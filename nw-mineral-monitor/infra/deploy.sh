@@ -43,7 +43,8 @@ case "${1:-deploy}" in
     echo "==> [1/5] Creating/updating CloudFormation stack '$STACK' in $REGION (5-10 min first time)…"
     wait_for_clear_state
     aws cloudformation deploy --template-file "$HERE/template.yaml" \
-      --stack-name "$STACK" --region "$REGION" --capabilities CAPABILITY_IAM
+      --stack-name "$STACK" --region "$REGION" --capabilities CAPABILITY_IAM \
+      --no-fail-on-empty-changeset
 
     BUCKET="$(outputs BucketName)"; FN="$(outputs UpdaterFunctionName)"; URL="$(outputs SiteURL)"
     echo "    bucket: $BUCKET"; echo "    lambda: $FN"

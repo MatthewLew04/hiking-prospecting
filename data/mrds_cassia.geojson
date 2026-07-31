@@ -1,0 +1,5732 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.57086,
+     42.30431
+    ]
+   },
+   "properties": {
+    "id": "10022764",
+    "name": "Excelsior",
+    "dev_status": "Producer",
+    "commodities": "Silver, Gold, Copper, Lead, Zinc",
+    "commod_primary": "Silver, Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10022764"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.05165,
+     42.08462
+    ]
+   },
+   "properties": {
+    "id": "10040437",
+    "name": "Miller Cinnabar",
+    "dev_status": "Past Producer",
+    "commodities": "Mercury, Copper, Lead, Arsenic, Barium-Barite",
+    "commod_primary": "Mercury",
+    "ore": "Cinnabar, Jamesonite, Tetrahedrite",
+    "gangue": "Barite, Quartz, Realgar",
+    "work_type": "Underground",
+    "prod_size": "S",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10040437"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.44143,
+     42.6713
+    ]
+   },
+   "properties": {
+    "id": "10048481",
+    "name": "Minidoka",
+    "dev_status": "Past Producer",
+    "commodities": "Gold, Platinum",
+    "commod_primary": "Gold",
+    "ore": "Allanite, Augite, Garnet, Gold, Ilmenite, Magnetite, Olivine, Platinum, Zircon",
+    "gangue": "Obsidian, Quartz",
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Snake River Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10048481"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.10198,
+     42.12071
+    ]
+   },
+   "properties": {
+    "id": "10070116",
+    "name": "Pumicite Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Goose Creek District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070116"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.14755,
+     42.04297
+    ]
+   },
+   "properties": {
+    "id": "10070117",
+    "name": "Pumicite Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Goose Creek District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070117"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.25759,
+     42.273
+    ]
+   },
+   "properties": {
+    "id": "10070118",
+    "name": "Pumicite Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Goose Creek District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070118"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.71139,
+     42.07361
+    ]
+   },
+   "properties": {
+    "id": "10070308",
+    "name": "City of Rocks Uranium Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Uranium, Thorium, REE",
+    "commod_primary": "Uranium, Thorium, REE",
+    "ore": "Magnetite",
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Almo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070308"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.49806,
+     42.08881
+    ]
+   },
+   "properties": {
+    "id": "10070312",
+    "name": "Pumicite Occurrence",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Almo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070312"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.59666,
+     42.02521
+    ]
+   },
+   "properties": {
+    "id": "10070313",
+    "name": "Pumicite Occurrence",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Almo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070313"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.81277,
+     42.24272
+    ]
+   },
+   "properties": {
+    "id": "10070314",
+    "name": "Pumicite Occurrence",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Oakley Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070314"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.57697,
+     42.51161
+    ]
+   },
+   "properties": {
+    "id": "10070316",
+    "name": "Clay Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Clay",
+    "commod_primary": null,
+    "ore": "Clay",
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Declo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070316"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.8386,
+     42.035
+    ]
+   },
+   "properties": {
+    "id": "10070319",
+    "name": "South Mountain Pegmatites",
+    "dev_status": "Occurrence",
+    "commodities": "Feldspar",
+    "commod_primary": "Feldspar",
+    "ore": "Pegmatite",
+    "gangue": "Muscovite, Quartz",
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Goose Creek District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070319"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.73557,
+     42.04741
+    ]
+   },
+   "properties": {
+    "id": "10070320",
+    "name": "City of Rocks Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Feldspar, Uranium, Beryllium, Thorium",
+    "commod_primary": "Feldspar, Uranium",
+    "ore": "Pegmatite",
+    "gangue": "Garnet, Muscovite, Plagioclase, Quartz",
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Almo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070320"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.69087,
+     42.07681
+    ]
+   },
+   "properties": {
+    "id": "10070322",
+    "name": "City of Rocks Uranium Placer Deposit",
+    "dev_status": "Prospect",
+    "commodities": "Uranium",
+    "commod_primary": "Uranium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Almo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070322"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.78087,
+     42.55491
+    ]
+   },
+   "properties": {
+    "id": "10070324",
+    "name": "Snake River Placers",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Burley Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070324"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.5219,
+     42.665
+    ]
+   },
+   "properties": {
+    "id": "10070326",
+    "name": "Snake River Placers",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Acequia Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070326"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.43507,
+     42.67271
+    ]
+   },
+   "properties": {
+    "id": "10070328",
+    "name": "Idaho Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070328"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27776,
+     42.62571
+    ]
+   },
+   "properties": {
+    "id": "10070332",
+    "name": "Bancroft Claim Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070332"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.22253,
+     42.62435
+    ]
+   },
+   "properties": {
+    "id": "10070333",
+    "name": "G. W. Lish Farm Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070333"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56197,
+     42.52131
+    ]
+   },
+   "properties": {
+    "id": "10070354",
+    "name": "Marble Quarry",
+    "dev_status": "Past Producer",
+    "commodities": "Marble, Dimension",
+    "commod_primary": "Marble, Dimension",
+    "ore": "Marble",
+    "gangue": "Pyrite",
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Declo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070354"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.61587,
+     42.44571
+    ]
+   },
+   "properties": {
+    "id": "10070355",
+    "name": "Marble Quarry",
+    "dev_status": "Past Producer",
+    "commodities": "Marble, Dimension, Lead",
+    "commod_primary": "Marble, Dimension",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Albion Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070355"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.55586,
+     42.30661
+    ]
+   },
+   "properties": {
+    "id": "10070356",
+    "name": "Melcher Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Silver, Gold, Copper",
+    "commod_primary": "Lead",
+    "ore": "Anglesite, Chalcopyrite, Galena, Malachite, Pyromorphite, Tetrahedrite",
+    "gangue": "Pyrite, Quartz",
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070356"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.58197,
+     42.31571
+    ]
+   },
+   "properties": {
+    "id": "10070357",
+    "name": "Big Bertha Group",
+    "dev_status": "Past Producer",
+    "commodities": "Gold, Lead, Silver, Copper, Zinc",
+    "commod_primary": "Gold",
+    "ore": "Chalcopyrite, Galena, Pyromorphite, Sphalerite, Tetrahedrite",
+    "gangue": "Quartz, Specularite",
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070357"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.58757,
+     42.30821
+    ]
+   },
+   "properties": {
+    "id": "10070358",
+    "name": "Albion Group Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Silver, Gold, Zinc, Copper",
+    "commod_primary": "Lead, Silver, Gold",
+    "ore": "Chalcopyrite, Galena, Malachite, Pyromorphite, Sphalerite, Tetrahedrite",
+    "gangue": "Pyrite, Quartz",
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070358"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.60867,
+     42.30491
+    ]
+   },
+   "properties": {
+    "id": "10070359",
+    "name": "Golden Eagle Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Gold, Silver, Copper",
+    "commod_primary": "Lead",
+    "ore": "Galena, Pyromorphite",
+    "gangue": null,
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070359"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.60947,
+     42.31241
+    ]
+   },
+   "properties": {
+    "id": "10070360",
+    "name": "Harris and Hume Prospect",
+    "dev_status": "Past Producer",
+    "commodities": "Silver, Gold, Lead",
+    "commod_primary": "Silver",
+    "ore": "Pyromorphite",
+    "gangue": "Limonite, Quartz",
+    "work_type": "Underground",
+    "prod_size": "N",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070360"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63977,
+     42.19461
+    ]
+   },
+   "properties": {
+    "id": "10070361",
+    "name": "Last Chance Group Prospect",
+    "dev_status": "Prospect",
+    "commodities": "Copper",
+    "commod_primary": "Copper",
+    "ore": "Chrysocolla, Malachite",
+    "gangue": "Quartz",
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070361"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.7025,
+     42.3011
+    ]
+   },
+   "properties": {
+    "id": "10070362",
+    "name": "Boulder Creek Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Lead, Silver, Copper",
+    "commod_primary": "Lead, Silver, Copper",
+    "ore": "Galena, Malachite, Tetrahedrite",
+    "gangue": "Quartz",
+    "work_type": "Surface/Underground",
+    "prod_size": "N",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070362"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.07365,
+     42.09492
+    ]
+   },
+   "properties": {
+    "id": "10070363",
+    "name": "Silver Hills Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Silver, Zinc, Lead, Gold, Copper, Antimony",
+    "commod_primary": "Silver, Zinc, Lead",
+    "ore": "Jamesonite, Malachite, Sphalerite, Tetrahedrite",
+    "gangue": "Calcite, Pyrite, Quartz",
+    "work_type": "Underground",
+    "prod_size": "S",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070363"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.04665,
+     42.09772
+    ]
+   },
+   "properties": {
+    "id": "10070364",
+    "name": "Ruth Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Zinc, Copper, Silver, Mercury",
+    "commod_primary": "Zinc",
+    "ore": "Cinnabar, Malachite, Smithsonite, Sphalerite, Tetrahedrite",
+    "gangue": "Calamine, Quartz, Realgar",
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070364"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.03005,
+     42.08162
+    ]
+   },
+   "properties": {
+    "id": "10070365",
+    "name": "Hazel Pine Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Gold, Silver, Lead, Zinc",
+    "commod_primary": "Gold, Silver, Lead",
+    "ore": "Calamine, Smithsonite",
+    "gangue": "Calcite, Quartz",
+    "work_type": "Underground",
+    "prod_size": "S",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070365"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.0375,
+     42.07426
+    ]
+   },
+   "properties": {
+    "id": "10070366",
+    "name": "Valentine Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Mercury, Gold, Silver, Lead",
+    "commod_primary": "Mercury",
+    "ore": "Cinnabar",
+    "gangue": "Barite, Quartz, Realgar",
+    "work_type": "Underground",
+    "prod_size": "S",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070366"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.05363,
+     42.09714
+    ]
+   },
+   "properties": {
+    "id": "10070367",
+    "name": "Mineral Gulch Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Copper, Zinc",
+    "commod_primary": "Copper",
+    "ore": "Malachite, Smithsonite",
+    "gangue": "Calcite, Quartz",
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070367"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.07195,
+     42.10301
+    ]
+   },
+   "properties": {
+    "id": "10070368",
+    "name": "East Dry Fork Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Iron",
+    "commod_primary": null,
+    "ore": "Limonite",
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070368"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.10395,
+     42.10991
+    ]
+   },
+   "properties": {
+    "id": "10070369",
+    "name": "War Eagle Peak Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Copper",
+    "commod_primary": null,
+    "ore": "Malachite, Tetrahedrite",
+    "gangue": "Quartz",
+    "work_type": "Surface/Underground",
+    "prod_size": "N",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10070369"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.00698,
+     42.10461
+    ]
+   },
+   "properties": {
+    "id": "10089069",
+    "name": "Uranium Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Uranium",
+    "commod_primary": "Uranium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Goose Creek Dist.",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089069"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.07005,
+     42.22741
+    ]
+   },
+   "properties": {
+    "id": "10089121",
+    "name": "Pumicite Pit",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Sublett Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089121"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.41757,
+     42.67381
+    ]
+   },
+   "properties": {
+    "id": "10089123",
+    "name": "General Grant Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089123"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.25526,
+     42.61631
+    ]
+   },
+   "properties": {
+    "id": "10089127",
+    "name": "Spring Bar Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089127"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.24196,
+     42.61131
+    ]
+   },
+   "properties": {
+    "id": "10089128",
+    "name": "Sweetzer Farm Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089128"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.70947,
+     42.36411
+    ]
+   },
+   "properties": {
+    "id": "10089148",
+    "name": "Marble Quarry",
+    "dev_status": "Past Producer",
+    "commodities": "Marble, Dimension",
+    "commod_primary": "Marble, Dimension",
+    "ore": "Marble",
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Albion Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089148"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80671,
+     42.54324
+    ]
+   },
+   "properties": {
+    "id": "10089149",
+    "name": "Burley Clay Mine",
+    "dev_status": "Producer",
+    "commodities": "Brick Clay",
+    "commod_primary": "Brick Clay",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Burley Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10089149"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.54667,
+     42.48711
+    ]
+   },
+   "properties": {
+    "id": "10090087",
+    "name": "Cyanite Occurrence",
+    "dev_status": "Occurrence",
+    "commodities": "Kyanite",
+    "commod_primary": null,
+    "ore": "Kyanite",
+    "gangue": "Garnet, Phlogopite, Quartz",
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Declo Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10090087"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.03255,
+     42.09552
+    ]
+   },
+   "properties": {
+    "id": "10093474",
+    "name": "Mineral Gulch Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Gold, Silver, Zinc, Copper",
+    "commod_primary": "Gold",
+    "ore": "Copper, Gold, Tetrahedrite",
+    "gangue": "Barite, Calcite, Quartz",
+    "work_type": null,
+    "prod_size": "N",
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10093474"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.72031,
+     42.25547
+    ]
+   },
+   "properties": {
+    "id": "10096228",
+    "name": "Gray Copper Prospect",
+    "dev_status": "Prospect",
+    "commodities": "Copper",
+    "commod_primary": "Copper",
+    "ore": "Malachite, Tetrahedrite",
+    "gangue": "Pyrite, Quartz",
+    "work_type": "Underground",
+    "prod_size": "N",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10096228"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.39646,
+     42.68211
+    ]
+   },
+   "properties": {
+    "id": "10105612",
+    "name": "Snake River Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10105612"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.24896,
+     42.61381
+    ]
+   },
+   "properties": {
+    "id": "10105613",
+    "name": "Durango Placer",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Lake Walcott",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10105613"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.76587,
+     42.17431
+    ]
+   },
+   "properties": {
+    "id": "10105619",
+    "name": "Marble Quarry",
+    "dev_status": "Past Producer",
+    "commodities": "Marble, Dimension",
+    "commod_primary": "Marble, Dimension",
+    "ore": "Marble",
+    "gangue": null,
+    "work_type": null,
+    "prod_size": "S",
+    "district": "Oakley Area",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10105619"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.53027,
+     42.46911
+    ]
+   },
+   "properties": {
+    "id": "10105620",
+    "name": "Old Dominion Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Silver, Copper",
+    "commod_primary": "Lead, Silver",
+    "ore": "Galena, Lead, Malachite, Tetrahedrite",
+    "gangue": "Pyrite, Quartz",
+    "work_type": "Surface/Underground",
+    "prod_size": "S",
+    "district": "Stokes District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10105620"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.79417,
+     42.47131
+    ]
+   },
+   "properties": {
+    "id": "10119508",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119508"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.58666,
+     42.23821
+    ]
+   },
+   "properties": {
+    "id": "10119531",
+    "name": "Sears Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119531"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63896,
+     42.10411
+    ]
+   },
+   "properties": {
+    "id": "10119587",
+    "name": "Durfee Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119587"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.6364,
+     42.0503
+    ]
+   },
+   "properties": {
+    "id": "10119676",
+    "name": "Almo Basin-Raft River #3",
+    "dev_status": "Unknown",
+    "commodities": "Garnet, Iron, REE, Titanium, Zirconium",
+    "commod_primary": "Garnet, Iron, REE, Titanium, Zirconium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119676"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.71147,
+     42.15571
+    ]
+   },
+   "properties": {
+    "id": "10119701",
+    "name": "City of Rocks Area",
+    "dev_status": "Past Producer",
+    "commodities": "Uranium",
+    "commod_primary": "Uranium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119701"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.71837,
+     42.25211
+    ]
+   },
+   "properties": {
+    "id": "10119747",
+    "name": "Myers Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119747"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.77807,
+     42.17961
+    ]
+   },
+   "properties": {
+    "id": "10119758",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Gemstone",
+    "commod_primary": "Gemstone",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119758"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.19729,
+     42.416
+    ]
+   },
+   "properties": {
+    "id": "10119773",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119773"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.7161,
+     42.0561
+    ]
+   },
+   "properties": {
+    "id": "10119775",
+    "name": "White Mica Mining and Milling",
+    "dev_status": "Occurrence",
+    "commodities": "Copper, Gold, Lead, Silver, Zinc",
+    "commod_primary": "Copper, Gold, Lead, Silver, Zinc",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119775"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.34446,
+     42.35071
+    ]
+   },
+   "properties": {
+    "id": "10119793",
+    "name": "Sand Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119793"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80778,
+     42.52851
+    ]
+   },
+   "properties": {
+    "id": "10119881",
+    "name": "Oakley Pit",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119881"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35976,
+     42.09461
+    ]
+   },
+   "properties": {
+    "id": "10119889",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10119889"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.75227,
+     42.52711
+    ]
+   },
+   "properties": {
+    "id": "10120000",
+    "name": "Goose Creek Placer Deposits",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120000"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63057,
+     42.26211
+    ]
+   },
+   "properties": {
+    "id": "10120074",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120074"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.05335,
+     42.09302
+    ]
+   },
+   "properties": {
+    "id": "10120080",
+    "name": "Mineral Gulch Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Iron",
+    "commod_primary": "Iron",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120080"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.92398,
+     42.45161
+    ]
+   },
+   "properties": {
+    "id": "10120200",
+    "name": "Magic Valley Sand and Gravel",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120200"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.28666,
+     42.47241
+    ]
+   },
+   "properties": {
+    "id": "10120237",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120237"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.37776,
+     42.09821
+    ]
+   },
+   "properties": {
+    "id": "10120261",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10120261"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.04695,
+     42.07992
+    ]
+   },
+   "properties": {
+    "id": "10143667",
+    "name": "Black Pine Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Gold, Silver",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": "Surface",
+    "prod_size": null,
+    "district": "Black Pine District",
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143667"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.81727,
+     42.17661
+    ]
+   },
+   "properties": {
+    "id": "10143723",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143723"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.78507,
+     42.52321
+    ]
+   },
+   "properties": {
+    "id": "10143726",
+    "name": "Kloepfer Curtis Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143726"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.26586,
+     42.49021
+    ]
+   },
+   "properties": {
+    "id": "10143764",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143764"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.27149,
+     42.4057
+    ]
+   },
+   "properties": {
+    "id": "10143766",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143766"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80417,
+     42.34071
+    ]
+   },
+   "properties": {
+    "id": "10143767",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143767"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.98337,
+     42.02411
+    ]
+   },
+   "properties": {
+    "id": "10143769",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lignite, Uranium",
+    "commod_primary": "Lignite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143769"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35276,
+     42.12961
+    ]
+   },
+   "properties": {
+    "id": "10143779",
+    "name": "Gravel Pits",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143779"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.61897,
+     42.57101
+    ]
+   },
+   "properties": {
+    "id": "10143782",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143782"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35276,
+     42.45851
+    ]
+   },
+   "properties": {
+    "id": "10143874",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143874"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.29196,
+     42.39321
+    ]
+   },
+   "properties": {
+    "id": "10143906",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143906"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80417,
+     42.38321
+    ]
+   },
+   "properties": {
+    "id": "10143941",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143941"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.38196,
+     42.09821
+    ]
+   },
+   "properties": {
+    "id": "10143961",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143961"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.26509,
+     42.4074
+    ]
+   },
+   "properties": {
+    "id": "10143983",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10143983"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.69947,
+     42.09521
+    ]
+   },
+   "properties": {
+    "id": "10144112",
+    "name": "Idaho Queen #1",
+    "dev_status": "Occurrence",
+    "commodities": "Beryllium, Thorium, Uranium",
+    "commod_primary": "Beryllium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10144112"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.39196,
+     42.30661
+    ]
+   },
+   "properties": {
+    "id": "10144113",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10144113"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.53446,
+     42.02101
+    ]
+   },
+   "properties": {
+    "id": "10144272",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10144272"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.73277,
+     42.03931
+    ]
+   },
+   "properties": {
+    "id": "10144321",
+    "name": "Black Jack Scheelite",
+    "dev_status": "Occurrence",
+    "commodities": "Tungsten",
+    "commod_primary": null,
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10144321"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.27029,
+     42.3638
+    ]
+   },
+   "properties": {
+    "id": "10144355",
+    "name": "Quarry",
+    "dev_status": "Unknown",
+    "commodities": "Stone, Dimension",
+    "commod_primary": "Stone, Dimension",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10144355"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.11005,
+     42.10801
+    ]
+   },
+   "properties": {
+    "id": "10154555",
+    "name": "U-30-3",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10154555"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.01557,
+     42.01161
+    ]
+   },
+   "properties": {
+    "id": "10159833",
+    "name": "Pumicite Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Pumice",
+    "commod_primary": "Pumice",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10159833"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.79367,
+     42.25681
+    ]
+   },
+   "properties": {
+    "id": "10159903",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10159903"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.44256,
+     42.20351
+    ]
+   },
+   "properties": {
+    "id": "10159993",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10159993"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.50777,
+     42.47661
+    ]
+   },
+   "properties": {
+    "id": "10168022",
+    "name": "Flowing Well",
+    "dev_status": "Unknown",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168022"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.02478,
+     42.4093
+    ]
+   },
+   "properties": {
+    "id": "10168027",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168027"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.50976,
+     42.27521
+    ]
+   },
+   "properties": {
+    "id": "10168102",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168102"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.58006,
+     42.07071
+    ]
+   },
+   "properties": {
+    "id": "10168112",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168112"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.23149,
+     42.4032
+    ]
+   },
+   "properties": {
+    "id": "10168136",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168136"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.44756,
+     42.07411
+    ]
+   },
+   "properties": {
+    "id": "10168200",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168200"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.86117,
+     42.37661
+    ]
+   },
+   "properties": {
+    "id": "10168278",
+    "name": "Kloepfer Oakley Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168278"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.95058,
+     42.34321
+    ]
+   },
+   "properties": {
+    "id": "10168344",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168344"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.68027,
+     42.47381
+    ]
+   },
+   "properties": {
+    "id": "10168345",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168345"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.02308,
+     42.4135
+    ]
+   },
+   "properties": {
+    "id": "10168368",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168368"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.32666,
+     42.49911
+    ]
+   },
+   "properties": {
+    "id": "10168397",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168397"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.02948,
+     42.15161
+    ]
+   },
+   "properties": {
+    "id": "10168405",
+    "name": "Barrett Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Lignite, Uranium",
+    "commod_primary": "Lignite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168405"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.54667,
+     42.48711
+    ]
+   },
+   "properties": {
+    "id": "10168429",
+    "name": "Bill Anderson Kyanite Property",
+    "dev_status": "Occurrence",
+    "commodities": "Kyanite",
+    "commod_primary": "Kyanite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168429"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27085,
+     42.07741
+    ]
+   },
+   "properties": {
+    "id": "10168437",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168437"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.27899,
+     42.4049
+    ]
+   },
+   "properties": {
+    "id": "10168453",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168453"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.62807,
+     42.40051
+    ]
+   },
+   "properties": {
+    "id": "10168466",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168466"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.69257,
+     42.06911
+    ]
+   },
+   "properties": {
+    "id": "10168478",
+    "name": "Almo Basin-Circle Creek #2",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168478"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.90007,
+     42.30631
+    ]
+   },
+   "properties": {
+    "id": "10168485",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168485"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.31306,
+     42.26381
+    ]
+   },
+   "properties": {
+    "id": "10168540",
+    "name": "Borrow Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168540"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.23195,
+     42.04551
+    ]
+   },
+   "properties": {
+    "id": "10168571",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168571"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88277,
+     42.24021
+    ]
+   },
+   "properties": {
+    "id": "10168603",
+    "name": "Rocky Mtn. Quarry",
+    "dev_status": "Producer",
+    "commodities": "Stone",
+    "commod_primary": "Stone",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168603"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.90087,
+     42.09101
+    ]
+   },
+   "properties": {
+    "id": "10168613",
+    "name": "Rocky Mnt Quartzite Quarry",
+    "dev_status": "Producer",
+    "commodities": "Stone, Dimension",
+    "commod_primary": "Stone, Dimension",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168613"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.52256,
+     42.27181
+    ]
+   },
+   "properties": {
+    "id": "10168623",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168623"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.75947,
+     42.46021
+    ]
+   },
+   "properties": {
+    "id": "10168631",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168631"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.53027,
+     42.46911
+    ]
+   },
+   "properties": {
+    "id": "10168658",
+    "name": "Old Dominion Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Copper, Silver, Zinc",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168658"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.40726,
+     42.40681
+    ]
+   },
+   "properties": {
+    "id": "10168693",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10168693"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63226,
+     42.12741
+    ]
+   },
+   "properties": {
+    "id": "10183667",
+    "name": "Almo Basin-Edwards Creek",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10183667"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.83947,
+     42.03491
+    ]
+   },
+   "properties": {
+    "id": "10183720",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Uranium, Beryllium, Thorium",
+    "commod_primary": "Uranium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10183720"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85197,
+     42.33051
+    ]
+   },
+   "properties": {
+    "id": "10192424",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192424"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88257,
+     42.02411
+    ]
+   },
+   "properties": {
+    "id": "10192435",
+    "name": "Middle Mountain",
+    "dev_status": "Prospect",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192435"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.00778,
+     42.15131
+    ]
+   },
+   "properties": {
+    "id": "10192447",
+    "name": "Trapper Creek # 1",
+    "dev_status": "Prospect",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192447"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.10805,
+     42.24821
+    ]
+   },
+   "properties": {
+    "id": "10192510",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192510"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.82338,
+     42.52681
+    ]
+   },
+   "properties": {
+    "id": "10192532",
+    "name": "Gravel Pit - Idaho Dept of Highways",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192532"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.64776,
+     42.06991
+    ]
+   },
+   "properties": {
+    "id": "10192543",
+    "name": "Almo Basin-Circle Creek #3",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192543"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.13478,
+     42.3955
+    ]
+   },
+   "properties": {
+    "id": "10192548",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192548"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.52897,
+     42.48631
+    ]
+   },
+   "properties": {
+    "id": "10192590",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192590"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85008,
+     42.53101
+    ]
+   },
+   "properties": {
+    "id": "10192660",
+    "name": "Gravel Pit--Idaho Dept of Highway",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192660"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.48946,
+     42.48301
+    ]
+   },
+   "properties": {
+    "id": "10192678",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192678"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.69027,
+     42.24381
+    ]
+   },
+   "properties": {
+    "id": "10192682",
+    "name": "North Carson Creek",
+    "dev_status": "Past Producer",
+    "commodities": "Limestone, General",
+    "commod_primary": "Limestone, General",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192682"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.21729,
+     42.4149
+    ]
+   },
+   "properties": {
+    "id": "10192691",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192691"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.72477,
+     42.06321
+    ]
+   },
+   "properties": {
+    "id": "10192697",
+    "name": "White Mica Mining and Milling",
+    "dev_status": "Occurrence",
+    "commodities": "Gold, Copper, Lead, Silver, Zinc",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192697"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.06005,
+     42.37131
+    ]
+   },
+   "properties": {
+    "id": "10192717",
+    "name": "Phosphate Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Phosphorus-Phosphates",
+    "commod_primary": "Phosphorus-Phosphates",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192717"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.69256,
+     42.00661
+    ]
+   },
+   "properties": {
+    "id": "10192752",
+    "name": "Idaho Quartzite",
+    "dev_status": "Prospect",
+    "commodities": "Silica",
+    "commod_primary": "Silica",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192752"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63146,
+     42.09961
+    ]
+   },
+   "properties": {
+    "id": "10192780",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192780"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.33896,
+     42.18131
+    ]
+   },
+   "properties": {
+    "id": "10192782",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192782"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88367,
+     42.16301
+    ]
+   },
+   "properties": {
+    "id": "10192868",
+    "name": "Kloepfer Birley Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192868"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.62556,
+     42.06821
+    ]
+   },
+   "properties": {
+    "id": "10192882",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10192882"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.34526,
+     42.16051
+    ]
+   },
+   "properties": {
+    "id": "10193092",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10193092"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.11618,
+     42.3818
+    ]
+   },
+   "properties": {
+    "id": "10193173",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10193173"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.07195,
+     42.10301
+    ]
+   },
+   "properties": {
+    "id": "10216573",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Copper",
+    "commod_primary": "Copper",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216573"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63166,
+     42.10571
+    ]
+   },
+   "properties": {
+    "id": "10216593",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216593"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.26776,
+     42.36961
+    ]
+   },
+   "properties": {
+    "id": "10216604",
+    "name": "Borrow Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216604"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56476,
+     42.08681
+    ]
+   },
+   "properties": {
+    "id": "10216660",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216660"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.02645,
+     42.40271
+    ]
+   },
+   "properties": {
+    "id": "10216689",
+    "name": "Big Southern Butte",
+    "dev_status": "Prospect",
+    "commodities": "Molybdenum",
+    "commod_primary": "Molybdenum",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216689"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.70337,
+     42.30101
+    ]
+   },
+   "properties": {
+    "id": "10216706",
+    "name": "Unnamed Location",
+    "dev_status": "Prospect",
+    "commodities": "Lead, Silver",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216706"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.98397,
+     42.07161
+    ]
+   },
+   "properties": {
+    "id": "10216741",
+    "name": "Unnamed Location",
+    "dev_status": "Past Producer",
+    "commodities": "Lignite, Uranium",
+    "commod_primary": "Lignite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216741"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.52057,
+     42.45241
+    ]
+   },
+   "properties": {
+    "id": "10216749",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216749"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35586,
+     42.43961
+    ]
+   },
+   "properties": {
+    "id": "10216762",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216762"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.50337,
+     42.48601
+    ]
+   },
+   "properties": {
+    "id": "10216765",
+    "name": "Bridger Hot Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216765"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.76007,
+     42.17021
+    ]
+   },
+   "properties": {
+    "id": "10216850",
+    "name": "Posey No 5",
+    "dev_status": "Occurrence",
+    "commodities": "Kyanite",
+    "commod_primary": "Kyanite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216850"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.07058,
+     42.403
+    ]
+   },
+   "properties": {
+    "id": "10216851",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216851"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.46946,
+     42.01801
+    ]
+   },
+   "properties": {
+    "id": "10216858",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216858"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63056,
+     42.02411
+    ]
+   },
+   "properties": {
+    "id": "10216970",
+    "name": "Almo Basin-Raft River #2",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216970"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.73027,
+     42.31161
+    ]
+   },
+   "properties": {
+    "id": "10216976",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10216976"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.57837,
+     42.51351
+    ]
+   },
+   "properties": {
+    "id": "10217010",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217010"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63866,
+     42.00931
+    ]
+   },
+   "properties": {
+    "id": "10217068",
+    "name": "Almo Basin-Raft River #1",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217068"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.43226,
+     42.28411
+    ]
+   },
+   "properties": {
+    "id": "10217073",
+    "name": "Sand Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217073"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27726,
+     42.41741
+    ]
+   },
+   "properties": {
+    "id": "10217118",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217118"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.10115,
+     42.39711
+    ]
+   },
+   "properties": {
+    "id": "10217151",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Phosphorus-Phosphates",
+    "commod_primary": "Phosphorus-Phosphates",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217151"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.84148,
+     42.52911
+    ]
+   },
+   "properties": {
+    "id": "10217158",
+    "name": "Gordon Paving",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10217158"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.76167,
+     42.17521
+    ]
+   },
+   "properties": {
+    "id": "10231881",
+    "name": "Kinney Mine",
+    "dev_status": "Past Producer",
+    "commodities": "Lead, Silver",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10231881"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.94007,
+     42.08521
+    ]
+   },
+   "properties": {
+    "id": "10240701",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240701"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.23696,
+     42.42551
+    ]
+   },
+   "properties": {
+    "id": "10240730",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240730"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.55007,
+     42.38741
+    ]
+   },
+   "properties": {
+    "id": "10240780",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240780"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27505,
+     42.09101
+    ]
+   },
+   "properties": {
+    "id": "10240786",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240786"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.30276,
+     42.40271
+    ]
+   },
+   "properties": {
+    "id": "10240790",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240790"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56366,
+     42.31571
+    ]
+   },
+   "properties": {
+    "id": "10240807",
+    "name": "Connor Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Lead, Gold, Silver",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240807"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.07258,
+     42.01181
+    ]
+   },
+   "properties": {
+    "id": "10240840",
+    "name": "Worthington Prospect",
+    "dev_status": "Past Producer",
+    "commodities": "Lignite, Uranium",
+    "commod_primary": "Lignite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240840"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.64397,
+     42.54321
+    ]
+   },
+   "properties": {
+    "id": "10240847",
+    "name": "Marsh Creek Placer Deposits",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240847"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.57336,
+     42.29911
+    ]
+   },
+   "properties": {
+    "id": "10240855",
+    "name": "Giant Lode",
+    "dev_status": "Unknown",
+    "commodities": "Gold, Lead, Silver, Zinc",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240855"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.34976,
+     42.13101
+    ]
+   },
+   "properties": {
+    "id": "10240875",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240875"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.14668,
+     42.4021
+    ]
+   },
+   "properties": {
+    "id": "10240880",
+    "name": "Artesian City",
+    "dev_status": "Prospect",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240880"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.12058,
+     42.14211
+    ]
+   },
+   "properties": {
+    "id": "10240916",
+    "name": "Trapper Creek #2",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240916"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.03008,
+     42.32681
+    ]
+   },
+   "properties": {
+    "id": "10240935",
+    "name": "Poulton Warm Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240935"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.96777,
+     42.02601
+    ]
+   },
+   "properties": {
+    "id": "10240941",
+    "name": "Gravel Pit",
+    "dev_status": "Occurrence",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240941"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.44226,
+     42.07771
+    ]
+   },
+   "properties": {
+    "id": "10240949",
+    "name": "Gravel Pit",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10240949"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.23255,
+     42.32571
+    ]
+   },
+   "properties": {
+    "id": "10241044",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241044"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88757,
+     42.26461
+    ]
+   },
+   "properties": {
+    "id": "10241089",
+    "name": "Brick and Tile Clay Deposit",
+    "dev_status": "Unknown",
+    "commodities": "Clay",
+    "commod_primary": "Clay",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241089"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.96397,
+     42.03821
+    ]
+   },
+   "properties": {
+    "id": "10241140",
+    "name": "Limestone Occurrence",
+    "dev_status": "Occurrence",
+    "commodities": "Stone, Crushed/Broken, Clay",
+    "commod_primary": "Stone, Crushed/Broken",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241140"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.79558,
+     42.54881
+    ]
+   },
+   "properties": {
+    "id": "10241167",
+    "name": "Clay Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Clay",
+    "commod_primary": "Clay",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241167"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88198,
+     42.35961
+    ]
+   },
+   "properties": {
+    "id": "10241171",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241171"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35526,
+     42.20271
+    ]
+   },
+   "properties": {
+    "id": "10241268",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241268"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.97698,
+     42.16911
+    ]
+   },
+   "properties": {
+    "id": "10241284",
+    "name": "Nelson Well",
+    "dev_status": "Prospect",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241284"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.36866,
+     42.10051
+    ]
+   },
+   "properties": {
+    "id": "10241302",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241302"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.02118,
+     42.31241
+    ]
+   },
+   "properties": {
+    "id": "10241369",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10241369"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.37116,
+     42.11521
+    ]
+   },
+   "properties": {
+    "id": "10255694",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10255694"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.62947,
+     42.31931
+    ]
+   },
+   "properties": {
+    "id": "10265166",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265166"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.16508,
+     42.4055
+    ]
+   },
+   "properties": {
+    "id": "10265168",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265168"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.23808,
+     42.01521
+    ]
+   },
+   "properties": {
+    "id": "10265171",
+    "name": "Thoroughbred Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265171"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.25696,
+     42.60681
+    ]
+   },
+   "properties": {
+    "id": "10265182",
+    "name": "Gravel Pit--Idaho Dept of Highways",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265182"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.38556,
+     42.08741
+    ]
+   },
+   "properties": {
+    "id": "10265195",
+    "name": "Gravel Pits",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265195"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.54947,
+     42.56601
+    ]
+   },
+   "properties": {
+    "id": "10265203",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265203"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80167,
+     42.30881
+    ]
+   },
+   "properties": {
+    "id": "10265216",
+    "name": "Land Ranch Spring",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265216"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.07918,
+     42.15101
+    ]
+   },
+   "properties": {
+    "id": "10265250",
+    "name": "Grant Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Lignite, Uranium",
+    "commod_primary": "Lignite",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265250"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.07198,
+     42.3949
+    ]
+   },
+   "properties": {
+    "id": "10265264",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265264"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.60477,
+     42.58601
+    ]
+   },
+   "properties": {
+    "id": "10265271",
+    "name": "Brick and Tile Clay Deposit",
+    "dev_status": "Prospect",
+    "commodities": "Clay",
+    "commod_primary": "Clay",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265271"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.10168,
+     42.4066
+    ]
+   },
+   "properties": {
+    "id": "10265289",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265289"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.71087,
+     42.03961
+    ]
+   },
+   "properties": {
+    "id": "10265301",
+    "name": "Almo Basin",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium, Zirconium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265301"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.47946,
+     42.27851
+    ]
+   },
+   "properties": {
+    "id": "10265321",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265321"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56946,
+     42.09351
+    ]
+   },
+   "properties": {
+    "id": "10265341",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265341"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.78917,
+     42.18911
+    ]
+   },
+   "properties": {
+    "id": "10265378",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265378"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.86167,
+     42.17271
+    ]
+   },
+   "properties": {
+    "id": "10265404",
+    "name": "Oakley Warm Springs",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265404"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85277,
+     42.12961
+    ]
+   },
+   "properties": {
+    "id": "10265448",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265448"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.52866,
+     42.34521
+    ]
+   },
+   "properties": {
+    "id": "10265476",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265476"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.64087,
+     42.52071
+    ]
+   },
+   "properties": {
+    "id": "10265485",
+    "name": "State Pit Cs 162",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265485"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.10395,
+     42.10991
+    ]
+   },
+   "properties": {
+    "id": "10265542",
+    "name": "Unnamed Location",
+    "dev_status": "Prospect",
+    "commodities": "Copper",
+    "commod_primary": "Copper",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265542"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.21165,
+     42.01711
+    ]
+   },
+   "properties": {
+    "id": "10265623",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265623"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.50777,
+     42.57051
+    ]
+   },
+   "properties": {
+    "id": "10265635",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265635"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.64916,
+     42.11241
+    ]
+   },
+   "properties": {
+    "id": "10265669",
+    "name": "Almo Basin-Graham Creek",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265669"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.28416,
+     42.52491
+    ]
+   },
+   "properties": {
+    "id": "10265681",
+    "name": "Arco",
+    "dev_status": "Past Producer",
+    "commodities": "Limestone, General",
+    "commod_primary": "Limestone, General",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265681"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.84897,
+     42.11881
+    ]
+   },
+   "properties": {
+    "id": "10265687",
+    "name": "Oakley Valley Stone,Inc",
+    "dev_status": "Producer",
+    "commodities": "Stone",
+    "commod_primary": "Stone",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265687"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27756,
+     42.38101
+    ]
+   },
+   "properties": {
+    "id": "10265692",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265692"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.82698,
+     42.53211
+    ]
+   },
+   "properties": {
+    "id": "10265733",
+    "name": "Kloepfer Burley Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265733"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.27369,
+     42.3988
+    ]
+   },
+   "properties": {
+    "id": "10265811",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265811"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.06975,
+     42.47771
+    ]
+   },
+   "properties": {
+    "id": "10265818",
+    "name": "Crushed Rock Pit--Burley Hwy Dist",
+    "dev_status": "Producer",
+    "commodities": "Stone, Crushed/Broken",
+    "commod_primary": "Stone, Crushed/Broken",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265818"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.36086,
+     42.21711
+    ]
+   },
+   "properties": {
+    "id": "10265860",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265860"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80727,
+     42.41631
+    ]
+   },
+   "properties": {
+    "id": "10265881",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265881"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.54527,
+     42.40351
+    ]
+   },
+   "properties": {
+    "id": "10265908",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Clay",
+    "commod_primary": "Clay",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10265908"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.70777,
+     42.07571
+    ]
+   },
+   "properties": {
+    "id": "10281433",
+    "name": "Brooks Prospect",
+    "dev_status": "Occurrence",
+    "commodities": "Beryllium, Thorium, Uranium",
+    "commod_primary": "Beryllium",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10281433"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.02648,
+     42.4174
+    ]
+   },
+   "properties": {
+    "id": "10289483",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289483"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.31506,
+     42.26241
+    ]
+   },
+   "properties": {
+    "id": "10289509",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289509"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.19588,
+     42.12161
+    ]
+   },
+   "properties": {
+    "id": "10289525",
+    "name": "Phosphate Deposit",
+    "dev_status": "Occurrence",
+    "commodities": "Phosphorus-Phosphates",
+    "commod_primary": "Phosphorus-Phosphates",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289525"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.82007,
+     42.09321
+    ]
+   },
+   "properties": {
+    "id": "10289550",
+    "name": "Quarry",
+    "dev_status": "Unknown",
+    "commodities": "Stone, Dimension",
+    "commod_primary": "Stone, Dimension",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289550"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.33166,
+     42.31301
+    ]
+   },
+   "properties": {
+    "id": "10289564",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289564"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85917,
+     42.13131
+    ]
+   },
+   "properties": {
+    "id": "10289585",
+    "name": "Quarries",
+    "dev_status": "Unknown",
+    "commodities": "Marble, Dimension",
+    "commod_primary": "Marble, Dimension",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289585"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.72007,
+     42.08301
+    ]
+   },
+   "properties": {
+    "id": "10289587",
+    "name": "Almo Basin-Circle Creek #1",
+    "dev_status": "Unknown",
+    "commodities": "REE, Garnet, Iron, Titanium",
+    "commod_primary": "REE",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289587"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.34146,
+     42.35071
+    ]
+   },
+   "properties": {
+    "id": "10289671",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289671"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.59647,
+     42.60491
+    ]
+   },
+   "properties": {
+    "id": "10289690",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289690"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.49587,
+     42.49211
+    ]
+   },
+   "properties": {
+    "id": "10289733",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289733"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.39336,
+     42.49131
+    ]
+   },
+   "properties": {
+    "id": "10289752",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289752"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.21645,
+     42.00301
+    ]
+   },
+   "properties": {
+    "id": "10289789",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289789"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.39196,
+     42.10771
+    ]
+   },
+   "properties": {
+    "id": "10289806",
+    "name": "Hot Well",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289806"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.26026,
+     42.41491
+    ]
+   },
+   "properties": {
+    "id": "10289820",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289820"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.28645,
+     42.09961
+    ]
+   },
+   "properties": {
+    "id": "10289870",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289870"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.77897,
+     42.22631
+    ]
+   },
+   "properties": {
+    "id": "10289875",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289875"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.52806,
+     42.27931
+    ]
+   },
+   "properties": {
+    "id": "10289897",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289897"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.77227,
+     42.31071
+    ]
+   },
+   "properties": {
+    "id": "10289913",
+    "name": "Unnamed Location",
+    "dev_status": "Prospect",
+    "commodities": "Lead",
+    "commod_primary": "Lead",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289913"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56057,
+     42.65211
+    ]
+   },
+   "properties": {
+    "id": "10289942",
+    "name": "Gravel Pit",
+    "dev_status": "Past Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289942"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.76617,
+     42.52431
+    ]
+   },
+   "properties": {
+    "id": "10289963",
+    "name": "Hoffbuhr Ready Mix",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289963"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.37366,
+     42.26051
+    ]
+   },
+   "properties": {
+    "id": "10289996",
+    "name": "Gravel Pit",
+    "dev_status": "Unknown",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289996"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.04335,
+     42.07802
+    ]
+   },
+   "properties": {
+    "id": "10289997",
+    "name": "Tolman Mine",
+    "dev_status": "Prospect",
+    "commodities": "Gold, Arsenic, Mercury",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10289997"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.98338,
+     42.16491
+    ]
+   },
+   "properties": {
+    "id": "10290027",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290027"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.25369,
+     42.2788
+    ]
+   },
+   "properties": {
+    "id": "10290074",
+    "name": "Gravel Pit--Us Forest Service",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290074"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.05645,
+     42.03992
+    ]
+   },
+   "properties": {
+    "id": "10290100",
+    "name": "Unnamed Location",
+    "dev_status": "Occurrence",
+    "commodities": "Copper, Antimony, Mercury, Zinc",
+    "commod_primary": "Copper",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290100"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.56026,
+     42.25131
+    ]
+   },
+   "properties": {
+    "id": "10290103",
+    "name": "Geothermal Location",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290103"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.86167,
+     42.17271
+    ]
+   },
+   "properties": {
+    "id": "10290189",
+    "name": "Oakley Warm Springs",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290189"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80397,
+     42.45101
+    ]
+   },
+   "properties": {
+    "id": "10290218",
+    "name": "Oakley Pit",
+    "dev_status": "Producer",
+    "commodities": "Sand and Gravel, Construction",
+    "commod_primary": "Sand and Gravel, Construction",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290218"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.22866,
+     42.62431
+    ]
+   },
+   "properties": {
+    "id": "10290455",
+    "name": "Broken Arrow Ranch",
+    "dev_status": "Occurrence",
+    "commodities": "Geothermal",
+    "commod_primary": "Geothermal",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10290455"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.27776,
+     42.62571
+    ]
+   },
+   "properties": {
+    "id": "10305116",
+    "name": "Raft River Placer Deposit",
+    "dev_status": "Past Producer",
+    "commodities": "Gold",
+    "commod_primary": "Gold",
+    "ore": null,
+    "gangue": null,
+    "work_type": null,
+    "prod_size": null,
+    "district": null,
+    "url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10305116"
+   }
+  }
+ ]
+}

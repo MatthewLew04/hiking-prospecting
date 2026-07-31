@@ -1,0 +1,6422 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.562911,
+     42.303383
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 357
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.573802,
+     42.300711
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 357
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.043059,
+     42.077602
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 333
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.069807,
+     42.094578
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 2
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.467249,
+     41.996538
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 237
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.939959,
+     42.084339
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Blue Hill",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430729,
+    "scanid": 235371,
+    "ftr_azimut": 229
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.985911,
+     42.070476
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": "Mine",
+    "topo_name": "Blue Hill",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430729,
+    "scanid": 235371,
+    "ftr_azimut": 232
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.7189,
+     42.251176
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": "Myers Mine",
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 339
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.554963,
+     42.302907
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": "Melcher Mine",
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 337
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.718129,
+     42.252262
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 357
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.940105,
+     42.084441
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Blue Hill",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430729,
+    "scanid": 235371,
+    "ftr_azimut": 230
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.03269,
+     42.081463
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 246
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.573445,
+     42.299819
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 1
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.566471,
+     42.172071
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Elba",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431789,
+    "scanid": 236022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.579578,
+     42.071753
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.352833,
+     42.458612
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.629574,
+     42.319257
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.463895,
+     42.015569
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.338817,
+     42.181234
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.793728,
+     42.256971
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.312955,
+     42.263675
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.551449,
+     42.566301
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.463326,
+     42.013453
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.50779,
+     42.570532
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.680269,
+     42.473673
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "View",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5436182,
+    "scanid": 238636,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.292061,
+     42.393434
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.833584,
+     42.343186
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.832413,
+     42.342872
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.903067,
+     42.199473
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Oakley",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434154,
+    "scanid": 237439,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.39201,
+     42.306496
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Nibbs Creek",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434083,
+    "scanid": 237401,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.447302,
+     42.073996
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.631834,
+     42.105654
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Almo",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430200,
+    "scanid": 235059,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.267747,
+     42.369531
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.852115,
+     42.330433
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.618872,
+     42.571028
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.277876,
+     42.330204
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Grand View Peak",
+    "topo_date": 1965,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432192,
+    "scanid": 236276,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.302903,
+     42.402689
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.534426,
+     42.020988
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.804188,
+     42.340655
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.277599,
+     42.380967
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.469793,
+     42.01858
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.442091,
+     42.077506
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.547961,
+     42.566027
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.950856,
+     42.351814
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.372858,
+     42.465688
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.625417,
+     42.068132
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.581211,
+     42.069786
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.564684,
+     42.087032
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.569559,
+     42.093511
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Jim Sage Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432916,
+    "scanid": 236703,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.48494,
+     42.278821
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Nibbs Creek",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434083,
+    "scanid": 237401,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.469332,
+     42.017627
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.355637,
+     42.439636
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.393242,
+     42.491257
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.474612,
+     42.278149
+    ]
+   },
+   "properties": {
+    "ftr_type": "Borrow Pit",
+    "ftr_name": null,
+    "topo_name": "Nibbs Creek",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434083,
+    "scanid": 237401,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.221733,
+     42.018956
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435683,
+    "scanid": 238339,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.229557,
+     42.045177
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435683,
+    "scanid": 238339,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.332894,
+     42.315571
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.064186,
+     42.310802
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett Reservoir",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435713,
+    "scanid": 238357,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.142322,
+     42.269381
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435721,
+    "scanid": 238355,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.407111,
+     42.406865
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.331723,
+     42.313125
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.235087,
+     42.400544
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "South Chapin Mountain",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435509,
+    "scanid": 238231,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.345132,
+     42.160653
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.696811,
+     42.469434
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "View",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5436182,
+    "scanid": 238636,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.794172,
+     42.471344
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.967755,
+     42.026137
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Blue Hill",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430729,
+    "scanid": 235371,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.879922,
+     42.348569
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433508,
+    "scanid": 237047,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.898291,
+     42.308345
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433508,
+    "scanid": 237047,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.275054,
+     42.091125
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Naf",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434012,
+    "scanid": 237361,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.762867,
+     42.221871
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.315064,
+     42.41384
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.315037,
+     42.262592
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.759578,
+     42.459554
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.385088,
+     42.087725
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.244509,
+     42.327538
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435721,
+    "scanid": 238355,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.390883,
+     42.102553
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.759371,
+     42.46121
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.341511,
+     42.35065
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.807135,
+     42.416407
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.371159,
+     42.115148
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Naf",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434012,
+    "scanid": 237361,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.305564,
+     42.168224
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.747848,
+     42.435606
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "View",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5436182,
+    "scanid": 238636,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.300863,
+     42.167755
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.596449,
+     42.604498
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.266664,
+     42.489236
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.898615,
+     42.310705
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433508,
+    "scanid": 237047,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.545539,
+     42.403491
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.882942,
+     42.359467
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.765822,
+     42.413664
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.898348,
+     42.312571
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433508,
+    "scanid": 237047,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.138399,
+     42.313744
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435721,
+    "scanid": 238355,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.549986,
+     42.387331
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.260263,
+     42.414928
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.349648,
+     42.131054
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.35271,
+     42.129612
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.901681,
+     42.307533
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.560921,
+     42.522551
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.760487,
+     42.439165
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.164257,
+     42.329658
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435721,
+    "scanid": 238355,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.765412,
+     42.41577
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.022074,
+     42.204343
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sweetzer Canyon",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435775,
+    "scanid": 238392,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.355262,
+     42.202834
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.270746,
+     42.077305
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Naf",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434012,
+    "scanid": 237361,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.286557,
+     42.099781
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Naf",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434012,
+    "scanid": 237361,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.902052,
+     42.302151
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.386011,
+     42.087299
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.881162,
+     42.359643
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.630411,
+     42.262147
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.596466,
+     42.605526
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.560664,
+     42.652232
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Acequia",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430142,
+    "scanid": 235024,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.134712,
+     42.395562
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Murtaugh",
+    "topo_date": 1965,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434004,
+    "scanid": 237356,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.578406,
+     42.513526
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Rupert SE",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435073,
+    "scanid": 237975,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.803947,
+     42.451203
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.528642,
+     42.345244
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.795737,
+     42.45146
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.360795,
+     42.217092
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.522358,
+     42.271932
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.266199,
+     42.492175
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.804286,
+     42.383288
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.265444,
+     42.488358
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.792411,
+     42.194435
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.373597,
+     42.26036
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.247045,
+     42.269617
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435721,
+    "scanid": 238355,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.286749,
+     42.472521
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.899204,
+     42.304892
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.216439,
+     42.003307
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435683,
+    "scanid": 238339,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.353645,
+     42.128941
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Bridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430851,
+    "scanid": 235446,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.881368,
+     42.3565
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.807167,
+     42.452431
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.879481,
+     42.355844
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433510,
+    "scanid": 237048,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.359909,
+     42.094598
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Naf",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434012,
+    "scanid": 237361,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.806271,
+     42.447355
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Kenyon",
+    "topo_date": 1964,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433002,
+    "scanid": 236758,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.509715,
+     42.27529
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.817096,
+     42.17656
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.325113,
+     42.414317
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.162306,
+     42.562209
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "North Chapin Mountain",
+    "topo_date": 1984,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434105,
+    "scanid": 237412,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.950471,
+     42.343249
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "Marion",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433508,
+    "scanid": 237047,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.211274,
+     42.016924
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5435685,
+    "scanid": 238340,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.878239,
+     42.217758
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "Oakley",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434156,
+    "scanid": 237440,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.930334,
+     42.073841
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "Blue Hill",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430725,
+    "scanid": 235369,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.54676,
+     42.256884
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel/Borrow Pit - Undifferentiated",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431377,
+    "scanid": 235760,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.58046,
+     42.313165
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.04905,
+     42.092065
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.496276,
+     42.488853
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.581716,
+     42.312437
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.588112,
+     42.309339
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.033704,
+     42.080728
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.777171,
+     42.313325
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.459901,
+     41.996044
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.458228,
+     41.995749
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461035,
+    "scanid": 252071,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.454435,
+     41.995812
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.460621,
+     41.996946
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.456272,
+     41.995364
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.590623,
+     42.297385
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.029767,
+     42.088667
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.766541,
+     42.175021
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.774859,
+     42.317932
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Marion SE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433506,
+    "scanid": 237049,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.466269,
+     42.098754
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.037617,
+     42.119904
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.069875,
+     42.101862
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.560049,
+     42.31483
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.081358,
+     42.101604
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.588355,
+     42.309625
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.101116,
+     42.397134
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "North Heglar Canyon",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434111,
+    "scanid": 237415,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.108074,
+     42.049837
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Ibex Peak",
+    "topo_date": 1977,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5676728,
+    "scanid": 236605,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.034599,
+     42.118619
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.033916,
+     42.09352
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.467099,
+     41.99692
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.619913,
+     42.401083
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.037242,
+     42.091729
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.562589,
+     42.304441
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.035308,
+     42.118034
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.587814,
+     42.297847
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.561126,
+     42.302657
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.559805,
+     42.314789
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.765561,
+     42.175021
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.455988,
+     41.994287
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.089023,
+     42.104545
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.461221,
+     41.995697
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.616898,
+     42.447435
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.053493,
+     42.090967
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.030038,
+     42.089056
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.621265,
+     42.401321
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.097854,
+     42.10948
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.496467,
+     42.489555
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.451153,
+     41.99367
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85668,
+     42.129911
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.621075,
+     42.400198
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.079618,
+     42.012413
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Ibex Peak",
+    "topo_date": 1977,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5676728,
+    "scanid": 236605,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.081513,
+     42.103151
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.089031,
+     42.107086
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.461688,
+     41.995003
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Standrod",
+    "topo_date": 1990,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5461033,
+    "scanid": 252070,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.491715,
+     42.484421
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.037149,
+     42.092928
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.03782,
+     42.093328
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.042247,
+     42.073466
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.038499,
+     42.094455
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.078571,
+     42.011235
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": "Worthington Mine",
+    "topo_name": "Ibex Peak",
+    "topo_date": 1977,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5676728,
+    "scanid": 236605,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.621046,
+     42.400721
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Albion",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430170,
+    "scanid": 235041,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.068895,
+     42.102271
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.07829,
+     42.09993
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.582116,
+     42.312209
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.588705,
+     42.300691
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.442298,
+     42.203842
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Kane Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432980,
+    "scanid": 236744,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.038149,
+     42.094313
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.573612,
+     42.301746
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.487632,
+     42.48424
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.034868,
+     42.088414
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.732072,
+     42.315956
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.08826,
+     42.104659
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.497954,
+     42.491649
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Idahome",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5432782,
+    "scanid": 236624,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.468815,
+     42.099861
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Chokecherry Canyon",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431238,
+    "scanid": 235677,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.034544,
+     42.092264
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.052194,
+     42.090588
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.031089,
+     42.085826
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.788765,
+     42.191668
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.592576,
+     42.298841
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Connor Ridge",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5431381,
+    "scanid": 235762,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.090077,
+     42.433648
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "North Heglar Canyon",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434111,
+    "scanid": 237415,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.028957,
+     42.089877
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Black Pine Peak",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430659,
+    "scanid": 235332,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.106413,
+     42.049023
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Ibex Peak",
+    "topo_date": 1977,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5676728,
+    "scanid": 236605,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.098403,
+     42.395063
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "North Heglar Canyon",
+    "topo_date": 1985,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434111,
+    "scanid": 237415,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.733014,
+     42.315432
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Mount Harrison",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433908,
+    "scanid": 237294,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.85031,
+     42.113434
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.868505,
+     42.154433
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.859688,
+     42.129552
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.818932,
+     42.09226
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433416,
+    "scanid": 236988,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.853011,
+     42.113779
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.819024,
+     42.093774
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433416,
+    "scanid": 236988,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.853899,
+     42.118038
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.854147,
+     42.165177
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.856398,
+     42.110623
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.855995,
+     42.119756
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.866068,
+     42.153815
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.855046,
+     42.114798
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.870059,
+     42.154937
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.868602,
+     42.15411
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.861757,
+     42.125808
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.861386,
+     42.104277
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.858308,
+     42.132664
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.821202,
+     42.093774
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433416,
+    "scanid": 236988,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.852945,
+     42.162024
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.869837,
+     42.155575
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.865212,
+     42.163117
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430398,
+    "scanid": 235166,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.856354,
+     42.11616
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433416,
+    "scanid": 236988,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.859231,
+     42.131294
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Basin",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5430400,
+    "scanid": 235168,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.859001,
+     42.123956
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.857718,
+     42.111123
+    ]
+   },
+   "properties": {
+    "ftr_type": "Quarry",
+    "ftr_name": null,
+    "topo_name": "Lyman Pass",
+    "topo_date": 2001,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433418,
+    "scanid": 236990,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.432312,
+     42.28405
+    ]
+   },
+   "properties": {
+    "ftr_type": "Sand Pit",
+    "ftr_name": null,
+    "topo_name": "Nibbs Creek",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5434083,
+    "scanid": 237401,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.344443,
+     42.350831
+    ]
+   },
+   "properties": {
+    "ftr_type": "Sand Pit",
+    "ftr_name": null,
+    "topo_name": "Malta",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433474,
+    "scanid": 237022,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.347034,
+     42.463032
+    ]
+   },
+   "properties": {
+    "ftr_type": "Sand Pit",
+    "ftr_name": null,
+    "topo_name": "Malta NE",
+    "topo_date": 1968,
+    "topo_scale": "24000",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5433470,
+    "scanid": 237023,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.070453,
+     42.094506
+    ]
+   },
+   "properties": {
+    "ftr_type": "Adit",
+    "ftr_name": "Silver Hills Mine",
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 4
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.231935,
+     42.045931
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.211185,
+     42.017288
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.216133,
+     42.003166
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.257205,
+     42.60704
+    ]
+   },
+   "properties": {
+    "ftr_type": "Gravel Pit",
+    "ftr_name": null,
+    "topo_name": "Lake Walcott",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5436938,
+    "scanid": 239144,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.049282,
+     42.092308
+    ]
+   },
+   "properties": {
+    "ftr_type": "Mine Shaft",
+    "ftr_name": "Ruth Mine",
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.043425,
+     42.077731
+    ]
+   },
+   "properties": {
+    "ftr_type": "Open Pit Mine",
+    "ftr_name": "Tolman Mine",
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.104166,
+     42.110404
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.036892,
+     42.091592
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.056708,
+     42.081802
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.049084,
+     42.064089
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.035053,
+     42.088418
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.035842,
+     42.092932
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.101202,
+     42.397146
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Sublett",
+    "topo_date": 1958,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437528,
+    "scanid": 239305,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.049727,
+     42.065963
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.030168,
+     42.088772
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.069586,
+     42.10183
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.053411,
+     42.090824
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.467166,
+     41.996435
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Park Valley",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5462815,
+    "scanid": 251223,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.038702,
+     42.072787
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.48604,
+     41.994851
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Park Valley",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5462815,
+    "scanid": 251223,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.465415,
+     41.994341
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Park Valley",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5462815,
+    "scanid": 251223,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.478196,
+     41.994026
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Park Valley",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5462815,
+    "scanid": 251223,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.090745,
+     42.107441
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.088716,
+     42.103801
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.052226,
+     42.090759
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.08946,
+     42.105289
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.034809,
+     42.092172
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": null,
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.032689,
+     42.081461
+    ]
+   },
+   "properties": {
+    "ftr_type": "Prospect Pit",
+    "ftr_name": "Hazel Pine Mine",
+    "topo_name": "Strevell",
+    "topo_date": 1959,
+    "topo_scale": "62500",
+    "state": "ID",
+    "county": "Cassia",
+    "remarks": null,
+    "gda_id": 5437522,
+    "scanid": 239300,
+    "ftr_azimut": 0
+   }
+  }
+ ]
+}

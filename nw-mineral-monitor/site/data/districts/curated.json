@@ -1,0 +1,849 @@
+[
+  {
+    "name": "Coeur d'Alene District (Silver Valley)",
+    "state": "ID",
+    "lat": 47.5411,
+    "lon": -116.1481,
+    "commodities": [
+      "silver",
+      "lead",
+      "zinc",
+      "gold"
+    ],
+    "era": "1884–present",
+    "status": "active",
+    "description": "A gold rush in 1884 gave way to the lead-silver-zinc lodes that made this the premier silver district in the United States: more than 1.18 billion ounces of silver have been produced since 1884. The Bunker Hill Mine at Kellogg (discovered 1885) grew into the nation's largest lead-zinc mine, with over 150 miles of workings and 165 million ounces of silver before closing in 1981; the Sunshine Mine produced about 367 million ounces of silver. A 21-square-mile Superfund site was declared around the Bunker Hill smelter complex in 1982. Mining continues: Hecla's Lucky Friday mine at Mullan (operating since 1942, with a 9,600-foot-deep #4 shaft) produced 5.26 million ounces of silver in 2025, and Bunker Hill Mining Corp. is on schedule to restart the Bunker Hill mine in the first half of 2026.",
+    "key_mines": [
+      "Bunker Hill Mine",
+      "Sunshine Mine",
+      "Lucky Friday Mine",
+      "Galena Mine"
+    ],
+    "anchor": "Bunker Hill Mine & Smelting Complex, Kellogg, ID",
+    "sources": [
+      {
+        "title": "Idaho State University Digital Geology of Idaho – Northern Idaho and Mining",
+        "url": "https://www.isu.edu/digitalgeologyidaho/n-idaho-mining/"
+      },
+      {
+        "title": "Bunker Hill Mining Corp. – Bunker Hill Mine Overview",
+        "url": "https://www.bunkerhillmining.com/bunker-hill-mine/overview/"
+      },
+      {
+        "title": "Hecla Mining – Lucky Friday Operation",
+        "url": "https://www.hecla.com/operations/lucky-friday-idaho"
+      }
+    ]
+  },
+  {
+    "name": "Boise Basin",
+    "state": "ID",
+    "lat": 43.8286,
+    "lon": -115.8322,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1862–1930s",
+    "status": "historic-tourism",
+    "description": "Placer gold discovered on Grimes Creek on August 2, 1862 set off the Pacific Northwest's biggest gold rush; about 2.9 million ounces of gold have been recovered from the basin, the most of any Idaho placer region. Rush-era population reached roughly 20,000, and Idaho City surpassed Portland to become the largest community in the Pacific Northwest, with Placerville, Centerville and Pioneerville close behind. Hydraulic giants worked the gravels for more than two decades, the Gold Hill lode at Quartzburg ran into the 1930s, and dredging continued through the Depression. Idaho City survives as a historic tourist town at the heart of the district.",
+    "key_mines": [
+      "Grimes Creek placers",
+      "Idaho City diggings",
+      "Gold Hill Mine (Quartzburg)"
+    ],
+    "anchor": "Idaho City, ID (district's principal camp)",
+    "sources": [
+      {
+        "title": "Idaho State Historical Society Reference Series No. 9: Mining in Idaho",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/08/0009.pdf"
+      },
+      {
+        "title": "Idaho State Historical Society Reference Series No. 166: Placer Mining in Southern Idaho, 1862–1864",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/12/0166.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Owyhee District (Silver City–De Lamar)",
+    "state": "ID",
+    "lat": 43.0169,
+    "lon": -116.7331,
+    "commodities": [
+      "silver",
+      "gold"
+    ],
+    "era": "1863–present (intermittent)",
+    "status": "exploration",
+    "description": "Placers found on Jordan Creek in May 1863 led to bonanza silver lodes on War Eagle Mountain; famous mines included the Poorman, Golden Chariot, Ida Elmore and Oro Fino, and the 1868 'Owyhee War' between rival claim owners required militia intervention. Over one million ounces of gold and twenty million ounces of silver were credited to the early Silver City mines by 1912, when major production ceased. A modern open-pit revival at nearby DeLamar (from 1977) roughly matched the district's historic yield by 1984. Silver City survives as a remarkably intact ghost town of about 70 buildings (National Register, 1972), while Integra Resources is advancing a restart of the past-producing DeLamar mine, completing a feasibility study for a gold-silver heap-leach operation and winning selection to the federal FAST-41 permitting program.",
+    "key_mines": [
+      "Poorman Mine",
+      "Golden Chariot Mine",
+      "De Lamar Mine",
+      "War Eagle Mountain lodes"
+    ],
+    "anchor": "Silver City, ID townsite (Jordan Creek)",
+    "sources": [
+      {
+        "title": "Idaho State Historical Society Reference Series No. 9: Mining in Idaho (Owyhee)",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/08/0009.pdf"
+      },
+      {
+        "title": "Western Mining History – Silver City, Idaho",
+        "url": "https://westernmininghistory.com/towns/idaho/silver-city/"
+      },
+      {
+        "title": "Integra Resources – DeLamar Heap Leach Feasibility Study news release",
+        "url": "https://integraresources.com/news/integra-delivers-robust-feasibility-study-for-delamar-gold-silver-heap-leach-project-highlighting-improved-economics-and-reduced-development-risk/"
+      }
+    ]
+  },
+  {
+    "name": "Wood River District",
+    "state": "ID",
+    "lat": 43.505,
+    "lon": -114.2867,
+    "commodities": [
+      "lead",
+      "silver",
+      "zinc"
+    ],
+    "era": "1879–1970s",
+    "status": "historic-tourism",
+    "description": "Lead-silver discoveries after the 1879 Bannock War brought Idaho's dominant rush of 1880 and spawned Hailey, Bellevue and Ketchum. The Minnie Moore at Broadford, found September 22, 1880, was the most important early mine and was later bought with British capital, while the big Philadelphia smelter at Ketchum (opened October 1881) made local ore treatment profitable; district output passed one million dollars a year by 1882. Wood River led Idaho's mining regions until the Coeur d'Alene overtook it in 1888, and cumulative production exceeded $62 million by 1970, with the Triumph mine on the East Fork a major later producer from 1927. The valley is now better known as the Sun Valley resort area, with mining preserved in local museums and historic sites.",
+    "key_mines": [
+      "Minnie Moore Mine",
+      "Triumph Mine",
+      "Broadford group"
+    ],
+    "anchor": "Hailey, ID (district hub on the Wood River)",
+    "sources": [
+      {
+        "title": "Idaho State Historical Society Reference Series No. 206: Site Report – Wood River",
+        "url": "https://history.idaho.gov/wp-content/uploads/0206.pdf"
+      },
+      {
+        "title": "Idaho State Historical Society Reference Series No. 9: Mining in Idaho (Wood River)",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/08/0009.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Yankee Fork District",
+    "state": "ID",
+    "lat": 44.3875,
+    "lon": -114.6958,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1876–1952",
+    "status": "historic-tourism",
+    "description": "Placer prospecting began in 1870, but the district boomed after the Charles Dickens lode (1875) and the General Custer lode (August 17, 1876) were found; the Custer mill was credited with $8 million between 1881–1886 and 1895–1904. The twin camps of Bonanza and Custer flourished in the 1880s—Custer reached about 600 people—before both were abandoned by 1911. The 988-ton Yankee Fork gold dredge later chewed through 6.33 million cubic yards of streambed until 1952, recovering an estimated $1,037,322 in gold and silver, and the district's total gold output is about $12 million. Today the ghost towns, the dredge, and the nearby Bayhorse townsite are preserved in Land of the Yankee Fork State Park near Challis.",
+    "key_mines": [
+      "General Custer Mine",
+      "Charles Dickens Mine",
+      "Yankee Fork Gold Dredge"
+    ],
+    "anchor": "Custer ghost town, Yankee Fork of the Salmon River",
+    "sources": [
+      {
+        "title": "Land of the Yankee Fork State Park – Idaho Parks and Recreation",
+        "url": "https://parksandrecreation.idaho.gov/state-park/land-of-the-yankee-fork-state-park/"
+      },
+      {
+        "title": "Idaho State Historical Society Reference Series No. 9: Mining in Idaho (Yankee Fork)",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/08/0009.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Stibnite–Yellow Pine District",
+    "state": "ID",
+    "lat": 44.8982,
+    "lon": -115.3393,
+    "commodities": [
+      "antimony",
+      "gold",
+      "tungsten",
+      "silver",
+      "mercury"
+    ],
+    "era": "1914–1996; redevelopment from 2025",
+    "status": "active",
+    "description": "Gold and antimony claims were recorded in 1914 in this remote camp found during the Thunder Mountain rush; Bradley Mining's operations from 1932 to 1952 yielded roughly $24 million in antimony, $21 million in tungsten and $4 million in gold, and by Perpetua Resources' account the site supplied 90 percent of U.S. antimony and half of its tungsten during World War II. Later open-pit mining ended in 1996–1997, leaving legacy contamination. Perpetua Resources' Stibnite Gold Project—host to the only identified U.S. reserve of the critical mineral antimony—received its final federal Record of Decision in January 2025 and broke ground on October 21, 2025, backed by an indicative $2 billion U.S. Export-Import Bank financing package. The mine plan targets about 450,000 ounces of gold per year in its first four years from 4.8-million-ounce reserves, alongside cleanup of the historic site.",
+    "key_mines": [
+      "Yellow Pine Mine",
+      "West End Mine",
+      "Meadow Creek Mine"
+    ],
+    "anchor": "Stibnite townsite, Valley County, ID",
+    "sources": [
+      {
+        "title": "Idaho State Historical Society Reference Series No. 9: Mining in Idaho (Stibnite)",
+        "url": "https://history.idaho.gov/wp-content/uploads/2018/08/0009.pdf"
+      },
+      {
+        "title": "Perpetua Resources Breaks Ground on the Stibnite Gold Project (PR Newswire, Oct 2025)",
+        "url": "https://www.prnewswire.com/news-releases/perpetua-resources-breaks-ground-on-the-stibnite-gold-project-302590660.html"
+      },
+      {
+        "title": "Perpetua Resources – The History of Stibnite",
+        "url": "https://perpetuaresources.com/the-history-of-stibnite-miners-and-muckrakers/"
+      }
+    ]
+  },
+  {
+    "name": "Butte District (\"Richest Hill on Earth\")",
+    "state": "MT",
+    "lat": 46.02,
+    "lon": -112.51,
+    "commodities": [
+      "copper",
+      "silver",
+      "zinc",
+      "manganese",
+      "molybdenum",
+      "gold"
+    ],
+    "era": "1864–present",
+    "status": "active",
+    "description": "Butte grew from 1864 placer diggings into the world's greatest copper camp, producing nearly one-third of the world's copper in the early 1900s under Marcus Daly's Anaconda company. Through 2013 the district yielded more than 22 billion pounds of copper, 720 million ounces of silver, 4.9 billion pounds of zinc and 3.7 billion pounds of manganese—the largest cumulative non-ferrous metal output of any district in the world through at least 1967. The Berkeley Pit operated 1955–1982 and is now an acidic pit lake at the center of one of the nation's largest Superfund complexes, while the Butte–Anaconda National Historic Landmark district commemorates the mines and their union history. Mining continues today: Montana Resources' Continental Pit (restarted 1986) moves about 55,000 tons of copper-molybdenum ore per day with roughly 400 employees and reserves projected to 2054.",
+    "key_mines": [
+      "Anaconda Mine",
+      "Berkeley Pit",
+      "Continental Pit"
+    ],
+    "anchor": "Berkeley Pit, Butte, MT",
+    "sources": [
+      {
+        "title": "National Park Service – Butte–Anaconda Historic District",
+        "url": "https://www.nps.gov/places/butte-anaconda-historic-district.htm"
+      },
+      {
+        "title": "Engineering & Mining Journal – A Blueprint for the Resurrection of Montana's Butte District",
+        "url": "https://www.e-mj.com/features/a-blueprint-for-the-resurrection-of-montana-s-butte-district/"
+      },
+      {
+        "title": "Montana Resources – About",
+        "url": "https://www.montanaresources.com/about/"
+      }
+    ]
+  },
+  {
+    "name": "Alder Gulch (Virginia City–Nevada City)",
+    "state": "MT",
+    "lat": 45.2961,
+    "lon": -111.9369,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1863–1922",
+    "status": "historic-tourism",
+    "description": "Bill Fairweather and Henry Edgar struck placer gold on May 26, 1863, igniting a rush that packed some 10,000 people into the 'Fourteen-mile City' along the gulch within a year. About $30–40 million in gold came out in the first few seasons alone, with total district estimates running from roughly $50 million past $100 million—among the richest placer gulches ever mined. Virginia City served as Montana's territorial capital from 1865 to 1875 and was the base of the famous 1863–64 vigilantes; floating dredges reworked the gulch from 1898 to 1922, erasing most of Nevada City. Both towns are now protected as a National Historic Landmark and rank among the best-preserved gold rush towns in the West.",
+    "key_mines": [
+      "Alder Gulch placers",
+      "Nevada City dredge fields"
+    ],
+    "anchor": "Virginia City, MT townsite",
+    "sources": [
+      {
+        "title": "Virginia City, MT (official) – Alder Gulch Area History",
+        "url": "https://www.virginiacitymt.com/Preservation/Area-History"
+      },
+      {
+        "title": "Western Mining History – Virginia City, Montana",
+        "url": "https://westernmininghistory.com/towns/montana/virginia-city/"
+      }
+    ]
+  },
+  {
+    "name": "Bannack (Grasshopper Creek)",
+    "state": "MT",
+    "lat": 45.1611,
+    "lon": -112.9956,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1862–1880s",
+    "status": "historic-tourism",
+    "description": "John White's party made Montana's first major gold strike on Grasshopper Creek on July 28, 1862, and Bannack boomed to several thousand residents within a year. The camp was the stage for sheriff Henry Plummer and the road-agent troubles that spawned the Vigilance Committee of 1863–64, and it became the first capital of Montana Territory in 1864 before the government moved to Virginia City. Richer strikes at Alder Gulch and Last Chance Gulch, and railroads that bypassed the town in the 1880s, sent Bannack into decline. It is now Bannack State Park, a National Historic Landmark regarded as the best preserved of Montana's ghost towns, with more than 50 buildings along Main Street.",
+    "key_mines": [
+      "Grasshopper Creek placers"
+    ],
+    "anchor": "Bannack ghost town / Bannack State Park",
+    "sources": [
+      {
+        "title": "Montana Fish, Wildlife & Parks – Bannack State Park",
+        "url": "https://fwp.mt.gov/stateparks/bannack-state-park"
+      },
+      {
+        "title": "Southwest Montana – History: Bannack",
+        "url": "https://southwestmt.com/specialfeatures/history/bannack/"
+      }
+    ]
+  },
+  {
+    "name": "Last Chance Gulch (Helena)",
+    "state": "MT",
+    "lat": 46.5964,
+    "lon": -112.0264,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1864–1880s",
+    "status": "historic-tourism",
+    "description": "On July 14, 1864, the 'Four Georgians' (John Cowan, D.J. Miller, John Crabb and Reginald Stanley) panned gold in a gulch they gave 'one last chance,' founding what became Helena. By the end of the 1860s, Last Chance and neighboring gulches had yielded nearly $18 million in gold, and the camp of 7,500 outgrew its rivals. Helena took the territorial capital from Virginia City in 1875, kept it at statehood, and the winding main street of Montana's capital city still follows the old gulch. The 1883 arrival of the railroad cemented Helena's transition from placer camp to enduring commercial and government center.",
+    "key_mines": [
+      "Last Chance Gulch placers"
+    ],
+    "anchor": "Last Chance Gulch street, downtown Helena, MT",
+    "sources": [
+      {
+        "title": "Historical Marker Database – The Discovery at Last Chance Gulch",
+        "url": "https://www.hmdb.org/m.asp?m=251040"
+      },
+      {
+        "title": "Southwest Montana – Last Chance: A Tale of the Four Georgians",
+        "url": "https://southwestmt.com/blog/last-chance-a-tale-of-the-four-georgians/"
+      }
+    ]
+  },
+  {
+    "name": "Marysville District (Drumlummon)",
+    "state": "MT",
+    "lat": 46.75,
+    "lon": -112.3031,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1876–1940s",
+    "status": "historic-tourism",
+    "description": "Irish prospector Thomas Cruse located the Drumlummon lode on Silver Creek in 1876 and sold it in the mid-1880s to an English syndicate for about $1.5 million; the buyers built large stamp mills and made Marysville one of Montana's premier gold camps. The district produced an estimated $50–60 million in gold—over 1.3 million ounces—with roughly half from the Drumlummon, and the town peaked near 4,000 people served by two railroads. Litigation with the neighboring St. Louis Mining Company, depleted ore and a 1909 fire brought decline, though the Drumlummon reopened in 1924 and worked through World War II. Marysville survives as a near-ghost town and small bedroom community northwest of Helena.",
+    "key_mines": [
+      "Drumlummon Mine"
+    ],
+    "anchor": "Marysville, MT townsite",
+    "sources": [
+      {
+        "title": "Western Mining History – Marysville, Montana",
+        "url": "https://westernmininghistory.com/towns/montana/marysville/"
+      },
+      {
+        "title": "Legends of America – Marysville, Montana: Home of the Drumlummon Mine",
+        "url": "https://www.legendsofamerica.com/mt-marysville/"
+      }
+    ]
+  },
+  {
+    "name": "Philipsburg–Granite District",
+    "state": "MT",
+    "lat": 46.3325,
+    "lon": -113.2961,
+    "commodities": [
+      "silver",
+      "manganese",
+      "sapphire",
+      "gold"
+    ],
+    "era": "1867–1970s",
+    "status": "historic-tourism",
+    "description": "Philipsburg was founded in 1867 around the Hope mill of the St. Louis & Montana Mining Company, and the Granite Mountain Mine four miles above town—discovered 1875, developed from 1880—produced about $20 million in silver between 1885 and 1893, the greatest silver bonanza of its day. The 1893 silver crash emptied the mountainside town of Granite, now one of Montana's best ghost towns. Philipsburg rebounded on strategic manganese: by 1917 its mines were producing half of all manganese mined in the United States, a role repeated in World War II. Today the brightly restored town lives on tourism and the Gem Mountain sapphire deposits along Rock Creek, worked since 1892.",
+    "key_mines": [
+      "Granite Mountain Mine",
+      "Hope Mill workings",
+      "Gem Mountain sapphire mine"
+    ],
+    "anchor": "Philipsburg, MT townsite",
+    "sources": [
+      {
+        "title": "Western Mining History – Philipsburg, Montana",
+        "url": "https://westernmininghistory.com/towns/montana/philipsburg/"
+      },
+      {
+        "title": "University of Montana – Philipsburg and the Flint Creek Valley: Silver and Sapphires",
+        "url": "https://www.umt.edu/this-is-montana/columns/stories/philipsburg.php"
+      }
+    ]
+  },
+  {
+    "name": "Zortman–Landusky (Little Rocky Mountains)",
+    "state": "MT",
+    "lat": 47.9167,
+    "lon": -108.5089,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1880s–1998",
+    "status": "remediation",
+    "description": "Gold camps at Zortman and Landusky in the Little Rocky Mountains, adjacent to the Fort Belknap Reservation, were reborn in 1979 when Pegasus Gold built some of the first large-scale cyanide heap-leach mines in the country, extracting about 2.5 million ounces of gold before the company's 1998 bankruptcy. The bankruptcy left Montana and the BLM running water-collection and treatment plants for acid mine drainage, with remediation costs of roughly $80–85 million (through 2022), mostly public money, and regulators expect water treatment to be required indefinitely. The site is a national cautionary tale for hardrock bonding policy. In May 2026 Montana DEQ settled a long-running enforcement case with the current site owner for $200,000, over objections from the Fort Belknap Indian Community.",
+    "key_mines": [
+      "Zortman Mine",
+      "Landusky Mine"
+    ],
+    "anchor": "Zortman, MT townsite",
+    "sources": [
+      {
+        "title": "Montana Legislature (2004) – Zortman & Landusky Mines: HJR 43 Water Quality Impacts",
+        "url": "https://archive.legmt.gov/content/publications/environmental/2004zortman.pdf"
+      },
+      {
+        "title": "Montana Free Press – What to know about the state's settlement with Zortman mine owner (June 2026)",
+        "url": "https://montanafreepress.org/2026/06/01/what-to-know-about-the-states-settlement-with-zortman-mine-owner/"
+      }
+    ]
+  },
+  {
+    "name": "Stillwater Complex (Nye–East Boulder)",
+    "state": "MT",
+    "lat": 45.4339,
+    "lon": -109.8069,
+    "commodities": [
+      "palladium",
+      "platinum"
+    ],
+    "era": "1986–present",
+    "status": "active",
+    "description": "The J-M Reef of the Stillwater layered igneous complex hosts the only major palladium-platinum mines in the United States: the Stillwater Mine near Nye (operating since 1986) and the East Boulder Mine south of Big Timber, now run by South Africa's Sibanye-Stillwater. In September 2024 the company cut roughly 700 jobs—about 40 percent of its 1,680-person Montana workforce—and idled the Stillwater West section after palladium collapsed below $1,000 an ounce amid Russian oversupply. In early 2026 the U.S. International Trade Administration found Russia had dumped palladium and imposed a 132 percent tariff; prices rebounded to about $1,750 an ounce and the company began cautious rehiring while planning upgrades before fully restarting the older workings. Reserves are sufficient for decades of production.",
+    "key_mines": [
+      "Stillwater Mine",
+      "East Boulder Mine"
+    ],
+    "anchor": "Stillwater Mine at Nye, MT",
+    "sources": [
+      {
+        "title": "Montana Free Press – Stillwater mine to cut production, lay off 700 workers (Sept 2024)",
+        "url": "https://montanafreepress.org/2024/09/12/stillwater-mine-cut-production-lay-off-700-workers-low-metal-prices-losses/"
+      },
+      {
+        "title": "Daily Montanan – Montana's largest mine wins trade case, sees palladium prices rebound (Feb 2026)",
+        "url": "https://dailymontanan.com/2026/02/20/montanas-largest-mine-wins-trade-case-sees-palladium-prices-rebound/"
+      }
+    ]
+  },
+  {
+    "name": "Republic District (Eureka Gulch)",
+    "state": "WA",
+    "lat": 48.6483,
+    "lon": -118.735,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1896–2017",
+    "status": "historic-tourism",
+    "description": "When the north half of the Colville Reservation opened to mineral entry on February 21, 1896, prospectors staked 30 claims in nine days along Eureka Gulch, founding the town of Republic. Through 1994 the district produced about 2.8 million ounces of gold and 15.8 million ounces of silver—by far Washington's largest precious-metal district, worth roughly $376 million at historic prices—with 85 percent coming from the Knob Hill and Golden Promise mines, which Hecla operated until closure in the mid-1990s. Kinross later milled ore in Republic from its Buckhorn mine (2008–2017, about $1.3 billion in gold); after closure, Kinross subsidiary Crown Resources was found liable in 2022 for more than 3,000 Clean Water Act violations tied to ongoing water-treatment obligations at Buckhorn. Republic itself now leans on heritage and the Stonerose fossil site.",
+    "key_mines": [
+      "Republic Mine",
+      "Knob Hill Mine",
+      "Golden Promise Mine",
+      "Buckhorn Mine (Kettle River mill)"
+    ],
+    "anchor": "Republic, WA townsite at Eureka Gulch",
+    "sources": [
+      {
+        "title": "WA DNR Information Circular 110 – Inactive and Abandoned Mine Lands: Republic Mining District",
+        "url": "https://www.dnr.wa.gov/Publications/ger_ic110_iaml_republic_mining_dist.pdf"
+      },
+      {
+        "title": "HistoryLink.org – Republic: Thumbnail History",
+        "url": "https://historylink.org/File/9050"
+      },
+      {
+        "title": "Washington Attorney General – Court rules gold mining company violated the law more than 3,000 times",
+        "url": "https://www.atg.wa.gov/news/news-releases/court-rules-gold-mining-company-violated-law-more-3000-times-okanogan-county"
+      }
+    ]
+  },
+  {
+    "name": "Holden (Railroad Creek) District",
+    "state": "WA",
+    "lat": 48.1991,
+    "lon": -120.7741,
+    "commodities": [
+      "copper",
+      "zinc",
+      "gold",
+      "silver"
+    ],
+    "era": "1938–1957",
+    "status": "remediation",
+    "description": "James Henry Holden located the Railroad Creek copper deposit above Lake Chelan on July 24, 1896, but its remoteness delayed development until the Howe Sound Company mined it from 1938 to 1957 as Washington's largest copper, gold and zinc mine, supporting a company town of about 600. The mine left millions of tons of acid-generating tailings; EPA and the Forest Service pursued successor Intalco and, after 2007, Rio Tinto, which carried out a roughly half-billion-dollar cleanup under a 2012 Record of Decision, with heavy construction in 2013–2016 and Phase 1 completed in 2018. Rio Tinto continues to operate a water-treatment plant, and Phase 2 remedy planning is underway. The donated townsite has been the Lutheran-affiliated Holden Village retreat since the early 1960s, reachable only by boat and bus.",
+    "key_mines": [
+      "Holden Mine"
+    ],
+    "anchor": "Holden Village (mine townsite), Railroad Creek valley",
+    "sources": [
+      {
+        "title": "Holden Mine Cleanup (Rio Tinto) – History",
+        "url": "https://holdenminecleanup.com/history/"
+      },
+      {
+        "title": "Holden Village – History: From Mining Town to Unique Retreat",
+        "url": "https://www.holdenvillage.org/about/history/"
+      },
+      {
+        "title": "US Forest Service – Holden Mine Site (Okanogan-Wenatchee NF)",
+        "url": "https://www.fs.usda.gov/r06/okanogan-wenatchee/natural-resources/holden-mine-site"
+      }
+    ]
+  },
+  {
+    "name": "Monte Cristo District",
+    "state": "WA",
+    "lat": 47.9856,
+    "lon": -121.3939,
+    "commodities": [
+      "gold",
+      "silver",
+      "lead",
+      "arsenic"
+    ],
+    "era": "1889–1907",
+    "status": "historic-tourism",
+    "description": "Joseph Pearsall spotted a glittering galena ledge at the headwaters of the South Fork Sauk in 1889 and filed the district's first claim on July 4 of that year; backers reportedly boasted there was enough gold 'to make the Count of Monte Cristo look like a pauper.' A Rockefeller-backed Everett syndicate built the Everett & Monte Cristo Railway (1893) to feed the Everett smelter, and mines like the Pride of the Mountains and Mystery peaked from 1895 to 1903, but young, refractory ores and repeated floods—catastrophically in November 1897—doomed the venture, with mining sputtering out by 1920. Arsenic- and lead-laden tailings prompted a Forest Service cleanup around 2013–2015, funded by about $11 million from the ASARCO bankruptcy, removing 18,000 cubic yards of contaminated material. The ghost town is now a popular 4-mile hike, maintained with the Monte Cristo Preservation Association.",
+    "key_mines": [
+      "Pride of the Mountains Mine",
+      "Mystery Mine",
+      "Golden Cord Mine"
+    ],
+    "anchor": "Monte Cristo ghost townsite, South Fork Sauk River",
+    "sources": [
+      {
+        "title": "HistoryLink.org – Monte Cristo: Thumbnail History",
+        "url": "https://www.historylink.org/file/8404"
+      },
+      {
+        "title": "HistoryLink.org – Joseph Pearsall stakes the first mining claim at Monte Cristo (July 4, 1889)",
+        "url": "https://www.historylink.org/file/7890"
+      },
+      {
+        "title": "Everett Herald – Cleanup begins of what Monte Cristo miners left behind",
+        "url": "https://www.heraldnet.com/news/cleanup-begins-of-what-monte-cristo-miners-left-behind/"
+      }
+    ]
+  },
+  {
+    "name": "Blewett District (Peshastin Creek)",
+    "state": "WA",
+    "lat": 47.4231,
+    "lon": -120.6592,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1874–1911",
+    "status": "historic-tourism",
+    "description": "One of Washington's earliest lode-gold camps: John Shafer located the first quartz claim in Culver Gulch in 1874, following placer discoveries in the Peshastin Creek gravels, and miners first crushed ore in stone arrastras whose remains still exist. Stamp mills replaced them—six stamps in the late 1870s, ten in 1891, and a twenty-stamp mill at the mouth of Culver Gulch in 1896—serving mines such as the Pole Pick along a rich east-west vein zone. The town of Blewett (post office 1894) had a hotel, school, stores and telegraph, but the main mill shut in 1905 when the vein pinched out and mining ceased by 1911. The ghost townsite lies along US 97 below Blewett Pass, marked by a roadside interpretive sign and mill ruins.",
+    "key_mines": [
+      "Pole Pick Mine",
+      "Culver Gulch mines",
+      "Blewett Arrastra"
+    ],
+    "anchor": "Blewett ghost townsite on US 97, Peshastin Creek",
+    "sources": [
+      {
+        "title": "Wikipedia – Blewett, Washington",
+        "url": "https://en.wikipedia.org/wiki/Blewett,_Washington"
+      },
+      {
+        "title": "Western Mining History – Blewett District",
+        "url": "https://westernmininghistory.com/library/38197/page1/"
+      }
+    ]
+  },
+  {
+    "name": "Metaline District",
+    "state": "WA",
+    "lat": 48.8606,
+    "lon": -117.3736,
+    "commodities": [
+      "zinc",
+      "lead",
+      "silver"
+    ],
+    "era": "1906–2019",
+    "status": "remediation",
+    "description": "Placer gold drew miners to the Pend Oreille River canyon as early as 1859, but the district's fame rests on Mississippi Valley-type lead-zinc ore bodies developed from the early 1900s; district mines produced about 17.5 million tons of ore averaging 2.52 percent zinc and 1.14 percent lead. Underground mining at the Pend Oreille Mine began in 1952, ran intermittently, and was revived by Teck in 2004; the mine shut for good in 2019, ending the county's last major mining employment (about 210 jobs), and Teck moved from care-and-maintenance to formal closure in 2021. Closure work now includes capping the tailings facility, water-treatment permitting and cleanup of legacy areas, while cement-plant-built Metaline Falls has reinvented itself as a small arts and recreation town.",
+    "key_mines": [
+      "Pend Oreille Mine",
+      "Grandview Mine"
+    ],
+    "anchor": "Metaline Falls, WA townsite",
+    "sources": [
+      {
+        "title": "Washington Dept. of Ecology – Pend Oreille mine",
+        "url": "https://ecology.wa.gov/ecologys-work-near-you/regional-work/eastern-region/pend-oreille-mine"
+      },
+      {
+        "title": "HistoryLink.org – Metaline Falls: Thumbnail History",
+        "url": "https://www.historylink.org/file/9216"
+      },
+      {
+        "title": "Western Mining History – Metaline District",
+        "url": "https://westernmininghistory.com/mine-detail/60000888/"
+      }
+    ]
+  },
+  {
+    "name": "Sumpter–Cracker Creek District",
+    "state": "OR",
+    "lat": 44.7461,
+    "lon": -118.1975,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1862–1954",
+    "status": "historic-tourism",
+    "description": "Placers were found in the Sumpter Valley in 1862, and the Cracker Creek lode camp above Sumpter (around Bourne) became one of Oregon's most productive, yielding about $9 million—mostly between 1895 and 1910—though crude milling lost an estimated $4 million more to the tailings. Bucket-line dredging began January 7, 1913 with the 'City of Sumpter' and continued until July 1954; the surviving 1935 dredge alone dug up more than $4 million in gold. That dredge, listed on the National Register in 1971, is now the centerpiece of Sumpter Valley Dredge State Heritage Area, opened to the public in 1994 beside the restored Sumpter Valley Railroad. The gold-rush town of Sumpter endures as a heritage-tourism hub of Baker County's 'Gold Belt'.",
+    "key_mines": [
+      "Cracker Creek mines (Bourne)",
+      "Sumpter Valley dredges"
+    ],
+    "anchor": "Sumpter Valley Dredge, Sumpter, OR",
+    "sources": [
+      {
+        "title": "Oregon DOGAMI, The Ore Bin v.21 no.3 – Mining in Baker County, 1861–1959",
+        "url": "https://pubs.oregon.gov/dogami/og/OBv21n03.pdf"
+      },
+      {
+        "title": "Oregon State Parks – Sumpter Valley Dredge State Heritage Area",
+        "url": "https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=174"
+      }
+    ]
+  },
+  {
+    "name": "Cornucopia District",
+    "state": "OR",
+    "lat": 45.0082,
+    "lon": -117.1927,
+    "commodities": [
+      "gold",
+      "silver"
+    ],
+    "era": "1884–1941",
+    "status": "abandoned",
+    "description": "Lode gold was discovered on Pine Creek in the Wallowa foothills in 1884 (some accounts say 1880), and the Union-Companion and Last Chance mines made Cornucopia one of Oregon's leading gold producers. District output passed $2.5 million by 1915 and roughly $7 million by 1922; DOGAMI estimated about $10 million for 1870–1939, and in the late 1930s the Cornucopia mines led the state in gold production with about 350 men employed. The War Production Board's WWII shutdown of gold mining closed the operation in 1941 and the town never recovered—the post office shut in 1942. Weathered buildings and mine workings survive as a ghost town near the hamlet of Halfway.",
+    "key_mines": [
+      "Union-Companion Mine",
+      "Last Chance Mine"
+    ],
+    "anchor": "Cornucopia ghost townsite, Pine Creek",
+    "sources": [
+      {
+        "title": "Oregon DOGAMI, The Ore Bin v.21 no.3 – Mining in Baker County, 1861–1959",
+        "url": "https://pubs.oregon.gov/dogami/og/OBv21n03.pdf"
+      },
+      {
+        "title": "Western Mining History – Cornucopia, Oregon",
+        "url": "https://westernmininghistory.com/towns/oregon/cornucopia/"
+      }
+    ]
+  },
+  {
+    "name": "Bohemia District",
+    "state": "OR",
+    "lat": 43.5751,
+    "lon": -122.6563,
+    "commodities": [
+      "gold",
+      "silver",
+      "copper",
+      "lead",
+      "zinc"
+    ],
+    "era": "1863–1940s",
+    "status": "historic-tourism",
+    "description": "James 'Bohemia' Johnson, reputedly hiding from the law, found gold high in the Calapooya Mountains in 1863, and the district organized in the mid-1860s about 25 miles southeast of Cottage Grove, its supply town. The Champion, Musick, Helena and Noonday were the main mines among roughly 2,000 claims, but total recorded metal production was only about $1 million—the wealth flowed mostly to Cottage Grove merchants and promoters. A post office served Bohemia City from 1893 to 1922; serious mining faded after World War II, though small claims like the Champion are still worked and the 1934 Musick Guard Station survives. Cottage Grove keeps the legacy alive with its Bohemia Mining Museum and an annual mining-days celebration.",
+    "key_mines": [
+      "Champion Mine",
+      "Musick Mine",
+      "Noonday Mine"
+    ],
+    "anchor": "Bohemia Mountain / Bohemia City site, Lane County",
+    "sources": [
+      {
+        "title": "Wikipedia – Bohemia mining district",
+        "url": "https://en.wikipedia.org/wiki/Bohemia_mining_district"
+      },
+      {
+        "title": "KVAL – Bohemia Mining District: The golden legacy and its impact on Oregon's history",
+        "url": "https://kval.com/news/local/bohemia-mining-district-the-golden-legacy-and-its-impact-on-oregons-history"
+      }
+    ]
+  },
+  {
+    "name": "Granite District (Blue Mountains)",
+    "state": "OR",
+    "lat": 44.81,
+    "lon": -118.4186,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1862–1942",
+    "status": "historic-tourism",
+    "description": "Gold was struck here on July 4, 1862, and the camp—first called Independence—took the name Granite when its post office opened in 1878. The surrounding district recorded over 2,100 mining locations, with a dozen producing mines near town including the Buffalo, Red Boy, Cougar, Ajax and Magnolia, and Granite incorporated at its boom peak around 1900 with hotels, stores and newspapers. The WWII federal ban on gold mining (1942) cut off the economy's lifeblood, and the town withered to a population of two by 1960. Today Granite is a living ghost town of a couple dozen residents, 15 miles from Sumpter on the Elkhorn Scenic Byway.",
+    "key_mines": [
+      "Buffalo Mine",
+      "Red Boy Mine",
+      "Ajax Mine"
+    ],
+    "anchor": "Granite, OR townsite",
+    "sources": [
+      {
+        "title": "Western Mining History – Granite, Oregon",
+        "url": "https://westernmininghistory.com/towns/oregon/granite/"
+      },
+      {
+        "title": "Travel Oregon – Granite (Ghost Towns)",
+        "url": "https://traveloregon.com/things-to-do/culture-history/ghost-towns/granite/"
+      }
+    ]
+  },
+  {
+    "name": "Canyon Creek District (Canyon City–John Day)",
+    "state": "OR",
+    "lat": 44.3931,
+    "lon": -118.9494,
+    "commodities": [
+      "gold"
+    ],
+    "era": "1862–early 1900s",
+    "status": "historic-tourism",
+    "description": "In June 1862 a party of California miners crossing the Strawberry Range struck gold at Whiskey Flat on Canyon Creek, and Canyon City sprang up so fast that tradition holds it was briefly Oregon's most populous town, with at least 2,500 residents in 1862–64. More than $26 million in gold was taken from Canyon Creek and the nearby mountains during the 1862–1880 rush—as much as $5 million a year in the earliest seasons—and by 1882 sixteen hydraulic mines operated, many owned by Chinese companies. The town survived Indian wars, stage robberies, a flash flood and repeated fires (1870, 1885, 1898, 1937). Canyon City remains the Grant County seat, its gold-rush past interpreted alongside the Kam Wah Chung heritage of neighboring John Day.",
+    "key_mines": [
+      "Whiskey Flat placers",
+      "Canyon Creek hydraulic mines"
+    ],
+    "anchor": "Canyon City, OR townsite",
+    "sources": [
+      {
+        "title": "Historical Marker Database – Welcome to Canyon City",
+        "url": "https://www.hmdb.org/m.asp?m=96722"
+      },
+      {
+        "title": "Western Mining History – Canyon City, Oregon",
+        "url": "https://westernmininghistory.com/towns/oregon/canyon-city/"
+      }
+    ]
+  },
+  {
+    "name": "South Pass–Atlantic City District",
+    "state": "WY",
+    "lat": 42.4683,
+    "lon": -108.7997,
+    "commodities": [
+      "gold",
+      "iron"
+    ],
+    "era": "1867–1880s; iron ore 1962–1983",
+    "status": "historic-tourism",
+    "description": "Discovery of the Carissa lode in June 1867 set off Wyoming's first and biggest gold rush, spawning South Pass City, Atlantic City (founded April 1868) and Miner's Delight near the emigrant trail crossing of the Continental Divide; a federal census counted 1,517 people in the mining area in 1869. The boom faded within five years, though the Carissa produced an estimated 50,000–180,000 ounces of gold before 1911 and E.T. Fisher's Rock Creek dredging recovered about $400,000 in the 1930s. U.S. Steel later ran America's highest open-pit iron-ore (taconite) mine near Atlantic City from 1962 to 1983, shipping roughly 90 million tons. South Pass City is preserved as a Wyoming state historic site including the Carissa Mine, while Atlantic City survives with a handful of year-round residents.",
+    "key_mines": [
+      "Carissa Mine",
+      "Miner's Delight Mine",
+      "Atlantic City iron-ore mine"
+    ],
+    "anchor": "South Pass City State Historic Site",
+    "sources": [
+      {
+        "title": "WyoHistory.org – The South Pass Gold Rush",
+        "url": "https://www.wyohistory.org/encyclopedia/south-pass-gold-rush"
+      },
+      {
+        "title": "Wyoming State Geological Survey – Gold",
+        "url": "https://main.wsgs.wyo.gov/mineral-resources/metals/gold"
+      },
+      {
+        "title": "WyoHistory.org – Atlantic City: Boom-bust Survivor",
+        "url": "https://www.wyohistory.org/encyclopedia/atlantic-city-boom-bust-survivor"
+      }
+    ]
+  },
+  {
+    "name": "Grand Encampment Copper District",
+    "state": "WY",
+    "lat": 41.2089,
+    "lon": -106.7947,
+    "commodities": [
+      "copper"
+    ],
+    "era": "1897–1908",
+    "status": "historic-tourism",
+    "description": "Sheepherder Ed Haggarty found copper high in the Sierra Madre in 1897, and the Rudefeha—later Ferris-Haggarty—mine drove a decade-long boom, at its peak employing 250 men and shipping around 80,000 pounds of ore a day. A 16-mile aerial tramway completed in 1902–03, the longest in the world at the time with 270 towers and 840 buckets, carried ore over the Continental Divide to the Boston & Wyoming smelter at Encampment. Smelter fires in 1906 caused over $300,000 in losses, and collapsing copper prices, corporate failures and litigation killed the boom by 1908–1913, ironically just as the railroad arrived. The Grand Encampment Museum preserves tramway towers and boom-era buildings, drawing thousands of visitors a year to the small ranching town.",
+    "key_mines": [
+      "Ferris-Haggarty (Rudefeha) Mine"
+    ],
+    "anchor": "Encampment, WY townsite (Grand Encampment Museum)",
+    "sources": [
+      {
+        "title": "WyoHistory.org – Encampment, Wyoming: Copper, Lumber and Rendezvous",
+        "url": "https://www.wyohistory.org/encyclopedia/encampment-wyoming"
+      },
+      {
+        "title": "Western Mining History – Encampment, Wyoming",
+        "url": "https://westernmininghistory.com/towns/wyoming/encampment/"
+      }
+    ]
+  },
+  {
+    "name": "Powder River Basin Coal District",
+    "state": "WY",
+    "lat": 43.5589,
+    "lon": -105.2883,
+    "commodities": [
+      "coal"
+    ],
+    "era": "1970s–present (Wyoming coal mined since 1865)",
+    "status": "active",
+    "description": "The Powder River Basin's thick subbituminous seams make it the most prolific coal field in the world and the anchor of U.S. supply: Wyoming alone accounts for roughly 40 percent of national coal production, and the basin's Black Thunder and North Antelope Rochelle mines—the two largest in the country—together produced 21 percent of all U.S. coal in 2022. Coal leaves the basin at rates measured in tons per second aboard 50–70 unit trains a day, though output has fallen steeply from Wyoming's 2008 peak of 466 million tons (239 million in 2021) as power plants retire. Policy has whipsawed: the Biden administration ended new federal coal leasing in the basin in November 2024, and in July 2025 the BLM, under Trump executive orders, proposed reopening about 1.2 million acres to leasing. Included here as an industrial 'district' because it dwarfs all other Northwest mining by tonnage and value.",
+    "key_mines": [
+      "North Antelope Rochelle Mine",
+      "Black Thunder Mine"
+    ],
+    "anchor": "North Antelope Rochelle Mine, near Wright, WY",
+    "sources": [
+      {
+        "title": "U.S. EIA – Coal explained: Where our coal comes from",
+        "url": "https://www.eia.gov/energyexplained/coal/where-our-coal-comes-from.php"
+      },
+      {
+        "title": "Wyoming State Geological Survey – Coal Production & Mining",
+        "url": "https://main.wsgs.wyo.gov/energy/coal/coal-production-mining"
+      },
+      {
+        "title": "Wyoming Public Media – BLM proposes reopening coal leasing in the Powder River Basin (July 2025)",
+        "url": "https://www.wyomingpublicmedia.org/natural-resources-energy/2025-07-08/blm-is-proposing-to-reopen-coal-leasing-in-the-powder-river-basin"
+      }
+    ]
+  },
+  {
+    "name": "Green River Trona District",
+    "state": "WY",
+    "lat": 41.5286,
+    "lon": -109.4661,
+    "commodities": [
+      "trona",
+      "soda ash"
+    ],
+    "era": "1947–present",
+    "status": "active",
+    "description": "The Green River Basin holds the world's largest trona deposit—an estimated 127-billion-ton resource, 40 billion tons of it minable by conventional underground methods, enough for well over 2,000 years of production. Trona was identified in a 1937 drill core and first mined commercially in 1947 by Westvaco; the ore is refined into soda ash for glass, detergents and chemicals, an industry Wyoming dominates nationally. In March 2025, London-based WE Soda closed a $1.425 billion purchase of Genesis Alkali's two Green River-area mines, creating the world's largest natural soda ash producer with about 10.5 million tons of combined annual capacity alongside operators such as Solvay, Sisecam and Tata Chemicals. Included as an industrial 'district': by value and continuity it is one of the Northwest's most important mining regions.",
+    "key_mines": [
+      "Westvaco Mine (first trona mine, 1947)",
+      "Genesis Alkali / WE Soda operations"
+    ],
+    "anchor": "Green River, WY (gateway town of the trona patch)",
+    "sources": [
+      {
+        "title": "Wyoming State Geological Survey – Trona",
+        "url": "https://main.wsgs.wyo.gov/mineral-resources/industrial-minerals/trona"
+      },
+      {
+        "title": "Cowboy State Daily – Two Wyoming trona mines bought for $1.4B to create world's largest producer (Mar 2025)",
+        "url": "https://cowboystatedaily.com/2025/03/03/two-wyoming-trona-mines-bought-for-1-4b-to-create-worlds-largest-producer/"
+      }
+    ]
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Black Pine district",
+    "lat": 42.077544,
+    "lon": -113.042955,
+    "commodities": ["gold", "silver", "zinc", "lead", "copper", "mercury", "antimony", "arsenic"],
+    "era": "ca. 1880-1930s small silver-zinc-mercury workings; 1991-1997 Pegasus open-pit gold; 2016-present Liberty Gold exploration/permitting",
+    "status": "exploration",
+    "description": "Southeast slope of the Black Pine Mountains in far southeastern Cassia County, near the Utah line. Historic ore (located ca. 1880) consisted of epithermal silver-zinc replacement bodies plus cinnabar in Mississippian Brazer (Chainman-White Knob equivalent) limestone; the Silver Hills mine shipped ore ca. 1894, the Hazel Pine ~14 cars ca. 1914, and the Ruth six cars of zinc ore during WWI, with the Silver Hills Mining Co. (inc. 1920) developing >3,000 ft of workings (average ore assayed 42.4 oz/ton Ag, 8.4% Zn). Noranda recognized disseminated Carlin-style, sediment-hosted gold in the 1980s, and Pegasus Gold mined the A, B, CD, E and Tolman open pits 1991-1997, producing 435,000 oz gold and 189,000 oz silver by heap leaching. Liberty Gold acquired the property in June 2016; its 2024 pre-feasibility study reported a probable reserve of 299.4 Mt at 0.32 g/t Au (3.11 Moz), and in April 2026 a federal Notice of Intent launched the EIS under a FAST-41 schedule, with a feasibility study targeted for Q4 2026 and first gold targeted for 2028. Anchor coordinates are the Black Pine Mine site (IGS DD-1 PO0175).",
+    "key_mines": ["Black Pine Mine (Pegasus A/B/CD/E and Tolman pits)", "Silver Hills Mine", "Ruth Mine", "Hazel Pine Mine", "Valentine Mine", "Virmyra group (Tallman/Tolman)", "Juniper Hill (mercury)"],
+    "sources": [
+      {"title": "Anderson, A.L., 1931, Geology and Mineral Resources of Eastern Cassia County, Idaho: Idaho Bureau of Mines and Geology Bulletin 14", "url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf"},
+      {"title": "Liberty Gold PFS results for Black Pine (Oct 10, 2024) - includes Pegasus 1991-1997 production of 435,000 oz Au", "url": "https://www.globenewswire.com/news-release/2024/10/10/2961106/0/en/Liberty-Gold-Announces-Preliminary-Feasibility-Study-Results-for-the-Black-Pine-Oxide-Gold-Project-in-Idaho-with-a-17-year-Mine-Life-and-a-32-After-Tax-Internal-Rate-of-Return.html"},
+      {"title": "Liberty Gold Advances Black Pine Permitting with Publication of a Federal Notice of Intent (Apr 3, 2026)", "url": "https://www.globenewswire.com/news-release/2026/04/03/3268006/0/en/Liberty-Gold-Advances-Black-Pine-Permitting-with-Publication-of-a-Federal-Notice-of-Intent.html"},
+      {"title": "Gillerman, V.S., 1996, Exploration in Idaho: Idaho Geological Survey annual review (Black Pine C/D and NE Tolman pits, 87,000 oz poured in 1996)", "url": "https://www.idahogeology.org/Uploads/Data/Regional_Development/1996RDmed.pdf"}
+    ]
+  },
+  {
+    "name": "Stokes district (Albion Range; includes Conner Creek, Fairchild/Boulder Creek and Old Dominion areas)",
+    "lat": 42.302918,
+    "lon": -113.554832,
+    "commodities": ["silver", "lead", "gold", "copper", "zinc"],
+    "era": "ca. 1880-1920s; assessment work into the 1950s",
+    "status": "abandoned",
+    "description": "Silver-lead-quartz fissure veins in Precambrian Harrison-series quartzites (with some replacements in Carboniferous limestone), clustered around a porphyritic granite stock near the crest of the northern Albion Range dome. Main workings lie on Conner Creek about seven miles south of Albion at 7,000-8,200 ft elevation, with lesser prospects on Fairchild and Boulder creeks east of Oakley and at the Old Dominion mine four miles northeast of Albion. Ore was discovered about 1880; the Melcher Mining and Milling Co. (inc. 1899) drove tunnels of 3,300 and 1,600 ft and built a flotation mill, marketing galena concentrates carrying ~4% copper, silver, and ~$10/ton gold, but was idle after 1920. Total district production was small and sporadic; the 1929 Idaho Mine Inspector listed Big Bertha (13 claims, 900 ft of tunnels), Alice, Albion group, Bimetallic, Giant, Golden Eagle and Walton as idle holdings, and nearby Grape Creek claims (Last Chance group) were reported separately. Anchor coordinates are the Cumora (Melcher) Mine on Conner Creek (IGS DD-1 PO0032).",
+    "key_mines": ["Melcher (Cumora) Mine", "Big Bertha group", "Albion group (Alice, Badger, Flagstaff, Independence)", "Golden Eagle", "Old Dominion Mine", "Last Chance group (Grape Creek)"],
+    "sources": [
+      {"title": "Anderson, A.L., 1931, Geology and Mineral Resources of Eastern Cassia County, Idaho: IBMG Bulletin 14 (Stokes district, p. 104-121)", "url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf"},
+      {"title": "29th Annual Report of the Mining Industry of Idaho for 1929 (Cassia County section)", "url": "https://www.idahogeology.org/Uploads/Data/ISMIR/1929_ISMIR.pdf"},
+      {"title": "IGS Database of the Mines and Prospects of Idaho (DD-1, v.1.2023)", "url": "https://www.idahogeology.org/product/dd-1"}
+    ]
+  },
+  {
+    "name": "Dolomite district (Idaho side of the Ashbrook/Vipont silver belt, south of Oakley)",
+    "lat": 42.01286,
+    "lon": -113.858406,
+    "commodities": ["silver", "copper", "lead"],
+    "era": "ca. 1900s-1920s (peak activity 1920-1923, coinciding with the Vipont mine boom across the Utah line)",
+    "status": "abandoned",
+    "description": "The Idaho extension of the silver belt whose famous mine, the Vipont, lies just across the state line in the Ashbrook district, Grouse Creek Mountains, Box Elder County, Utah (the Vipont shipped ~63,700 tons averaging 16.3 oz/ton silver in 1922 alone and was serviced through Oakley). Idaho Mine Inspector reports of 1921-1929 list a 'Dolomite district' in Cassia County south of Oakley: the Idaho Silver Mining Co. of Oakley (inc. 1920) held 13 claims 'part of which lies in Dolomite dist., Idaho, and Ashbrook dist., Utah... near and in the same belt with the famous Vipont mine' with ~300 ft of underground silver-copper workings, and the Oakley Mining and Milling Co. held the Boulder M group of 7 claims; the Little Jewel mine (George Myers, Oakley) was also carried in the district. No significant production is recorded from the Idaho side; the district faded with Vipont's 1923 closure (Utah-side dumps were reworked in the late 1970s). Anchor coordinates are the Idaho Silver Mining Co. site inside Cassia County (IGS DD-1 PO0062), ~1.5 km north of the state line.",
+    "key_mines": ["Idaho Silver Mining Co. workings", "Little Jewel", "Boulder M group", "(Vipont Mine - 3 km south, in Utah)"],
+    "sources": [
+      {"title": "23rd/24th Annual Reports of the Mining Industry of Idaho for 1921/1922 (Cassia County: Dolomite district entries)", "url": "https://www.idahogeology.org/Uploads/Data/ISMIR/1922_ISMIR.pdf"},
+      {"title": "Vipont Mine - Western Mining History (Ashbrook district, Box Elder County, Utah)", "url": "https://westernmininghistory.com/mine-detail/10087193/"},
+      {"title": "IGS Database of the Mines and Prospects of Idaho (DD-1, v.1.2023) - Idaho Silver Mining Co. record PO0062", "url": "https://www.idahogeology.org/product/dd-1"}
+    ]
+  },
+  {
+    "name": "Goose Creek district (lignite; 1950s uranium investigations; 1920s oil-gas tests)",
+    "lat": 42.011768,
+    "lon": -114.072432,
+    "commodities": ["coal (lignite)", "uranium", "oil/gas (tested, none found)"],
+    "era": "lignite known by 1888, mined briefly ca. 1900s-1911; oil/gas drilling 1919-1929; AEC uranium studies 1950s",
+    "status": "abandoned",
+    "description": "A ~156-260 sq mi basin on the Goose Creek plateau in southwestern Cassia County (Tps. 14-16 S., Rs. 20-22 E.), where lignite beds occur in Miocene-Pliocene lake and stream beds (Payette/Salt Lake formations) beneath rhyolite flows. The Worthington mine in the Beaverdam basin was 'the only one in the district that has marketed any coal,' operated one winter around the mid-1900s with product hauled 25 miles by team to Oakley, but the lignite's high moisture and ash (about 5,810 Btu as received) made it unsatisfactory; the Lang, Barrett, Smith, Grant and Eliason prospects never produced. The Goose Creek Oil and Developing Co. drilled on a federal permit on Coal and Goose creeks (1,750-ft well by 1929) and the Western Pearl Oil Co. drilled 1,670 ft twelve miles above Oakley in 1920, finding artesian water rather than oil. In 1953 the USGS, for the Atomic Energy Commission, documented uranium-bearing carbonaceous shale and lignite across the district into adjacent Utah and Nevada; no uranium was ever mined. Anchor coordinates are the Worthington Mine (IGS DD-1 TF0115).",
+    "key_mines": ["Worthington Mine", "Barrett Mine/Prospect", "Lang Prospect", "Grant, Smith and Eliason prospects"],
+    "sources": [
+      {"title": "Bowen, C.F., 1913, Lignite in the Goose Creek district, Cassia County, Idaho: USGS Bulletin 531-H, p. 252-262", "url": "https://pubs.usgs.gov/bul/0531h/report.pdf"},
+      {"title": "Mapel, W.J., and Hail, W.J., 1953, Uranium-bearing carbonaceous shale and lignite in the Goose Creek district...: USGS Trace Elements Investigations Report 339", "url": "https://pubs.usgs.gov/publication/tei339"},
+      {"title": "22nd Annual Report of the Mining Industry of Idaho for 1920 (Cassia County oil tests)", "url": "https://www.idahogeology.org/Uploads/Data/ISMIR/1920_ISMIR.pdf"},
+      {"title": "Piper, A.M., 1923, Geology and water resources of the Goose Creek Basin, Cassia County, Idaho: IBMG Bulletin 6", "url": "https://www.idahogeology.org/product/b-6"}
+    ]
+  },
+  {
+    "name": "Oakley stone quarries (Middle Mountain)",
+    "lat": 42.118769,
+    "lon": -113.848827,
+    "commodities": ["dimension stone (micaceous quartzite, 'Oakley stone' / Rocky Mountain quartzite)"],
+    "era": "1948-present",
+    "status": "active",
+    "description": "Quarries on the west slope of Middle Mountain, ~8 miles south of Oakley, produce 'Oakley stone,' a strongly foliated micaceous quartzite (Neoproterozoic Elba Quartzite and associated metaquartzite of the Albion Range metamorphic core complex) that splits into thin, mica-sheened veneer and flagstone in silver, gold and green (chromian-mica) hues. Commercial quarrying began in 1948 and expanded through the 1950s (Gary Mullard began trucking and selling the stone in 1952); by the 1980s it commanded premium prices across North America. Roughly a dozen companies quarry in the Oakley area today; the largest, Northern Stone Supply Inc. (IGS DD-1 PO0276), works ~1,300 acres of quarries, ships on the order of 50,000 tons per year, and the industry generates an estimated $80-90 million of annual economic activity - by most accounts the most commercially important mining ever done in Cassia County. Anderson (1931) had already noted quartzite, tuff and quartz-latite building stone being used locally in Albion and Oakley buildings. Anchor coordinates are the Oakley Valley Stone Inc. / Valley View quarry on Middle Mountain (IGS DD-1 PO0051).",
+    "key_mines": ["Northern Stone Supply quarries", "Oakley Valley Stone (Valley View) quarry", "Rocky Mountain Quartzite Quarry"],
+    "sources": [
+      {"title": "Oakley stone - Wikipedia (geology, 1948 start of commercial extraction)", "url": "https://en.wikipedia.org/wiki/Oakley_stone"},
+      {"title": "Rocky Mountain Quartzite: An Iconic Stone from the American West - Use Natural Stone / Natural Stone Institute", "url": "https://usenaturalstone.org/rocky-mountain-quartzite-an-iconic-stone-from-the-american-west/"},
+      {"title": "Anderson, A.L., 1931, IBMG Bulletin 14 (building stones and quartzite, p. 141-158)", "url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf"}
+    ]
+  },
+  {
+    "name": "City of Rocks - Almo area (pegmatite mica/feldspar, uranium-REE black sands, tungsten occurrence)",
+    "lat": 42.04737,
+    "lon": -113.735424,
+    "commodities": ["mica", "feldspar", "beryllium", "uranium", "thorium", "rare earths (monazite black sands)", "tungsten (scheelite occurrence)", "iron/titanium/zirconium (placer black sands)"],
+    "era": "small pegmatite prospecting late 1800s-1950s; uranium and black-sand placer prospecting 1950s; mineral entry closed since 1988",
+    "status": "abandoned (within City of Rocks National Reserve since 1988; mining excluded)",
+    "description": "Around Almo and the Cassia City of Rocks, pegmatites at the margins of the Oligocene Almo granite pluton and in Archean basement attracted prospecting for sheet mica (insulation material), feldspar and beryl; the City of Rocks Mine (IGS DD-1 PO0069, the anchor here) is recorded as a feldspar/beryllium producer on a small scale, and Anderson (1931) described mica prospecting in pegmatites at the south end of South Mountain near the Utah line. During the 1950s uranium boom the Brooks prospect ('Wicked Witch' / City of Rocks uranium deposit) and several placer claims on uranium-thorium-REE-bearing black sands were staked, and stream-sand monazite-magnetite concentrations were evaluated along Edwards, Graham, Circle and Raft River drainages of the Almo Basin (some carried in IGS records under a 'Stokes district' label); none produced commercially. The Black Jack Scheelite occurrence near Almo is Cassia County's only recorded tungsten showing, in the state inventory tracing to Livingston's 1919 statewide tungsten-cinnabar bulletin. Since designation of the City of Rocks National Reserve in 1988 the core area is closed to mineral entry; the NPS Abandoned Mineral Lands database lists seven small AML features at six sites in the reserve (dozer trenches, small surface pits, one plugged oil/gas well).",
+    "key_mines": ["City of Rocks Mine (feldspar-beryl)", "White Mica Mining and Milling prospect", "Brooks (Wicked Witch) uranium prospect", "Black Jack Scheelite occurrence", "Almo Basin black-sand placer claims"],
+    "sources": [
+      {"title": "Miller, D.M., Armstrong, R.L., Bedford, D.R., and Davis, M., 2008, Geologic map and digital database of the Almo quadrangle and City of Rocks National Reserve, Cassia County, Idaho: USGS Open-File Report 2008-1103", "url": "https://pubs.usgs.gov/of/2008/1103/of2008-1103_pamphlet.pdf"},
+      {"title": "NPS Geologic Resources Inventory Report, City of Rocks National Reserve (NPS NRR-2010/191), Mine-Related Issues section", "url": "https://npshistory.com/publications/ciro/nrr-2010-191.pdf"},
+      {"title": "Anderson, A.L., 1931, IBMG Bulletin 14 (mica and feldspar, p. 159; pegmatites)", "url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf"},
+      {"title": "IGS Database of the Mines and Prospects of Idaho (DD-1, v.1.2023) - Almo Basin and City of Rocks records", "url": "https://www.idahogeology.org/product/dd-1"}
+    ]
+  },
+  {
+    "name": "Snake River - Raft River fine-gold placers (northern Cassia County)",
+    "lat": 42.611267,
+    "lon": -113.241816,
+    "commodities": ["gold (fine 'flour' gold)", "minor silver"],
+    "era": "1880s-ca. 1905 principal era; recorded output 1902-1915; sporadic small-scale work afterward",
+    "status": "abandoned",
+    "description": "Skim-bar and terrace placers along the Snake River (the county's north boundary) and near the mouth of the Raft River carried extremely fine 'flour' gold (0.93-0.95 fine; 1,000-2,000 colors to the cent). Bancroft recorded Lane and Co. making $25 per man-day near the Raft River mouth in the 1880s, and USGS statistics compiled by Hill (1916) credit Cassia County with $57,408 of the $149,315 in gold recorded from the upper Snake River between 1902 and 1915 - the largest county share. Work between Burley and Milner ended when backwater from Milner Dam (1905) and the Minidoka reservoir submerged the productive bars; the IGS database still carries the Bancroft, Durango, Sweetzer Farm, G.W. Lish Farm and Spring Bar placer claims along the Raft-Snake confluence reach. Large mechanized ventures on the Snake repeatedly failed because the gold was too fine to save. Anchor coordinates are the Raft River (Sweetzer Farm) Placer, a recorded past producer (IGS DD-1 PO0097).",
+    "key_mines": ["Sweetzer Farm / Raft River Placer", "Bancroft Placer", "Durango Placer", "G.W. Lish Farm Placer", "Snake River (Villa/Dep #1-2) placers near Milner"],
+    "sources": [
+      {"title": "Hill, J.M., 1916, Notes on the fine gold of Snake River, Idaho: USGS Bulletin 620-L", "url": "https://pubs.usgs.gov/bul/0620l/report.pdf"},
+      {"title": "IGS Database of the Mines and Prospects of Idaho (DD-1, v.1.2023) - Raft River/Snake River placer records", "url": "https://www.idahogeology.org/product/dd-1"},
+      {"title": "Bell, R.N., 1902, The origin of the fine gold of the Snake: Engineering and Mining Journal, v. 73, p. 143-144 (cited in Hill 1916)", "url": "https://pubs.usgs.gov/bul/0620l/report.pdf"}
+    ]
+  }
+]

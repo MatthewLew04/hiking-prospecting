@@ -1,0 +1,9 @@
+# macOS junk
+.DS_Store
+
+# build artifacts / staging
+nw-mineral-monitor/infra/updater.zip
+_to_delete/
+
+# account-specific auth switch lives only in S3, never in git
+auth.json

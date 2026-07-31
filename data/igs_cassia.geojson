@@ -1,0 +1,3161 @@
+{
+ "type": "FeatureCollection",
+ "name": "IGS_Mines_and_Prospects_Cassia_County",
+ "metadata": {
+  "source": "Idaho Geological Survey, Database of the Mines and Prospects of Idaho (Digital Data DD-1), version 1.2023, by C.A. Tate, J.A. Eldredge, V.E. Mitchell, and L.R. Stanford",
+  "source_url": "https://www.idahogeology.org/product/dd-1",
+  "download_url": "https://www.idahogeology.org/pub/Digital_Data/Digital_Databases/MinesPubDD-1_2023.zip",
+  "filter": "CountyName = 'Cassia' (all 125 records also verified spatially inside the Cassia County polygon)",
+  "crs": "WGS84 (EPSG:4326)",
+  "retrieved": "2026-07-29",
+  "notes": "status derived from DD-1 'Producer' flag (past producer vs prospect/occurrence); DD-1 does not track current operational status. site_type derived from Placer/Underground/Surface/Drilled flags and site names."
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.721164,
+     42.08065
+    ]
+   },
+   "properties": {
+    "name": "White Mica Mining and Milling",
+    "commodities": [
+     "silver",
+     "gold",
+     "lead",
+     "uranium",
+     "copper",
+     "beryllium",
+     "zinc",
+     "thorium"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0071",
+    "mining_district": null,
+    "companies": "White Mica Mining and Milling",
+    "county": "Cassia",
+    "plss": "15S 23E 36 NENW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.710723,
+     42.03957
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "titanium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0072",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 23E 13 NESE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.637121,
+     42.050171
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Raft River #3",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "abrasives",
+     "zirconium",
+     "titanium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0073",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 24E 10 SWSE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.692422,
+     42.006571
+    ]
+   },
+   "properties": {
+    "name": "Idaho Quartzite",
+    "commodities": [
+     "silica"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0074",
+    "mining_district": null,
+    "companies": "Idaho Quartzite Corporation",
+    "county": "Cassia",
+    "plss": "16S 24E 30 SWSE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.641281,
+     42.006811
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Raft River #1",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "abrasives",
+     "zirconium",
+     "titanium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0075",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 24E 27 SESW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.63042,
+     42.024071
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Raft River #2",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "abrasives",
+     "titanium",
+     "zirconium",
+     "black sand"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0076",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 24E 22 SESE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.59652,
+     42.025171
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Occurrence",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0077",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 24E 24 NWSE",
+    "quad_24k": "Jim Sage Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.6317,
+     42.007781
+    ]
+   },
+   "properties": {
+    "name": "Oasis Oil Co.",
+    "commodities": [
+     "oil"
+    ],
+    "site_type": "well",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0078",
+    "mining_district": null,
+    "companies": "Oasis Oil",
+    "county": "Cassia",
+    "plss": "16S 24E 27 SESE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.463817,
+     42.106271
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0079",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 26E 19 SENW",
+    "quad_24k": "Chokecherry Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.497918,
+     42.088771
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Occurrence",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0080",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 25E 26 NWSE",
+    "quad_24k": "Chokecherry Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.522625,
+     42.664864
+    ]
+   },
+   "properties": {
+    "name": "Dep #1-2, Snake River Placers, Valley View",
+    "commodities": [
+     "gold",
+     "silver"
+    ],
+    "site_type": "placer",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0082",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 25E 3 SESW",
+    "quad_24k": "Acequia"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.434923,
+     42.672665
+    ]
+   },
+   "properties": {
+    "name": "Idaho Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0085",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 26E 5 SENE",
+    "quad_24k": "Lake Walcott West"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.396322,
+     42.682065
+    ]
+   },
+   "properties": {
+    "name": "Snake River Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0087",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "08S 26E 34 NESE",
+    "quad_24k": "Lake Walcott West"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.277618,
+     42.625666
+    ]
+   },
+   "properties": {
+    "name": "Bancroft Placer, Raft River Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0094",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 27E 22 SENE",
+    "quad_24k": "Lake Walcott East"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.255117,
+     42.616267
+    ]
+   },
+   "properties": {
+    "name": "Raft River Placer, Spring Bar Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0095",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 27E 25 NWNW",
+    "quad_24k": "Lake Walcott SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.248817,
+     42.613767
+    ]
+   },
+   "properties": {
+    "name": "Durango Placer, Raft River Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0096",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 27E 25 SENW",
+    "quad_24k": "North Chapin Mountain"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.241816,
+     42.611267
+    ]
+   },
+   "properties": {
+    "name": "Raft River Placer, Sweetzer Farm Placer",
+    "commodities": [
+     "silver",
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0097",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 27E 25 NWSE",
+    "quad_24k": "North Chapin Mountain"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.227116,
+     42.625467
+    ]
+   },
+   "properties": {
+    "name": "G. W. Lish Farm Placer, Raft River Placer",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0098",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "09S 28E 19 NESW",
+    "quad_24k": "Gifford Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.780731,
+     42.554864
+    ]
+   },
+   "properties": {
+    "name": "Goose Creek Placer Deposits, Snake River Placers",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0006",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Burley"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.810431,
+     42.540164
+    ]
+   },
+   "properties": {
+    "name": "Burley Clay Mine",
+    "commodities": [
+     "clay"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0007",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "10S 23E 19 NWSE",
+    "quad_24k": "Burley"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.604626,
+     42.585965
+    ]
+   },
+   "properties": {
+    "name": "Brick and Tile Clay Deposit",
+    "commodities": [
+     "clay"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0009",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "10S 24E 1 SWNW",
+    "quad_24k": "Rupert SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.561824,
+     42.521266
+    ]
+   },
+   "properties": {
+    "name": "Brittannic Mining Co., Declo, Marble Quarry",
+    "commodities": [
+     "marble"
+    ],
+    "site_type": "quarry",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0011",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "10S 25E 29 SESW",
+    "quad_24k": "Rupert SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.576825,
+     42.511566
+    ]
+   },
+   "properties": {
+    "name": "Clay Deposit",
+    "commodities": [
+     "clay"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0012",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "10S 25E 31 SWNE",
+    "quad_24k": "Rupert SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.546523,
+     42.487066
+    ]
+   },
+   "properties": {
+    "name": "Bill Anderson Kyanite Property",
+    "commodities": [
+     "Kyanite"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0013",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "11S 25E 9 NWNW",
+    "quad_24k": "Albion"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.496282,
+     42.488856
+    ]
+   },
+   "properties": {
+    "name": "Ward Group, Wood Group",
+    "commodities": [
+     "gold",
+     "lead",
+     "silver",
+     "copper"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0014",
+    "mining_district": null,
+    "companies": "Burley Mining and Development",
+    "county": "Cassia",
+    "plss": "11S 25E 2 SESE",
+    "quad_24k": "Idahome"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.489322,
+     42.482967
+    ]
+   },
+   "properties": {
+    "name": "Paddy",
+    "commodities": [
+     "silver",
+     "copper",
+     "lead"
+    ],
+    "site_type": "unspecified",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0015",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "11S 25E 12 SWNW",
+    "quad_24k": "Idahome"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.530123,
+     42.469066
+    ]
+   },
+   "properties": {
+    "name": "Old Dominion Mine",
+    "commodities": [
+     "silver",
+     "gold",
+     "lead",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0016",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "11S 25E 15 SWNW",
+    "quad_24k": "Albion"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.80993,
+     42.455665
+    ]
+   },
+   "properties": {
+    "name": "Unnamed location",
+    "commodities": [],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0017",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "11S 23E 19 SWNE",
+    "quad_24k": "Kenyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.616845,
+     42.447456
+    ]
+   },
+   "properties": {
+    "name": "Albion, Idaho Stone and Lime Co., Marble Quarry",
+    "commodities": [
+     "marble"
+    ],
+    "site_type": "quarry",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0018",
+    "mining_district": null,
+    "companies": "Idaho Stone and Lime",
+    "county": "Cassia",
+    "plss": "11S 24E 23 SWSE",
+    "quad_24k": "Albion"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.627925,
+     42.400467
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospects",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0019",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "12S 24E 10 NENE",
+    "quad_24k": "View"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.568503,
+     42.385427
+    ]
+   },
+   "properties": {
+    "name": "Marsh Basin Oil and Gas Co.",
+    "commodities": [
+     "oil"
+    ],
+    "site_type": "well",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0020",
+    "mining_district": null,
+    "companies": "Marsh Basin Oil and Gas",
+    "county": "Cassia",
+    "plss": "12S 25E 17 NWNW",
+    "quad_24k": "Albion"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.709326,
+     42.364067
+    ]
+   },
+   "properties": {
+    "name": "Marble Quarry",
+    "commodities": [
+     "marble"
+    ],
+    "site_type": "quarry",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0021",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "12S 23E 24 NESE",
+    "quad_24k": "Mount Harrison"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.771328,
+     42.318467
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0022",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 4 NWSE",
+    "quad_24k": "Marion SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.772128,
+     42.310667
+    ]
+   },
+   "properties": {
+    "name": "Unnamed mine",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0023",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 9 SWNE",
+    "quad_24k": "Marion SE"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.730126,
+     42.311567
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospects",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0024",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 11 NENE",
+    "quad_24k": "Mount Harrison"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.701666,
+     42.309877
+    ]
+   },
+   "properties": {
+    "name": "Boulder Creek Prospect, Boulder Mine",
+    "commodities": [
+     "lead",
+     "silver",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0025",
+    "mining_district": null,
+    "companies": "Oakley Mining and Milling",
+    "county": "Cassia",
+    "plss": "13S 24E 7 NENW",
+    "quad_24k": "Mount Harrison"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.609323,
+     42.312368
+    ]
+   },
+   "properties": {
+    "name": "Harris and Hume Prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0026",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 24E 11 NENE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.592473,
+     42.298868
+    ]
+   },
+   "properties": {
+    "name": "Golden Eagle Mine",
+    "commodities": [
+     "gold",
+     "silver",
+     "lead",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0027",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 24E 13 NENE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.587422,
+     42.308168
+    ]
+   },
+   "properties": {
+    "name": "Albion Group Mine, Alice, Badger, Flagstaff, Independence",
+    "commodities": [
+     "silver",
+     "gold",
+     "copper",
+     "lead",
+     "zinc"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0028",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 25E 7 SWNW",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.580342,
+     42.313138
+    ]
+   },
+   "properties": {
+    "name": "Big Bertha Group",
+    "commodities": [
+     "silver",
+     "gold",
+     "copper",
+     "lead",
+     "zinc"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0029",
+    "mining_district": null,
+    "companies": "Big Bertha Mining",
+    "county": "Cassia",
+    "plss": "13S 25E 7 NENW",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.559792,
+     42.314768
+    ]
+   },
+   "properties": {
+    "name": "Connor Prospect",
+    "commodities": [
+     "lead",
+     "silver",
+     "gold"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0030",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.571322,
+     42.312368
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospects",
+    "commodities": [],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0031",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 25E 7 NENE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.554832,
+     42.302918
+    ]
+   },
+   "properties": {
+    "name": "Cumora Mine, Melcher Mine",
+    "commodities": [
+     "gold",
+     "silver",
+     "lead",
+     "copper",
+     "zinc"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0032",
+    "mining_district": null,
+    "companies": "Cumora Consolidated Mining Company Limited, Melcher Mining and Milling",
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.570722,
+     42.304268
+    ]
+   },
+   "properties": {
+    "name": "Excelsior",
+    "commodities": [
+     "copper",
+     "silver",
+     "zinc",
+     "lead"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0033",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 25E 7 NESE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.573222,
+     42.299068
+    ]
+   },
+   "properties": {
+    "name": "Giant Lode",
+    "commodities": [
+     "silver",
+     "gold",
+     "lead",
+     "zinc"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0034",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 25E 18 NENE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.423498,
+     42.313479
+    ]
+   },
+   "properties": {
+    "name": "Malta No. 1 Well",
+    "commodities": [
+     "oil"
+    ],
+    "site_type": "well",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0035",
+    "mining_district": null,
+    "companies": "Cougar Oil",
+    "county": "Cassia",
+    "plss": "13S 26E 9 NENW",
+    "quad_24k": "Nibbs Creek"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.88743,
+     42.264567
+    ]
+   },
+   "properties": {
+    "name": "Brick and Tile Clay Deposit",
+    "commodities": [
+     "clay"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0036",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 22E 28 NWSW",
+    "quad_24k": "Marion"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.812628,
+     42.242667
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Occurrence",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0037",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 31 SWSE",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.716525,
+     42.252968
+    ]
+   },
+   "properties": {
+    "name": "Gray Copper Prospect, Myers Mine",
+    "commodities": [
+     "lead",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0038",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 36 NWNE",
+    "quad_24k": "Mount Harrison"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.707925,
+     42.244268
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0039",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 23E 36 SESE",
+    "quad_24k": "Cache Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.690125,
+     42.243768
+    ]
+   },
+   "properties": {
+    "name": "North Carson Creek",
+    "commodities": [
+     "limestone"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0040",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 24E 31 SESE",
+    "quad_24k": "Cache Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.789027,
+     42.189068
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0041",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 23E 20 NESE",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.777926,
+     42.179568
+    ]
+   },
+   "properties": {
+    "name": "Unnamed location",
+    "commodities": [
+     "gemstones"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0042",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 23E 28 SENW",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.765726,
+     42.174268
+    ]
+   },
+   "properties": {
+    "name": "Marble Quarry",
+    "commodities": [
+     "marble"
+    ],
+    "site_type": "quarry",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0043",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 23E 28 NESE",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.761526,
+     42.175168
+    ]
+   },
+   "properties": {
+    "name": "Kenny Mine, Kinney Mine",
+    "commodities": [
+     "lead",
+     "silver"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0044",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 23E 27 NWSW",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.759926,
+     42.170169
+    ]
+   },
+   "properties": {
+    "name": "Posey No. 5",
+    "commodities": [
+     "Kyanite",
+     "Aluminum"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0045",
+    "mining_district": null,
+    "companies": "Rhone-Poulenc Basic Chemical Company, Stauffer Chemical Company",
+    "county": "Cassia",
+    "plss": "14S 23E 27 SESW",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.639623,
+     42.194569
+    ]
+   },
+   "properties": {
+    "name": "Last Chance Group Prospect, Last Chance Mine, Mountain View Nos. 1-4, Olympia Nos. 1 and 2",
+    "commodities": [
+     "copper",
+     "gold",
+     "silver",
+     "lead",
+     "zinc"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0046",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 24E 22 NENW",
+    "quad_24k": "Cache Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.630272,
+     42.182269
+    ]
+   },
+   "properties": {
+    "name": "Olympia Group, Olympia Nos. 1 and 2",
+    "commodities": [
+     "lead",
+     "gold",
+     "silver",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0047",
+    "mining_district": null,
+    "companies": "Olympia Mining and Milling",
+    "county": "Cassia",
+    "plss": "14S 24E 27 NENE",
+    "quad_24k": "Cache Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.599611,
+     42.16126
+    ]
+   },
+   "properties": {
+    "name": "Hawkins Mining Co.",
+    "commodities": [
+     "silver",
+     "lead",
+     "gold"
+    ],
+    "site_type": "unspecified",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0048",
+    "mining_district": null,
+    "companies": "Hawkins Mining",
+    "county": "Cassia",
+    "plss": "14S 24E 36 NESW",
+    "quad_24k": "Elba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.442417,
+     42.20347
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0049",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 26E 17 NESW",
+    "quad_24k": "Kane Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.852628,
+     42.129568
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0050",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 22E 11 SWSW",
+    "quad_24k": "Basin"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.848827,
+     42.118769
+    ]
+   },
+   "properties": {
+    "name": "Oakley Valley Stone Inc., Valley View Mine",
+    "commodities": [
+     "stone",
+     "quartzite"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0051",
+    "mining_district": "Goose Creek",
+    "companies": "Oakley Valley Stone, Northern Stone Supply Incorporated, Oakley Mining and Milling, Oakley Valley Stone, Valley View Mine, Sawtooth Stone LLC, American Stone, Scrivanich, Northern Stone Supply Incorporated, Dave Rodriguez, Oakley Valley Stone",
+    "county": "Cassia",
+    "plss": "15S 22E 14 NWSW",
+    "quad_24k": "Lyman Pass"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.632122,
+     42.12737
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Edwards Creek",
+    "commodities": [
+     "rare-earths",
+     "iron",
+     "titanium",
+     "abrasives",
+     "zirconium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0052",
+    "mining_district": "Stokes",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 10 SESE",
+    "quad_24k": "Cache Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.649022,
+     42.11237
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Graham Creek",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "titanium",
+     "abrasives",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0053",
+    "mining_district": "Stokes",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 16 SESE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.929859,
+     42.096678
+    ]
+   },
+   "properties": {
+    "name": "Goose Creek Oil and Development Co.",
+    "commodities": [
+     "gas",
+     "oil",
+     "uranium"
+    ],
+    "site_type": "well",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0054",
+    "mining_district": "Goose Creek",
+    "companies": "Goose Creek Oil and Developing",
+    "county": "Cassia",
+    "plss": "15S 22E 30 NWNW",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.853,
+     42.113
+    ]
+   },
+   "properties": {
+    "name": "Rocky Mountain Quartzite Quarry",
+    "commodities": [
+     "stone"
+    ],
+    "site_type": "quarry",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0055",
+    "mining_district": "Goose Creek",
+    "companies": "Northern Stone Supply Incorporated, Northern Stone Supply Incorporated, Northern Stone Supply Incorporated, Northern Stone Supply Incorporated",
+    "county": "Cassia",
+    "plss": "15S 22E 22 NENE",
+    "quad_24k": "Lyman Pass"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.938989,
+     42.084658
+    ]
+   },
+   "properties": {
+    "name": "J.D. Well, West Pearl Oil and Gas Co.",
+    "commodities": [
+     "oil"
+    ],
+    "site_type": "well",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0056",
+    "mining_district": "Goose Creek",
+    "companies": "West Pearl Oil and Gas",
+    "county": "Cassia",
+    "plss": "15S 21E 25 SWSE",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.983831,
+     42.071568
+    ]
+   },
+   "properties": {
+    "name": "Unnamed location",
+    "commodities": [
+     "coal",
+     "uranium"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0057",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 21E 34 SESW",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.96383,
+     42.038169
+    ]
+   },
+   "properties": {
+    "name": "Unnamed location",
+    "commodities": [
+     "stone",
+     "limestone",
+     "clay"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0058",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 21E 14 NESW",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.98323,
+     42.024069
+    ]
+   },
+   "properties": {
+    "name": "Unnamed location",
+    "commodities": [
+     "coal",
+     "uranium"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0059",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 21E 22 SESW",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.839326,
+     42.03487
+    ]
+   },
+   "properties": {
+    "name": "South Mountain Pegmatites",
+    "commodities": [
+     "feldspar"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0060",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 22E 14 SWSE",
+    "quad_24k": "Lyman Pass"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.882427,
+     42.024069
+    ]
+   },
+   "properties": {
+    "name": "Middle Mountain",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0061",
+    "mining_district": "Goose Creek",
+    "companies": "Meridian Minerals",
+    "county": "Cassia",
+    "plss": "16S 22E 21 NESW",
+    "quad_24k": "Blue Hill"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.858406,
+     42.01286
+    ]
+   },
+   "properties": {
+    "name": "Idaho Silver Mining Co.",
+    "commodities": [
+     "silver"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0062",
+    "mining_district": "Goose Creek",
+    "companies": "Idaho Silver Mining",
+    "county": "Cassia",
+    "plss": "16S 22E 27 SWNE",
+    "quad_24k": "Lyman Pass"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.699323,
+     42.09517
+    ]
+   },
+   "properties": {
+    "name": "Idaho Queen #1",
+    "commodities": [
+     "uranium",
+     "thorium",
+     "beryllium"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0063",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 30 NENW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.719924,
+     42.08297
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Circle Creek #1",
+    "commodities": [
+     "iron",
+     "rare-earths",
+     "titanium",
+     "abrasives",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0064",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 23E 25 SESW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.716883,
+     42.07767
+    ]
+   },
+   "properties": {
+    "name": "Brooks Prospect, City of Rooks Uranium Deposit, Wicked Sisters Claim",
+    "commodities": [
+     "uranium",
+     "thorium",
+     "rare-earths",
+     "beryllium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0065",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 23E 36 SENW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.690723,
+     42.07677
+    ]
+   },
+   "properties": {
+    "name": "City of Rocks Uranium Placer Deposit",
+    "commodities": [
+     "uranium"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0066",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 31 SENE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.692423,
+     42.06907
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Circle Creek #2",
+    "commodities": [
+     "rare-earths",
+     "iron",
+     "zirconium",
+     "abrasives",
+     "titanium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0067",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 31 SWSE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.647621,
+     42.06987
+    ]
+   },
+   "properties": {
+    "name": "Almo Basin-Circle Creek #3",
+    "commodities": [
+     "rare-earths",
+     "iron",
+     "abrasives",
+     "titanium",
+     "zirconium",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0068",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 24E 33 SESE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.735424,
+     42.04737
+    ]
+   },
+   "properties": {
+    "name": "City of Rocks Mine",
+    "commodities": [
+     "beryllium",
+     "feldspar"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0069",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 23E 14 NWNE",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.739224,
+     42.03647
+    ]
+   },
+   "properties": {
+    "name": "Black Jack Scheelite",
+    "commodities": [
+     "tungsten"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0070",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 23E 14 SESW",
+    "quad_24k": "Almo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.10211,
+     42.39877
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "phosphate"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0163",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "12S 29E 7 NENE",
+    "quad_24k": "North Heglar Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.069907,
+     42.227372
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Pit",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0164",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 29E 9 NENW",
+    "quad_24k": "Sweetzer Canyon"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.103807,
+     42.109873
+    ]
+   },
+   "properties": {
+    "name": "War Eagle Peak Prospect",
+    "commodities": [
+     "copper",
+     "silver"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0165",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 19 NWNE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.081806,
+     42.104574
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospects",
+    "commodities": [
+     "zinc",
+     "copper",
+     "lead",
+     "gold",
+     "silver"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0166",
+    "mining_district": "Black Pine",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 20 NESE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.071806,
+     42.102974
+    ]
+   },
+   "properties": {
+    "name": "East Dry Fork Prospect",
+    "commodities": [
+     "iron"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0167",
+    "mining_district": "Black Pine",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 21 NESW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.069716,
+     42.094534
+    ]
+   },
+   "properties": {
+    "name": "Busy Bee, Joveon, Silver Hills Mine",
+    "commodities": [
+     "silver",
+     "zinc",
+     "calcium",
+     "gold",
+     "copper",
+     "lead",
+     "antimony",
+     "sulfur"
+    ],
+    "site_type": "unspecified",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0168",
+    "mining_district": "Black Pine",
+    "companies": "Noranda Exploration, Silver Hills Mining Company",
+    "county": "Cassia",
+    "plss": "15S 29E 28 NENW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.046505,
+     42.097674
+    ]
+   },
+   "properties": {
+    "name": "Deer Ridge Group, Ruth Mine, Silver Hills Mining Co., Valley View",
+    "commodities": [
+     "silver",
+     "gold",
+     "lead",
+     "mercury",
+     "zinc",
+     "copper"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0169",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 27 NWNE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.053205,
+     42.092974
+    ]
+   },
+   "properties": {
+    "name": "Mineral Gulch Prospect",
+    "commodities": [
+     "iron",
+     "barite"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0170",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 27 SENW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.040105,
+     42.093474
+    ]
+   },
+   "properties": {
+    "name": "Mineral Gulch Prospect",
+    "commodities": [
+     "copper",
+     "zinc",
+     "gold",
+     "mercury",
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0171",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 26 SWNW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.032405,
+     42.095474
+    ]
+   },
+   "properties": {
+    "name": "Mineral Gulch Prospect",
+    "commodities": [
+     "silver",
+     "gold",
+     "copper",
+     "zinc"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0172",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 26 NENW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.051505,
+     42.084574
+    ]
+   },
+   "properties": {
+    "name": "Highland, Miller Cinnabar, Virmyra Gold, E Pit",
+    "commodities": [
+     "mercury",
+     "copper",
+     "barium",
+     "arsenic",
+     "lead"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0173",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 27 SESW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.057105,
+     42.080174
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0174",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 34 NWNW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.042955,
+     42.077544
+    ]
+   },
+   "properties": {
+    "name": "Black Pine Mine, Duvall Mine, Juniper Hill Mercury, Tallman Mine, Thornton Mine, Tolman Mine, Virginia Group, Virmyra Gold Mining Co.",
+    "commodities": [
+     "gold",
+     "silver",
+     "zinc",
+     "copper",
+     "arsenic",
+     "mercury",
+     "barium"
+    ],
+    "site_type": "underground, surface, drilled",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0175",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Noranda Exploration, Pegasus, Pegasus Gold Corporation, Pegasus Gold Incorporated, Liberty Gold Corp., Noranda, Noranda Exploration, Virmyra Gold Mining, Pegasus Gold Incorporated, Pegasus Gold Corporation, Pegasus Gold Corporation, Pegasus Gold",
+    "county": "Cassia",
+    "plss": "15S 29E 34 SENE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.033625,
+     42.080684
+    ]
+   },
+   "properties": {
+    "name": "Gem Group, Hazel Pine Mine, Virginia",
+    "commodities": [
+     "silver",
+     "gold",
+     "zinc",
+     "mercury",
+     "copper",
+     "lead"
+    ],
+    "site_type": "underground",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0176",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus, Hazel Pine Mining",
+    "county": "Cassia",
+    "plss": "15S 29E 35 NENW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.034905,
+     42.075974
+    ]
+   },
+   "properties": {
+    "name": "Ackerill, Anderson Property, Highland Mines, Valentine Mine",
+    "commodities": [
+     "silver",
+     "gold",
+     "barite",
+     "lead",
+     "mercury",
+     "arsenic"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0177",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "15S 29E 35 NESW",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.047605,
+     42.063774
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospects",
+    "commodities": [],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0178",
+    "mining_district": "Black Pine",
+    "companies": "Noranda, Pegasus",
+    "county": "Cassia",
+    "plss": "16S 29E 3 SWNE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.562794,
+     42.303249
+    ]
+   },
+   "properties": {
+    "name": "Flagstaff",
+    "commodities": [],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0269",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.550853,
+     42.299919
+    ]
+   },
+   "properties": {
+    "name": "Independence",
+    "commodities": [],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0270",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 25E 8 SESE",
+    "quad_24k": "Connor Ridge"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.878,
+     42.243
+    ]
+   },
+   "properties": {
+    "name": "Northern Stone Supply, Inc.",
+    "commodities": [
+     "quartzite"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0276",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 22E 4 NWNE",
+    "quad_24k": "Oakley"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.6177,
+     42.1739
+    ]
+   },
+   "properties": {
+    "name": "Thunder Mountain No. 1",
+    "commodities": [
+     "gold",
+     "copper",
+     "lead",
+     "zinc"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0277",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "14S 24E 26 NWSE",
+    "quad_24k": "Elba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.0452,
+     42.07
+    ]
+   },
+   "properties": {
+    "name": "CD Pit",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "surface",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0278",
+    "mining_district": "Black Pine",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 34 SESE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.0464,
+     42.0808
+    ]
+   },
+   "properties": {
+    "name": "B Pit",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "surface",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0279",
+    "mining_district": "Black Pine",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 34 NWNE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.0447,
+     42.0893
+    ]
+   },
+   "properties": {
+    "name": "A Pit",
+    "commodities": [
+     "gold"
+    ],
+    "site_type": "surface",
+    "status": "past producer",
+    "source_id": "IGS DD-1 PO0280",
+    "mining_district": "Black Pine",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 29E 27 NESE",
+    "quad_24k": "Black Pine Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -113.856718,
+     42.105254
+    ]
+   },
+   "properties": {
+    "name": "Blue Creek Hill property, Oakley project",
+    "commodities": [],
+    "site_type": "drilled",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 PO0282",
+    "mining_district": "Goose Creek",
+    "companies": "Placer Dome, WestGold",
+    "county": "Cassia",
+    "plss": "15S 22E 22 NESE",
+    "quad_24k": "Lyman Pass"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.116038,
+     42.381764
+    ]
+   },
+   "properties": {
+    "name": "Unnamed prospect",
+    "commodities": [
+     "lead"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0091",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "12S 20E 16 SWNE",
+    "quad_24k": "Milner Butte"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.25744,
+     42.272964
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Deposit",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0098",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 19E 20 SESW",
+    "quad_24k": "Grand View Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.195737,
+     42.121566
+    ]
+   },
+   "properties": {
+    "name": "Phosphate Deposit",
+    "commodities": [
+     "phosphate"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0099",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 19E 14 SENW",
+    "quad_24k": "Mahogany Butte"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.120435,
+     42.142067
+    ]
+   },
+   "properties": {
+    "name": "Trapper Creek #2",
+    "commodities": [
+     "rare-earths",
+     "zirconium",
+     "titanium",
+     "abrasives",
+     "black sand"
+    ],
+    "site_type": "placer",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0100",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 9 NENW",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.087934,
+     42.143767
+    ]
+   },
+   "properties": {
+    "name": "Lignite Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0101",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 2 SWSW",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.079034,
+     42.150967
+    ]
+   },
+   "properties": {
+    "name": "Grant Prospect",
+    "commodities": [
+     "coal",
+     "uranium"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0102",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.029333,
+     42.151567
+    ]
+   },
+   "properties": {
+    "name": "Barrett Mine",
+    "commodities": [
+     "coal",
+     "uranium"
+    ],
+    "site_type": "unspecified",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0103",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 21E 5 SWNW",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.096534,
+     42.132667
+    ]
+   },
+   "properties": {
+    "name": "Lignite Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0104",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 10 NWSE",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.086034,
+     42.132667
+    ]
+   },
+   "properties": {
+    "name": "Eliason Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0105",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 11 NWSW",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.077634,
+     42.132367
+    ]
+   },
+   "properties": {
+    "name": "Smith Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0106",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 11 NWSE",
+    "quad_24k": "Severe Spring"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.101834,
+     42.120667
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Deposit",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0107",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 20E 15 SENW",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.006832,
+     42.104568
+    ]
+   },
+   "properties": {
+    "name": "Uranium Deposit",
+    "commodities": [
+     "uranium"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0108",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "15S 21E 21 NWSW",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.104634,
+     42.050968
+    ]
+   },
+   "properties": {
+    "name": "Lignite Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0109",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 20E 10 SWNW",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.092133,
+     42.049068
+    ]
+   },
+   "properties": {
+    "name": "Lignite Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0110",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 20E 10 SENE",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.079033,
+     42.044268
+    ]
+   },
+   "properties": {
+    "name": "Lignite Deposit",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0111",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 20E 11 SWSE",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.071333,
+     42.039868
+    ]
+   },
+   "properties": {
+    "name": "Lignite Deposit",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0112",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 20E 14 NENE",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.026331,
+     42.036268
+    ]
+   },
+   "properties": {
+    "name": "Lignite Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0113",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 21E 17 SWNW",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.089333,
+     42.012068
+    ]
+   },
+   "properties": {
+    "name": "Lang Prospect",
+    "commodities": [
+     "coal"
+    ],
+    "site_type": "prospect",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0114",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "13S 41E 4 NWNE",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.072432,
+     42.011768
+    ]
+   },
+   "properties": {
+    "name": "Worthington Mine",
+    "commodities": [
+     "coal",
+     "uranium"
+    ],
+    "site_type": "underground",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0115",
+    "mining_district": null,
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 20E 26 NENE",
+    "quad_24k": "Ibex Peak"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.015431,
+     42.011569
+    ]
+   },
+   "properties": {
+    "name": "Pumicite Deposit",
+    "commodities": [
+     "pumice"
+    ],
+    "site_type": "occurrence",
+    "status": "prospect/occurrence",
+    "source_id": "IGS DD-1 TF0116",
+    "mining_district": "Goose Creek",
+    "companies": null,
+    "county": "Cassia",
+    "plss": "16S 21E 29 NWSE",
+    "quad_24k": "Ibex Peak"
+   }
+  }
+ ]
+}

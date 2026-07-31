@@ -1,0 +1,389 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  NW Mineral Monitor - static map site on S3 + CloudFront, with a nightly
+  Lambda that refreshes BLM mining-claim snapshots (active daily; closed
+  monthly in three batches).
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: nw-mineral-monitor
+    AllowedPattern: '[a-z0-9-]+'
+    Description: Lowercase name used to tag/derive resource names.
+
+Resources:
+
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-oac'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  DataCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${ProjectName}-data-15min'
+        DefaultTTL: 900
+        MaxTTL: 3600
+        MinTTL: 60
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig: { CookieBehavior: none }
+          HeadersConfig: { HeaderBehavior: none }
+          QueryStringsConfig: { QueryStringBehavior: none }
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Ref ProjectName
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: site-s3
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !Ref OriginAccessControl
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: site-s3
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          # AWS managed policy "CachingOptimized"
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        CacheBehaviors:
+          - PathPattern: 'data/*'
+            TargetOriginId: site-s3
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: true
+            CachePolicyId: !Ref DataCachePolicy
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+
+  UpdaterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: s3-data-rw
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [ s3:GetObject, s3:PutObject ]
+                Resource: !Sub '${SiteBucket.Arn}/data/*'
+
+  UpdaterFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-claims-updater'
+      Runtime: python3.12
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 900
+      Role: !GetAtt UpdaterRole.Arn
+      Environment:
+        Variables:
+          BUCKET: !Ref SiteBucket
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"note": "placeholder - upload infra/lambda_updater.py "
+                              "(deploy.sh step 3, or paste it in the Lambda "
+                              "console code editor as index.py and Deploy)"}
+
+  NightlyActiveRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-nightly-active'
+      Description: Refresh active-claim snapshots, NW five states (09:10 UTC)
+      ScheduleExpression: cron(10 9 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"active","states":["WA","OR","ID","MT","WY"]}'
+
+  NightlyActiveNvUtRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-nightly-active-nvut'
+      Description: Refresh active-claim snapshots, NV+UT (09:40 UTC — NV is slow, runs alone)
+      ScheduleExpression: cron(40 9 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"active","states":["NV","UT"]}'
+
+  MonthlyClosedRule1:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-1'
+      Description: Refresh closed-claim snapshots for WA+OR (1st of month)
+      ScheduleExpression: cron(0 10 1 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["WA","OR"]}'
+
+  MonthlyClosedRule2:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-2'
+      Description: Refresh closed-claim snapshots for ID+MT (1st of month)
+      ScheduleExpression: cron(30 10 1 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["ID","MT"]}'
+
+  MonthlyClosedRule3:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-3'
+      Description: Refresh closed-claim snapshots for WY (1st of month)
+      ScheduleExpression: cron(0 11 1 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["WY"]}'
+
+  PermNightly:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyActiveRule.Arn
+  PermNightlyNvUt:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyActiveNvUtRule.Arn
+  PermClosed1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedRule1.Arn
+  PermClosed2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedRule2.Arn
+  PermClosed3:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedRule3.Arn
+
+  # ---------- AI Q&A (Bedrock relay) ----------
+  AskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: bedrock-invoke
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [ bedrock:InvokeModel ]
+                Resource:
+                  - 'arn:aws:bedrock:*::foundation-model/*'
+                  - !Sub 'arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/*'
+
+  AskFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-ask'
+      Runtime: python3.12
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 60
+      Role: !GetAtt AskRole.Arn
+      Environment:
+        Variables:
+          # tried in order; first one that answers sticks. Override to force a model.
+          # Verified against Bedrock model cards 2026-07: Opus 4.7 = best on Bedrock;
+          # Nova 2 Lite = first-party floor that needs no Anthropic use-case form.
+          MODEL_IDS: 'us.anthropic.claude-opus-4-7,us.anthropic.claude-sonnet-4-6,us.anthropic.claude-haiku-4-5-20251001-v1:0,us.amazon.nova-2-lite-v1:0'
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 501, "body": "placeholder - upload infra/ask_lambda.py"}
+
+  # API Gateway HTTP API instead of a Function URL — some org guardrails (SCPs)
+  # block anonymous lambda:InvokeFunctionUrl; API Gateway invokes are not affected.
+  AskApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub '${ProjectName}-ask-api'
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowOrigins: [ '*' ]
+        AllowMethods: [ POST, OPTIONS ]
+        AllowHeaders: [ x-auth-token, content-type ]
+
+  AskIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref AskApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt AskFunction.Arn
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
+
+  AskRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref AskApi
+      RouteKey: 'POST /ask'
+      Target: !Sub 'integrations/${AskIntegration}'
+
+  AskStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref AskApi
+      StageName: '$default'
+      AutoDeploy: true
+
+  AskApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AskFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AskApi}/*'
+
+  # ---------- Cognito login ----------
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub '${ProjectName}-users'
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true      # no self-signup
+      UsernameConfiguration:
+        CaseSensitive: false
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: false
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: admin_only
+            Priority: 1
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub '${ProjectName}-web'
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      PreventUserExistenceErrors: ENABLED
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      AccessTokenValidity: 24
+      IdTokenValidity: 24
+      RefreshTokenValidity: 30
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+
+  MapUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      UserPoolId: !Ref UserPool
+      Username: codyClinger
+      MessageAction: SUPPRESS   # no invite email; deploy.sh sets the permanent password
+
+Outputs:
+  SiteURL:
+    Description: Your map's URL
+    Value: !Sub 'https://${Distribution.DomainName}'
+  BucketName:
+    Description: Upload the site/ folder here
+    Value: !Ref SiteBucket
+  UpdaterFunctionName:
+    Description: The claims-updater Lambda
+    Value: !Ref UpdaterFunction
+  UserPoolId:
+    Description: Cognito user pool (manage users here)
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: Cognito app client id (goes in auth.json)
+    Value: !Ref UserPoolClient
+  DistributionId:
+    Description: CloudFront distribution (for cache invalidations)
+    Value: !Ref Distribution
+  AskUrl:
+    Description: AI answerer endpoint (goes in auth.json)
+    Value: !Sub 'https://${AskApi}.execute-api.${AWS::Region}.amazonaws.com/ask'
+  AskFunctionName:
+    Description: The AI relay Lambda
+    Value: !Ref AskFunction

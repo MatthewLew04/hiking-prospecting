@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NW Mineral Monitor — mines, claims & mineral sources of the northwest US</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛏</text></svg>">
+<link rel="stylesheet" href="assets/maplibre-gl.css">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --panel3:#1d222a;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
+  --ink:#e8e6df; --ink2:#a9aeb6; --mut:#71787f;
+  --accent:#2dd4bf; --accent-dim:rgba(45,212,191,.14);
+  --gold:#c98500; --agbase:#3987e5; --uree:#199e70; --stone:#9b8974; --energy:#7d8a99; --other:#6f6d66;
+  --warn:#fab219; --good:#0ca30c;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:13px/1.45 var(--sans);overflow:hidden}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+#app{display:grid;grid-template-rows:52px 1fr 26px;height:100vh}
+header{display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--line2);z-index:1200}
+.brand{display:flex;flex-direction:column;line-height:1.15;white-space:nowrap}
+.brand b{font-size:14px;letter-spacing:.12em}
+.brand b .pick{color:var(--accent)}
+.brand span{font-size:10px;color:var(--mut);letter-spacing:.06em}
+.hstats{display:flex;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink2);white-space:nowrap}
+.hstats .st{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.hstats .st b{color:var(--ink);font-weight:600}
+.hstats .st.live b{color:var(--good)}
+#searchWrap{position:relative;flex:1;max-width:400px;margin-left:auto}
+#search{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink);padding:7px 10px 7px 30px;font:12px var(--mono);outline:none}
+#search:focus{border-color:var(--accent)}
+#searchWrap::before{content:"⌕";position:absolute;left:9px;top:5px;color:var(--mut);font-size:15px}
+#results{position:absolute;top:34px;left:0;right:0;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;max-height:360px;overflow:auto;display:none;z-index:1500;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#results .r{padding:7px 10px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:8px;align-items:baseline}
+#results .r:hover{background:var(--panel3)}
+#results .r .tag{font:9px var(--mono);color:#0b0d10;border-radius:3px;padding:1px 5px;flex:none;letter-spacing:.05em}
+#results .r .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#results .r .sb{color:var(--mut);font-size:11px;margin-left:auto;white-space:nowrap;flex:none}
+.hbtns{display:flex;gap:6px;align-items:center}
+.seg{display:flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden}
+.seg button{background:var(--panel2);border:none;color:var(--ink2);padding:6px 10px;font:11px var(--mono);cursor:pointer}
+.seg button.on{background:var(--accent-dim);color:var(--accent)}
+.hbtn{background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink2);padding:6px 10px;font:11px var(--mono);cursor:pointer;white-space:nowrap}
+.hbtn:hover{color:var(--ink);border-color:var(--accent)}
+#main{display:grid;grid-template-columns:300px 1fr auto;min-height:0}
+aside{background:var(--panel);border-right:1px solid var(--line2);overflow-y:auto;padding:10px 12px 30px}
+aside::-webkit-scrollbar,#detail::-webkit-scrollbar,#results::-webkit-scrollbar,.modal-body::-webkit-scrollbar{width:9px}
+aside::-webkit-scrollbar-thumb,#detail::-webkit-scrollbar-thumb,#results::-webkit-scrollbar-thumb,.modal-body::-webkit-scrollbar-thumb{background:#2a2f37;border-radius:5px}
+.sec{margin-bottom:15px}
+.sec h3{font-size:10px;letter-spacing:.14em;color:var(--mut);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.sec h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.statechips{display:flex;gap:5px}
+.schip{flex:1;text-align:center;border:1px solid var(--line2);border-radius:6px;padding:5px 0;font:600 11px var(--mono);color:var(--ink2);cursor:pointer;user-select:none}
+.schip.on{background:var(--accent-dim);color:var(--accent);border-color:rgba(45,212,191,.4)}
+.lyr{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:5px;cursor:pointer;user-select:none}
+.lyr:hover{background:var(--panel2)}
+.lyr .sw{width:12px;height:12px;flex:none;border-radius:3px}
+.lyr .sw.dot{border-radius:50%}
+.lyr .nm{flex:1;font-size:12px}
+.lyr .ct{font:10px var(--mono);color:var(--mut)}
+.lyr .tgl{width:26px;height:14px;border-radius:8px;background:#333a44;position:relative;flex:none;transition:background .15s}
+.lyr .tgl::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#828a94;top:2px;left:2px;transition:all .15s}
+.lyr.on .tgl{background:var(--accent-dim)}
+.lyr.on .tgl::after{left:14px;background:var(--accent)}
+.lyr.off .nm,.lyr.off .ct{color:var(--mut)}
+.lyr.off .sw{opacity:.35}
+.subnote{font-size:10px;color:var(--mut);padding:0 6px 4px 26px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:flex;align-items:center;gap:5px;border:1px solid var(--line2);border-radius:12px;padding:3px 9px 3px 6px;font-size:11px;cursor:pointer;color:var(--ink2);user-select:none}
+.chip .d{width:8px;height:8px;border-radius:50%}
+.chip.on{border-color:transparent;color:var(--ink)}
+.chip.off{opacity:.42}
+.radio{display:flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden;margin-top:6px}
+.radio button{flex:1;background:transparent;border:none;color:var(--ink2);padding:5px 0;font:10px var(--mono);cursor:pointer;letter-spacing:.04em}
+.radio button.on{background:var(--accent-dim);color:var(--accent)}
+#visCount{font:10px var(--mono);color:var(--mut);margin-top:6px;text-align:right}
+#loadbar{font:10px var(--mono);color:var(--accent);margin-top:2px;min-height:13px}
+.bar{display:grid;grid-template-columns:110px 1fr 42px;align-items:center;gap:6px;margin-bottom:5px}
+.bar .l{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.bar .track{height:10px;position:relative}
+.bar .fill{height:10px;border-radius:0 4px 4px 0;min-width:2px}
+.bar:hover .fill{filter:brightness(1.25)}
+.bar .v{font:10px var(--mono);color:var(--ink2)}
+.dc{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin-bottom:6px;cursor:pointer}
+.dc:hover{border-color:var(--accent)}
+.dc .t{display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px}
+.dc .t .b{margin-left:auto}
+.dc .c{font-size:10.5px;color:var(--mut);margin-top:2px}
+.badge{font:9px var(--mono);letter-spacing:.06em;border-radius:3px;padding:1.5px 6px;white-space:nowrap}
+.badge.active{background:rgba(12,163,12,.18);color:#3ecf3e;border:1px solid rgba(12,163,12,.4)}
+.badge.exploration,.badge.remediation{background:rgba(250,178,25,.14);color:var(--warn);border:1px solid rgba(250,178,25,.4)}
+.badge.abandoned,.badge.historic-tourism{background:rgba(255,255,255,.06);color:var(--ink2);border:1px solid var(--line2)}
+.badge.closed{background:rgba(208,59,59,.14);color:#e07373;border:1px solid rgba(208,59,59,.4)}
+#mapWrap{position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#0a0c0e}
+.maplibregl-ctrl-attrib{background:rgba(11,13,16,.75)!important;color:#666!important;font-size:9px!important}
+.maplibregl-ctrl-attrib a{color:#888!important}
+.maplibregl-ctrl-group{background:var(--panel2)!important}
+.maplibregl-ctrl-group button{background:var(--panel2)!important}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon{filter:invert(.85)}
+.maplibregl-ctrl-scale{background:rgba(11,13,16,.6)!important;color:var(--ink2)!important;border-color:var(--mut)!important}
+.tip{position:absolute;pointer-events:none;background:#171b21;border:1px solid var(--line2);color:var(--ink);border-radius:4px;font:11px var(--mono);padding:3px 7px;box-shadow:0 3px 10px rgba(0,0,0,.5);z-index:900;display:none;max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dmark{position:absolute;cursor:pointer}
+.dmark .ring{width:22px;height:22px;border-radius:50%;border:2px dashed;position:absolute;left:-11px;top:-11px}
+.dmark.exploration .ring,.dmark.remediation .ring{animation:pulse 2.2s infinite}
+.dmark .lbl{position:absolute;top:12px;left:50%;transform:translateX(-50%);white-space:nowrap;font:600 9.5px var(--mono);letter-spacing:.07em;color:#f2ede0;text-shadow:0 1px 3px #000,0 0 6px #000;text-transform:uppercase}
+.dmark.auto .ring{display:none}
+.dmark.auto .lbl{color:#b9c2cc;font-weight:500;text-transform:none;letter-spacing:.03em;top:-5px}
+.dmark.deep .ring{width:16px;height:16px;left:-8px;top:-8px}
+.dmark.deep .lbl{font-size:8.5px;top:9px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(250,178,25,.5)}70%{box-shadow:0 0 0 12px rgba(250,178,25,0)}100%{box-shadow:0 0 0 0 rgba(250,178,25,0)}}
+#legend{position:absolute;left:10px;bottom:34px;z-index:1000;background:rgba(18,21,26,.93);border:1px solid var(--line2);border-radius:8px;padding:9px 11px;max-width:238px;backdrop-filter:blur(4px)}
+#legend h4{font:600 10px var(--mono);letter-spacing:.1em;color:var(--mut);margin-bottom:6px;cursor:pointer;user-select:none}
+#legend .lg{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--ink2);margin-bottom:3px}
+#legend .lg .s{width:14px;text-align:center;flex:none}
+#legend.min .lgBody{display:none}
+#liveBadge{position:absolute;right:10px;top:10px;z-index:1000;background:rgba(18,21,26,.93);border:1px solid var(--line2);border-radius:6px;padding:5px 10px;font:10px var(--mono);color:var(--ink2);display:none}
+#liveBadge.ok{border-color:rgba(12,163,12,.5)}
+#liveBadge.ok::before{content:"●";color:var(--good);margin-right:5px}
+#liveBadge.err::before{content:"●";color:#e07373;margin-right:5px}
+#detail{width:0;background:var(--panel);border-left:1px solid var(--line2);overflow-y:auto;transition:width .18s ease;position:relative}
+#detail.open{width:344px}
+#detail .inner{padding:14px;width:344px}
+#detail .x{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--mut);font-size:16px;cursor:pointer;z-index:2}
+#detail .x:hover{color:var(--ink)}
+#detail h2{font-size:15px;margin:2px 24px 8px 0;line-height:1.25}
+#detail .badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:3px 10px;font-size:12px;margin-bottom:12px}
+.kv dt{color:var(--mut)}
+.kv dd{color:var(--ink)}
+.kv dd.mono{font-family:var(--mono);font-size:11px}
+#detail .desc{font-size:12px;color:var(--ink2);margin-bottom:10px}
+#detail .src{font-size:10.5px;color:var(--mut);border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+#detail .links{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+#detail .links a{border:1px solid var(--line2);border-radius:5px;padding:4px 9px;font:11px var(--mono)}
+#detail .links a:hover{border-color:var(--accent);text-decoration:none}
+#detail ul{padding-left:16px;font-size:12px;color:var(--ink2)}
+footer{display:flex;align-items:center;gap:14px;background:var(--panel);border-top:1px solid var(--line2);padding:0 12px;font:10px var(--mono);color:var(--mut);white-space:nowrap;overflow:hidden}
+footer .warn{color:#c9a34a}
+footer .right{margin-left:auto}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-card{background:var(--panel);border:1px solid var(--line2);border-radius:10px;width:min(660px,92vw);max-height:84vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-head{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
+.modal-head h2{font-size:14px;letter-spacing:.06em}
+.modal-head button{margin-left:auto;background:none;border:none;color:var(--mut);font-size:17px;cursor:pointer}
+.modal-body{padding:14px 16px;overflow-y:auto;font-size:12.5px;color:var(--ink2)}
+.modal-body h3{color:var(--ink);font-size:12px;letter-spacing:.08em;margin:14px 0 6px}
+.modal-body h3:first-child{margin-top:0}
+.modal-body p{margin-bottom:8px}
+.modal-body table{width:100%;border-collapse:collapse;font-size:11.5px;margin:6px 0}
+.modal-body td,.modal-body th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+.modal-body th{color:var(--ink);font-weight:600}
+.pub{padding:7px 0;border-bottom:1px solid var(--line)}
+.pub b{color:var(--ink);font-weight:600}
+.pub .m{font:10.5px var(--mono);color:var(--mut)}
+.callout{border:1px solid rgba(250,178,25,.4);background:rgba(250,178,25,.07);border-radius:6px;padding:9px 11px;margin:8px 0}
+#menuBtn{display:none;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink);font-size:15px;padding:5px 10px;cursor:pointer;flex:none}
+@media (max-width:900px){
+  #app{grid-template-rows:auto 1fr 26px}
+  #main{grid-template-columns:1fr}
+  #menuBtn{display:block}
+  header{flex-wrap:wrap;gap:6px;padding:6px 8px;row-gap:6px}
+  .brand{margin-right:auto}
+  .brand b{font-size:12px;letter-spacing:.08em}
+  .brand span,.hstats{display:none}
+  #searchWrap{order:5;flex-basis:100%;max-width:none;min-width:0;margin-left:0}
+  .hbtns{gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  .hbtn,.seg button{padding:6px 7px;font-size:9.5px}
+  #btnReading{display:none}
+  aside{display:block;position:fixed;left:0;top:0;bottom:26px;width:min(330px,86vw);z-index:1450;
+    transform:translateX(-102%);transition:transform .22s ease;box-shadow:10px 0 34px rgba(0,0,0,.55)}
+  aside.open{transform:none}
+  .lyr{padding:9px 6px}
+  .chip{padding:6px 11px 6px 8px;font-size:12px}
+  .schip{padding:8px 0}
+  #detail{transition:none}
+  #detail.open{position:fixed;left:0;right:0;bottom:26px;top:auto;height:58vh;width:100vw;
+    border-left:none;border-top:1px solid var(--line2);border-radius:14px 14px 0 0;z-index:1600}
+  #detail .inner{width:auto;padding:16px 16px 30px}
+  #legend{max-width:200px;bottom:32px}
+  #liveBadge{left:10px;right:auto;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  footer{gap:8px;font-size:9px}
+  footer .right{display:none}
+  .modal-card{width:96vw;max-height:90vh}
+}
+/* ---------- ask terminal ---------- */
+#askPanel{position:absolute;right:10px;bottom:34px;width:392px;max-width:92vw;height:47vh;min-height:280px;
+  background:rgba(18,21,26,.97);border:1px solid var(--line2);border-radius:10px;z-index:1050;
+  display:none;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+#askPanel.open{display:flex}
+.ask-head{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);
+  font:600 11px var(--mono);letter-spacing:.12em;color:var(--accent)}
+.ask-head button{margin-left:auto;background:none;border:none;color:var(--mut);font-size:14px;cursor:pointer}
+#askMsgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+#askMsgs::-webkit-scrollbar{width:8px}
+#askMsgs::-webkit-scrollbar-thumb{background:#2a2f37;border-radius:4px}
+.msg{max-width:88%;padding:7px 10px;border-radius:8px;font-size:12px;line-height:1.5}
+.msg.user{align-self:flex-end;background:var(--accent-dim);color:var(--ink);border:1px solid rgba(45,212,191,.3)}
+.msg.bot{align-self:flex-start;background:var(--panel3);border:1px solid var(--line);color:var(--ink2)}
+.msg.bot b{color:var(--ink)}
+.msg .hit{display:block;color:var(--accent);cursor:pointer;padding:1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msg .hit:hover{text-decoration:underline}
+.msg .chiprow{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.msg .cbtn{border:1px solid rgba(45,212,191,.4);background:transparent;color:var(--accent);
+  border-radius:5px;padding:3px 8px;font:10.5px var(--mono);cursor:pointer}
+.msg .cbtn:hover{background:var(--accent-dim)}
+.ask-in{display:flex;border-top:1px solid var(--line)}
+.ask-in input{flex:1;background:transparent;border:none;color:var(--ink);padding:10px 12px;font:12px var(--mono);outline:none}
+.ask-in button{background:none;border:none;color:var(--accent);font:600 12px var(--mono);padding:0 14px;cursor:pointer;letter-spacing:.1em}
+/* ---------- intel modal items ---------- */
+.intel-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.intel-rank{flex:none;width:26px;height:26px;border-radius:6px;background:var(--accent-dim);color:var(--accent);
+  font:700 13px var(--mono);display:flex;align-items:center;justify-content:center}
+.intel-body b{color:var(--ink);font-size:12.5px}
+.intel-body .w{font-size:12px;color:var(--ink2);margin:3px 0}
+.intel-body .meta{font:10px var(--mono);color:var(--mut)}
+.intel-body a{font-size:10.5px}
+.intel-go{flex:none;align-self:center;border:1px solid rgba(45,212,191,.4);background:transparent;color:var(--accent);
+  border-radius:5px;padding:4px 10px;font:10.5px var(--mono);cursor:pointer}
+.intel-go:hover{background:var(--accent-dim)}
+/* ---------- auth gate ---------- */
+#authGate{position:fixed;inset:0;background:radial-gradient(1200px 600px at 50% 30%,#12151a 0%,#0b0d10 70%);z-index:5000;display:none;align-items:center;justify-content:center}
+#authGate.show{display:flex}
+.auth-card{width:min(360px,92vw);background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:26px 26px 20px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.auth-card .ab{font-size:16px;letter-spacing:.12em;font-weight:700;text-align:center}
+.auth-card .ab .pick{color:var(--accent)}
+.auth-card .as{font:10px var(--mono);letter-spacing:.14em;color:var(--mut);text-align:center;margin:4px 0 20px}
+.auth-card label{display:block;font:10px var(--mono);letter-spacing:.1em;color:var(--mut);margin:12px 0 4px}
+.auth-card input{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink);padding:9px 11px;font:13px var(--mono);outline:none}
+.auth-card input:focus{border-color:var(--accent)}
+#authBtn{width:100%;margin-top:18px;background:var(--accent-dim);border:1px solid rgba(45,212,191,.45);border-radius:6px;color:var(--accent);padding:10px 0;font:600 12px var(--mono);letter-spacing:.12em;cursor:pointer}
+#authBtn:hover{background:rgba(45,212,191,.22)}
+#authBtn:disabled{opacity:.5;cursor:wait}
+#authErr{min-height:16px;font-size:11.5px;color:#e07373;text-align:center;margin-top:10px}
+.auth-foot{font-size:9.5px;color:var(--mut);text-align:center;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+/* mobile overrides for late-defined components — must stay LAST in the stylesheet */
+@media (max-width:900px){
+  #askPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;height:62vh;min-height:300px;border-radius:14px 14px 0 0;z-index:1600}
+  .msg{font-size:13px}
+  .ask-in input{padding:13px 12px;font-size:13px}
+  .auth-card{padding:22px 18px 16px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button id="menuBtn" title="layers & filters">☰</button>
+    <div class="brand"><b><span class="pick">⛏</span> NW MINERAL MONITOR</b><span>WA · OR · ID · MT · WY · NV · UT — MINES · CLAIMS · GRADES</span></div>
+    <div class="hstats" id="hstats"></div>
+    <div id="searchWrap"><input id="search" placeholder="search mines, claims, districts…" autocomplete="off"><div id="results"></div></div>
+    <div class="hbtns">
+      <div class="seg" id="basemaps"><button data-b="dark" class="on">DARK</button><button data-b="sat">SAT</button><button data-b="topo">TOPO</button></div>
+      <button class="hbtn" id="btnIntel" style="display:none">INTEL</button>
+      <button class="hbtn" id="btnAsk" style="display:none">ASK ▸</button>
+      <button class="hbtn" id="btnReading">READING</button>
+      <button class="hbtn" id="btnAbout">ABOUT / SOURCES</button>
+      <button class="hbtn" id="btnSignOut" style="display:none">SIGN OUT</button>
+    </div>
+  </header>
+  <div id="main">
+    <aside>
+      <div class="sec"><h3>STATES</h3><div class="statechips" id="stateChips"></div><div id="loadbar"></div></div>
+      <div class="sec"><h3>SITE LAYERS</h3><div id="layersSites"></div></div>
+      <div class="sec"><h3>CLAIM LAYERS</h3><div id="layersClaims"></div></div>
+      <div class="sec"><h3>CONTEXT</h3><div id="layersCtx"></div></div>
+      <div class="sec"><h3>COMMODITY FILTER</h3>
+        <div class="chips" id="chips"></div>
+        <div class="radio" id="statusRadio">
+          <button data-v="all" class="on">ALL SITES</button><button data-v="ex">EXISTING ◯</button><button data-v="old">OLD ●</button>
+        </div>
+        <div id="visCount"></div>
+      </div>
+      <div class="sec"><h3>SITES BY COMMODITY CLASS</h3><div id="chart"></div>
+        <div class="subnote" style="padding-left:0" id="chartNote"></div></div>
+      <div class="sec"><h3>FAMOUS DISTRICTS</h3><div id="dlist"></div></div>
+    </aside>
+    <div id="mapWrap">
+      <div id="map"></div>
+      <div class="tip" id="tip"></div>
+      <div id="liveBadge"></div>
+      <div id="legend"><h4 id="legendHead">LEGEND ▾</h4><div class="lgBody" id="legendBody"></div></div>
+      <div id="askPanel">
+        <div class="ask-head">⌁ ASK THE DATA<span id="aiChip" style="display:none;margin-left:8px;border:1px solid rgba(12,163,12,.5);color:#3ecf3e;border-radius:4px;padding:1px 7px;font-size:9px;cursor:pointer" title="AI answerer for out-of-distribution questions — click to toggle">AI ON</span><button onclick="document.getElementById('askPanel').classList.remove('open')">✕</button></div>
+        <div id="askMsgs"></div>
+        <form class="ask-in" id="askForm"><input id="askInput" placeholder="how many gold producers in montana…" autocomplete="off"><button type="submit">SEND</button></form>
+      </div>
+    </div>
+    <div id="detail"><button class="x" onclick="closeDetail()">✕</button><div class="inner" id="detailInner"></div></div>
+  </div>
+  <footer>
+    <span id="coords">—</span>
+    <span class="warn">⚠ planning aid only — verify land ownership & claim status on the ground</span>
+    <span class="right" id="fresh"></span>
+  </footer>
+</div>
+<div class="modal" id="aboutModal"><div class="modal-card">
+  <div class="modal-head"><h2>ABOUT — DATA SOURCES & METHOD</h2><button onclick="toggleModal('aboutModal',0)">✕</button></div>
+  <div class="modal-body" id="aboutBody"></div></div></div>
+<div class="modal" id="readingModal"><div class="modal-card">
+  <div class="modal-head"><h2>READING ROOM</h2><button onclick="toggleModal('readingModal',0)">✕</button></div>
+  <div class="modal-body" id="readingBody"></div></div></div>
+<div class="modal" id="intelModal"><div class="modal-card">
+  <div class="modal-head"><h2>INTEL — TOP 10 · JULY 2026</h2><button onclick="toggleModal('intelModal',0)">✕</button></div>
+  <div class="modal-body" id="intelBody"></div></div></div>
+
+<div id="authGate"><div class="auth-card">
+  <div class="ab"><span class="pick">⛏</span> NW MINERAL MONITOR</div>
+  <div class="as">RESTRICTED ACCESS · SIGN IN</div>
+  <form id="authForm">
+    <label for="authUser">USERNAME</label>
+    <input id="authUser" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus>
+    <label for="authPass">PASSWORD</label>
+    <input id="authPass" type="password" autocomplete="current-password">
+    <button id="authBtn" type="submit">SIGN IN</button>
+    <div id="authErr"></div>
+  </form>
+  <div class="auth-foot">Access is managed in AWS Cognito — ask the site owner for an account.</div>
+</div></div>
+
+<script src="assets/maplibre-gl.js"></script>
+<script>
+'use strict';
+/* ============ constants ============ */
+const BUILD = '2026-07-31c';
+console.log('NW Mineral Monitor build', BUILD);
+const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
+const GROUPS = [
+  {k:'GOLD',  c:'#c98500', label:'Gold'},
+  {k:'AGBASE',c:'#3987e5', label:'Silver & base metals'},
+  {k:'UREE',  c:'#199e70', label:'U · Th · REE · Li'},
+  {k:'STONE', c:'#9b8974', label:'Stone & industrial'},
+  {k:'ENERGY',c:'#7d8a99', label:'Coal · geothermal'},
+  {k:'OTHER', c:'#6f6d66', label:'Other / unknown'}];
+const GC = GROUPS.map(g=>g.c);
+const SMAP = {P:'Producer',PP:'Past producer',PR:'Prospect',OC:'Occurrence',U:'Unknown',PL:'Plant'};
+/* word-boundary matters: "inactive" must NOT read as active */
+const isEx = s => /\b(producer|active)\b/.test(s||'') && !/\b(past|inactive)\b/.test(s||'');
+const CLAIMTYPE = {L:'Lode claim',P:'Placer claim',M:'Mill site',T:'Tunnel site','?':'Claim'};
+const EP = 'https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer';
+const fmt = n => n.toLocaleString('en-US');
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+
+/* ============ state ============ */
+const S = {
+  states: Object.fromEntries(STATES.map(s=>[s,true])),
+  layers: {mrds:true, stategeo:true, usmin:true, usminAgg:false,
+           claimsA:true, claimsC:false, live:true, grades:true,
+           distCur:true, distAuto:true, distDeep:true, counties:true},
+  groups: [0,1,2,3,4,5],
+  status: 'all',
+};
+const stores = {};        // key -> columnar data (+kind)
+let GR = null;            // cited ore-grade dataset (grades.json)
+const feats  = {mrds:[], stategeo:[], usmin:[], claimsA:[], claimsC:[]}; // geojson features by kind
+let MAN = null, curated = [], cassia = [], auto = [];
+let map, tipEl, liveAbort = null;
+
+/* ============ boot ============ */
+async function jget(u){ const r = await fetch(u); if(!r.ok) throw new Error(u+' '+r.status); return r.json(); }
+const loadbar = m => { $('loadbar').textContent = m || ''; };
+
+async function boot(){
+  MAN = await jget('data/manifest.json');
+  initMap();
+}
+
+function baseStyle(){
+  return {version:8, sources:{
+    carto:{type:'raster', tiles:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap © CARTO'},
+    esri:{type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'Imagery © Esri, Maxar, Earthstar Geographics'},
+    usgs:{type:'raster', tiles:['https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'USGS The National Map'}
+  }, layers:[
+    {id:'base-dark', type:'raster', source:'carto'},
+    {id:'base-sat',  type:'raster', source:'esri', layout:{visibility:'none'}},
+    {id:'base-topo', type:'raster', source:'usgs', layout:{visibility:'none'}, maxzoom:16}
+  ]};
+}
+
+function initMap(){
+  map = new maplibregl.Map({container:'map', style:baseStyle(), center:[-114.6,42.6], zoom:4.9, hash:true, attributionControl:{compact:true}});
+  map.addControl(new maplibregl.NavigationControl({showCompass:false}), 'bottom-right');
+  map.addControl(new maplibregl.ScaleControl({unit:'imperial'}), 'bottom-right');
+  tipEl = $('tip');
+  map.on('load', async () => {
+    addDataLayers();
+    buildUI();
+    wireMapEvents();
+    await loadContext();
+    await loadGrades();          // small + marquee — never wait behind the NV claims file
+    await loadSites();
+    await loadClaimsActive();
+    refreshStats();
+    refreshLive();
+    loadbar('');
+  });
+  map.on('mousemove', e => { $('coords').textContent = e.lngLat.lat.toFixed(5)+', '+e.lngLat.lng.toFixed(5); });
+}
+
+/* ============ map layers ============ */
+const EMPTY = {type:'FeatureCollection', features:[]};
+function addDataLayers(){
+  map.addSource('states', {type:'geojson', data:EMPTY});
+  map.addSource('counties', {type:'geojson', data:EMPTY});
+  for (const k of ['mrds','stategeo','usmin','claimsA','claimsC']) map.addSource(k, {type:'geojson', data:EMPTY});
+  map.addSource('liveClaims', {type:'geojson', data:EMPTY});
+
+  map.addLayer({id:'county-line', type:'line', source:'counties', minzoom:6.2,
+    paint:{'line-color':'#3a434d','line-width':.7,'line-opacity':.7}});
+  map.addLayer({id:'state-line', type:'line', source:'states',
+    paint:{'line-color':'#aab4be','line-width':1.4,'line-dasharray':[5,4],'line-opacity':.75}});
+
+  // closed claims — tiny embers under everything else
+  map.addLayer({id:'claimsC-dot', type:'circle', source:'claimsC',
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],6,.9,10,2,14,3.5],
+           'circle-color':'#8a6060','circle-opacity':.4}});
+  // active claim snapshot centroids
+  map.addLayer({id:'claimsA-dot', type:'circle', source:'claimsA',
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,1,8,2.2,11,4,14,6],
+           'circle-color':'#2dd4bf',
+           'circle-opacity':['interpolate',['linear'],['zoom'],5,.35,9,.7],
+           'circle-stroke-width':['step',['zoom'],0,10,1],'circle-stroke-color':'#0b0d10'}});
+  // live claim polygons
+  map.addLayer({id:'live-fill', type:'fill', source:'liveClaims',
+    paint:{'fill-color':'#2dd4bf','fill-opacity':['case',['==',['get','disp'],'FILED'],.05,.1]}});
+  map.addLayer({id:'live-line', type:'line', source:'liveClaims',
+    paint:{'line-color':'#2dd4bf','line-width':1,
+           'line-opacity':['case',['==',['get','disp'],'FILED'],.5,.85],
+           'line-dasharray':['case',['==',['get','disp'],'FILED'],['literal',[2,2]],['literal',[1,0]]]}});
+
+  // heatmaps at low zoom
+  const heat = (id, src, hue) => map.addLayer({id, type:'heatmap', source:src, maxzoom:7.6,
+    paint:{'heatmap-weight':.32,'heatmap-intensity':['interpolate',['linear'],['zoom'],4,.35,7,1.1],
+      'heatmap-radius':['interpolate',['linear'],['zoom'],4,2.5,7,10],
+      'heatmap-opacity':['interpolate',['linear'],['zoom'],6.6,.6,7.6,0],
+      'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(0,0,0,0)',.35,hue[0],.7,hue[1],1,hue[2]]}});
+  heat('usmin-heat','usmin',['rgba(83,102,120,.35)','rgba(133,156,173,.7)','#dfe7f0']);
+  heat('stategeo-heat','stategeo',['rgba(38,84,150,.4)','rgba(57,135,229,.75)','#9ec5f4']);
+  heat('mrds-heat','mrds',['rgba(140,92,0,.4)','rgba(201,133,0,.8)','#f4d18a']);
+
+  // circles at mid/high zoom
+  const gcolor = ['to-color',['at',['get','g'],['literal',GC]]];
+  map.addLayer({id:'usmin-c', type:'circle', source:'usmin', minzoom:6.8,
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,1.4,10,2.8,14,5],
+      'circle-color':'#93a7b8','circle-opacity':.8,
+      'circle-stroke-width':['step',['zoom'],0,10,.8],'circle-stroke-color':'#0b0d10'}});
+  map.addLayer({id:'stategeo-c', type:'circle', source:'stategeo', minzoom:6.8,
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,1.6,10,3.4,14,5.5],
+      'circle-color':gcolor,'circle-opacity':.85,
+      'circle-stroke-width':['step',['zoom'],0,9.5,1],'circle-stroke-color':'#e8e6df','circle-stroke-opacity':.7}});
+  map.addLayer({id:'mrds-c', type:'circle', source:'mrds', minzoom:6.8,
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],7,1.7,10,3.6,14,5.5],
+      'circle-color':gcolor,'circle-opacity':.9,
+      'circle-stroke-width':['step',['zoom'],0,9.5,1],'circle-stroke-color':'#0b0d10'}});
+  // existing/producing rings (mrds + stategeo with ex=1)
+  for (const src of ['mrds','stategeo'])
+    map.addLayer({id:src+'-ex', type:'circle', source:src, minzoom:6.2, filter:['==',['get','ex'],1],
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],6.5,4,10,8,14,11],
+        'circle-color':gcolor,'circle-opacity':.18,
+        'circle-stroke-width':2.4,'circle-stroke-color':gcolor}});
+  // cited ore grades — sequential gold ramp by Au oz/t (brighter = richer)
+  map.addSource('grades', {type:'geojson', data:EMPTY});
+  map.addLayer({id:'grades-c', type:'circle', source:'grades',
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,['+',2.5,['min',4,['get','v']]],10,['+',4,['min',7,['get','v']]],14,['+',6,['min',9,['get','v']]]],
+      'circle-color':['case',['==',['get','v'],0],'#93a7b8',
+        ['interpolate',['linear'],['get','v'],0.02,'#6e5210',0.2,'#9c7513',0.7,'#c99a1a',3,'#ecc94b',30,'#ffe9a0']],
+      'circle-opacity':.92,'circle-stroke-width':1.1,'circle-stroke-color':'#0b0d10'}});
+  map.addLayer({id:'hl', type:'circle', source:{type:'geojson', data:EMPTY},
+    paint:{'circle-radius':16,'circle-color':'rgba(0,0,0,0)','circle-stroke-width':2,'circle-stroke-color':'#ffffff','circle-stroke-opacity':.9}});
+}
+
+/* ============ data loading ============ */
+function colToFeatures(key, d){
+  const out = [];
+  const kind = d.src === 'stategeo' ? 'stategeo' : d.src;
+  for (let i=0;i<d.n;i++){
+    let ex = 0, g = 5, a = 0;
+    if (d.src==='mrds'){ g = d.g[i]; ex = d.st[i]==='P'?1:0; }
+    else if (d.src==='stategeo'){ g = d.g[i]; ex = isEx(d.stx[i])?1:0; }
+    else if (d.src==='usmin'){ a = /gravel|borrow|sand pit|disturbed/i.test(d.types[d.t[i]])?1:0; }
+    out.push({type:'Feature', properties:{f:key, i, st:d.state, g, ex, a},
+      geometry:{type:'Point', coordinates:[d.x[i], d.y[i]]}});
+  }
+  return {kind, features:out};
+}
+async function loadStateFile(kind, st){
+  const key = `${kind}_${st.toLowerCase()}`;
+  if (stores[key]) return;
+  const meta = (kind==='claimsA'||kind==='claimsC') ? MAN.claims[`${st.toLowerCase()}_${kind==='claimsA'?'active':'closed'}`] : MAN.sites[key];
+  if (!meta) return;
+  loadbar(`loading ${key}…`);
+  const d = await jget(meta.file);
+  d.key = key; stores[key] = d;
+  if (kind==='claimsA'||kind==='claimsC'){
+    const fs = [];
+    for (let i=0;i<d.n;i++) fs.push({type:'Feature', properties:{f:key, i, st:d.state},
+      geometry:{type:'Point', coordinates:[d.x[i], d.y[i]]}});
+    d._feats = fs;
+  } else {
+    d._feats = colToFeatures(key, d).features;
+  }
+}
+function pushKind(kind){
+  const fs = [];
+  for (const st of STATES){
+    if (!S.states[st]) continue;
+    const d = stores[`${kind}_${st.toLowerCase()}`];
+    if (d) for (const f of d._feats) fs.push(f);   // no spread: 275k args overflows the call stack
+  }
+  map.getSource(kind).setData({type:'FeatureCollection', features:fs});
+}
+async function loadSites(){
+  for (const kind of ['mrds','stategeo','usmin']){
+    if (!S.layers[kind]) continue;
+    for (const st of STATES) if (S.states[st]) await loadStateFile(kind, st);
+    pushKind(kind);
+    refreshStats();
+  }
+}
+async function loadClaimsActive(){
+  if (!S.layers.claimsA) return;
+  for (const st of STATES) if (S.states[st]) await loadStateFile('claimsA', st);
+  pushKind('claimsA');
+}
+async function loadClaimsClosed(){
+  if (!S.layers.claimsC) return;
+  for (const st of STATES) if (S.states[st]) await loadStateFile('claimsC', st);
+  pushKind('claimsC');
+  loadbar('');
+}
+async function loadGrades(){
+  try{
+    GR = await jget('data/grades/grades.json');
+    const fs = [];
+    for (let i=0;i<GR.n;i++){
+      if (GR.x[i]==null) continue;
+      fs.push({type:'Feature', properties:{i, v: GR.au[i]||0},
+        geometry:{type:'Point', coordinates:[GR.x[i], GR.y[i]]}});
+    }
+    map.getSource('grades').setData({type:'FeatureCollection', features:fs});
+  }catch(e){ GR = null; }
+}
+function showGrade(i){
+  const openB = GR.open[i]>=400? badge('active', `OPEN GROUND — nearest active claim ${GR.open[i]>=5000?'>5 km':fmt(GR.open[i])+' m'}`)
+    : GR.open[i]>=0? badge('closed', `ACTIVE CLAIMS ${fmt(GR.open[i])} m AWAY`)
+    : badge('abandoned','CLAIM STATUS UNKNOWN HERE');
+  openDetail(`<h2>${esc(GR.name[i])}</h2>
+    <div class="badges">${badge('exploration','CITED GRADE')} ${openB} <span class="badge abandoned">${GR.st[i]}</span></div>
+    ${kv([['Gold', GR.au[i]!=null? GR.au[i]+' oz/ton':null],
+          ['Silver', GR.ag[i]!=null? GR.ag[i]+' oz/ton':null],
+          ['Ore value', GR.usd[i]!=null? '$'+fmt(GR.usd[i])+' per ton (historic dollars)':null],
+          ['Basis', esc(GR.basis[i])],['Years', esc(GR.yrs[i])],
+          ['Tonnage', GR.ton&&GR.ton[i]? esc(GR.ton[i]):null],
+          ['MRDS status', GR.ds&&GR.ds[i]? esc(GR.ds[i]) + (GR.pz&&GR.pz[i]? ' · '+esc(GR.pz[i])+' producer':''):null],
+          ['Workings', GR.wt&&GR.wt[i]? esc(GR.wt[i]):null],
+          ['Commodities', GR.com&&GR.com[i]? esc(GR.com[i]):null],
+          ['District', esc(GR.dist[i])],
+          ['County', GR.cnty&&GR.cnty[i]? esc(GR.cnty[i])+' Co.':null],
+          ['Records', GR.nrec[i]>1? GR.nrec[i]+' grade records for this mine':null]])}
+    <div class="desc" style="border-left:2px solid var(--gold);padding-left:9px;font-style:italic">“${esc(GR.quote[i])}”</div>
+    <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
+      ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
+    <div class="src">${esc(GR.src[i])}. Bonanza assay-text numbers are hand-picked specimens, not mine averages — the quote is the evidence. Open-ground uses the claims snapshot only: famous old districts are often PATENTED (private land carries no BLM claims — Goldfield is the classic trap), so "no claims" ≠ "open to staking". Verify ownership & withdrawals on the ground.</div>`);
+}
+function gradeAnswer(q, f){
+  if (!GR) return void botMsg('Grade dataset not loaded.');
+  const openOnly = /unclaim|open ground|no (active )?claims|not permitted|un-?permitted|abandoned.*(claim|ground)/.test(q);
+  const silver = /silver|\bag\b/.test(q) && !/gold|\bau\b/.test(q);
+  const rows = [];
+  for (let i=0;i<GR.n;i++){
+    if (f.states && !f.states.includes(GR.st[i])) continue;
+    if (f.near && (GR.x[i]==null || havKm(f.near.lat, f.near.lon, GR.y[i], GR.x[i])>f.km)) continue;
+    if (openOnly && GR.open[i]<400) continue;
+    const v = silver? GR.ag[i] : GR.au[i];
+    if (v==null) continue;
+    rows.push([v, i]);
+  }
+  rows.sort((a,b)=>b[0]-a[0]);
+  if (!rows.length) return void botMsg(`No cited ${silver?'silver':'gold'} grades match${openOnly?' with open ground':''}${f.states?' in '+f.states.join('+'):''}${f.near?' near '+esc(f.near.label.split('(')[0]):''}. The grade set covers ${fmt(GR.n)} mines (WA OR ID MT WY NV UT) — try widening the radius ("within 60 km"), dropping "unclaimed", or the other metal (${silver?'gold':'silver'}).`);
+  const d = botMsg(`<b>${fmt(rows.length)}</b> cited ${silver?'silver':'gold'} grades${openOnly?' on OPEN ground (no active claim within 400 m — but patented private parcels also show no claims; verify ownership)':''}, richest first — specimen assays rank high, so read each quote:`);
+  rows.slice(0,12).forEach(([v,i])=>d.appendChild(hitLink(
+    `${GR.name[i]} ${GR.st[i]} — ${v} oz/t ${silver?'Ag':'Au'}${GR.open[i]>=400?' · OPEN':''}`, null, ()=>{
+      if (GR.x[i]!=null){ map.flyTo({center:[GR.x[i],GR.y[i]], zoom:12.5, duration:900});
+        map.getSource('hl').setData({type:'Feature',properties:{},geometry:{type:'Point',coordinates:[GR.x[i],GR.y[i]]}});
+        setTimeout(()=>map.getSource('hl').setData(EMPTY), 3200); }
+      showGrade(i);
+    })));
+}
+async function loadContext(){
+  const [st, co, cur, cas, au, intel] = await Promise.all([
+    jget('data/boundaries/states.json'), jget('data/boundaries/counties.json'),
+    jget('data/districts/curated.json'), jget('data/districts/cassia.json'), jget('data/districts/auto.json'),
+    jget('data/intel.json').catch(()=>null)]);
+  map.getSource('states').setData(st); map.getSource('counties').setData(co);
+  curated = cur; cassia = cas.items; auto = au.items; INTEL = intel;
+  buildDistrictMarkers(); buildDistrictCards();
+  if (INTEL) initIntel();
+}
+
+/* ============ filters ============ */
+function siteFilter(extra){
+  const f = ['all',
+    ['in',['get','st'],['literal',STATES.filter(s=>S.states[s])]],
+    ['in',['get','g'],['literal',S.groups]]];
+  if (S.status==='ex') f.push(['==',['get','ex'],1]);
+  if (S.status==='old') f.push(['==',['get','ex'],0]);
+  if (extra) f.push(extra);
+  return f;
+}
+function applyFilters(){
+  const usminF = ['all', ['in',['get','st'],['literal',STATES.filter(s=>S.states[s])]]];
+  if (!S.layers.usminAgg) usminF.push(['==',['get','a'],0]);
+  for (const [id, f] of [
+    ['mrds-c', siteFilter()], ['mrds-heat', siteFilter()], ['mrds-ex', siteFilter(['==',['get','ex'],1])],
+    ['stategeo-c', siteFilter()], ['stategeo-heat', siteFilter()], ['stategeo-ex', siteFilter(['==',['get','ex'],1])],
+    ['usmin-c', usminF], ['usmin-heat', usminF]]) map.setFilter(id, f);
+  const vis = (id,on) => map.setLayoutProperty(id, 'visibility', on?'visible':'none');
+  vis('mrds-c',S.layers.mrds); vis('mrds-heat',S.layers.mrds); vis('mrds-ex',S.layers.mrds&&S.status!=='old');
+  vis('stategeo-c',S.layers.stategeo); vis('stategeo-heat',S.layers.stategeo); vis('stategeo-ex',S.layers.stategeo&&S.status!=='old');
+  vis('usmin-c',S.layers.usmin); vis('usmin-heat',S.layers.usmin);
+  vis('claimsA-dot',S.layers.claimsA); vis('claimsC-dot',S.layers.claimsC);
+  vis('grades-c',S.layers.grades);
+  vis('live-fill',S.layers.live); vis('live-line',S.layers.live);
+  vis('county-line',S.layers.counties);
+  for (const k of ['claimsA','claimsC']) pushKind(k);
+  updateDistrictMarkers(); refreshStats(); refreshLive();
+}
+
+/* ============ UI build ============ */
+function buildUI(){
+  const sc = $('stateChips');
+  STATES.forEach(st=>{
+    const c = document.createElement('div'); c.className='schip on'; c.textContent=st;
+    c.onclick = async ()=>{ S.states[st]=!S.states[st]; c.classList.toggle('on');
+      await loadSites(); await loadClaimsActive(); if(S.layers.claimsC) await loadClaimsClosed();
+      for (const k of ['mrds','stategeo','usmin']) if (S.layers[k]) pushKind(k);
+      applyFilters(); };
+    sc.appendChild(c);
+  });
+  const lyr = (parent, k, nm, ct, sw, note) => {
+    const row = document.createElement('div');
+    row.className = 'lyr ' + (S.layers[k]?'on':'off');
+    row.innerHTML = `${sw}<span class="nm">${nm}</span><span class="ct">${ct}</span><span class="tgl"></span>`;
+    row.onclick = async ()=>{
+      S.layers[k]=!S.layers[k]; row.classList.toggle('on'); row.classList.toggle('off');
+      if (k==='claimsC'&&S.layers.claimsC) await loadClaimsClosed();
+      if (['mrds','stategeo','usmin'].includes(k)&&S.layers[k]) { await loadSites(); }
+      applyFilters();
+    };
+    $(parent).appendChild(row);
+    if (note){ const n = document.createElement('div'); n.className='subnote'; n.textContent=note; $(parent).appendChild(n); }
+  };
+  const T = MAN.totals;
+  const nSites = Object.entries(MAN.sites);
+  const cnt = pre => nSites.filter(([k])=>k.startsWith(pre)).reduce((a,[,v])=>a+v.n,0);
+  lyr('layersSites','mrds','USGS MRDS mineral sites',fmt(cnt('mrds')),'<span class="sw dot" style="background:#c98500"></span>');
+  lyr('layersSites','stategeo','State geo-survey databases',fmt(cnt('stategeo')),'<span class="sw dot" style="background:#3987e5;border:1px solid #e8e6df"></span>','IGS DD-1 · WGS DDS-30 · DOGAMI MILO-4 · MBMG AIM · WSGS');
+  lyr('layersSites','usmin','Topo-map workings (USMIN)',fmt(cnt('usmin')),'<span class="sw dot" style="background:#93a7b8"></span>');
+  lyr('layersSites','usminAgg','· include aggregate/borrow pits','','<span class="sw dot" style="background:#5c6770"></span>');
+  lyr('layersSites','grades','Cited ore grades (oz/t)', MAN.grades? fmt(MAN.grades.n):'', '<span class="sw dot" style="background:#ecc94b"></span>','from USGS tables + digitized bulletins & inspector reports — WA/OR/ID/MT/WY + NV/UT');
+  lyr('layersClaims','claimsA','Active claims (nightly snapshot)',fmt(T.claims_active),'<span class="sw dot" style="background:#2dd4bf"></span>');
+  lyr('layersClaims','live','Live claim boundaries (BLM)','z≥10.5','<span class="sw" style="background:rgba(45,212,191,.25);border:1px solid #2dd4bf"></span>','queries BLM MLRS for the current view — always current');
+  lyr('layersClaims','claimsC','Closed claims (historic)',fmt(T.claims_closed),'<span class="sw dot" style="background:#8a6060"></span>','heavy: ~40 MB across 5 states, loads on demand');
+  lyr('layersCtx','distCur','Famous districts','28','<span class="sw" style="background:transparent;border:2px dashed #fab219;border-radius:50%"></span>');
+  lyr('layersCtx','distDeep','Cassia deep-dive districts','7','<span class="sw" style="background:transparent;border:2px dashed #98a0a8;border-radius:50%"></span>');
+  lyr('layersCtx','distAuto','All MRDS district labels',String(MAN.districts.auto.n),'<span class="sw" style="background:transparent;color:#b9c2cc;font-size:9px;line-height:12px;text-align:center">abc</span>','derived from MRDS district tags · z≥8.5');
+  lyr('layersCtx','counties','County lines','198','<span class="sw" style="background:transparent;border-top:1px solid #3a434d;height:1px;margin-top:6px"></span>');
+
+  const chipsEl = $('chips');
+  GROUPS.forEach((g,gi)=>{
+    const c = document.createElement('span');
+    c.className='chip on'; c.style.background = g.c+'22';
+    c.innerHTML = `<span class="d" style="background:${g.c}"></span>${g.label}`;
+    c.onclick = ()=>{ const on = S.groups.includes(gi);
+      S.groups = on? S.groups.filter(x=>x!==gi) : [...S.groups, gi];
+      c.classList.toggle('on',!on); c.classList.toggle('off',on); applyFilters(); };
+    chipsEl.appendChild(c);
+  });
+  $('statusRadio').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#statusRadio button').forEach(x=>x.classList.toggle('on', x===b));
+    S.status = b.dataset.v; applyFilters();
+  });
+  $('basemaps').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#basemaps button').forEach(x=>x.classList.toggle('on', x===b));
+    for (const [id,key] of [['base-dark','dark'],['base-sat','sat'],['base-topo','topo']])
+      map.setLayoutProperty(id,'visibility', b.dataset.b===key?'visible':'none');
+  });
+  $('btnAbout').onclick = ()=>toggleModal('aboutModal',1);
+  $('btnReading').onclick = ()=>toggleModal('readingModal',1);
+  /* mobile drawer */
+  const small = ()=>window.innerWidth<=900;
+  $('menuBtn').onclick = ()=>document.querySelector('aside').classList.toggle('open');
+  map.getContainer().addEventListener('pointerdown', ()=>{ if(small()) document.querySelector('aside').classList.remove('open'); });
+  $('dlist').addEventListener('click', ()=>{ if(small()) document.querySelector('aside').classList.remove('open'); });
+  if (small()) $('legend').classList.add('min');
+  document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); }));
+  $('legendHead').onclick = ()=>$('legend').classList.toggle('min');
+  buildLegend(); buildModals(); wireSearch();
+  $('hstats').innerHTML =
+    `<span class="st"><b>${fmt(T.sites)}</b> SITES</span>
+     <span class="st"><b>${fmt(T.claims_active)}</b> ACTIVE CLAIMS</span>
+     <span class="st"><b>${fmt(T.claims_closed)}</b> CLOSED</span>
+     <span class="st live" id="liveStat"><b>LIVE</b> BLM</span>`;
+  $('fresh').textContent = `claims snapshot ${MAN.claims_updated} · sites: MRDS 2022 · USMIN 2023 · state DBs 2023–26 · build ${BUILD}`;
+}
+
+function refreshStats(){
+  // group counts across loaded mrds+stategeo (state-filtered)
+  const counts = [0,0,0,0,0,0]; let tot=0, ex=0;
+  for (const kind of ['mrds','stategeo']){
+    if (!S.layers[kind]) continue;
+    for (const st of STATES){
+      if (!S.states[st]) continue;
+      const d = stores[`${kind}_${st.toLowerCase()}`]; if (!d) continue;
+      for (let i=0;i<d.n;i++){ counts[d.g[i]]++; tot++; }
+    }
+  }
+  const chart = $('chart'); chart.innerHTML='';
+  const mx = Math.max(1,...counts);
+  GROUPS.forEach((g,gi)=>{
+    const b = document.createElement('div'); b.className='bar';
+    b.innerHTML = `<span class="l">${g.label}</span><span class="track"><span class="fill" style="width:${(counts[gi]/mx*100).toFixed(1)}%;background:${g.c}"></span></span><span class="v">${fmt(counts[gi])}</span>`;
+    chart.appendChild(b);
+  });
+  $('chartNote').textContent = `${fmt(tot)} MRDS + state-survey sites loaded for ${STATES.filter(s=>S.states[s]).join(' ')}`;
+  let vis=0;
+  for (const kind of ['mrds','stategeo','usmin']) if (S.layers[kind])
+    for (const st of STATES) if (S.states[st]){ const d=stores[`${kind}_${st.toLowerCase()}`]; if(d) vis+=d.n; }
+  $('visCount').textContent = `${fmt(vis)} site records in loaded layers`;
+}
+
+/* ============ district markers ============ */
+const dmarks = [];
+function distClass(s){ s=(s||'').toLowerCase();
+  if(s.startsWith('active')) return 'active';
+  if(s.startsWith('exploration')) return 'exploration';
+  if(s.startsWith('remediation')) return 'remediation';
+  if(s.includes('closed')||s.includes('reserve')) return 'closed';
+  if(s.includes('tourism')||s.includes('historic')) return 'historic-tourism';
+  return 'abandoned';
+}
+const DCOL = {active:'#3ecf3e', exploration:'#fab219', remediation:'#fab219', abandoned:'#98a0a8', closed:'#e07373','historic-tourism':'#b9a06a'};
+function mkMarker(d, kind){
+  const cls = kind==='auto' ? 'auto' : distClass(d.status);
+  const el = document.createElement('div');
+  el.className = `dmark ${cls}${kind==='deep'?' deep':''}${kind==='auto'?' auto':''}`;
+  const short = (d.name||'').split('(')[0].trim();
+  el.innerHTML = (kind==='auto'?'':`<div class="ring" style="border-color:${DCOL[cls]||'#98a0a8'}"></div>`) +
+    `<div class="lbl">${esc(kind==='auto'? short : short.toUpperCase())}</div>`;
+  el.addEventListener('click', e=>{ e.stopPropagation(); showDistrict(d, kind); });
+  const m = new maplibregl.Marker({element:el, anchor:'center'}).setLngLat([d.lon, d.lat]);
+  return {m, d, kind, on:false};
+}
+function buildDistrictMarkers(){
+  curated.forEach(d=>dmarks.push(mkMarker(d,'curated')));
+  cassia.forEach(d=>dmarks.push(mkMarker(d,'deep')));
+  auto.forEach(d=>dmarks.push(mkMarker(d,'auto')));
+  // Attach every marker exactly once and toggle CSS visibility from then on.
+  // (An add/remove lifecycle can orphan marker elements if anything throws
+  // mid-update, leaving "ghost" rings frozen on screen — this cannot.)
+  dmarks.forEach(o=>{
+    if (!isFinite(o.d.lon) || !isFinite(o.d.lat)){ o.dead = true; return; }
+    o.el = o.m.getElement();
+    o.el.style.display = 'none';
+    o.m.addTo(map);
+    o.on = false;
+  });
+  // force a reprojection after attach (guards against any stale transform at
+  // add time — markers otherwise only reposition on the next map move)
+  const reproject = ()=>dmarks.forEach(o=>{ if(!o.dead) o.m.setLngLat([o.d.lon, o.d.lat]); });
+  requestAnimationFrame(reproject);
+  map.once('idle', reproject);
+  updateDistrictMarkers();
+}
+function updateDistrictMarkers(){
+  let z, b;
+  try{ z = map.getZoom(); b = map.getBounds(); }catch(e){ return; }
+  dmarks.forEach(o=>{
+    if (o.dead) return;
+    try{
+      let show = S.states[o.d.state] !== false;
+      if (o.kind==='curated') show = show && S.layers.distCur;
+      if (o.kind==='deep')    show = show && S.layers.distDeep && z >= 7.2;
+      if (o.kind==='auto')    show = show && S.layers.distAuto && z >= 8.5 && b.contains([o.d.lon,o.d.lat]);
+      if (show !== o.on){ o.el.style.display = show ? '' : 'none'; o.on = show; }
+    }catch(e){ /* one bad marker must never freeze the rest */ }
+  });
+}
+
+/* ============ live claims ============ */
+let liveTimer = null;
+async function refreshLive(){
+  const badge = $('liveBadge');
+  if (!S.layers.live || map.getZoom() < 10.5){
+    map.getSource('liveClaims').setData(EMPTY); badge.style.display='none'; return;
+  }
+  if (liveAbort) liveAbort.abort();
+  const ctl = liveAbort = new AbortController();
+  const killer = setTimeout(()=>ctl.abort(), 20000);
+  badge.style.display='block'; badge.className=''; badge.textContent='querying BLM MLRS…';
+  const b = map.getBounds();
+  const base = `${EP}/1/query?geometry=${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`+
+    `&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects`+
+    `&outFields=OBJECTID,CSE_NR,CSE_NAME,CSE_TYPE_NR,CSE_DISP,RCRD_ACRS&returnGeometry=true&outSR=4326`+
+    `&geometryPrecision=5&orderByFields=OBJECTID&resultRecordCount=2000&f=geojson`;
+  try{
+    let cursor = 0, out = [], pages = 0;
+    while (pages < 4){
+      const u = base + `&where=${encodeURIComponent('OBJECTID>'+cursor)}`;
+      const r = await fetch(u, {signal:ctl.signal}); const j = await r.json();
+      if (j.error) throw new Error(j.error.message||'BLM error');
+      const fs = j.features||[];
+      for (const f of fs){
+        const p = f.properties;
+        f.properties = {serial:p.CSE_NR, name:p.CSE_NAME, disp:(p.CSE_DISP||'').toUpperCase(),
+          type:(MAN.live_query.type_decode[String(p.CSE_TYPE_NR)]||'?'), acres:p.RCRD_ACRS, oid:p.OBJECTID};
+        cursor = Math.max(cursor, p.OBJECTID||0);
+      }
+      for (const f of fs) out.push(f);
+      pages++;
+      if (!fs.length) break;
+    }
+    if (ctl.signal.aborted) return;
+    map.getSource('liveClaims').setData({type:'FeatureCollection', features:out});
+    badge.className='ok';
+    badge.textContent = `LIVE · ${fmt(out.length)} claim polygons from BLM · ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){
+    if (ctl.signal.aborted) return;
+    badge.className='err'; badge.textContent='BLM live query failed — showing snapshot only';
+  }
+}
+
+/* ============ events ============ */
+function wireMapEvents(){
+  map.on('moveend', ()=>{ updateDistrictMarkers();
+    clearTimeout(liveTimer); liveTimer = setTimeout(refreshLive, 450); });
+  map.on('zoomend', ()=>updateDistrictMarkers());
+  map.on('idle', ()=>updateDistrictMarkers());
+  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill'];
+  map.on('mousemove', e=>{
+    const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
+    if (!fs.length){ tipEl.style.display='none'; map.getCanvas().style.cursor=''; return; }
+    map.getCanvas().style.cursor='pointer';
+    tipEl.style.display='block';
+    tipEl.style.left = (e.point.x+14)+'px'; tipEl.style.top = (e.point.y+14)+'px';
+    tipEl.textContent = tipText(fs[0]);
+  });
+  map.on('click', e=>{
+    const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
+    if (fs.length) showFeature(fs[0]);
+  });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeDetail(); toggleModal('aboutModal',0); toggleModal('readingModal',0); $('results').style.display='none'; }});
+}
+function rec(f){ const p=f.properties; const d=stores[p.f]; return {d, i:p.i}; }
+function tipText(f){
+  const lid = f.layer.id, p = f.properties;
+  if (lid==='grades-c' && GR){ const i=p.i;
+    return `${GR.name[i]} — ${GR.au[i]!=null? GR.au[i]+' oz/t Au' : GR.ag[i]!=null? GR.ag[i]+' oz/t Ag' : '$'+GR.usd[i]+'/ton'}${GR.open[i]>=400?' · OPEN':''}`; }
+  if (lid==='live-fill') return `${p.name||p.serial} — ${CLAIMTYPE[p.type]} (${p.disp}) · LIVE`;
+  const {d,i} = rec(f); if(!d) return '';
+  if (d.src==='mrds') return `${d.nm[i]} — ${SMAP[d.st[i]]||''}${d.c[i]?' · '+d.c[i].split('·')[0]:''} (MRDS)`;
+  if (d.src==='stategeo') return `${d.nm[i]}${d.c[i]?' — '+d.c[i].split('·')[0]:''} (${d.state} survey)`;
+  if (d.src==='usmin') return `${d.types[d.t[i]]} · ${d.q[i]} quad (${d.yr[i]||'?'})`;
+  if (p.f.includes('active')) return `${d.name[i]||d.serial[i]} — ${CLAIMTYPE[d.type[i]]} (${d.disp[i]})`;
+  return `${d.name[i]||d.serial[i]} — closed ${CLAIMTYPE[d.type[i]].toLowerCase()}`;
+}
+
+/* ============ detail panel ============ */
+const detail = $('detail'), dInner = $('detailInner');
+function openDetail(h){ dInner.innerHTML=h; detail.classList.add('open'); }
+function closeDetail(){ detail.classList.remove('open'); }
+function toggleModal(id,on){ $(id).classList.toggle('open',!!on); }
+const gmaps=(y,x)=>`https://www.google.com/maps?q=${y},${x}`;
+const badge=(c,t)=>`<span class="badge ${c}">${t}</span>`;
+const gbadge=gi=>{const g=GROUPS[gi];return `<span class="badge" style="border:1px solid ${g.c}66;color:${g.c};background:${g.c}18">${g.label.toUpperCase()}</span>`};
+function kv(rows){ return '<dl class="kv">'+rows.filter(r=>r[1]).map(([k,v,mono])=>`<dt>${k}</dt><dd${mono?' class="mono"':''}>${v}</dd>`).join('')+'</dl>'; }
+
+function showFeature(f){
+  const lid = f.layer.id, p = f.properties;
+  if (lid==='grades-c' && GR) return showGrade(p.i);
+  if (lid==='live-fill'){
+    openDetail(`<h2>${esc(p.name||p.serial)}</h2>
+      <div class="badges">${p.disp==='FILED'?badge('exploration','FILED / PENDING'):badge('active',esc(p.disp))} <span class="badge abandoned">${CLAIMTYPE[p.type].toUpperCase()}</span> <span class="badge active">LIVE FROM BLM</span></div>
+      ${kv([['Serial',esc(p.serial),1],['Acres',p.acres]])}
+      <div class="links"><a href="https://mlrs.blm.gov/s/" target="_blank">Look up serial in MLRS ↗</a></div>
+      <div class="src">Queried live from BLM MLRS just now. Boundaries snapped to PLSS — legal corners exist only on the ground. <b>An active claim is private mineral property — get permission before prospecting.</b></div>`);
+    return;
+  }
+  const {d,i} = rec(f); if(!d) return;
+  const y=d.y[i], x=d.x[i];
+  if (d.src==='mrds') openDetail(`<h2>${esc(d.nm[i])}</h2>
+    <div class="badges">${badge(d.st[i]==='P'?'active':'abandoned',(SMAP[d.st[i]]||'UNKNOWN').toUpperCase())} ${gbadge(d.g[i])} <span class="badge abandoned">${d.state}</span></div>
+    ${kv([['Commodities',esc(d.c[i])||'—'],['District',esc(d.d[i])],['Coordinates',y.toFixed(5)+', '+x.toFixed(5),1]])}
+    <div class="links"><a href="https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=${d.id[i]}" target="_blank">MRDS record ↗</a><a href="${gmaps(y,x)}" target="_blank">Google Maps ↗</a></div>
+    <div class="src">USGS Mineral Resources Data System (legacy; unmaintained since ~2011). Coordinates can be off by hundreds of meters — a lead, not a waypoint.</div>`);
+  else if (d.src==='stategeo') openDetail(`<h2>${esc(d.nm[i])}</h2>
+    <div class="badges">${isEx(d.stx[i])?badge('active',esc(d.stx[i].toUpperCase())):badge('abandoned',esc((d.stx[i]||'site').toUpperCase()))} ${gbadge(d.g[i])} <span class="badge abandoned">${d.state}</span></div>
+    ${kv([['Commodities',esc(d.c[i])||'—'],['Site type',esc(d.ty[i])],['Record',esc(d.id[i]),1],['Coordinates',y.toFixed(5)+', '+x.toFixed(5),1]])}
+    <div class="links"><a href="${gmaps(y,x)}" target="_blank">Google Maps ↗</a></div>
+    <div class="src">${esc(d.source)}.</div>`);
+  else if (d.src==='usmin') openDetail(`<h2>${esc(d.types[d.t[i]])}</h2>
+    <div class="badges">${badge('abandoned','TOPO-MAP FEATURE')} <span class="badge abandoned">${d.state}</span></div>
+    ${kv([['Feature',esc(d.types[d.t[i]])],['Source quad',esc(d.q[i])+' ('+(d.yr[i]||'?')+', 1:'+d.scales[d.sc[i]].replace('k',',000').replace('625,000','62,500')+')'],['Coordinates',y.toFixed(5)+', '+x.toFixed(5),1]])}
+    <div class="links"><a href="${gmaps(y,x)}" target="_blank">Google Maps ↗</a></div>
+    <div class="src">USGS USMIN v10 (2023), digitized from historical topo maps — the feature may be collapsed, reclaimed, or fenced today. <b>Never enter adits or shafts.</b></div>`);
+  else { // claims snapshots
+    const active = p.f.includes('active');
+    openDetail(`<h2>${esc((d.name&&d.name[i])||d.serial[i])}</h2>
+      <div class="badges">${active? (d.disp[i]==='FILED'?badge('exploration','FILED / PENDING'):badge('active',esc(d.disp[i]))) : badge('closed','CLOSED CLAIM')} <span class="badge abandoned">${CLAIMTYPE[d.type[i]].toUpperCase()}</span> <span class="badge abandoned">${d.state}</span></div>
+      ${kv([['Serial',esc(d.serial[i]),1],['Acres',active?d.acres[i]:null],['Centroid',y.toFixed(5)+', '+x.toFixed(5),1]])}
+      <div class="links"><a href="https://mlrs.blm.gov/s/" target="_blank">Look up serial in MLRS ↗</a><a href="${gmaps(y,x)}" target="_blank">Google Maps ↗</a></div>
+      <div class="src">BLM MLRS snapshot (${esc(d.retrieved)}). Centroid of the PLSS-snapped claim footprint — zoom past 10.5 with “Live claim boundaries” on to fetch current polygons from BLM. ${active?'<b>Active claims are private mineral property.</b>':'Closed = once staked, later dropped — usually open ground unless re-staked, withdrawn, or private.'}</div>`);
+  }
+}
+function showDistrict(d, kind){
+  if (kind==='auto'){
+    openDetail(`<h2>${esc(d.name)} district</h2>
+      <div class="badges"><span class="badge abandoned">${d.state}</span> <span class="badge abandoned">MRDS DISTRICT TAG</span></div>
+      ${kv([['MRDS records',fmt(d.n)],['Top commodities',esc((d.commodities||[]).join(', '))]])}
+      <div class="src">Auto-generated from USGS MRDS district tags (≥5 records; label at record centroid). Toggle site layers and zoom in to see the individual records.</div>`);
+    return;
+  }
+  const cls = distClass(d.status);
+  openDetail(`<h2>${esc(d.name)}</h2>
+    <div class="badges">${badge(cls,cls.toUpperCase())} <span class="badge abandoned">${d.state||'ID'}</span>${d.deep?' <span class="badge abandoned">CASSIA DEEP-DIVE</span>':''}</div>
+    ${kv([['Commodities',esc((d.commodities||[]).join(', '))],['Era',esc(d.era)],['Status',esc(d.status)],['Anchor',esc(d.anchor||'')]])}
+    <div class="desc">${esc(d.description)}</div>
+    ${d.key_mines&&d.key_mines.length?`<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin-bottom:4px">KEY MINES</h3><ul>${d.key_mines.map(m=>`<li>${esc(m)}</li>`).join('')}</ul>`:''}
+    <div class="src">${(d.sources||[]).map(s=>`<div>· <a href="${esc(s.url)}" target="_blank">${esc(s.title)}</a></div>`).join('')}</div>`);
+}
+function buildDistrictCards(){
+  const dl = $('dlist');
+  [...curated].sort((a,b)=>a.state.localeCompare(b.state)||a.name.localeCompare(b.name)).forEach(d=>{
+    const cls = distClass(d.status);
+    const card = document.createElement('div'); card.className='dc';
+    card.innerHTML = `<div class="t">${esc(d.name.split('(')[0].trim())}<span class="b badge ${cls}">${d.state}</span></div>
+      <div class="c">${esc((d.commodities||[]).slice(0,4).join(' · '))} — ${esc((d.era||'').split(';')[0])}</div>`;
+    card.onclick = ()=>{ map.flyTo({center:[d.lon,d.lat], zoom:10.2, duration:900}); showDistrict(d,'curated'); };
+    dl.appendChild(card);
+  });
+}
+
+/* ============ search ============ */
+function wireSearch(){
+  const resEl = $('results');
+  $('search').addEventListener('input', e=>{
+    const q = e.target.value.trim().toLowerCase();
+    if (q.length<2){ resEl.style.display='none'; return; }
+    const hits = [];
+    const push = (tag,color,nm,sub,y,x,fn)=>{ if(hits.length<18) hits.push({tag,color,nm,sub,y,x,fn}); };
+    for (const d of [...curated, ...cassia]) if (d.name.toLowerCase().includes(q))
+      push('DIST','#fab219', d.name, d.state, d.lat, d.lon, ()=>showDistrict(d,'curated'));
+    for (const d of auto) if (hits.length<18 && d.name.toLowerCase().includes(q))
+      push('DIST','#8f97a1', d.name+' district', d.state, d.lat, d.lon, ()=>showDistrict(d,'auto'));
+    for (const key in stores){
+      if (hits.length>=18) break;
+      const d = stores[key];
+      const names = d.nm || d.name; if (!names) continue;
+      for (let i=0;i<d.n && hits.length<18;i++){
+        const n = names[i]; if (!n || !n.toLowerCase().includes(q)) continue;
+        const src = d.src||'claims';
+        const color = src==='mrds'?'#c98500':src==='stategeo'?'#3987e5':src==='usmin'?'#93a7b8':'#2dd4bf';
+        const tag = src==='claims'? (key.includes('active')?'CLAIM':'CLSD') : src.toUpperCase().slice(0,5);
+        const fake = {layer:{id:'x'}, properties:{f:key, i}};
+        push(tag, color, n, d.state, d.y[i], d.x[i], ()=>showFeature(src==='claims'?{layer:{id:'snap'},properties:{f:key,i}}:fake));
+      }
+    }
+    resEl.innerHTML = hits.length? hits.map((h,j)=>`<div class="r" data-j="${j}"><span class="tag" style="background:${h.color}">${h.tag}</span><span class="nm">${esc(h.nm)}</span><span class="sb">${esc(h.sub||'')}</span></div>`).join('') : '<div class="r" style="color:var(--mut)">no matches in loaded layers</div>';
+    resEl.style.display='block';
+    resEl.querySelectorAll('.r[data-j]').forEach(el=>{
+      el.onclick = ()=>{ const h = hits[+el.dataset.j]; resEl.style.display='none';
+        map.flyTo({center:[h.x,h.y], zoom:Math.max(map.getZoom(),12), duration:900});
+        map.getSource('hl').setData({type:'Feature',properties:{},geometry:{type:'Point',coordinates:[h.x,h.y]}});
+        setTimeout(()=>map.getSource('hl').setData(EMPTY), 3200);
+        h.fn(); };
+    });
+  });
+  document.addEventListener('click', e=>{ if(!e.target.closest('#searchWrap')) $('results').style.display='none'; });
+}
+
+/* ============ legend & modals ============ */
+function buildLegend(){
+  $('legendBody').innerHTML = `
+  <div class="lg"><span class="s"><span style="display:inline-block;width:12px;height:12px;border:2.5px solid #c98500;border-radius:50%"></span></span>existing / producing (circle)</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:8px;height:8px;background:#c98500;border-radius:50%"></span></span>old mine · prospect · occurrence (dot)</div>
+  <div class="lg" style="flex-wrap:wrap;gap:4px;margin:4px 0 3px">${GROUPS.map(g=>`<span style="display:inline-flex;align-items:center;gap:3px;margin-right:5px"><span style="width:7px;height:7px;border-radius:50%;background:${g.c};display:inline-block"></span><span style="font-size:9.5px">${g.label}</span></span>`).join('')}</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:8px;height:8px;background:#93a7b8;border-radius:50%"></span></span>topo-map working (USMIN) — type on click</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:9px;height:9px;background:linear-gradient(90deg,#6e5210,#ffe9a0);border-radius:50%"></span></span>cited ore grade — brighter/bigger = richer Au</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:8px;height:8px;background:#2dd4bf;border-radius:50%"></span></span>active claim centroid (snapshot)</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:12px;height:9px;background:rgba(45,212,191,.2);border:1px solid #2dd4bf"></span></span>live claim boundary (zoom ≥ 10.5)</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:6px;height:6px;background:#8a6060;border-radius:50%"></span></span>closed claim (staked ground, now open*)</div>
+  <div class="lg"><span class="s"><span style="display:inline-block;width:12px;height:12px;border:2px dashed #fab219;border-radius:50%"></span></span>mining district</div>
+  <div class="lg"><span class="s" style="color:#f4d18a">▓</span>heatmap at low zoom = site density</div>
+  <div style="font-size:9px;color:var(--mut);margin-top:4px">*unless re-staked, withdrawn, or private — verify.</div>`;
+}
+function buildModals(){
+  const T = MAN.totals;
+  $('aboutBody').innerHTML = `
+  <p><b style="color:var(--ink)">NW Mineral Monitor</b> fuses seven government datasets plus original research into one picture of where minerals have been found, dug, and claimed across Washington, Oregon, Idaho, Montana and Wyoming. ${fmt(T.sites)} sites · ${fmt(T.claims_active)} active claims · ${fmt(T.claims_closed)} closed claims · ${28+7+MAN.districts.auto.n} districts.</p>
+  <h3>DATA SOURCES</h3>
+  <table>
+  <tr><th>Layer</th><th>Source</th><th>Records</th></tr>
+  <tr><td>MRDS mineral sites</td><td><a href="https://mrdata.usgs.gov/mrds/" target="_blank">USGS Mineral Resources Data System</a> (legacy; 2022 dump) — 7 states incl. NV/UT</td><td>81,827</td></tr>
+  <tr><td>Topo-map workings</td><td><a href="https://mrdata.usgs.gov/usmin/" target="_blank">USGS USMIN</a> v10 (2023), DOI 10.5066/F78W3CHG — 24k/48k/62.5k series</td><td>212,115</td></tr>
+  <tr><td>Cited ore grades</td><td>USGS MRDS relational tables + digitized bulletins & inspector reports (see GRADES-PLAN in the repo) — every value quote-backed</td><td>2,948</td></tr>
+  <tr><td>State surveys</td><td><a href="https://www.idahogeology.org/product/dd-1" target="_blank">IGS DD-1</a> · <a href="https://gis.dnr.wa.gov/site1/rest/services/Public_Geology/Mines_and_Minerals/MapServer" target="_blank">WGS DDS-30</a> · <a href="https://www.oregon.gov/dogami/milo/pages/index.aspx" target="_blank">DOGAMI MILO-4</a> · <a href="https://www.mbmg.mtech.edu/MontanaGeology/AbandonedMines/main.asp" target="_blank">MBMG AIM</a> · <a href="https://main.wsgs.wyo.gov/mineral-resources/overview" target="_blank">WSGS</a></td><td>52,831</td></tr>
+  <tr><td>Mining claims</td><td><a href="https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer" target="_blank">BLM MLRS GIS</a> — nightly snapshot + live viewport queries</td><td>${fmt(T.claims_active)} / ${fmt(T.claims_closed)}</td></tr>
+  <tr><td>Districts</td><td>28 curated (2–3 sources each) + 7 Cassia County deep-dive + ${MAN.districts.auto.n} auto-derived from MRDS tags</td><td>${28+7+MAN.districts.auto.n}</td></tr>
+  <tr><td>Boundaries</td><td>US Census TIGER/Line cartographic 500k (2023)</td><td>5 + 198</td></tr>
+  </table>
+  <h3>AUTO-UPDATING</h3>
+  <p>Two mechanisms keep claims current: (1) when hosted with the included AWS stack, a <b>nightly Lambda job</b> re-pulls every active claim in the five states from BLM MLRS and rewrites the snapshot files (footer shows the snapshot date); (2) at zoom ≥ 10.5 with “Live claim boundaries” on, the map <b>queries BLM directly for the current viewport</b> — those polygons are always current, straight from the source. MRDS is a legacy archive (no updates since ~2011); USMIN and the state databases update on multi-year cycles and are refreshed with site rebuilds.</p>
+  <h3>HOW TO READ</h3>
+  <p><b style="color:var(--ink)">Circles = existing/producing. Dots = old.</b> Color = commodity class. Steel dots are physical workings off old topo sheets — the best "something was actually dug here" signal. Teal = live BLM claims; maroon embers = closed claims (once staked, now mostly open). At low zoom the site layers render as density heat — amber (MRDS), blue (state surveys), steel (topo workings).</p>
+  <h3>CAVEATS</h3>
+  <p>· MRDS coordinates can be off by hundreds of meters; its "Producer" flags are frozen in time.<br>
+  · USMIN features date from 1958–2001 maps — expect collapse, reclamation, fencing.<br>
+  · Wyoming closed claims are truncated to the most recent 250,000 of 287,066.<br>
+  · WA/OR/MT/WY survey databases differ in scope (MT = abandoned-mine inventory; OR MILO mixes occurrences and borrow pits; WA has no per-record status; WY is explicitly incomplete). A site in two layers is corroboration, not duplication.<br>
+  · Claim polygons are PLSS-snapped; claimant names aren't in the public GIS — search serials in <a href="https://mlrs.blm.gov/s/" target="_blank">MLRS</a>.</p>
+  <div class="callout"><b style="color:var(--warn)">⚠ Safety & legality.</b> Never enter adits, shafts, or open workings. An active claim is a property right — prospecting on one without permission is claim jumping. Verify surface ownership (BLM / USFS / state / private) before digging; National Parks, most National Monuments, and City of Rocks NR are closed to mineral entry. This is a research aid, not a legal land-status document.</div>`;
+  const PUBS = [
+   ['Anderson 1931 — Geology & Mineral Resources of Eastern Cassia County','IBMG Bulletin 14 — the Cassia deep-dive bible','https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf'],
+   ['Idaho Mine Inspector annual reports (1899–1970s)','year-by-year "journal entries" of every Idaho mine — full scanned set','https://www.idahogeology.org/Uploads/Data/ISMIR/1929_ISMIR.pdf'],
+   ['USGS Bulletin 531-H — Goose Creek lignite (Bowen 1913)','','https://pubs.usgs.gov/bul/0531h/report.pdf'],
+   ['USGS Bulletin 620-L — Fine gold of the Snake River (Hill 1916)','','https://pubs.usgs.gov/bul/0620l/report.pdf'],
+   ['IGS DD-1 — Mines & Prospects of Idaho','the statewide database behind the Idaho layer','https://www.idahogeology.org/product/dd-1'],
+   ['WGS Digital Data Series 30 — Mines and Minerals of Washington','','https://www.dnr.wa.gov/programs-and-services/geology/publications-and-data/gis-data-and-databases'],
+   ['DOGAMI MILO — Mineral Information Layer for Oregon','','https://www.oregon.gov/dogami/milo/pages/index.aspx'],
+   ['MBMG Abandoned & Inactive Mines program','','https://www.mbmg.mtech.edu/MontanaGeology/AbandonedMines/main.asp'],
+   ['WSGS Mines and Minerals of Wyoming','','https://main.wsgs.wyo.gov/mineral-resources/overview'],
+   ['BLM MLRS — claim records & serial lookup','','https://mlrs.blm.gov/s/'],
+   ['Liberty Gold — Black Pine project (Cassia Co.)','EIS in progress; first gold targeted 2028','https://libertygold.ca/projects/black-pine/'],
+   ['Perpetua Resources — Stibnite Gold Project','ROD Jan 2025; groundbreaking Oct 2025','https://perpetuaresources.com/'],
+   ['Western Mining History — district & mine encyclopedia','','https://westernmininghistory.com/'],
+  ];
+  $('readingBody').innerHTML = `<p>Primary sources and portals. District panels carry their own citations — click any district ring.</p>` +
+    PUBS.map(p=>`<div class="pub"><b>${p[0]}</b>${p[1]?`<br><span class="m">${p[1]}</span>`:''}<br><a href="${p[2]}" target="_blank">${p[2].length>78?p[2].slice(0,78)+'…':p[2]}</a></div>`).join('');
+}
+
+/* ================= INTEL + ASK-the-data ================= */
+let INTEL = null;
+function havKm(la1,lo1,la2,lo2){ const p=Math.PI/180;
+  const a=.5-Math.cos((la2-la1)*p)/2+Math.cos(la1*p)*Math.cos(la2*p)*(1-Math.cos((lo2-lo1)*p))/2;
+  return 12742*Math.asin(Math.sqrt(a)); }
+
+function initIntel(){
+  $('btnIntel').style.display=''; $('btnAsk').style.display='';
+  $('btnIntel').onclick = ()=>toggleModal('intelModal',1);
+  $('btnAsk').onclick = ()=>{ $('askPanel').classList.add('open'); $('askInput').focus();
+    if (!$('askMsgs').children.length) botMsg(
+      `<b>Ask the data.</b> I answer from the loaded layers — nothing leaves your browser. Try:`,
+      ['how many gold producers in montana','silver mines near philipsburg','tell me about the owyhee district',
+       'where should I prospect','claims in wyoming','top 10'].map(q=>({label:q, fn:()=>{ userMsg(q); answer(q); }})));
+  };
+  $('intelBody').innerHTML =
+    `<p style="font-size:12px">${esc(INTEL.method)}</p>` +
+    INTEL.top10.map(t=>`<div class="intel-item"><div class="intel-rank">${t.rank}</div>
+      <div class="intel-body" style="flex:1"><b>${esc(t.title)}</b><div class="w">${esc(t.why)}</div>
+      <div class="meta">${t.data&&t.data.active!=null?`claims: ${fmt(t.data.active)} active${t.data.filed!=null?' · '+fmt(t.data.filed)+' filed':''}${t.data.usminWork?' · '+fmt(t.data.usminWork)+' workings':''} · `:''}${(t.sources||[]).map(s=>`<a href="${esc(s.url)}" target="_blank">${esc(s.title.length>42?s.title.slice(0,42)+'…':s.title)}</a>`).join(' · ')}</div></div>
+      <button class="intel-go" data-lat="${t.lat}" data-lon="${t.lon}" data-z="${t.zoom}">GO</button></div>`).join('') +
+    `<h3>WATCHLIST</h3>` + INTEL.watchlist.map(w=>`<div class="pub"><b>${esc(w.title)}</b><br><span style="font-size:11.5px">${esc(w.note)}</span><br>${(w.sources||[]).map(s=>`<a href="${esc(s.url)}" target="_blank" style="font-size:10.5px">${esc(s.title.slice(0,50))}</a>`).join(' · ')}</div>`).join('');
+  $('intelBody').addEventListener('click', e=>{
+    const b = e.target.closest('.intel-go'); if(!b) return;
+    toggleModal('intelModal',0);
+    map.flyTo({center:[+b.dataset.lon, +b.dataset.lat], zoom:+b.dataset.z, duration:1200});
+  });
+  $('askForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const q = $('askInput').value.trim(); if(!q) return;
+    $('askInput').value=''; userMsg(q); answer(q);
+  });
+  if (aiAvailable()){
+    const chip = $('aiChip'); chip.style.display='';
+    chip.onclick = ()=>{ AI.on=!AI.on;
+      chip.textContent = AI.on?'AI ON':'AI OFF';
+      chip.style.color = AI.on?'#3ecf3e':'var(--mut)';
+      chip.style.borderColor = AI.on?'rgba(12,163,12,.5)':'var(--line2)'; };
+  }
+}
+function userMsg(t){ const d=document.createElement('div'); d.className='msg user'; d.textContent=t;
+  $('askMsgs').appendChild(d); $('askMsgs').scrollTop=1e9; }
+function botMsg(html, chips){
+  const d=document.createElement('div'); d.className='msg bot'; d.innerHTML=html;
+  if (chips&&chips.length){ const row=document.createElement('div'); row.className='chiprow';
+    chips.forEach(c=>{ const b=document.createElement('button'); b.className='cbtn'; b.textContent=c.label;
+      b.onclick=c.fn; row.appendChild(b); });
+    d.appendChild(row); }
+  $('askMsgs').appendChild(d); $('askMsgs').scrollTop=1e9; return d;
+}
+function hitLink(name, sub, fn){
+  const s=document.createElement('span'); s.className='hit'; s.textContent='▸ '+name+(sub?' — '+sub:'');
+  s.onclick=fn; return s;
+}
+/* --- programmatic filter application --- */
+function setUiStates(list){ STATES.forEach((st,i)=>{ S.states[st]=list.includes(st);
+  document.querySelectorAll('.schip')[i].classList.toggle('on', S.states[st]); }); }
+function setUiGroups(list){ S.groups=list;
+  document.querySelectorAll('#chips .chip').forEach((c,i)=>{ c.classList.toggle('on', list.includes(i)); c.classList.toggle('off', !list.includes(i)); }); }
+function setUiStatus(v){ S.status=v;
+  document.querySelectorAll('#statusRadio button').forEach(b=>b.classList.toggle('on', b.dataset.v===v)); }
+
+/* --- AI answerer (Bedrock via the ask Lambda; tools execute HERE) --- */
+const AI = {on:true, hist:[]};
+const aiAvailable = ()=> !!(AUTH.cfg && AUTH.cfg.askUrl);
+function trimJson(o, max=10000){ let s=JSON.stringify(o);
+  while (s.length>max && o.sample && o.sample.length>1){ o.sample.pop(); o.truncated=true; s=JSON.stringify(o); }
+  return o; }
+function execTool(name, a){
+  try{
+    if (name==='query_sites') return trimJson(execQuerySites(a||{}));
+    if (name==='query_claims') return trimJson(execQueryClaims(a||{}));
+    if (name==='get_district'){
+      const p = findPlace(String(a.name||''));
+      if (!p || !p.d) return {error:'no district matched "'+a.name+'"'};
+      const im = INTEL && INTEL.districts.find(x=>x.name===p.d.name);
+      return {name:p.d.name, state:p.d.state, status:p.d.status, era:p.d.era,
+        commodities:p.d.commodities, description:(p.d.description||'').slice(0,650),
+        metrics_within_25km: im? im.m : undefined,
+        sources:(p.d.sources||[]).map(s=>s.title+' — '+s.url), lat:p.lat, lon:p.lon};
+    }
+    if (name==='get_intel'){
+      if (!INTEL) return {error:'intel bundle not loaded'};
+      const sec = a.section||'all';
+      const top10 = INTEL.top10.map(t=>({rank:t.rank,title:t.title,state:t.state,why:t.why}));
+      const news = INTEL.news.map(n=>({id:n.id, summary:(n.summary||n.status||'').slice(0,200)}));
+      const all = {statewide:INTEL.statewide, top10, watchlist:INTEL.watchlist, news};
+      return trimJson(sec==='all'? all : {[sec]: all[sec]}, 14000);
+    }
+    if (name==='query_grades'){
+      if (!GR) return {error:'grade dataset not loaded'};
+      const silver = a.metal==='silver';
+      const lim = Math.min(a.limit||10, 25); const rows=[];
+      for (let i=0;i<GR.n;i++){
+        if (a.states && !a.states.includes(GR.st[i])) continue;
+        if (a.open_ground_only && GR.open[i]<400) continue;
+        if (a.near_lat!=null && (GR.x[i]==null || havKm(a.near_lat,a.near_lon,GR.y[i],GR.x[i])>(a.radius_km||25))) continue;
+        const v = silver? GR.ag[i] : GR.au[i];
+        if (v==null || v < (a.min_opt||0)) continue;
+        rows.push([v,i]);
+      }
+      rows.sort((x,y)=>y[0]-x[0]);
+      return trimJson({count:rows.length, note:'assay-text values can be hand-picked specimens — quote is the evidence; open_m: metres to nearest active claim (5000=none within 5km, -1=unknown/no claims data)',
+        sample: rows.slice(0,lim).map(([v,i])=>({mine:GR.name[i], state:GR.st[i], district:GR.dist[i],
+          au_opt:GR.au[i], ag_opt:GR.ag[i], usd_per_ton:GR.usd[i], basis:GR.basis[i], years:GR.yrs[i],
+          tonnage:GR.ton?GR.ton[i]:null, status:GR.ds?GR.ds[i]:null, workings:GR.wt?GR.wt[i]:null,
+          prod_size:GR.pz?GR.pz[i]:null, county:GR.cnty?GR.cnty[i]:null,
+          open_m:GR.open[i], quote:GR.quote[i], source:GR.src[i], lat:GR.y[i], lon:GR.x[i]}))});
+    }
+    if (name==='resolve_place'){
+      const p = findPlace(String(a.name||''));
+      return p? {label:p.label, lat:p.lat, lon:p.lon} : {error:'not found — try a district or larger town in the 5 states'};
+    }
+    if (name==='map_control'){
+      if (a.filter_states || a.filter_group || a.filter_status){
+        setUiStates(a.filter_states || [...STATES]);
+        const gi = a.filter_group? GROUPS.findIndex(g=>g.k===a.filter_group) : -1;
+        setUiGroups(gi>=0? [gi] : [0,1,2,3,4,5]);
+        setUiStatus(a.filter_status==='existing'?'ex':a.filter_status==='old'?'old':'all');
+        applyFilters();
+      }
+      if (a.fly_lat!=null && a.fly_lon!=null)
+        map.flyTo({center:[a.fly_lon, a.fly_lat], zoom:a.zoom||10, duration:1100});
+      return {ok:true};
+    }
+    return {error:'unknown tool '+name};
+  }catch(e){ return {error:String(e.message||e).slice(0,200)}; }
+}
+function execQuerySites(a){
+  const scope = a.scope==='workings'? 'usmin' : 'sites';
+  const gi = a.commodity_group? GROUPS.findIndex(g=>g.k===a.commodity_group) : -1;
+  const term=(a.commodity_term||'').toLowerCase()||null, nameq=(a.name_contains||'').toLowerCase()||null;
+  const km=a.radius_km||25, lim=Math.min(a.limit||8,20);
+  let count=0; const rows=[];
+  for (const key in stores){ const d=stores[key];
+    const want = scope==='usmin'? d.src==='usmin' : (d.src==='mrds'||d.src==='stategeo');
+    if (!want || (a.states && !a.states.includes(d.state))) continue;
+    for (let i=0;i<d.n;i++){
+      let nm;
+      if (scope==='usmin'){
+        if (/gravel|borrow|sand pit|disturbed/i.test(d.types[d.t[i]])) continue;
+        nm = d.types[d.t[i]];
+      } else {
+        if (gi>=0 && d.g[i]!==gi) continue;
+        if (term && !(d.c[i]||'').toLowerCase().includes(term)) continue;
+        if (a.status){ const ex = d.src==='mrds'? d.st[i]==='P' : isEx(d.stx[i]);
+          if ((a.status==='producing')!==ex) continue; }
+        nm = d.nm[i];
+      }
+      if (nameq && !(nm||'').toLowerCase().includes(nameq)) continue;
+      if (a.near_lat!=null && havKm(a.near_lat, a.near_lon, d.y[i], d.x[i])>km) continue;
+      count++;
+      if (rows.length<lim) rows.push(scope==='usmin'
+        ? {type:nm, quad:d.q[i], year:d.yr[i]||null, state:d.state, lat:d.y[i], lon:d.x[i]}
+        : {name:nm, state:d.state, commodities:d.c[i]||null,
+           status: d.src==='mrds'? SMAP[d.st[i]] : (d.stx[i]||null), source:d.src, lat:d.y[i], lon:d.x[i]});
+    }
+  }
+  const pre = scope==='usmin'? 'usmin_' : 'mrds_';
+  const missing = STATES.filter(s=> (!a.states||a.states.includes(s)) && !stores[pre+s.toLowerCase()]);
+  const out = {count, sample:rows};
+  if (missing.length) out.note = 'layers not loaded for: '+missing.join(', ')+' (state toggled off)';
+  return out;
+}
+function execQueryClaims(a){
+  const layer = a.layer==='closed'? 'closed' : 'active';
+  const nameq=(a.name_contains||'').toLowerCase()||null, km=a.radius_km||25, lim=Math.min(a.limit||8,20);
+  let count=0, filed=0; const rows=[];
+  for (const key in stores){ const d=stores[key];
+    if (d.src || !key.includes(layer)) continue;
+    if (a.states && !a.states.includes(d.state)) continue;
+    for (let i=0;i<d.n;i++){
+      const isFiled = layer==='active' && d.disp[i]==='FILED';
+      if (a.filed_only && !isFiled) continue;
+      const nm = d.name[i]||d.serial[i];
+      if (nameq && !(nm||'').toLowerCase().includes(nameq)) continue;
+      if (a.near_lat!=null && havKm(a.near_lat, a.near_lon, d.y[i], d.x[i])>km) continue;
+      count++; if (isFiled) filed++;
+      if (rows.length<lim) rows.push({name:nm, serial:d.serial[i], type:CLAIMTYPE[d.type[i]],
+        state:d.state, disposition: layer==='active'? d.disp[i]:'CLOSED', lat:d.y[i], lon:d.x[i]});
+    }
+  }
+  const missing = STATES.filter(s=> (!a.states||a.states.includes(s)) && !stores[s.toLowerCase()+'_'+layer]);
+  const out = {count, filed_count: layer==='active'? filed: undefined, sample:rows,
+    snapshot: MAN? MAN.claims_updated: undefined};
+  if (missing.length) out.note = 'claim layers not loaded for: '+missing.join(', ')+
+    (layer==='closed'? ' (closed claims load on demand — toggle the layer on)':'');
+  return out;
+}
+async function aiAnswer(q){
+  const box = botMsg(`<span style="color:var(--mut)">⌁ thinking…</span>`);
+  const lines = [];
+  const paint = final=>{ box.innerHTML =
+    lines.map(l=>`<div style="font:10px var(--mono);color:var(--mut)">${l}</div>`).join('') +
+    (final? `<div style="margin-top:${lines.length?'5px':'0'}">${final}</div>` : `<span style="color:var(--mut)">⌁ thinking…</span>`);
+    $('askMsgs').scrollTop=1e9; };
+  if (!AI.hist.length){
+    const loaded = STATES.filter(s=>S.states[s]).join(', ');
+    AI.hist.push({role:'user', content:[{text:`(session context — not a question) Loaded states: ${loaded}. Statewide stats: ${JSON.stringify(INTEL?INTEL.statewide:{})}`}]},
+                 {role:'assistant', content:[{text:'Context noted.'}]});
+  }
+  const msgs = [...AI.hist, {role:'user', content:[{text:q}]}];
+  for (let round=0; round<7; round++){
+    /* NB: custom header, NOT Authorization — a public Lambda Function URL
+       treats an Authorization header as a (failed) AWS SigV4 attempt → 403 */
+    const r = await fetch(AUTH.cfg.askUrl, {method:'POST',
+      headers:{'Content-Type':'application/json',
+        ...(accessToken()? {'x-auth-token': accessToken()} : {})},
+      body: JSON.stringify({messages: msgs})});
+    const j = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(j.error || ('AI endpoint HTTP '+r.status));
+    msgs.push(j.message);
+    if (j.stopReason === 'tool_use'){
+      const results = [];
+      for (const c of (j.message.content||[])){
+        if (!c.toolUse) continue;
+        const out = execTool(c.toolUse.name, c.toolUse.input);
+        lines.push(`→ ${c.toolUse.name}${out && out.count!=null? ' · '+fmt(out.count)+' hits' : out && out.error? ' · '+esc(out.error.slice(0,40)) : ''}`);
+        paint(null);
+        results.push({toolResult:{toolUseId:c.toolUse.toolUseId, content:[{json: out}]}});
+      }
+      msgs.push({role:'user', content: results});
+      continue;
+    }
+    const text = (j.message.content||[]).filter(c=>c.text).map(c=>c.text).join('\n').trim();
+    paint(esc(text || '(no answer)').replace(/\n/g,'<br>'));
+    AI.hist = msgs.slice(-12);
+    return;
+  }
+  throw new Error('gave up after 7 tool rounds');
+}
+function routeAI(q, localNote){
+  if (aiAvailable() && AI.on){
+    aiAnswer(q).catch(e=>{
+      botMsg(`<span style="color:#e07373">AI: ${esc(String(e.message||e))}</span>` +
+        (localNote? `<br>${esc(localNote)}` : '') +
+        `<br><span style="font-size:10.5px;color:var(--mut)">Falling back to structured queries — try "help" for patterns.</span>`);
+    });
+  } else {
+    botMsg((localNote? esc(localNote)+'<br>' : '') +
+      `I couldn't parse that as a data query${aiAvailable()? ' and AI is toggled off':' (AI answerer not configured on this deployment)'}. Try "help" for patterns.`);
+  }
+}
+
+/* --- the query engine --- */
+const GAZ = {'tonopah':[38.07,-117.23],'goldfield':[37.71,-117.24],'virginia city':[39.31,-119.65],
+ 'ely':[39.25,-114.89],'elko':[40.83,-115.76],'winnemucca':[40.97,-117.74],'austin':[39.49,-117.07],
+ 'eureka':[39.51,-115.96],'salt lake city':[40.76,-111.89],'st george':[37.10,-113.58],'wendover':[40.74,-114.04],
+ 'coeur d\'alene':[47.54,-116.15],'kellogg':[47.54,-116.13],'wallace':[47.47,-115.93],
+ 'butte':[46.0,-112.53],'helena':[46.59,-112.04],'philipsburg':[46.33,-113.29],'boise':[43.62,-116.2],
+ 'burley':[42.54,-113.79],'oakley':[42.24,-113.88],'twin falls':[42.56,-114.46],'baker city':[44.77,-117.83],
+ 'john day':[44.42,-118.95],'spokane':[47.66,-117.43],'missoula':[46.87,-113.99],'bozeman':[45.68,-111.04],
+ 'casper':[42.85,-106.32],'cheyenne':[41.14,-104.82],'salmon':[45.18,-113.9],'challis':[44.5,-114.23],'bend':[44.06,-121.31]};
+function allDistricts(){ return [...curated, ...cassia].map(d=>({d, rich:true})).concat(auto.map(d=>({d, rich:false}))); }
+function findPlace(txt){
+  txt = txt.trim().toLowerCase().replace(/\s+district$/,'');
+  if (txt.length < 3) return null;
+  for (const {d, rich} of allDistricts()){
+    const n = (d.name||'').toLowerCase();
+    const short = n.split('(')[0].trim();
+    if (short.length < 3 && !n.includes(txt)) continue;   // junk names like "(Unorganized)"
+    if (n.includes(txt) || (short.length >= 4 && txt.includes(short)))
+      return {lat:d.lat, lon:d.lon, label:d.name, d, rich};
+  }
+  for (const g in GAZ) if (txt.includes(g)) return {lat:GAZ[g][0], lon:GAZ[g][1], label:g};
+  return null;
+}
+const COMTERMS = [
+ [/\bgold\b/,0,null],[/\bsilver\b/,1,'silver'],[/\bcopper\b/,1,'copper'],[/\blead\b/,1,'lead'],
+ [/\bzinc\b/,1,'zinc'],[/\btungsten\b/,1,'tungsten'],[/\bantimony\b/,1,'antimony'],[/\bmercury\b/,1,'mercury'],
+ [/\buranium\b/,2,'uranium'],[/rare earth|\bree\b/,2,null],[/\blithium\b/,2,'lithium'],[/\bthorium\b/,2,'thorium'],
+ [/\bstone\b|\bquartzite\b/,3,null],[/\bmica\b/,3,'mica'],[/\bgarnet\b/,3,'garnet'],[/\bopal\b/,3,'opal'],
+ [/\bcoal\b/,4,'coal'],[/\bgeothermal\b/,4,'geothermal']];
+function parseQuery(q){
+  const f = {states:null, g:null, term:null, ex:null, near:null, km:25, scope:'sites', wantCount:/how many|count|number of/.test(q)};
+  const st=[]; if(/washington/.test(q)||/\bwa\b/.test(q)) st.push('WA');
+  if(/oregon/.test(q)) st.push('OR');
+  if(/idaho|\bid\b(?!aho)/.test(q)) st.push('ID');
+  if(/montana|\bmt\b/.test(q)) st.push('MT');
+  if(/wyoming|\bwy\b/.test(q)) st.push('WY');
+  if(/nevada|\bnv\b/.test(q)) st.push('NV');
+  if(/\butah\b|\but\b/.test(q)) st.push('UT');
+  if (st.length) f.states=st;
+  for (const [re,g,term] of COMTERMS) if (re.test(q)){ f.g=g; f.term=term; break; }
+  if (/producer|producing|operating|active mine/.test(q)) f.ex=1;
+  else if (/\bold\b|historic|abandoned|past/.test(q)) f.ex=0;
+  if (/working|adit|shaft|prospect pit|topo/.test(q)) f.scope='usmin';
+  if (/\bclaims?\b/.test(q)) f.scope='claims';
+  const km = q.match(/within\s+(\d+)\s*(km|mi)/); if (km) f.km = +km[1]*(km[2]==='mi'?1.609:1);
+  const nr = q.match(/near\s+([a-z .'’-]+?)(?:\s+within.*)?$/); if (nr) f.near = findPlace(nr[1]);
+  return f;
+}
+function runQuery(f){
+  const hits=[]; let count=0;
+  const stateOK = st => !f.states || f.states.includes(st);
+  const scan = (d, getName, getLatLon, pred, show) => {
+    for (let i=0;i<d.n;i++){
+      if (pred && !pred(i)) continue;
+      const [y,x] = getLatLon(i);
+      if (f.near && havKm(f.near.lat, f.near.lon, y, x) > f.km) continue;
+      count++;
+      if (hits.length<12) hits.push({name:getName(i)||'Unnamed', y, x, fn:show(i)});
+    }
+  };
+  if (f.scope==='claims'){
+    const filedOnly = f.term==null && false;
+    for (const key in stores){
+      const d = stores[key]; if (d.src) continue;             // claims stores have no src
+      if (!stateOK(d.state)) continue;
+      const active = key.includes('active');
+      scan(d, i=>d.name[i]||d.serial[i], i=>[d.y[i],d.x[i]],
+        i=>true, i=>()=>showFeature({layer:{id:'snap'},properties:{f:key,i}}));
+    }
+  } else if (f.scope==='usmin'){
+    for (const key in stores){ const d=stores[key]; if (d.src!=='usmin'||!stateOK(d.state)) continue;
+      scan(d, i=>d.types[d.t[i]], i=>[d.y[i],d.x[i]],
+        i=>!/gravel|borrow|sand pit|disturbed/i.test(d.types[d.t[i]]),
+        i=>()=>showFeature({layer:{id:'x'},properties:{f:key,i}})); }
+  } else {
+    for (const key in stores){ const d=stores[key];
+      if ((d.src!=='mrds'&&d.src!=='stategeo')||!stateOK(d.state)) continue;
+      scan(d, i=>d.nm[i], i=>[d.y[i],d.x[i]], i=>{
+        if (f.g!=null && d.g[i]!==f.g) return false;
+        if (f.term && !(d.c[i]||'').toLowerCase().includes(f.term)) return false;
+        if (f.ex!=null){
+          const ex = d.src==='mrds' ? (d.st[i]==='P'?1:0) : (isEx(d.stx[i])?1:0);
+          if (ex!==f.ex) return false; }
+        return true;
+      }, i=>()=>showFeature({layer:{id:'x'},properties:{f:key,i}})); }
+  }
+  return {count, hits};
+}
+function describeFilter(f){
+  const bits=[];
+  if (f.ex===1) bits.push('producing'); if (f.ex===0) bits.push('historic');
+  if (f.term) bits.push(f.term); else if (f.g!=null) bits.push(GROUPS[f.g].label.toLowerCase());
+  bits.push(f.scope==='claims'?'claims':f.scope==='usmin'?'topo workings':'sites');
+  if (f.states) bits.push('in '+f.states.join('+'));
+  if (f.near) bits.push(`within ${Math.round(f.km)} km of ${f.near.label.split('(')[0].trim()}`);
+  return bits.join(' ');
+}
+function answer(q){
+  q = q.toLowerCase().trim();
+  if (/^(help|\?|what can you do)/.test(q)){
+    botMsg(`I run structured queries over the loaded layers. Combine a <b>commodity</b> (gold, silver, antimony, uranium, coal…), a <b>status</b> (producing / historic), a <b>state</b>, a <b>scope</b> (sites, claims, workings), and a <b>place</b> ("near philipsburg", "within 40 km of butte"). Or: "tell me about ‹district›", "top 10", "where should I prospect".`);
+    return;
+  }
+  if (/top *10|top ten|interesting|happening|summar/.test(q)){
+    if (!INTEL) return void botMsg('Intel bundle not loaded.');
+    botMsg(`<b>Top 10, July 2026</b> — data + verified news (full briefing under INTEL):`,
+      INTEL.top10.map(t=>({label:`${t.rank}. ${t.title.length>34?t.title.slice(0,34)+'…':t.title}`,
+        fn:()=>map.flyTo({center:[t.lon,t.lat], zoom:t.zoom, duration:1100})})));
+    return;
+  }
+  if (/prospect|hottest|stake|where should i/.test(q)){
+    if (!INTEL) return void botMsg('Intel bundle not loaded.');
+    const ds = INTEL.districts;
+    const hot = [...ds].sort((a,b)=>b.m.filed-a.m.filed).slice(0,4);
+    const orph = ds.filter(d=>d.m.usminWork>=40 && d.m.active<50).sort((a,b)=>b.m.usminWork-a.m.usminWork).slice(0,3);
+    const el = botMsg(`<b>Two signals worth your boots.</b><br>Freshest staking (most FILED claims within 25 km):<br>` +
+      hot.map(d=>`· ${esc(d.name.split('(')[0].trim())} ${d.state} — ${fmt(d.m.filed)} filed`).join('<br>') +
+      `<br><b>Orphan ground</b> (dense old workings, few live claims):<br>` +
+      orph.map(d=>`· ${esc(d.name.split('(')[0].trim())} ${d.state} — ${d.m.usminWork} workings vs ${d.m.active} active claims`).join('<br>') +
+      `<br><span style="font-size:10.5px;color:var(--mut)">Verify land status & withdrawals before staking — active claims are private property.</span>`,
+      [...hot,...orph].map(d=>({label:d.name.split('(')[0].trim().slice(0,22), fn:()=>{ map.flyTo({center:[d.lon,d.lat],zoom:10.5,duration:1100}); }})));
+    return;
+  }
+  const tell = q.match(/(?:tell me about|what is|about)\s+(?:the\s+)?(.+?)(?:\s+district)?\s*\??$/);
+  if (tell){
+    const p = findPlace(tell[1]);
+    if (p && p.d){
+      const im = INTEL && INTEL.districts.find(x=>x.name===p.d.name);
+      const mtx = im? ` · <b>${fmt(im.m.active)}</b> active claims (${fmt(im.m.filed)} filed) · <b>${fmt(im.m.usminWork)}</b> topo workings · ${fmt(im.m.mrds+im.m.stategeo)} recorded sites within 25 km` : '';
+      botMsg(`<b>${esc(p.d.name)}</b> ${p.d.state?'('+p.d.state+')':''}${p.rich? '<br>'+esc((p.d.description||'').slice(0,420))+((p.d.description||'').length>420?'…':'') : '<br>MRDS district tag — '+fmt(p.d.n||0)+' records.'}${mtx}`,
+        [{label:'GO', fn:()=>{ map.flyTo({center:[p.lon,p.lat], zoom:10.4, duration:1100}); showDistrict(p.d, p.rich?'curated':'auto'); }}]);
+      return;
+    }
+  }
+  /* grade / open-ground questions hit the cited-grades dataset first */
+  if (/oz.?(per|\/).?ton|highest.?grade|richest|grade.?sort|sort.*grade|unclaimed|open ground|not permitted|un-?permitted/.test(q)){
+    if (!GR) return void botMsg('The grade dataset is still loading — ask again in a few seconds.');
+    return gradeAnswer(q, parseQuery(q));
+  }
+  /* interpretive questions go straight to the AI answerer (it can still call the query tools) */
+  if (aiAvailable() && AI.on &&
+      /\bwhy\b|\bhow (did|does|was|do)\b|\bhistory\b|\bexplain\b|\bcompare\b|\bwhat happened\b|\bworth\b|\bbest\b|\bversus\b|\bvs\b/.test(q))
+    return routeAI(q, null);
+  /* structured query — anything the parser can't ground goes to the AI answerer */
+  const f = parseQuery(q);
+  const hasSignal = f.g!=null || f.term || f.states || f.near || f.ex!=null || f.scope!=='sites' || f.wantCount;
+  if (!hasSignal) return routeAI(q, null);
+  if (f.scope==='claims' && !f.near && f.states && f.states.length===1 && INTEL && INTEL.statewide[f.states[0]]){
+    const s = INTEL.statewide[f.states[0]];
+    botMsg(`<b>${f.states[0]} claims</b> (snapshot ${esc(MAN.claims_updated)}): <b>${fmt(s.active)}</b> active — ${fmt(s.filed)} of those newly FILED (${(100*s.filed/s.active).toFixed(0)}%) — plus <b>${fmt(s.closed)}</b> closed historic claims.`);
+    return;
+  }
+  const {count, hits} = runQuery(f);
+  const desc = describeFilter(f);
+  if (!count) return routeAI(q, `No ${desc} matched in the loaded layers.`);
+  const chips = [];
+  if (f.g!=null || f.ex!=null || f.states) chips.push({label:'⚡ apply to map', fn:()=>{
+    if (f.states) setUiStates(f.states); else setUiStates([...STATES]);
+    if (f.g!=null) setUiGroups([f.g]); else setUiGroups([0,1,2,3,4,5]);
+    setUiStatus(f.ex===1?'ex':f.ex===0?'old':'all');
+    applyFilters();
+    if (f.near) map.flyTo({center:[f.near.lon,f.near.lat], zoom:10, duration:1100});
+  }});
+  const d = botMsg(`<b>${fmt(count)}</b> ${esc(desc)}.${count>hits.length? ' First '+hits.length+':' : ''}`, chips);
+  hits.forEach(h=>d.insertBefore(hitLink(h.name, null, ()=>{
+    map.flyTo({center:[h.x,h.y], zoom:Math.max(map.getZoom(),12.5), duration:900});
+    map.getSource('hl').setData({type:'Feature',properties:{},geometry:{type:'Point',coordinates:[h.x,h.y]}});
+    setTimeout(()=>map.getSource('hl').setData(EMPTY), 3200); h.fn();
+  }), d.querySelector('.chiprow')));
+}
+
+/* ================= auth (AWS Cognito, optional) =================
+   If auth.json exists at the site root ({"region":"...","clientId":"..."}),
+   the app requires a Cognito sign-in before loading any data. Without it
+   (local dev, or auth intentionally off) the site is open. */
+const AUTH = {cfg:null, KEY:'nwmm_auth'};
+async function authCfg(){
+  try{ const r = await fetch('auth.json', {cache:'no-store'});
+    if (!r.ok) return null;
+    const j = await r.json();
+    return (j && j.clientId && j.region && j.enabled!==false) ? j : null;
+  }catch(e){ return null; }
+}
+function jwtExpMs(t){ try{ return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).exp*1000; }catch(e){ return 0; } }
+async function cog(target, body){
+  const r = await fetch(`https://cognito-idp.${AUTH.cfg.region}.amazonaws.com/`, {
+    method:'POST',
+    headers:{'Content-Type':'application/x-amz-json-1.1','X-Amz-Target':'AWSCognitoIdentityProviderService.'+target},
+    body: JSON.stringify(body)});
+  const j = await r.json().catch(()=>({}));
+  if (!r.ok) throw Object.assign(new Error(j.message || j.__type || 'authentication error'), {code: j.__type});
+  return j;
+}
+function saveTokens(res){
+  const cur = JSON.parse(localStorage.getItem(AUTH.KEY) || '{}');
+  localStorage.setItem(AUTH.KEY, JSON.stringify({
+    id: res.IdToken || cur.id, access: res.AccessToken || cur.access,
+    refresh: res.RefreshToken || cur.refresh}));
+}
+function accessToken(){ try{ return JSON.parse(localStorage.getItem(AUTH.KEY)||'{}').access||null; }catch(e){ return null; } }
+async function login(username, password){
+  let r = await cog('InitiateAuth', {AuthFlow:'USER_PASSWORD_AUTH', ClientId:AUTH.cfg.clientId,
+    AuthParameters:{USERNAME:username, PASSWORD:password}});
+  if (r.ChallengeName === 'NEW_PASSWORD_REQUIRED'){
+    // user was created with a temporary password — set the same one permanently
+    r = await cog('RespondToAuthChallenge', {ChallengeName:'NEW_PASSWORD_REQUIRED',
+      ClientId:AUTH.cfg.clientId, Session:r.Session,
+      ChallengeResponses:{USERNAME:username, NEW_PASSWORD:password}});
+  }
+  if (!r.AuthenticationResult) throw new Error('unexpected sign-in challenge: ' + (r.ChallengeName||'?'));
+  saveTokens(r.AuthenticationResult);
+}
+async function ensureAuth(){
+  AUTH.cfg = await authCfg();
+  if (!AUTH.cfg) return;                       // auth not configured — open site
+  const btn = $('btnSignOut');
+  btn.style.display = '';
+  btn.onclick = ()=>{ localStorage.removeItem(AUTH.KEY); location.reload(); };
+  const stored = JSON.parse(localStorage.getItem(AUTH.KEY) || '{}');
+  if (stored.id && jwtExpMs(stored.id) > Date.now() + 60000) return;   // still valid
+  if (stored.refresh){
+    try{
+      const r = await cog('InitiateAuth', {AuthFlow:'REFRESH_TOKEN_AUTH', ClientId:AUTH.cfg.clientId,
+        AuthParameters:{REFRESH_TOKEN: stored.refresh}});
+      if (r.AuthenticationResult){ saveTokens(r.AuthenticationResult); return; }
+    }catch(e){ localStorage.removeItem(AUTH.KEY); }
+  }
+  // interactive sign-in
+  const gate = $('authGate'); gate.classList.add('show');
+  await new Promise(resolve=>{
+    $('authForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const u = $('authUser').value.trim(), p = $('authPass').value;
+      if (!u || !p){ $('authErr').textContent = 'enter a username and password'; return; }
+      $('authBtn').disabled = true; $('authErr').textContent = '';
+      try{
+        await login(u, p);
+        gate.classList.remove('show');
+        resolve();
+      }catch(err){
+        $('authBtn').disabled = false;
+        $('authErr').textContent =
+          err.code === 'NotAuthorizedException' ? 'wrong username or password' :
+          err.code === 'PasswordResetRequiredException' ? 'password reset required — see the Cognito console' :
+          /fetch/i.test(err.message) ? 'can’t reach AWS Cognito — check your connection' :
+          err.message;
+      }
+    });
+  });
+}
+(async ()=>{ await ensureAuth(); await boot(); })().catch(e=>{ document.body.innerHTML = `<div style="padding:40px;font-family:monospace;color:#a9aeb6">Failed to start: ${esc(e.message)} — if opened from file://, serve the folder instead (python3 -m http.server) so data files can load.</div>`; });
+</script>
+</body>
+</html>

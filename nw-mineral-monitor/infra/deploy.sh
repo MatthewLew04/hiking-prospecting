@@ -72,7 +72,8 @@ case "${1:-deploy}" in
 
     echo "==> [3/5] Uploading site ($(du -sh "$SITE" | cut -f1)) + enabling Cognito login…"
     aws s3 sync "$SITE" "s3://$BUCKET" --region "$REGION" --delete \
-      --cache-control "public, max-age=3600" --exclude "data/*" --exclude "auth.json" --exclude "index.html"
+      --cache-control "public, max-age=3600" --exclude "data/*" --exclude "auth.json" --exclude "index.html" \
+      --exclude "ckpt/*" --exclude "watch/*"   # runtime state — --delete must never touch these
     aws s3 cp "$SITE/index.html" "s3://$BUCKET/index.html" --region "$REGION" \
       --cache-control "public, max-age=60" --content-type "text/html"
     aws s3 sync "$SITE/data" "s3://$BUCKET/data" --region "$REGION" --delete \
@@ -107,7 +108,8 @@ case "${1:-deploy}" in
   update-site)
     BUCKET="$(outputs BucketName)"
     aws s3 sync "$SITE" "s3://$BUCKET" --region "$REGION" --delete \
-      --cache-control "public, max-age=3600" --exclude "data/*" --exclude "auth.json" --exclude "index.html"
+      --cache-control "public, max-age=3600" --exclude "data/*" --exclude "auth.json" --exclude "index.html" \
+      --exclude "ckpt/*" --exclude "watch/*"   # runtime state — --delete must never touch these
     aws s3 cp "$SITE/index.html" "s3://$BUCKET/index.html" --region "$REGION" \
       --cache-control "public, max-age=60" --content-type "text/html"
     aws s3 sync "$SITE/data" "s3://$BUCKET/data" --region "$REGION" --delete \

@@ -43,7 +43,10 @@ CLOSED_CAP = int(os.environ.get("CLOSED_CAP", "250000"))
 s3 = boto3.client("s3")
 
 
-def fetch(url, tries=4):
+def fetch(url, tries=6):
+    """Retries transport failures AND JSON-carried server errors — the NV
+    partition throws {'error': {'code': 503, 'Wait timeout…'}} mid-stream
+    under load; those are transient and must not kill the refresh."""
     last = None
     req = urllib.request.Request(url, headers={
         "User-Agent": "nw-mineral-monitor-updater/1.0 (AWS Lambda)",
@@ -51,10 +54,15 @@ def fetch(url, tries=4):
     for i in range(tries):
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
-                return json.loads(r.read())
+                j = json.loads(r.read())
+            if "error" in j:
+                last = j["error"]
+                time.sleep(min(30, 3 * (i + 1)))
+                continue
+            return j
         except Exception as e:           # noqa: BLE001 — retry anything transient
             last = e
-            time.sleep(2 * (i + 1))
+            time.sleep(min(30, 3 * (i + 1)))
     raise RuntimeError(f"BLM fetch failed after {tries} tries: {last}")
 
 

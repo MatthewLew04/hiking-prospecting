@@ -22,15 +22,23 @@ UA = {'User-Agent': 'nw-mineral-monitor/1.0 (research pipeline)', 'Accept': 'app
 PAGE = 2000
 
 
-def fetch(url, tries=5):
+def fetch(url, tries=8):
+    """Retry BOTH transport failures and JSON-carried server errors —
+    BLM's NV partition throws {'error': {'code': 503, 'Wait timeout…'}}
+    mid-stream under load; treating that as fatal cost a 90-minute pull."""
     last = None
     for i in range(tries):
         try:
             req = urllib.request.Request(url, headers=UA)
             with urllib.request.urlopen(req, timeout=180) as r:
-                return json.loads(r.read())
+                j = json.loads(r.read())
+            if 'error' in j:
+                last = j['error']
+                time.sleep(min(60, 5 * (i + 1)))
+                continue
+            return j
         except Exception as e:                    # noqa: BLE001
-            last = e; time.sleep(3 * (i + 1))
+            last = e; time.sleep(min(60, 5 * (i + 1)))
     raise RuntimeError(f'fetch failed after {tries}: {last}')
 
 
@@ -51,16 +59,22 @@ def run(st, cap=250000):
                 f'&returnCountOnly=true&f=json').get('count')
     print(f'{st}: {cnt} closed cases total; keeping most recent {cap}', flush=True)
 
-    cursor = None
-    seen = set()
+    # resume from checkpoint if a prior run died mid-pull
+    ckpt = f'/tmp/{st.lower()}_closed_ckpt.json'
+    cursor, seen = None, set()
     cols = {'serial': [], 'name': [], 'type': [], 'x': [], 'y': []}
+    try:
+        c = json.load(open(ckpt))
+        cursor, cols = c['cursor'], c['cols']
+        seen = set(cols['serial'])
+        print(f'{st}: resumed from checkpoint — {len(seen):,} records, cursor {cursor}', flush=True)
+    except Exception:
+        pass
     t0 = time.time()
     page_i = 0
     while len(cols['serial']) < cap:
         where = '1=1' if cursor is None else f'OBJECTID<{cursor}'
         j = fetch(base + '&where=' + urllib.parse.quote(where))
-        if 'error' in j:
-            raise RuntimeError(f'BLM error {st}: {j["error"]}')
         feats = j.get('features', [])
         if not feats:
             break
@@ -85,10 +99,11 @@ def run(st, cap=250000):
                 break
         page_i += 1
         if page_i % 10 == 0:
+            json.dump({'cursor': cursor, 'cols': cols}, open(ckpt, 'w'))
             rate = len(cols['serial']) / max(1, time.time() - t0)
             eta = (cap - len(cols['serial'])) / max(1, rate)
             print(f'  {st} page {page_i}: {len(cols["serial"]):,} kept '
-                  f'({rate:.0f}/s, ~{eta/60:.0f} min left)', flush=True)
+                  f'({rate:.0f}/s, ~{eta/60:.0f} min left, ckpt saved)', flush=True)
 
     n = len(cols['serial'])
     out = {'state': st, 'layer': 'closed', 'retrieved': time.strftime('%Y-%m-%d'),
@@ -98,6 +113,8 @@ def run(st, cap=250000):
     path = f'/home/claude/nw/site/data/claims/{st.lower()}_closed.json'
     json.dump(out, open(path, 'w'), separators=(',', ':'))
     import os
+    try: os.remove(ckpt)
+    except OSError: pass
     print(f'{st}: wrote {n:,} of {cnt:,} -> {path} '
           f'({os.path.getsize(path):,} bytes, {time.time()-t0:.0f}s)', flush=True)
 

@@ -132,6 +132,14 @@ Resources:
               - Effect: Allow
                 Action: [ s3:GetObject, s3:PutObject ]
                 Resource: !Sub '${SiteBucket.Arn}/data/*'
+              # checkpoint files for the resumable pulls (crash fix 2026-08-06)
+              - Effect: Allow
+                Action: [ s3:GetObject, s3:PutObject, s3:DeleteObject ]
+                Resource: !Sub '${SiteBucket.Arn}/ckpt/*'
+              # self-continuation: a pull that runs low on time re-invokes itself
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProjectName}-claims-updater'
 
   UpdaterFunction:
     Type: AWS::Lambda::Function
@@ -139,7 +147,9 @@ Resources:
       FunctionName: !Sub '${ProjectName}-claims-updater'
       Runtime: python3.12
       Handler: index.handler
-      MemorySize: 512
+      # 512 OOM-killed the NV pull (275k geometries in flight) and starved the
+      # CPU — memory scales CPU/network on Lambda, so 2048 also parses ~4× faster
+      MemorySize: 2048
       Timeout: 900
       Role: !GetAtt UpdaterRole.Arn
       Environment:
@@ -318,7 +328,7 @@ Resources:
       FunctionName: !Sub '${ProjectName}-expiration-watch'
       Runtime: python3.12
       Handler: index.handler
-      MemorySize: 512
+      MemorySize: 1024
       Timeout: 900
       Role: !GetAtt WatchRole.Arn
       Environment:
@@ -423,7 +433,7 @@ Resources:
       FunctionName: !Sub '${ProjectName}-ask'
       Runtime: python3.12
       Handler: index.handler
-      MemorySize: 256
+      MemorySize: 512
       Timeout: 60
       Role: !GetAtt AskRole.Arn
       Environment:

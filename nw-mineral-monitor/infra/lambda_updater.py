@@ -16,9 +16,19 @@ Pagination per BLM server quirks (verified 2026-07-30):
 
 Closed layers are pulled NEWEST-FIRST (OBJECTID DESC, where OBJECTID<cursor)
 and capped at CLOSED_CAP (default 250,000) per state — NV alone has 1.23M
-closed cases, which would blow both the Lambda timeout and the site file
-budget. States under the cap are complete; others carry truncated=true +
-total_available.
+closed cases, which would blow the site file budget.
+
+CHECKPOINT + SELF-CONTINUATION (added 2026-08-06 — the crash fix):
+Lambda's hard ceiling is 15 minutes, but a 250k-record closed pull takes
+40–160 minutes at BLM's throttle, so the monthly closed refreshes used to
+time out on every run (and NV active flirted with OOM at 512 MB — memory is
+now 2048 in the template). The updater is now resumable: when fewer than
+TIME_RESERVE ms remain, it writes progress (cursor + columns) to
+s3://bucket/ckpt/{st}_{mode}.json, asynchronously re-invokes ITSELF with the
+remaining work, and exits cleanly. The chain continues until every state is
+done; each completed state deletes its checkpoint and stamps the manifest.
+CHAIN_MAX (env, default 30) is the runaway stop. Needs
+lambda:InvokeFunction on itself + s3 rw on ckpt/* (both in template.yaml).
 """
 import json, os, time, urllib.request, urllib.parse, boto3
 
@@ -38,9 +48,12 @@ TYPE_DECODE = {"384101": "L", "384103": "L", "384201": "P", "384203": "P",
                "384301": "T", "384303": "T", "384401": "M", "384403": "M"}
 FIELDS = "OBJECTID,CSE_NR,CSE_NAME,CSE_TYPE_NR,CSE_DISP,RCRD_ACRS"
 PAGE = 2000
-MAX_PAGES = 400          # safety valve per state/layer
+MAX_PAGES = 400          # safety valve per state/layer (per chain segment)
 CLOSED_CAP = int(os.environ.get("CLOSED_CAP", "250000"))
+CHAIN_MAX = int(os.environ.get("CHAIN_MAX", "30"))
+TIME_RESERVE_MS = 150_000          # checkpoint + re-invoke headroom
 s3 = boto3.client("s3")
+lam = boto3.client("lambda")
 
 
 def fetch(url, tries=6):
@@ -83,7 +96,34 @@ def centroid(rings):
     return cx / (6 * a), cy / (6 * a)
 
 
-def pull_state(state, mode):
+def ckpt_key(state, mode):
+    return f"ckpt/{state.lower()}_{mode}.json"
+
+
+def ckpt_load(bucket, state, mode):
+    try:
+        return json.loads(s3.get_object(Bucket=bucket,
+                                        Key=ckpt_key(state, mode))["Body"].read())
+    except Exception:                    # noqa: BLE001 — no checkpoint = fresh start
+        return None
+
+
+def ckpt_save(bucket, state, mode, ck):
+    s3.put_object(Bucket=bucket, Key=ckpt_key(state, mode),
+                  Body=json.dumps(ck, separators=(",", ":")).encode(),
+                  ContentType="application/json")
+
+
+def ckpt_clear(bucket, state, mode):
+    try:
+        s3.delete_object(Bucket=bucket, Key=ckpt_key(state, mode))
+    except Exception:                    # noqa: BLE001
+        pass
+
+
+def pull_state(state, mode, bucket, ms_left):
+    """Resumable pull. Returns (data, done). done=False means we ran low on
+    time: progress is checkpointed to S3 and the caller should re-invoke."""
     xmin, ymin, xmax, ymax = BBOX[state]
     geometry = json.dumps({"xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax,
                            "spatialReference": {"wkid": 4326}})
@@ -94,17 +134,33 @@ def pull_state(state, mode):
             f"&inSR=4326&spatialRel=esriSpatialRelIntersects"
             f"&outFields={FIELDS}&returnGeometry=true&outSR=4326&geometryPrecision=5"
             f"&orderByFields={order}&resultRecordCount={PAGE}&f=json")
-    total = None
-    if desc:
-        j = fetch(f"{EP}/{LAYER[mode]}/query?geometryType=esriGeometryEnvelope"
-                  f"&geometry={urllib.parse.quote(geometry)}&inSR=4326"
-                  f"&spatialRel=esriSpatialRelIntersects&where=1%3D1"
-                  f"&returnCountOnly=true&f=json")
-        total = j.get("count")
-    cursor, seen, cols = None, set(), {"serial": [], "name": [], "type": [], "x": [], "y": []}
-    if mode == "active":
-        cols["disp"] = []; cols["acres"] = []
+
+    ck = ckpt_load(bucket, state, mode)
+    if ck:
+        cursor, total, cols = ck["cursor"], ck.get("total"), ck["cols"]
+        seen = set(cols["serial"])
+        print(f"{state} {mode}: resuming checkpoint at cursor {cursor}, "
+              f"{len(seen):,} rows so far")
+    else:
+        cursor, cols = None, {"serial": [], "name": [], "type": [], "x": [], "y": []}
+        if mode == "active":
+            cols["disp"] = []; cols["acres"] = []
+        seen = set()
+        total = None
+        if desc:
+            j = fetch(f"{EP}/{LAYER[mode]}/query?geometryType=esriGeometryEnvelope"
+                      f"&geometry={urllib.parse.quote(geometry)}&inSR=4326"
+                      f"&spatialRel=esriSpatialRelIntersects&where=1%3D1"
+                      f"&returnCountOnly=true&f=json")
+            total = j.get("count")
+
     for _ in range(MAX_PAGES):
+        if ms_left() < TIME_RESERVE_MS:
+            ckpt_save(bucket, state, mode,
+                      {"cursor": cursor, "total": total, "cols": cols})
+            print(f"{state} {mode}: out of time at {len(cols['serial']):,} rows — "
+                  f"checkpointed, continuing in next invocation")
+            return None, False
         if desc:
             where = "1=1" if cursor is None else f"OBJECTID<{cursor}"
         else:
@@ -144,25 +200,11 @@ def pull_state(state, mode):
     if desc and total is not None:
         out["truncated"] = out["n"] < total
         out["total_available"] = total
-    return out
+    ckpt_clear(bucket, state, mode)
+    return out, True
 
 
-def handler(event, context):
-    event = event or {}
-    mode = event.get("mode", "active")
-    states = event.get("states", list(BBOX))
-    bucket = os.environ["BUCKET"]
-    results = {}
-    for st in states:
-        data = pull_state(st, mode)
-        key = f"data/claims/{st.lower()}_{mode}.json"
-        s3.put_object(Bucket=bucket, Key=key,
-                      Body=json.dumps(data, separators=(",", ":")).encode(),
-                      ContentType="application/json",
-                      CacheControl="public, max-age=900")
-        results[st] = data["n"]
-        print(f"{st} {mode}: {data['n']} claims -> s3://{bucket}/{key}")
-    # stamp the manifest
+def stamp_manifest(bucket, mode, results):
     try:
         man = json.loads(s3.get_object(Bucket=bucket, Key="data/manifest.json")["Body"].read())
         today = time.strftime("%Y-%m-%d")
@@ -180,4 +222,42 @@ def handler(event, context):
                       CacheControl="public, max-age=300")
     except Exception as e:              # noqa: BLE001 — manifest stamp is best-effort
         print("manifest update skipped:", e)
-    return {"mode": mode, "counts": results}
+
+
+def handler(event, context):
+    event = event or {}
+    mode = event.get("mode", "active")
+    states = list(event.get("states", list(BBOX)))
+    chain = int(event.get("chain", 0))
+    bucket = os.environ["BUCKET"]
+    ms_left = (context.get_remaining_time_in_millis if context
+               else (lambda: 900_000))
+    results = {}
+    while states:
+        st = states[0]
+        data, done = pull_state(st, mode, bucket, ms_left)
+        if not done:
+            if chain + 1 > CHAIN_MAX:
+                raise RuntimeError(f"chain limit {CHAIN_MAX} hit on {st} {mode} — "
+                                   f"BLM slower than ever seen; raise CHAIN_MAX")
+            nxt = {"mode": mode, "states": states, "chain": chain + 1}
+            lam.invoke(FunctionName=os.environ.get("AWS_LAMBDA_FUNCTION_NAME",
+                                                   context.function_name),
+                       InvocationType="Event",
+                       Payload=json.dumps(nxt).encode())
+            if results:
+                stamp_manifest(bucket, mode, results)
+            print(f"continuing as chain {chain + 1}: {states}")
+            return {"mode": mode, "continued": True, "chain": chain + 1,
+                    "completed": results, "remaining": states}
+        key = f"data/claims/{st.lower()}_{mode}.json"
+        s3.put_object(Bucket=bucket, Key=key,
+                      Body=json.dumps(data, separators=(",", ":")).encode(),
+                      ContentType="application/json",
+                      CacheControl="public, max-age=900")
+        results[st] = data["n"]
+        print(f"{st} {mode}: {data['n']} claims -> s3://{bucket}/{key}")
+        states.pop(0)
+    if results:
+        stamp_manifest(bucket, mode, results)
+    return {"mode": mode, "counts": results, "chain": chain}

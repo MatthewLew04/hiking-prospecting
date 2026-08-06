@@ -159,3 +159,74 @@ if you want it differently.
     200 but are interactive JS apps). If BLM ever publishes the flat-file
     extracts they've promised for MLRS, `fetch_claims_aoi.py` is where they
     plug in.
+
+## WS5 — county-direct claim extraction (2026-08-06)
+
+23. **Cassia has no online recorded-document index** (verified 2026-08-06 at
+    cassia.gov/recorder: vault by appointment, records request to
+    recorder@cassia.gov). The adapter therefore runs OPERATOR-ASSISTED:
+    the pipeline emits a prefilled records request, ingests whatever
+    export/transcription comes back from `data-inbox/county/<county>/`
+    (CSV/TSV/JSON, headers sniffed), and never scrapes. Portals that block
+    automated verification via robots.txt (iDoc Market et al.) are marked
+    `unverified` in the coverage matrix rather than probed around — same
+    no-walled-apps posture as WS2d's fee report.
+
+24. **Matching is claim name + TRS, never claimant.** The public MLRS GIS
+    carries no claimant names (see #WS3), so county grantor/grantee fields
+    corroborate a match in the dossier but don't drive it. Confidence tiers
+    HIGH (name ≥.9 + section overlap) / MEDIUM / LOW ride on every match and
+    every alert; numbered-series names ("PMG 370" vs "PMG 371") are
+    penalized so series claims don't cross-match.
+
+25. **"COUNTY-RECORDED — NOT IN MLRS" is a lead with a clock on it.** State
+    law records the location first; FLPMA (43 U.S.C. § 1744) gives 90 days
+    to file with BLM, plus adjudication lag. The alert text says exactly
+    that. The watch Lambda retires the alert automatically once a same-name
+    case appears in the MLRS active layer, and skips county alerts entirely
+    when the deployed county file is demo data.
+
+26. **`--demo` is the only path that ingests `demo/county_sample.csv`** —
+    synthetic rows (marked in-file) that exercise every doc class and both
+    signal kinds against real Cassia serials. A real (empty-inbox) run ships
+    with the site so nothing synthetic can be mistaken for a record.
+
+## WS6 — geologic maps + lithology targeting (2026-08-06)
+
+27. **Macrostrat is the vector source of record, by measurement not
+    preference.** The spec's order (IGS vector → NGMDB → SGMC → Macrostrat)
+    was probed: IGS ArcGIS REST still 502s from this environment (#12-era
+    finding), NGMDB vector products are per-quad downloads, SGMC's WFS
+    works — and Macrostrat already harmonizes SGMC 1:500k *plus* the IGS
+    Twin Falls 30×60 DWM-49 1:100k for this AOI, serving the best available
+    scale per area with a per-unit citation. Every unit carries source_id,
+    verbatim description, citation, and scale in `data/geology/{aoi}.json`;
+    SGMC-WFS remains the coded fallback. Scanned-quad georeferencing
+    (rasters) is recorded as the Tier-1 upgrade path, not attempted.
+
+28. **Zero Tier-1 / Tier-2 units in Cassia is a map-scale fact, not an
+    engine bug.** No mapped unit at 1:500k/1:100k carries sinter/opaline/
+    chalcedony or hydrothermal-alteration language here. The tier regexes
+    stay sinter-first (they fire immediately if a finer map ever enters the
+    stack); rankings in this AOI are Tier-3 hosts × faults × geothermal ×
+    pathfinders × open ground. The UI note and every card say so.
+
+29. **Plain "altered" is excluded from Tier 2 on purpose:** the AOI's only
+    "altered" matches are weathered basalt (olivine→iddingsite) in DWM-49 —
+    a proven false positive. Tier 2 requires silicif-/jasperoid/argillic/
+    propylitic/alunite/adularia/hydrothermally-altered language.
+    Travertine/tufa is scored separately at low weight (calcareous — right
+    plumbing, wrong chemistry), exactly per spec.
+
+30. **Faults come from the geologic maps (Macrostrat line layer), clipped
+    per tile** — seams are irrelevant for distance/intersection math.
+    USGS NSHM hazfaults2014 was integrated but contains zero features in
+    this bbox (it only models major seismogenic structures); its fetch
+    stays in as a supplement for future AOIs. The earthquake.usgs.gov WAF
+    403s ArcGIS paging params — that fetch is single-shot by design.
+
+31. **Sentinel-2/ASTER alteration indices (WS6c) are recorded as future
+    work**, not shipped: the corroborating-raster value is real, but it
+    needs scene selection + cloud masking to avoid painting false
+    confidence over 2,600 mi². The target JSON schema already has room
+    (`boosts`) for a satellite term.

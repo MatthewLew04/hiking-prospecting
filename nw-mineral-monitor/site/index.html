@@ -174,6 +174,8 @@ footer .right{margin-left:auto}
 .ulrow.off .sw{opacity:.25}.ulrow.off .nm{color:var(--mut);text-decoration:line-through}
 #ingestLog{font:10px var(--mono);color:var(--mut);margin-top:5px;max-height:90px;overflow:auto}
 /* ---- WS2 open ground ---- */
+.lrow{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:5px;font-size:12px;cursor:pointer;user-select:none}
+.lrow:hover{background:var(--panel2)}
 .oglegend{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .oglegend span{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
 .oglegend i{width:11px;height:11px;border-radius:3px;display:inline-block}
@@ -312,6 +314,12 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>OPEN GROUND — CASSIA</h3><div id="layersOG"></div>
         <div class="oglegend" id="ogLegend" style="display:none"></div>
         <div class="subnote" id="ogNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>GEOLOGY TARGETS — CASSIA</h3><div id="layersWS6"></div>
+        <div class="oglegend" id="tgLegend" style="display:none"></div>
+        <div class="subnote" id="tgNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
+        <div class="subnote" id="ctyNote" style="padding-left:0"></div>
+        <div id="ctyBtns"></div></div>
       <div class="sec"><h3>MY DATA</h3><div id="layersUser"></div>
         <div class="subnote" style="padding-left:0">drop CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP on the map — lat-lon, UTM and PLSS legals (“T12S R22E Sec 14”) auto-geocode</div>
         <div id="ingestLog"></div></div>
@@ -379,7 +387,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-06c';
+const BUILD = '2026-08-06d';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -446,9 +454,10 @@ function initMap(){
     wireMapEvents();
     await loadContext();
     await loadGrades();          // small + marquee — never wait behind the NV claims file
-    loadOpenGround().then(()=>handleClaimHash()).catch(()=>{});   // WS2 sections (Cassia AOI)
+    loadOpenGround().then(()=>handleClaimHash())
+      .then(()=>loadGeoTargets()).catch(()=>{});                  // WS2 sections + WS6 targets (Cassia AOI)
     loadUserLayers().catch(()=>{});                               // WS1 ingest + registry
-    loadAlerts().catch(()=>{});                                   // WS2d watch digest
+    loadCounty().catch(()=>{}).then(()=>loadAlerts()).catch(()=>{}); // WS5 county + WS2d watch digest
     await loadSites();
     await loadClaimsActive();
     refreshStats();
@@ -900,7 +909,7 @@ function wireMapEvents(){
     clearTimeout(liveTimer); liveTimer = setTimeout(refreshLive, 450); });
   map.on('zoomend', ()=>updateDistrictMarkers());
   map.on('idle', ()=>updateDistrictMarkers());
-  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill'];
+  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill'];
   map.on('mousemove', e=>{
     const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
     if (!fs.length){ tipEl.style.display='none'; map.getCanvas().style.cursor=''; return; }
@@ -918,6 +927,9 @@ function wireMapEvents(){
 function rec(f){ const p=f.properties; const d=stores[p.f]; return {d, i:p.i}; }
 function tipText(f){
   const lid = f.layer.id, p = f.properties;
+  if (lid==='tg-fill' && TGIDX[p.id]){ const t=TGIDX[p.id];
+    return `#${t.rank} · ${t.score} · ${t.nm||'unit'}${t.money?' ★':''} (${(t.tierName||'').split(' — ')[0]})`; }
+  if (lid==='geo-fill') return `${p.nm||'geologic unit'}${p.age?' · '+p.age:''}`;
   if (lid==='grades-c' && GR){ const i=p.i;
     return `${GR.name[i]} — ${GR.au[i]!=null? GR.au[i]+' oz/t Au' : GR.ag[i]!=null? GR.ag[i]+' oz/t Ag' : '$'+GR.usd[i]+'/ton'}${GR.open[i]>=400?' · OPEN':''}`; }
   if (lid==='live-fill') return `${p.name||p.serial} — ${CLAIMTYPE[p.type]} (${p.disp}) · LIVE`;
@@ -941,6 +953,8 @@ function kv(rows){ return '<dl class="kv">'+rows.filter(r=>r[1]).map(([k,v,mono]
 
 function showFeature(f){
   const lid = f.layer.id, p = f.properties;
+  if (lid==='tg-fill') return showTarget(p.id);
+  if (lid==='geo-fill') return showGeoUnit(p.id);
   if (lid==='grades-c' && GR) return showGrade(p.i);
   if (lid==='live-fill'){
     openDetail(`<h2>${esc(p.name||p.serial)}</h2>
@@ -1075,6 +1089,9 @@ function buildModals(){
   <tr><td>PLSS sections (Cassia)</td><td><a href="https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer" target="_blank">BLM CadNSDI</a> — Boise Meridian section polygons</td><td>1,889</td></tr>
   <tr><td>Open-ground grid (Cassia)</td><td>Derived: claims legal descriptions × <a href="https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_LimitedScale/MapServer" target="_blank">BLM SMA</a> (generalized) × withdrawal/segregation cases × historic-feature layers</td><td>1,889 sections</td></tr>
   <tr><td>Historic press & records</td><td><a href="https://www.loc.gov/collections/chronicling-america/" target="_blank">Chronicling America</a> · Google Books · <a href="https://arlweb.msha.gov/OpenGovernmentData/OGIMSHA.asp" target="_blank">MSHA open data</a> — automated sweep w/ citations (dossiers)</td><td>per-mine</td></tr>
+  <tr><td>Geologic map + faults (Cassia)</td><td><a href="https://macrostrat.org/" target="_blank">Macrostrat</a> harmonized polygons (CC-BY 4.0) — serving USGS SGMC 1:500k + IGS DWM-49 1:100k here; verbatim description, citation & scale carried per unit</td><td>304 units</td></tr>
+  <tr><td>Geology targets (Cassia)</td><td>WS6 sinter-first engine: tiered lithology regexes × mapped faults & intersections × <a href="https://www.usgs.gov/tools/geographic-names-information-system-gnis" target="_blank">GNIS</a> hot/warm springs × IDWR geothermal wells × MRDS pathfinder commodities × WS2 open ground — every target carries its full scoring rationale</td><td>ranked</td></tr>
+  <tr><td>County recorder (Cassia)</td><td>WS5 operator-assisted ingest — Cassia has <b>no online index</b> (verified 2026-08-06; records request / vault visit), instruments fuzzy-matched to MLRS serials by claim name + TRS; COUNTY-COVERAGE.md has the per-county matrix</td><td>per-export</td></tr>
   </table>
   <h3>AUTO-UPDATING</h3>
   <p>Two mechanisms keep claims current: (1) when hosted with the included AWS stack, a <b>nightly Lambda job</b> re-pulls every active claim in the five states from BLM MLRS and rewrites the snapshot files (footer shows the snapshot date); (2) at zoom ≥ 10.5 with “Live claim boundaries” on, the map <b>queries BLM directly for the current viewport</b> — those polygons are always current, straight from the source. MRDS is a legacy archive (no updates since ~2011); USMIN and the state databases update on multi-year cycles and are refreshed with site rebuilds.</p>
@@ -1512,6 +1529,9 @@ function answer(q){
       return;
     }
   }
+  /* WS6 geology-target questions — before grades ("epithermal gold targets") */
+  if (/\btargets?\b|sinter|opalin|epithermal|geolog|rhyolite/.test(q) && !/oz|grade|richest/.test(q))
+    return void tgAnswer(q);
   /* section-grid questions (Cassia AOI) — before grades so "sections" doesn't fall through */
   if (/\bsections?\b|\bgrid\b|was claimed|now open|split.?estate|withdrawn|lapsed|expir|watch list|alerts?\b/.test(q)
       && !/oz|grade|richest/.test(q)){
@@ -1696,7 +1716,7 @@ async function loadOpenGround(){
   map.on('click','og-fill', e=>{
     // let point features win
     const others = map.queryRenderedFeatures(e.point).filter(f=>!['og-fill','og-line'].includes(f.layer.id) && f.source!=='carto');
-    if (others.some(f=>['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill'].includes(f.layer.id))) return;
+    if (others.some(f=>['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill'].includes(f.layer.id))) return;
     const p = e.features[0].properties;
     showSection(p.id);
   });
@@ -1754,6 +1774,178 @@ async function showWatchInAsk(){
     })));
 }
 
+/* ---------- WS6: geology + sinter-first targets ---------- */
+let GEO = null, TG = null, TGIDX = {}, CTY = null;
+const TIERC = {1:'#ff5d73', 2:'#fb923c', 3:'#60a5fa', 9:'#a78bfa'};
+const TIERSHORT = {1:'T1 SINTER', 2:'T2 ALTERED', 3:'T3 HOST', 9:'TRAVERTINE'};
+function ws6Row(id, label, onchg){
+  const row = document.createElement('label');
+  row.className='lrow'; row.innerHTML = `<input type="checkbox" id="${id}"> <span>${label}</span>`;
+  $('layersWS6').appendChild(row);
+  $(id).onchange = onchg;
+  return row;
+}
+async function loadGeoTargets(){
+  try{
+    [GEO, TG] = await Promise.all([jget(`data/geology/${AOI}.json`), jget(`data/targets/${AOI}.json`)]);
+  }catch(e){ $('tgNote').textContent = 'no geology build yet — run pipelines/fetch_geology.py + geology_targets.py'; return; }
+  for (const t of TG.targets) TGIDX[t.id] = t;
+  const under = map.getLayer('og-fill') ? 'og-fill' : 'claimsC-dot';
+  // geologic map (units colored by the source map's own colors) + mapped faults
+  map.addSource('geo', {type:'geojson', data:{type:'FeatureCollection', features:
+    GEO.units.map(u=>({type:'Feature', properties:{id:u.id, nm:u.nm, age:u.age, col:u.col||'#4b5563'},
+                       geometry:{type:'MultiPolygon', coordinates:u.g}}))}});
+  map.addLayer({id:'geo-fill', type:'fill', source:'geo', layout:{visibility:'none'},
+    paint:{'fill-color':['get','col'],'fill-opacity':.18}}, under);
+  map.addLayer({id:'geo-line', type:'line', source:'geo', layout:{visibility:'none'}, minzoom:8.5,
+    paint:{'line-color':'#ffffff','line-width':.3,'line-opacity':.15}}, under);
+  map.addSource('geo-faults', {type:'geojson', data:{type:'FeatureCollection', features:
+    GEO.faults.map(f=>({type:'Feature', properties:{nm:f.nm, ty:f.ty},
+                        geometry:{type:'LineString', coordinates:f.path}}))}});
+  map.addLayer({id:'geo-fault', type:'line', source:'geo-faults', layout:{visibility:'none'},
+    paint:{'line-color':'#d4a53f','line-width':.9,'line-opacity':.55,'line-dasharray':[3,2]}}, under);
+  // ranked targets (above open ground, below the point layers)
+  map.addSource('tg', {type:'geojson', data:{type:'FeatureCollection', features:
+    TG.targets.map(t=>({type:'Feature', properties:{id:t.id, rank:t.rank, tier:t.tier,
+                        money:t.money?1:0, area:t.area_km2||0},
+                        geometry:{type:'MultiPolygon', coordinates:t.g}}))}});
+  const tcol = ['match',['get','tier'],1,TIERC[1],2,TIERC[2],9,TIERC[9],TIERC[3]];
+  // big regional units get outline-weight display so they can't flood the map
+  map.addLayer({id:'tg-fill', type:'fill', source:'tg', layout:{visibility:'none'},
+    paint:{'fill-color':tcol,'fill-opacity':['case',
+      ['>',['get','area'],120], .07,
+      ['==',['get','money'],1], .42, .26]}}, 'claimsC-dot');
+  map.addLayer({id:'tg-line', type:'line', source:'tg', layout:{visibility:'none'},
+    paint:{'line-color':tcol,'line-width':['case',['==',['get','money'],1],2.2,
+      ['>',['get','area'],120],.7,1.1],'line-opacity':.8}}, 'claimsC-dot');
+  ws6Row('geoToggle','GEOLOGIC MAP + FAULTS', e=>{
+    const v = e.target.checked?'visible':'none';
+    for (const l of ['geo-fill','geo-line','geo-fault']) map.setLayoutProperty(l,'visibility',v);
+  });
+  ws6Row('tgToggle','TARGETS (RANKED)', e=>{
+    const v = e.target.checked?'visible':'none';
+    for (const l of ['tg-fill','tg-line']) map.setLayoutProperty(l,'visibility',v);
+    $('tgLegend').style.display = e.target.checked?'flex':'none';
+    if (e.target.checked && map.getZoom() < 8) map.flyTo({center:[-113.65,42.33], zoom:9.2, duration:1200});
+  });
+  const listBtn = document.createElement('div');
+  listBtn.className='subnote'; listBtn.style.cssText='padding-left:0;cursor:pointer;color:var(--accent)';
+  listBtn.textContent = '▸ ranked target list';
+  listBtn.onclick = ()=>showTargetList();
+  $('layersWS6').appendChild(listBtn);
+  const bt = TG.stats.by_tier||{};
+  $('tgLegend').innerHTML = Object.entries(bt).map(([nm,n])=>{
+    const tier = nm.startsWith('TIER 1')?1:nm.startsWith('TIER 2')?2:nm.startsWith('TRAV')?9:3;
+    return `<span><i style="background:${TIERC[tier]}"></i>${TIERSHORT[tier]} · ${n}</span>`;
+  }).join('') + `<span><i style="border:2px solid ${TIERC[2]};background:none"></i>★ money = tier≤2 on open ground</span>`;
+  $('tgNote').textContent = `${TG.stats.targets} scored targets from ${TG.stats.scored_units} mapped units — ${TG.generated}. `
+    + `No T1 sinter / T2 alteration is MAPPED at this AOI's vector scales (1:500k + 1:100k) — a map-scale statement, not a ground truth. Cards show full scoring.`;
+}
+function tierBadge(t){ return `<span class="badge" style="border:1px solid ${TIERC[t.tier]}88;color:${TIERC[t.tier]};background:${TIERC[t.tier]}1c">${esc(TIERSHORT[t.tier])}</span>`; }
+function showTarget(id){
+  const t = TGIDX[id]; if (!t) return;
+  const src = t.src||{};
+  openDetail(`<h2>#${t.rank} — ${esc(t.nm||'geologic unit')}</h2>
+    <div class="badges">${tierBadge(t)} <span class="badge exploration">SCORE ${t.score}</span>
+      ${t.money?'<span class="badge active">★ MONEY LAYER</span>':''}
+      <span class="badge abandoned">CASSIA AOI</span></div>
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">WHY THIS SCORES</h3>
+    ${t.why.map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">UNIT DESCRIPTION — VERBATIM FROM THE MAP</h3>
+    <div class="desc" style="border-left:2px solid ${TIERC[t.tier]}66;padding-left:8px">${esc(t.de||t.li||'(no description on this unit)')}</div>
+    ${kv([['Age', esc(t.age||'')],['Lithology (coded)', esc(t.li||'')],
+          ['Unit area in AOI', t.area_km2? t.area_km2+' km²':null],
+          ['Map scale', esc((src.scale_note||src.scale||'?')+'')],
+          ['Open sections under it', (t.secs_open||[]).length? t.secs_open.slice(0,6).map(esc).join('; ')+((t.secs_open.length>6)?' …':''):null]])}
+    <div class="links">
+      <a href="#" onclick="map.flyTo({center:[${t.cx},${t.cy}],zoom:11.6,duration:900});return false">Fly to it</a>
+      <a href="https://macrostrat.org/api/v2/geologic_units/map?map_id=${t.id}&format=json" target="_blank">Source record ↗</a>
+      <a href="https://ngmdb.usgs.gov/mapview/?center=${t.cx},${t.cy}&zoom=12" target="_blank">NGMDB MapView ↗</a>
+      <a href="${gmaps(t.cy,t.cx)}" target="_blank">Google Maps ↗</a></div>
+    <div class="src">Source map: ${esc(src.ref||'?')} (served via Macrostrat, CC-BY 4.0). ${esc(TG.honesty||'')}</div>`);
+}
+function showGeoUnit(id){
+  const u = (GEO&&GEO.units||[]).find(x=>x.id===id); if (!u) return;
+  const src = (GEO.sources||{})[u.src]||{};
+  const t = TGIDX[id];
+  openDetail(`<h2>${esc(u.nm||'geologic unit')}</h2>
+    <div class="badges">${t?tierBadge(t):''}<span class="badge abandoned">GEOLOGIC MAP</span><span class="badge abandoned">${esc(src.scale||'')}</span></div>
+    <div class="desc">${esc(u.de||u.li||'(no description)')}</div>
+    ${kv([['Age', esc(u.age||'')],['Strat name', esc(u.sn||'')],['Lithology', esc(u.li||'')]])}
+    ${t?`<button class="dosbtn" onclick="showTarget(${id})">🎯 TARGET CARD — #${t.rank}, SCORE ${t.score}</button>`:''}
+    <div class="src">${esc(src.ref||'')} — via Macrostrat (CC-BY 4.0), retrieved ${esc(GEO.generated)}.</div>`);
+}
+function showTargetList(){
+  if (!TG) return;
+  const rows = TG.targets.slice(0,20).map(t=>`<div class="dc" onclick="map.flyTo({center:[${t.cx},${t.cy}],zoom:11.4,duration:900});showTarget(${t.id})">
+      <div class="t"><span style="color:${TIERC[t.tier]};font:600 11px var(--mono)">#${t.rank}</span> ${esc((t.nm||'unit').slice(0,44))} <span class="b">${t.money?'★ ':''}${t.score}</span></div>
+      <div class="c">${esc(TIERSHORT[t.tier])} · fault ${t.boosts.fault_km!=null?t.boosts.fault_km+' km':'—'} · open ${t.boosts.open.open_n}/${t.boosts.open.n} sections${t.boosts.springs.length?' · '+esc(t.boosts.springs[0].nm):''}</div></div>`).join('');
+  openDetail(`<h2>Ranked targets — Cassia</h2>
+    <div class="badges"><span class="badge exploration">TOP ${Math.min(20,TG.targets.length)} OF ${TG.targets.length}</span></div>
+    <div style="margin:8px 0">${rows}</div>
+    <div class="src">${esc(TG.method||'')}</div>`);
+  const tgl=$('tgToggle'); if (tgl&&!tgl.checked) tgl.click();
+}
+function tgAnswer(q){
+  if (!TG || !TG.targets.length) return void botMsg('No geology targets built yet — run pipelines/fetch_geology.py then geology_targets.py.');
+  const money = TG.targets.filter(t=>t.money).length;
+  const d = botMsg(`<b>${TG.targets.length}</b> geology targets in Cassia (sinter-first engine): `
+    + Object.entries(TG.stats.by_tier||{}).map(([nm,n])=>`${n} ${nm.split(' — ')[0]}`).join(', ')
+    + `. ${money?`<b style="color:#3ecf3e">${money} money-layer</b> (tier≤2 on open ground). `:''}`
+    + `<span style="font-size:10.5px;color:var(--mut)">No T1 sinter is mapped at this AOI's scales — see the layer note. Research leads, not discoveries.</span>`,
+    [{label:'⚡ show targets', fn:()=>{ const t=$('tgToggle'); if(t&&!t.checked) t.click(); }},
+     {label:'📋 ranked list', fn:()=>showTargetList()}]);
+  TG.targets.slice(0,8).forEach(t=>d.appendChild(hitLink(
+    `#${t.rank} ${t.nm||'unit'} — ${t.score}${t.money?' ★':''} (fault ${t.boosts.fault_km!=null?t.boosts.fault_km+' km':'—'})`, null,
+    ()=>{ map.flyTo({center:[t.cx,t.cy], zoom:11.4, duration:900}); const g=$('tgToggle'); if(g&&!g.checked) g.click(); showTarget(t.id); })));
+}
+
+/* ---------- WS5: county recorder records ---------- */
+async function loadCounty(){
+  try{ CTY = await jget(`data/county/${AOI}.json`); }
+  catch(e){ $('ctyNote').textContent='no county build yet — run pipelines/county_records.py'; return; }
+  const s = CTY.stats||{};
+  const m = s.matched||{};
+  $('ctyNote').innerHTML = s.records
+    ? `${s.records} instruments ingested${CTY.demo?' <b style="color:var(--warn)">(DEMO DATA)</b>':''} · matched to MLRS: ${m.HIGH||0} high / ${m.MEDIUM||0} med / ${m.LOW||0} low · ${(CTY.alerts||[]).length} signal(s)`
+    : `Cassia has <b>no online index</b> (verified ${esc(CTY.generated)}) — this workstream runs on recorder exports you drop in <span style="font-family:var(--mono)">data-inbox/county/</span>. County recording leads MLRS by weeks; that gap is the signal.`;
+  const mk=(txt,fn)=>{ const b=document.createElement('div'); b.className='subnote';
+    b.style.cssText='padding-left:0;cursor:pointer;color:var(--accent)'; b.textContent=txt; b.onclick=fn;
+    $('ctyBtns').appendChild(b); };
+  mk('▸ coverage matrix + records request', showCountyInfo);
+  if (s.records) mk('▸ ingested instruments', showCountyRecords);
+}
+function showCountyInfo(){
+  const c = CTY.coverage||{}; const rec = c.recorder||{};
+  openDetail(`<h2>County recorder — ${esc(CTY.county)} Co., ${esc(CTY.state)}</h2>
+    <div class="badges"><span class="badge ${c.access==='manual-request'?'exploration':'abandoned'}">${esc((c.access||'?').toUpperCase())}</span>
+      ${c.verified?`<span class="badge active">VERIFIED ${esc(c.verified_date||'')}</span>`:'<span class="badge abandoned">UNVERIFIED</span>'}</div>
+    ${kv([['How verified', esc(c.verify_method||'')],['Notes', esc(c.notes||'')],
+          ['Recorder', `${esc(rec.name||'')} · ${esc(rec.phone||'')} · <a href="${esc(rec.url||'#')}" target="_blank">${esc(rec.url||'')}</a>`],
+          ['Why county-first', esc(CTY.law_note||'')],
+          ['Drop exports in', `<span style="font-family:var(--mono)">${esc(CTY.inbox||'')}</span>`]])}
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">PREFILLED RECORDS REQUEST</h3>
+    <pre style="white-space:pre-wrap;font:10.5px var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px">${esc(CTY.request_template||'')}</pre>
+    <div class="src">${esc(CTY.disclaimer||'')} Full matrix for neighboring counties: COUNTY-COVERAGE.md in the repo.</div>`);
+}
+function showCountyRecords(){
+  const rows = (CTY.records||[]).map((r,i)=>{
+    const mm = r.match;
+    return `<div class="dc" data-i="${i}">
+      <div class="t">${esc(r.type)} <span class="b">${esc(r.recorded||'')}</span></div>
+      <div class="c">${esc(r.claim_name||'(no claim name)')}${r.instrument?' · inst. '+esc(r.instrument):''}
+        ${mm?` — <b style="color:${mm.conf==='HIGH'?'#3ecf3e':mm.conf==='MEDIUM'?'#fbbf24':'#a9aeb6'}">${mm.conf}</b> match → ${esc(mm.ser)}`:' — <b style="color:#2dd4bf">no MLRS match</b>'}</div></div>`;
+  }).join('');
+  openDetail(`<h2>County instruments — ${esc(CTY.county)}</h2>
+    <div class="badges"><span class="badge abandoned">${(CTY.records||[]).length} RECORDS</span>${CTY.demo?'<span class="badge exploration">DEMO DATA</span>':''}</div>
+    <div style="margin:8px 0">${rows||'<div class="src">none ingested yet</div>'}</div>
+    <div class="src">${esc(CTY.disclaimer||'')}</div>`);
+  dInner.querySelectorAll('.dc').forEach(el=>el.onclick = ()=>{
+    const r = CTY.records[+el.dataset.i];
+    if (r.match) showDossier('claim', r.match.ser);
+  });
+}
+
 /* ---------- WS3: dossiers ---------- */
 const CANON_RE = /\b(the|mine|mines|mining|claims?|group|lode|placer|prospect|property|tunnel|shaft|no\.?\s*\d+|#\s*\d+|\d+)\b/g;
 const canonName = n => String(n||'').replace(/\s*\([^)]*\)/g,'').toLowerCase().replace(CANON_RE,' ').replace(/[^a-z ]+/g,' ').replace(/\s+/g,' ').trim();
@@ -1795,6 +1987,17 @@ async function claimDossier(ser){
     const labs = row.secs.map(id=>PLSSIDX[id]?.lab||id).slice(0,6);
     facts.push({k:'Sections (from legal description)', v:labs.join('; '), src:S, ret:''});
   }
+  // WS5: county recorder instruments matched to this serial
+  if (CTY && CTY.matches_by_serial && CTY.matches_by_serial[ser]){
+    for (const ri of CTY.matches_by_serial[ser]){
+      const r = CTY.records[ri]; if (!r) continue;
+      facts.push({k:'County recorder', v:`${r.type} — recorded ${r.recorded||'?'}`
+        + (r.instrument?` · inst. ${r.instrument}`:'') + (r.book?` · bk ${r.book}${r.page?'/'+r.page:''}`:'')
+        + (r.grantor?` · grantor ${r.grantor}`:'') + (r.grantee?` · grantee ${r.grantee}`:'')
+        + ` (${r.match?r.match.conf:'?'}-confidence name+TRS match${CTY.demo?' — DEMO DATA':''})`,
+        src:'County export via WS5 pipeline', ret:CTY.generated||''});
+    }
+  }
   const h = HIST.byName[canonName(row.name)];
   return {title:`${row.name||'(unnamed)'} — ${ser}`, facts,
           links:jsLinksFor(row.name, ser), history:h?h.hits:[]};
@@ -1820,27 +2023,41 @@ async function showDossier(kind, key){
 
 /* ---------- WS2d: alerts ---------- */
 async function loadAlerts(){
-  let a=null; try{ a = await jget('data/alerts/latest.json'); }catch(e){ return; }
-  if (!a || !a.generated) return;
-  const n = (a.alerts||[]).length;
+  let a=null; try{ a = await jget('data/alerts/latest.json'); }catch(e){}
+  // WS5 county signal classes — skip the client-side merge once the watch
+  // Lambda starts folding them into the digest itself (avoid double display)
+  const cAl = (a && (a.alerts||[]).some(x=>x.county)) ? [] : ((CTY && CTY.alerts) || []);
+  const n = ((a&&a.generated)?(a.alerts||[]).length:0) + cAl.length;
+  if (!n && !(a&&a.generated)) return;
   const btn = $('btnAlerts'); btn.style.display='';
   btn.textContent = n? `WATCH · ${n}` : 'WATCH';
   if (n) btn.style.color = 'var(--gold)';
-  btn.onclick = ()=>{ renderAlerts(a); $('alertsPanel').classList.toggle('open'); };
+  btn.onclick = ()=>{ renderAlerts(a||{alerts:[]}, cAl); $('alertsPanel').classList.toggle('open'); };
 }
-function renderAlerts(a){
-  const rows = (a.alerts||[]).map((al,i)=>`<div class="alrow" data-i="${i}">
-      <span class="k" style="color:${al.kind.includes('CLOSED')?'#f87171':al.kind.includes('LAPSED')?'#fbbf24':'#34d399'}">${esc(al.kind)}</span>
-      — ${esc(al.name||'(unnamed)')} <span style="color:var(--mut)">${esc(al.ser)}</span>
+function alColor(k){
+  return k.includes('COUNTY')?'#2dd4bf' : k.includes('ASSESSMENT')?'#34d399'
+       : k.includes('CLOSED')?'#f87171' : k.includes('LAPSED')?'#fbbf24' : '#34d399';
+}
+function renderAlerts(a, cAl){
+  cAl = cAl||[];
+  const all = [...cAl.map(x=>({...x, _cty:1})), ...(a.alerts||[])];
+  const rows = all.map((al,i)=>`<div class="alrow" data-i="${i}">
+      <span class="k" style="color:${alColor(al.kind)}">${esc(al.kind)}</span>
+      — ${esc(al.name||'(unnamed)')} <span style="color:var(--mut)">${esc(al.ser||al.instrument||'')}</span>
       <div class="ev">${esc((al.trs||[]).join('; '))}<br>${esc(al.evidence||'')}</div></div>`).join('');
-  $('alertsBody').innerHTML = `<div style="font:10px var(--mono);color:var(--mut);margin-bottom:4px">${esc(a.generated)} · mode ${esc(a.mode)} · ${a.active_now} active cases in AOI</div>`
+  const head = a.generated
+    ? `${esc(a.generated)} · mode ${esc(a.mode)} · ${a.active_now} active cases in AOI${cAl.length?` · +${cAl.length} county signal(s)${CTY&&CTY.demo?' (DEMO)':''}`:''}`
+    : cAl.length? `county recorder signals${CTY&&CTY.demo?' (DEMO DATA)':''} — the daily MLRS watch Lambda hasn't written a digest yet`
+    : '';
+  $('alertsBody').innerHTML = `<div style="font:10px var(--mono);color:var(--mut);margin-bottom:4px">${head}</div>`
     + (rows || '<div class="src">no transitions in the last run.</div>')
     + (a.lapse_note? `<div class="callout" style="font-size:10.5px">${esc(a.lapse_note)}</div>`:'')
-    + `<div class="src">${esc(a.disclaimer||'')}</div>`;
+    + `<div class="src">${esc(a.disclaimer||(CTY&&CTY.disclaimer)||'')}</div>`;
   $('alertsBody').querySelectorAll('.alrow').forEach(el=>el.onclick = ()=>{
-    const al = a.alerts[+el.dataset.i];
+    const al = all[+el.dataset.i];
     if (al.xy) map.flyTo({center:al.xy, zoom:13, duration:900});
-    showDossier('claim', al.ser);
+    if (al.ser) showDossier('claim', al.ser);
+    else if (al._cty) showCountyRecords();
   });
 }
 async function handleClaimHash(){

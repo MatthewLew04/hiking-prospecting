@@ -123,3 +123,38 @@ messy-CSV acceptance test (`demo/messy_cassia.csv`).
   cached sections the browser queries CadNSDI live; offline it reports the
   row unmatched.
 - **git push HTTP 400** — `git config http.postBuffer 524288000` then retry.
+
+## 9. WS5 — county recorder workflow (operator-assisted)
+
+Cassia has **no online index** (verified 2026-08-06). The loop:
+
+```bash
+cd pipelines && python3 county_records.py     # writes site/data/county/cassia.json
+```
+
+1. Open the map → COUNTY RECORDS → "coverage matrix + records request" and
+   send the prefilled request to recorder@cassia.gov (or visit the vault —
+   call (208) 878-5240 first).
+2. Drop whatever comes back (CSV/TSV/JSON, any sane headers — see
+   `data-inbox/county/README.md`) into `data-inbox/county/cassia/`.
+3. Re-run the script, then `bash deploy.sh` (sync only is fine). Matched
+   instruments appear in claim dossiers; unmatched new locations appear in
+   WATCH as **COUNTY-RECORDED — NOT IN MLRS**; the daily watch Lambda folds
+   them into email/webhook digests and auto-retires ones that reach MLRS.
+
+`python3 county_records.py --demo` exercises the whole flow with synthetic
+`demo/county_sample.csv` (clearly flagged DEMO in the UI — don't deploy it).
+Coverage for neighboring counties: `COUNTY-COVERAGE.md`.
+
+## 10. WS6 — geology + targets refresh
+
+```bash
+cd pipelines && python3 fetch_geology.py && python3 geology_targets.py
+```
+
+First run pulls ~20 Macrostrat tiles + ~1,000 unit records (a few minutes;
+everything lands in `pipelines/cache/`, so re-runs are instant). Then
+deploy-sync. Sources, scales, and citations ride inside
+`site/data/geology/cassia.json`; scoring rationale inside
+`site/data/targets/cassia.json`. Re-run cadence: whenever IGS publishes new
+mapping for the area (Macrostrat picks it up) — yearly is plenty.

@@ -16,6 +16,7 @@ Interactive map of mines, mining claims, and mineral sources across **Washington
 | `site/data/districts/` | `curated.json` (28, cited), `cassia.json` (7 deep-dive), `auto.json` (437 from MRDS tags) |
 | `site/data/manifest.json` | Layer inventory, counts, freshness stamps, live-query spec |
 | `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
+| `site/data/geology/` · `targets/` · `county/` | WS5–WS6 bundles: harmonized geologic map + faults + springs (cited per unit), ranked sinter-first targets with scoring rationale, county-recorder instruments + coverage |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
 | `data-inbox/` | Drop files here + run `pipelines/inbox_ingest.py` → permanent map layers |
 | `demo/` | `messy_cassia.csv` acceptance-test file (see DEMO.md) |
@@ -37,6 +38,28 @@ facts, MLRS serial-register path, county-recorder & SoS guidance, Mindat /
 Chronicling America / HathiTrust prefilled searches. **WS4 web scrub** —
 automated Chronicling America + Google Books + MSHA sweep, deduped by
 name-variant, rendered as a chronological history in each dossier.
+
+## WS5 + WS6 (2026-08-06)
+
+**WS5 county-direct claim extraction** — claims become real at the county
+recorder before BLM ever sees them (state recording first; FLPMA's 90-day
+BLM window + adjudication lag after). Cassia has no online index (verified),
+so the adapter is operator-assisted: prefilled records request, header-sniffed
+ingest from `data-inbox/county/`, doc-type classification, TRS parsing, fuzzy
+name+TRS matching to MLRS serials (confidence-tiered), county instruments in
+each claim dossier, and two new WATCH signal classes — **COUNTY-RECORDED —
+NOT IN MLRS** and **ASSESSMENT FILED (COUNTY)**. Per-county coverage matrix
+in `COUNTY-COVERAGE.md`. **WS6 geology targets (sinter-first)** — the full
+geologic map for the AOI (Macrostrat-harmonized: SGMC 1:500k + IGS DWM-49
+1:100k here, citation + scale per unit) plus mapped faults, GNIS hot/warm
+springs, and IDWR geothermal wells, scored by a tiered engine: T1 sinter/
+opaline hot-spring deposits (flagged anywhere, regardless of proximity to
+anything), T2 silicified/hydrothermally-altered (fault-weighted), T3
+rhyolite–tuff–bimodal epithermal hosts, travertine labeled separately; boosts
+for fault intersections, pathfinder commodities (Hg Sb As ×2), thermal
+springs/wells, and WS2 open ground (tier≤2 + open = the money flag). Every
+target renders an explanation card: verbatim unit description, source-map
+citation + scale, the arithmetic of its score, and the land status under it.
 
 Judgment calls: `ASSUMPTIONS.md`. Operations: `RUNBOOK.md`. Walkthrough: `DEMO.md`.
 

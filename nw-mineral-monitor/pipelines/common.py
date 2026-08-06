@@ -159,3 +159,12 @@ def write_json(relpath, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     json.dump(obj, open(path, 'w'), separators=(',', ':'))
     print(f'wrote {relpath} ({os.path.getsize(path):,} bytes)')
+
+
+def update_manifest(key, entry):
+    """Merge one freshness entry into site/data/manifest.json (WS5/WS6)."""
+    path = os.path.join(SITE, 'data', 'manifest.json')
+    man = json.load(open(path))
+    man.setdefault('ws56', {})[key] = entry
+    json.dump(man, open(path, 'w'), separators=(',', ':'))
+    print(f'manifest: ws56.{key} = {entry}')

@@ -171,6 +171,25 @@ def handler(event, context):
                                 "LEAD, not a conclusion. Verify the serial register.",
                         "link": (f"{site}/#claim={ser}" if site else None)})
 
+    # ---- WS5: fold in county-recorder signals, if a county build is deployed.
+    # county_records.py runs operator-side and ships data/county/{aoi}.json with
+    # the site; anything it flagged (COUNTY-RECORDED — NOT IN MLRS, ASSESSMENT
+    # FILED) rides along in the digest + notifications. A county NOT-IN-MLRS
+    # alert whose claim has since appeared in the active layer is retired here
+    # by name-match rather than re-alerted.
+    county_key = os.environ.get("AOI_KEY", "cassia")
+    cty = s3_json(bucket, f"data/county/{county_key}.json") or {}
+    if not cty.get("demo"):
+        active_names = {(v.get("name") or "").strip().lower() for v in cur_active.values()}
+        for ca in cty.get("alerts", []):
+            nm = (ca.get("name") or "").strip().lower()
+            if ca.get("kind", "").startswith("COUNTY-RECORDED") and nm and nm in active_names:
+                continue                          # it reached MLRS — signal resolved
+            alerts.append({"kind": ca.get("kind"), "ser": ca.get("ser"),
+                           "name": ca.get("name"), "trs": ca.get("trs"),
+                           "xy": None, "evidence": ca.get("evidence"),
+                           "county": True})
+
     put_json(bucket, "watch/state_active.json",
              cur_active, cache="no-store")
     digest = {"generated": today, "mode": mode, "aoi_bbox": bbox,
@@ -187,7 +206,8 @@ def handler(event, context):
         if frm and to:
             lines = [f"NW Mineral Monitor — {len(alerts)} alert(s), {today}", ""]
             for a in alerts[:60]:
-                lines += [f"[{a['kind']}] {a.get('name') or '(unnamed)'} — {a['ser']}",
+                lines += [f"[{a['kind']}] {a.get('name') or '(unnamed)'} — "
+                          f"{a.get('ser') or a.get('instrument') or 'no serial yet'}",
                           f"  TRS: {'; '.join(a.get('trs') or []) or 'see map'}",
                           f"  {a.get('evidence', '')}",
                           f"  {a.get('link') or ''}", ""]

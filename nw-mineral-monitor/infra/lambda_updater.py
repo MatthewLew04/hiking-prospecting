@@ -50,8 +50,9 @@ FIELDS = "OBJECTID,CSE_NR,CSE_NAME,CSE_TYPE_NR,CSE_DISP,RCRD_ACRS"
 PAGE = 2000
 MAX_PAGES = 400          # safety valve per state/layer (per chain segment)
 CLOSED_CAP = int(os.environ.get("CLOSED_CAP", "250000"))
-CHAIN_MAX = int(os.environ.get("CHAIN_MAX", "30"))
+CHAIN_MAX = int(os.environ.get("CHAIN_MAX", "40"))
 TIME_RESERVE_MS = 150_000          # checkpoint + re-invoke headroom
+LOCK_TTL = 3 * 3600                # a lock older than this is a dead chain
 s3 = boto3.client("s3")
 lam = boto3.client("lambda")
 
@@ -121,6 +122,53 @@ def ckpt_clear(bucket, state, mode):
         pass
 
 
+# ---- per-state run locks -------------------------------------------------
+# Multiple roots can fire the updater for overlapping states (nightly rules,
+# deploy.sh's refresh, manual invokes, Lambda's async auto-retry) — without a
+# lock their chains stomp one shared checkpoint AND double the BLM load,
+# which is exactly what makes BLM start timing out. One owner per state×mode.
+def lock_key(state, mode):
+    return f"ckpt/lock_{state.lower()}_{mode}.json"
+
+
+def lock_read(bucket, state, mode):
+    try:
+        return json.loads(s3.get_object(Bucket=bucket,
+                                        Key=lock_key(state, mode))["Body"].read())
+    except Exception:                    # noqa: BLE001
+        return None
+
+
+def lock_write(bucket, state, mode, run_id):
+    s3.put_object(Bucket=bucket, Key=lock_key(state, mode),
+                  Body=json.dumps({"run_id": run_id, "ts": time.time()}).encode(),
+                  ContentType="application/json")
+
+
+def lock_release(bucket, state, mode):
+    try:
+        s3.delete_object(Bucket=bucket, Key=lock_key(state, mode))
+    except Exception:                    # noqa: BLE001
+        pass
+
+
+def claim_states(bucket, states, mode, run_id, chain):
+    """Return the subset of states this run may work on, asserting locks."""
+    mine = []
+    for st in states:
+        lk = lock_read(bucket, st, mode)
+        if lk and lk.get("run_id") != run_id and time.time() - lk.get("ts", 0) < LOCK_TTL:
+            if chain == 0:
+                print(f"{st} {mode}: another run owns it (run {lk['run_id'][:8]}…) — skipping")
+                continue
+            # a continuation that lost its lock was superseded — stand down
+            print(f"{st} {mode}: lock taken over by run {lk['run_id'][:8]}… — standing down")
+            continue
+        lock_write(bucket, st, mode, run_id)
+        mine.append(st)
+    return mine
+
+
 def pull_state(state, mode, bucket, ms_left):
     """Resumable pull. Returns (data, done). done=False means we ran low on
     time: progress is checkpointed to S3 and the caller should re-invoke."""
@@ -165,7 +213,17 @@ def pull_state(state, mode, bucket, ms_left):
             where = "1=1" if cursor is None else f"OBJECTID<{cursor}"
         else:
             where = f"OBJECTID>{cursor or 0}"
-        j = fetch(base + "&where=" + urllib.parse.quote(where))
+        try:
+            j = fetch(base + "&where=" + urllib.parse.quote(where))
+        except RuntimeError as e:
+            # BLM stalled past all retries — that's a checkpoint, not a crash.
+            # Raising here used to trigger Lambda's async auto-retry, which
+            # spawned DUPLICATE chains over the same states.
+            ckpt_save(bucket, state, mode,
+                      {"cursor": cursor, "total": total, "cols": cols})
+            print(f"{state} {mode}: BLM stalled at {len(cols['serial']):,} rows ({e}) — "
+                  f"checkpointed, continuing in next invocation")
+            return None, False
         if "error" in j:
             raise RuntimeError(f"BLM error {state}/{mode}: {j['error']}")
         feats = j.get("features", [])
@@ -227,20 +285,31 @@ def stamp_manifest(bucket, mode, results):
 def handler(event, context):
     event = event or {}
     mode = event.get("mode", "active")
-    states = list(event.get("states", list(BBOX)))
     chain = int(event.get("chain", 0))
+    run_id = event.get("run_id") or (context.aws_request_id if context
+                                     else f"local-{time.time():.0f}")
     bucket = os.environ["BUCKET"]
     ms_left = (context.get_remaining_time_in_millis if context
                else (lambda: 900_000))
+    states = claim_states(bucket, list(event.get("states", list(BBOX))),
+                          mode, run_id, chain)
+    if not states:
+        print(f"nothing to do — all requested states owned by other runs")
+        return {"mode": mode, "counts": {}, "chain": chain, "skipped": True}
     results = {}
     while states:
         st = states[0]
         data, done = pull_state(st, mode, bucket, ms_left)
         if not done:
             if chain + 1 > CHAIN_MAX:
+                for s2 in states:
+                    lock_release(bucket, s2, mode)
                 raise RuntimeError(f"chain limit {CHAIN_MAX} hit on {st} {mode} — "
                                    f"BLM slower than ever seen; raise CHAIN_MAX")
-            nxt = {"mode": mode, "states": states, "chain": chain + 1}
+            for s2 in states:                       # keep our locks fresh
+                lock_write(bucket, s2, mode, run_id)
+            nxt = {"mode": mode, "states": states, "chain": chain + 1,
+                   "run_id": run_id}
             lam.invoke(FunctionName=os.environ.get("AWS_LAMBDA_FUNCTION_NAME",
                                                    context.function_name),
                        InvocationType="Event",
@@ -258,6 +327,7 @@ def handler(event, context):
         results[st] = data["n"]
         print(f"{st} {mode}: {data['n']} claims -> s3://{bucket}/{key}")
         states.pop(0)
+        lock_release(bucket, st, mode)
     if results:
         stamp_manifest(bucket, mode, results)
-    return {"mode": mode, "counts": results, "chain": chain}
+    return {"mode": mode, "counts": results, "chain": chain, "run_id": run_id}

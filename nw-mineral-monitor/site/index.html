@@ -379,7 +379,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-06b';
+const BUILD = '2026-08-06c';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -626,7 +626,7 @@ function showGrade(i){
 }
 function gradeAnswer(q, f){
   if (!GR) return void botMsg('Grade dataset not loaded.');
-  const openOnly = /unclaim|open ground|no (active )?claims|not permitted|un-?permitted|abandoned.*(claim|ground)/.test(q);
+  const openOnly = /unclaim|open ground|no (active )?claims|not permitted|un-?permitted|abandoned.*(claim|ground)|\bavailable\b|\bavail\b/.test(q);
   const silver = /silver|\bag\b/.test(q) && !/gold|\bau\b/.test(q);
   const rows = [];
   for (let i=0;i<GR.n;i++){
@@ -1519,8 +1519,13 @@ function answer(q){
     if (OG) return void ogAnswer(q);
     return void botMsg('The section-status grid covers Cassia County and is still loading (or failed to load) — the OPEN GROUND panel in the sidebar toggles it.');
   }
-  /* grade / open-ground questions hit the cited-grades dataset first */
-  if (/oz.?(per|\/).?ton|highest.?grade|richest|grade.?sort|sort.*grade|unclaimed|open ground|not permitted|un-?permitted/.test(q)){
+  /* grade / open-ground questions hit the cited-grades dataset first.
+     Catches typo'd and colloquial richness asks too: "most gold/to miing
+     sites", "highest gold concentration", "best available gold". */
+  const metalWord = /\bgold\b|\bsilver\b|\bau\b|\bag\b/.test(q);
+  if (/oz.?(per|\/).?to?n?\b|per.?ton|\bgrades?\b|highest.?grade|richest|concentration|unclaimed|open ground|not permitted|un-?permitted/.test(q)
+      || (metalWord && /\b(most|highest|best|top|richest)\b/.test(q))
+      || (metalWord && /\bavailable\b/.test(q) && /site|mine|deposit|ground|claim/.test(q))){
     if (!GR) return void botMsg('The grade dataset is still loading — ask again in a few seconds.');
     return gradeAnswer(q, parseQuery(q));
   }
@@ -1548,6 +1553,8 @@ function answer(q){
     applyFilters();
     if (f.near) map.flyTo({center:[f.near.lon,f.near.lat], zoom:10, duration:1100});
   }});
+  // gold/silver site lists get a one-click pivot to the cited-grade ranking
+  if (GR && (f.g===0 || /gold|silver/.test(q))) chips.push({label:'⛏ richest by oz/ton instead', fn:()=>gradeAnswer(q, f)});
   const d = botMsg(`<b>${fmt(count)}</b> ${esc(desc)}.${count>hits.length? ' First '+hits.length+':' : ''}`, chips);
   hits.forEach(h=>d.insertBefore(hitLink(h.name, null, ()=>{
     map.flyTo({center:[h.x,h.y], zoom:Math.max(map.getZoom(),12.5), duration:900});

@@ -1,0 +1,1 @@
+{"generated":null,"note":"seeded — the expiration-watch Lambda rewrites this after its first run (deploy.sh excludes alerts/* from sync so live digests survive redeploys)"}

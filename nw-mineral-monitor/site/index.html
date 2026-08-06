@@ -161,6 +161,40 @@ footer .right{margin-left:auto}
 .pub .m{font:10.5px var(--mono);color:var(--mut)}
 .callout{border:1px solid rgba(250,178,25,.4);background:rgba(250,178,25,.07);border-radius:6px;padding:9px 11px;margin:8px 0}
 #menuBtn{display:none;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink);font-size:15px;padding:5px 10px;cursor:pointer;flex:none}
+/* ---- WS1 ingest ---- */
+#dropOverlay{position:fixed;inset:0;background:rgba(11,13,16,.86);z-index:6000;display:none;align-items:center;justify-content:center;pointer-events:none}
+#dropOverlay.show{display:flex}
+#dropOverlay .in{border:2px dashed var(--accent);border-radius:14px;padding:46px 60px;color:var(--accent);font:600 15px var(--mono);letter-spacing:.08em;background:rgba(45,212,191,.05)}
+.ulrow{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.ulrow .sw{width:10px;height:10px;border-radius:3px;flex:none}
+.ulrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.ulrow .nm:hover{color:var(--accent)}
+.ulrow button{background:none;border:1px solid var(--line2);border-radius:4px;color:var(--mut);font-size:9px;padding:1px 5px;cursor:pointer}
+.ulrow button:hover{color:var(--ink);border-color:var(--ink)}
+.ulrow.off .sw{opacity:.25}.ulrow.off .nm{color:var(--mut);text-decoration:line-through}
+#ingestLog{font:10px var(--mono);color:var(--mut);margin-top:5px;max-height:90px;overflow:auto}
+/* ---- WS2 open ground ---- */
+.oglegend{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.oglegend span{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--mut)}
+.oglegend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+/* ---- WS3 dossier ---- */
+.dosfact{padding:5px 0;border-bottom:1px solid var(--line);font-size:12px}
+.dosfact b{color:var(--ink);font-weight:600}
+.dosfact .s{display:block;font:9.5px var(--mono);color:var(--mut);margin-top:2px}
+.doslink{padding:5px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.doslink .n{display:block;font-size:10px;color:var(--mut);margin-top:1px}
+.doshist{border-left:2px solid var(--line2);padding-left:9px;margin:6px 0}
+.doshist .h{margin-bottom:7px;font-size:11.5px}
+.doshist .h .d{font:10px var(--mono);color:var(--gold)}
+.dosbtn{display:inline-block;margin:8px 6px 0 0;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.4);border-radius:5px;color:var(--accent);padding:5px 11px;font:600 10.5px var(--mono);letter-spacing:.1em;cursor:pointer}
+.dosbtn:hover{background:rgba(45,212,191,.2)}
+/* ---- WS2d alerts ---- */
+#alertsPanel{position:absolute;top:10px;right:10px;width:330px;max-width:92vw;max-height:70%;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:10px 12px;z-index:900;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#alertsPanel.open{display:block}
+.alrow{padding:7px 0;border-bottom:1px solid var(--line);font-size:11.5px;cursor:pointer}
+.alrow:hover{background:rgba(255,255,255,.03)}
+.alrow .k{font:600 10px var(--mono);letter-spacing:.08em}
+.alrow .ev{color:var(--mut);font-size:10.5px;margin-top:2px}
 @media (max-width:900px){
   #app{grid-template-rows:auto 1fr 26px}
   #main{grid-template-columns:1fr}
@@ -259,6 +293,8 @@ footer .right{margin-left:auto}
       <div class="seg" id="basemaps"><button data-b="dark" class="on">DARK</button><button data-b="sat">SAT</button><button data-b="topo">TOPO</button></div>
       <button class="hbtn" id="btnIntel" style="display:none">INTEL</button>
       <button class="hbtn" id="btnAsk" style="display:none">ASK ▸</button>
+      <button class="hbtn" id="btnData" title="import CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP">+ DATA</button>
+      <button class="hbtn" id="btnAlerts" style="display:none">WATCH</button>
       <button class="hbtn" id="btnReading">READING</button>
       <button class="hbtn" id="btnAbout">ABOUT / SOURCES</button>
       <button class="hbtn" id="btnSignOut" style="display:none">SIGN OUT</button>
@@ -269,6 +305,12 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>STATES</h3><div class="statechips" id="stateChips"></div><div id="loadbar"></div></div>
       <div class="sec"><h3>SITE LAYERS</h3><div id="layersSites"></div></div>
       <div class="sec"><h3>CLAIM LAYERS</h3><div id="layersClaims"></div></div>
+      <div class="sec"><h3>OPEN GROUND — CASSIA</h3><div id="layersOG"></div>
+        <div class="oglegend" id="ogLegend" style="display:none"></div>
+        <div class="subnote" id="ogNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>MY DATA</h3><div id="layersUser"></div>
+        <div class="subnote" style="padding-left:0">drop CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP on the map — lat-lon, UTM and PLSS legals (“T12S R22E Sec 14”) auto-geocode</div>
+        <div id="ingestLog"></div></div>
       <div class="sec"><h3>CONTEXT</h3><div id="layersCtx"></div></div>
       <div class="sec"><h3>COMMODITY FILTER</h3>
         <div class="chips" id="chips"></div>
@@ -294,9 +336,12 @@ footer .right{margin-left:auto}
     </div>
     <div id="detail"><button class="x" onclick="closeDetail()">✕</button><div class="inner" id="detailInner"></div></div>
   </div>
+  <div id="alertsPanel"><b style="font:600 11px var(--mono);letter-spacing:.1em">⚠ EXPIRATION WATCH</b><button style="float:right;background:none;border:none;color:var(--mut);cursor:pointer" onclick="document.getElementById('alertsPanel').classList.remove('open')">✕</button><div id="alertsBody" style="margin-top:6px"></div></div>
+  <div id="dropOverlay"><div class="in">DROP FILES TO ADD TO THE MAP</div></div>
+  <input type="file" id="fileIn" multiple style="display:none" accept=".csv,.xlsx,.xls,.geojson,.json,.kml,.kmz,.gpx,.zip">
   <footer>
     <span id="coords">—</span>
-    <span class="warn">⚠ planning aid only — verify land ownership & claim status on the ground</span>
+    <span class="warn">⚠ research leads only — open-ground status is NOT a title search; verify at BLM & the county recorder before staking</span>
     <span class="right" id="fresh"></span>
   </footer>
 </div>
@@ -325,10 +370,12 @@ footer .right{margin-left:auto}
 </div></div>
 
 <script src="assets/maplibre-gl.js"></script>
+<script src="assets/jszip.min.js"></script>
+<script src="assets/xlsx.mini.min.js"></script>
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-07-31c';
+const BUILD = '2026-08-05a';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -395,6 +442,9 @@ function initMap(){
     wireMapEvents();
     await loadContext();
     await loadGrades();          // small + marquee — never wait behind the NV claims file
+    loadOpenGround().then(()=>handleClaimHash()).catch(()=>{});   // WS2 sections (Cassia AOI)
+    loadUserLayers().catch(()=>{});                               // WS1 ingest + registry
+    loadAlerts().catch(()=>{});                                   // WS2d watch digest
     await loadSites();
     await loadClaimsActive();
     refreshStats();
@@ -567,6 +617,7 @@ function showGrade(i){
     <div class="desc" style="border-left:2px solid var(--gold);padding-left:9px;font-style:italic">“${esc(GR.quote[i])}”</div>
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
+    <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
     <div class="src">${esc(GR.src[i])}. Bonanza assay-text numbers are hand-picked specimens, not mine averages — the quote is the evidence. Open-ground uses the claims snapshot only: famous old districts are often PATENTED (private land carries no BLM claims — Goldfield is the classic trap), so "no claims" ≠ "open to staking". Verify ownership & withdrawals on the ground.</div>`);
 }
 function gradeAnswer(q, f){
@@ -917,6 +968,7 @@ function showFeature(f){
     openDetail(`<h2>${esc((d.name&&d.name[i])||d.serial[i])}</h2>
       <div class="badges">${active? (d.disp[i]==='FILED'?badge('exploration','FILED / PENDING'):badge('active',esc(d.disp[i]))) : badge('closed','CLOSED CLAIM')} <span class="badge abandoned">${CLAIMTYPE[d.type[i]].toUpperCase()}</span> <span class="badge abandoned">${d.state}</span></div>
       ${kv([['Serial',esc(d.serial[i]),1],['Acres',active?d.acres[i]:null],['Centroid',y.toFixed(5)+', '+x.toFixed(5),1]])}
+      <button class="dosbtn" onclick="showDossier('claim','${esc(d.serial[i])}')">📋 DOSSIER — CLAIMANTS, RECORDS, HISTORY</button>
       <div class="links"><a href="https://mlrs.blm.gov/s/" target="_blank">Look up serial in MLRS ↗</a><a href="${gmaps(y,x)}" target="_blank">Google Maps ↗</a></div>
       <div class="src">BLM MLRS snapshot (${esc(d.retrieved)}). Centroid of the PLSS-snapped claim footprint — zoom past 10.5 with “Live claim boundaries” on to fetch current polygons from BLM. ${active?'<b>Active claims are private mineral property.</b>':'Closed = once staked, later dropped — usually open ground unless re-staked, withdrawn, or private.'}</div>`);
   }
@@ -1016,6 +1068,9 @@ function buildModals(){
   <tr><td>Mining claims</td><td><a href="https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer" target="_blank">BLM MLRS GIS</a> — nightly snapshot + live viewport queries</td><td>${fmt(T.claims_active)} / ${fmt(T.claims_closed)}</td></tr>
   <tr><td>Districts</td><td>28 curated (2–3 sources each) + 7 Cassia County deep-dive + ${MAN.districts.auto.n} auto-derived from MRDS tags</td><td>${28+7+MAN.districts.auto.n}</td></tr>
   <tr><td>Boundaries</td><td>US Census TIGER/Line cartographic 500k (2023)</td><td>5 + 198</td></tr>
+  <tr><td>PLSS sections (Cassia)</td><td><a href="https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer" target="_blank">BLM CadNSDI</a> — Boise Meridian section polygons</td><td>1,889</td></tr>
+  <tr><td>Open-ground grid (Cassia)</td><td>Derived: claims legal descriptions × <a href="https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_LimitedScale/MapServer" target="_blank">BLM SMA</a> (generalized) × withdrawal/segregation cases × historic-feature layers</td><td>1,889 sections</td></tr>
+  <tr><td>Historic press & records</td><td><a href="https://www.loc.gov/collections/chronicling-america/" target="_blank">Chronicling America</a> · Google Books · <a href="https://arlweb.msha.gov/OpenGovernmentData/OGIMSHA.asp" target="_blank">MSHA open data</a> — automated sweep w/ citations (dossiers)</td><td>per-mine</td></tr>
   </table>
   <h3>AUTO-UPDATING</h3>
   <p>Two mechanisms keep claims current: (1) when hosted with the included AWS stack, a <b>nightly Lambda job</b> re-pulls every active claim in the five states from BLM MLRS and rewrites the snapshot files (footer shows the snapshot date); (2) at zoom ≥ 10.5 with “Live claim boundaries” on, the map <b>queries BLM directly for the current viewport</b> — those polygons are always current, straight from the source. MRDS is a legacy archive (no updates since ~2011); USMIN and the state databases update on multi-year cycles and are refreshed with site rebuilds.</p>
@@ -1541,6 +1596,503 @@ async function ensureAuth(){
     });
   });
 }
+/* ================================================================
+   WS1–WS4 modules: universal ingest, open ground, dossiers, watch
+   ================================================================ */
+const AOI = 'cassia';
+let PLSSF = null, PLSSIDX = null, OG = null, DOS = null, AOICLAIMS = null, HIST = null;
+
+/* ---------- WS2: open-ground section layer ---------- */
+const OGCOLOR = {OPEN:'#34d399', CLOSED_ONLY:'#fbbf24', ACTIVE:'#f87171',
+                 WITHDRAWN:'#a78bfa', NONFEDERAL:'#4b5563', QUIET:'#233041'};
+const OGLABEL = {OPEN:'open ground + historic workings', CLOSED_ONLY:'was claimed, now open',
+                 ACTIVE:'actively claimed', WITHDRAWN:'withdrawn / not locatable',
+                 NONFEDERAL:'non-federal surface', QUIET:'federal, no history'};
+async function loadOpenGround(){
+  try{
+    [PLSSF, OG] = await Promise.all([jget(`data/plss/${AOI}.json`), jget(`data/openground/${AOI}.json`)]);
+  }catch(e){ return; }
+  PLSSIDX = {};
+  for (const f of PLSSF.features){
+    const rings = f.geometry.coordinates;
+    let sx=0, sy=0, n=0;
+    for (const p of rings[0]){ sx+=p[0]; sy+=p[1]; n++; }
+    PLSSIDX[f.properties.id] = {lab:f.properties.lab, cx:sx/n, cy:sy/n, rings};
+  }
+  const byId = {}; for (const s of OG.sections) byId[s.id] = s;
+  const feats = [];
+  for (const f of PLSSF.features){
+    const s = byId[f.properties.id]; if (!s) continue;
+    feats.push({type:'Feature', properties:{id:s.id, st:s.st, lab:s.lab}, geometry:f.geometry});
+  }
+  map.addSource('og', {type:'geojson', data:{type:'FeatureCollection', features:feats}});
+  const color = ['match',['get','st'],
+    'OPEN',OGCOLOR.OPEN,'CLOSED_ONLY',OGCOLOR.CLOSED_ONLY,'ACTIVE',OGCOLOR.ACTIVE,
+    'WITHDRAWN',OGCOLOR.WITHDRAWN,'NONFEDERAL',OGCOLOR.NONFEDERAL, OGCOLOR.QUIET];
+  map.addLayer({id:'og-fill', type:'fill', source:'og', layout:{visibility:'none'},
+    paint:{'fill-color':color,'fill-opacity':['match',['get','st'],'OPEN',.42,'CLOSED_ONLY',.32,'ACTIVE',.16,'WITHDRAWN',.2,'NONFEDERAL',.06,.03]}}, 'claimsC-dot');
+  map.addLayer({id:'og-line', type:'line', source:'og', layout:{visibility:'none'}, minzoom:9,
+    paint:{'line-color':color,'line-width':.6,'line-opacity':.5}}, 'claimsC-dot');
+  // sidebar toggle + legend
+  const row = document.createElement('label');
+  row.className='lrow'; row.innerHTML = `<input type="checkbox" id="ogToggle"> <span>SECTION STATUS GRID</span>`;
+  $('layersOG').appendChild(row);
+  $('ogToggle').onchange = e=>{
+    const v = e.target.checked ? 'visible':'none';
+    map.setLayoutProperty('og-fill','visibility',v); map.setLayoutProperty('og-line','visibility',v);
+    $('ogLegend').style.display = e.target.checked ? 'flex':'none';
+    if (e.target.checked && map.getZoom() < 8.4) map.flyTo({center:[-113.65,42.33], zoom:9.4, duration:1200});
+  };
+  $('ogLegend').innerHTML = ['OPEN','CLOSED_ONLY','ACTIVE','WITHDRAWN','NONFEDERAL']
+    .map(k=>`<span><i style="background:${OGCOLOR[k]}"></i>${OGLABEL[k]}</span>`).join('');
+  const st = OG.stats||{};
+  $('ogNote').textContent = `${OG.name}: ${st.OPEN||0} open-with-history · ${st.CLOSED_ONLY||0} previously claimed · ${st.ACTIVE||0} active — ${OG.generated}. Research leads only.`;
+  map.on('click','og-fill', e=>{
+    // let point features win
+    const others = map.queryRenderedFeatures(e.point).filter(f=>!['og-fill','og-line'].includes(f.layer.id) && f.source!=='carto');
+    if (others.some(f=>['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill'].includes(f.layer.id))) return;
+    const p = e.features[0].properties;
+    showSection(p.id);
+  });
+}
+function showSection(id){
+  const s = OG.sections.find(x=>x.id===id); if (!s) return;
+  const cls = {OPEN:'active', CLOSED_ONLY:'exploration', ACTIVE:'closed', WITHDRAWN:'abandoned', NONFEDERAL:'abandoned', QUIET:'abandoned'}[s.st]||'abandoned';
+  const why = {
+    OPEN:`historic workings present (${s.nH}), no active claim touches this section, surface agency ${s.ag||'?'} (locatable).`,
+    CLOSED_ONLY:`${s.nC} closed case(s), no active claim today, surface ${s.ag||'?'}.`,
+    ACTIVE:`${s.nA} active case(s) list this section in their legal description.`,
+    WITHDRAWN:`withdrawal/park overlay${s.wdl&&s.wdl.length?` (${s.wdl.join('; ')})`:''} or non-locatable agency (${s.ag||'?'}).`,
+    NONFEDERAL:`surface at section centroid is ${s.ag||'private/state/unknown'} — no BLM claims possible on surface. Patented old claims look exactly like this.`,
+    QUIET:`federal ${s.ag||''} surface, no claims either way, no mapped workings.`}[s.st];
+  openDetail(`<h2>${esc(s.lab)}</h2>
+    <div class="badges">${badge(cls, s.st.replace('_',' '))} ${s.split?badge('exploration','SPLIT-ESTATE FLAG'):''} <span class="badge abandoned">CASSIA</span></div>
+    ${kv([['Why', why],
+          ['Historic features', s.nH? s.hist.join(' · '):null],
+          ['Active serials', s.nA? s.actSer.map(x=>`<a href="#" onclick="showDossier('claim','${x}');return false">${x}</a>`).join(', '):null, s.nA?0:1],
+          ['Closed serials', s.nC? s.cloSer.map(x=>`<a href="#" onclick="showDossier('claim','${x}');return false">${x}</a>`).join(', ')+(s.nC>10?` +${s.nC-10} more`:''):null, s.nC?0:1],
+          ['Mineral segregation', s.split? 'yes — minerals segregated; split-estate research needed':null]])}
+    <div class="src">${esc(OG.note)}</div>`);
+}
+
+/* ---------- WS3: dossiers ---------- */
+const CANON_RE = /\b(the|mine|mines|mining|claims?|group|lode|placer|prospect|property|tunnel|shaft|no\.?\s*\d+|#\s*\d+|\d+)\b/g;
+const canonName = n => String(n||'').replace(/\s*\([^)]*\)/g,'').toLowerCase().replace(CANON_RE,' ').replace(/[^a-z ]+/g,' ').replace(/\s+/g,' ').trim();
+function jsLinksFor(name, ser){
+  const q = encodeURIComponent(name||''), L=[];
+  if (ser){
+    L.push({label:'MLRS serial register (search the serial)', url:'https://reports.blm.gov/report/MLRS/95/Serial-Register-Page',
+      note:`Interactive BLM report app — search ${ser}. Claimant names, mailing addresses of record, location date, full actions history.`});
+    L.push({label:'MLRS Virtual Public Room', url:'https://mlrs.blm.gov/', note:'Case lookup by serial; official record.'});
+    L.push({label:`The Diggings — ${ser}`, url:`https://thediggings.com/usa?q=${encodeURIComponent(ser)}`, note:'Unofficial MLRS mirror; convenient claimant summaries.'});
+  }
+  if (name){
+    L.push({label:`Mindat search “${name}”`, url:`https://www.mindat.org/search.php?search=${q}`, note:'Mineralogy + locality write-ups.'});
+    L.push({label:`Chronicling America — “${name}”`, url:`https://www.loc.gov/collections/chronicling-america/?q=${q}+idaho`, note:'Full-text newspapers 1770–1963.'});
+    L.push({label:`HathiTrust full-text — “${name}”`, url:`https://babel.hathitrust.org/cgi/ls?q1=${q}%20idaho;a=srchls;anyall1=all`, note:'Mining & Scientific Press / E&MJ live here.'});
+  }
+  if (DOS && DOS.recorder) L.push({label:DOS.recorder.name, url:DOS.recorder.url,
+    note:`${DOS.recorder.note||''} ${DOS.recorder.phone||''} · ${DOS.recorder.address||''} — location notices, assessment-work affidavits, quitclaims.`});
+  if (DOS && DOS.sos) L.push({label:'Idaho SoS business search (company claimants)', url:DOS.sos, note:'Registered agent + officers for LLC/corp claimants.'});
+  return L;
+}
+async function ensureDossiers(){
+  if (!DOS){ try{ DOS = await jget(`data/dossiers/${AOI}.json`); }catch(e){ DOS = {mines:{}}; } }
+  if (!HIST){ try{ HIST = await jget(`data/history/${AOI}.json`); }catch(e){ HIST = {byName:{}}; } }
+  return DOS;
+}
+async function claimDossier(ser){
+  try{ AOICLAIMS = AOICLAIMS || await jget(`data/openground/${AOI}_claims.json`); }catch(e){ return null; }
+  const row = [...AOICLAIMS.active, ...AOICLAIMS.closed].find(c=>c.ser===ser);
+  if (!row) return null;
+  const S = 'BLM MLRS MiningClaims (bbox snapshot)';
+  const facts = [
+    {k:'Serial', v:row.ser + (row.leg?` (legacy ${row.leg})`:''), src:S, ret:AOICLAIMS.provenance?.retrieved||OG?.generated||''},
+    {k:'Status', v:row.disp, src:S, ret:''},
+    {k:'Type', v:{L:'Lode',P:'Placer',T:'Tunnel site',M:'Millsite'}[row.type]||row.type, src:S, ret:''}];
+  if (row.acres) facts.push({k:'Recorded acres', v:row.acres, src:S, ret:''});
+  if (row.secs&&row.secs.length && PLSSIDX){
+    const labs = row.secs.map(id=>PLSSIDX[id]?.lab||id).slice(0,6);
+    facts.push({k:'Sections (from legal description)', v:labs.join('; '), src:S, ret:''});
+  }
+  const h = HIST.byName[canonName(row.name)];
+  return {title:`${row.name||'(unnamed)'} — ${ser}`, facts,
+          links:jsLinksFor(row.name, ser), history:h?h.hits:[]};
+}
+async function showDossier(kind, key){
+  await ensureDossiers();
+  const d = kind==='mine'? DOS.mines[String(key)] : await claimDossier(String(key));
+  if (!d){ openDetail(`<h2>No dossier</h2><div class="src">No compiled dossier for this feature (outside the Cassia AOI, or pipelines haven't run). The research links in the feature popup still work.</div>`); return; }
+  if (kind==='mine' && !(d.history||[]).length){
+    const h = HIST.byName[canonName(d.title)]; if (h) d.history = h.hits;
+  }
+  const facts = (d.facts||[]).map(f=>`<div class="dosfact"><b>${esc(f.k)}:</b> ${f.k.includes('grade')?f.v:esc(String(f.v))}<span class="s">source: ${/^https?:/.test(f.src)?`<a href="${esc(f.src)}" target="_blank">${esc(f.src.split('/')[2]||f.src)}</a>`:esc(f.src)} · retrieved ${esc(f.ret)}</span></div>`).join('');
+  const hist = (d.history||[]).slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const histH = hist.length? `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">HISTORY — AUTOMATED SWEEP</h3><div class="doshist">${hist.map(h=>`<div class="h"><span class="d">${esc(h.date||'undated')}</span> · ${esc(h.kind||'')}<br><a href="${esc(h.url)}" target="_blank">${esc(h.title||h.url)}</a>${h.partof?` <span style="color:var(--mut)">(${esc(h.partof)})</span>`:''}</div>`).join('')}</div>`:'';
+  const links = (d.links||[]).map(l=>`<div class="doslink"><a href="${esc(l.url)}" target="_blank">${esc(l.label)} ↗</a><span class="n">${esc(l.note||'')}</span></div>`).join('');
+  openDetail(`<h2>${esc(d.title)}</h2>
+    <div class="badges">${badge('exploration','DOSSIER')} <span class="badge abandoned">CASSIA AOI</span></div>
+    ${facts||'<div class="src">no compiled facts</div>'}
+    ${histH}
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">GO DEEPER — PUBLIC RECORDS</h3>${links}
+    <div class="src">${esc(DOS.addresses_note||'')}</div>`);
+}
+
+/* ---------- WS2d: alerts ---------- */
+async function loadAlerts(){
+  let a=null; try{ a = await jget('data/alerts/latest.json'); }catch(e){ return; }
+  if (!a || !a.generated) return;
+  const n = (a.alerts||[]).length;
+  const btn = $('btnAlerts'); btn.style.display='';
+  btn.textContent = n? `WATCH · ${n}` : 'WATCH';
+  if (n) btn.style.color = 'var(--gold)';
+  btn.onclick = ()=>{ renderAlerts(a); $('alertsPanel').classList.toggle('open'); };
+}
+function renderAlerts(a){
+  const rows = (a.alerts||[]).map((al,i)=>`<div class="alrow" data-i="${i}">
+      <span class="k" style="color:${al.kind.includes('CLOSED')?'#f87171':al.kind.includes('LAPSED')?'#fbbf24':'#34d399'}">${esc(al.kind)}</span>
+      — ${esc(al.name||'(unnamed)')} <span style="color:var(--mut)">${esc(al.ser)}</span>
+      <div class="ev">${esc((al.trs||[]).join('; '))}<br>${esc(al.evidence||'')}</div></div>`).join('');
+  $('alertsBody').innerHTML = `<div style="font:10px var(--mono);color:var(--mut);margin-bottom:4px">${esc(a.generated)} · mode ${esc(a.mode)} · ${a.active_now} active cases in AOI</div>`
+    + (rows || '<div class="src">no transitions in the last run.</div>')
+    + (a.lapse_note? `<div class="callout" style="font-size:10.5px">${esc(a.lapse_note)}</div>`:'')
+    + `<div class="src">${esc(a.disclaimer||'')}</div>`;
+  $('alertsBody').querySelectorAll('.alrow').forEach(el=>el.onclick = ()=>{
+    const al = a.alerts[+el.dataset.i];
+    if (al.xy) map.flyTo({center:al.xy, zoom:13, duration:900});
+    showDossier('claim', al.ser);
+  });
+}
+async function handleClaimHash(){
+  const m = location.hash.match(/claim=([A-Z0-9]+)/i); if (!m) return;
+  try{ AOICLAIMS = AOICLAIMS || await jget(`data/openground/${AOI}_claims.json`); }catch(e){ return; }
+  const ser = m[1].toUpperCase();
+  const row = [...AOICLAIMS.active, ...AOICLAIMS.closed].find(c=>c.ser===ser);
+  if (row && row.x!=null) map.flyTo({center:[row.x,row.y], zoom:13.2, duration:1000});
+  showDossier('claim', ser);
+}
+
+/* ---------- WS1: universal ingest ---------- */
+const ULPAL = ['#f472b6','#a78bfa','#60a5fa','#fbbf24','#34d399','#f87171','#38bdf8','#facc15'];
+const LATH = ['lat','latitude','y','lat_dd','latdd','lat_dec','dec_lat','ycoord','y_coord'];
+const LONH = ['lon','lng','long','longitude','x','lon_dd','londd','lon_dec','dec_long','dec_lon','xcoord','x_coord'];
+const EASTH = ['easting','utm_e','utme','east','utm_easting','x_utm'];
+const NORTH_H = ['northing','utm_n','utmn','north','utm_northing','y_utm'];
+const ZONEH = ['zone','utm_zone','utmz'];
+const TRS_RE_JS = /T\.?\s*(\d{1,3})\s*([NS])\.?[,;\s]*R\.?\s*(\d{1,3})\s*([EW])\.?[,;\s]*S(?:ec|ection)?s?\.?\s*(\d{1,2})/i;
+let idbP = null;
+function idb(){
+  if (idbP) return idbP;
+  idbP = new Promise((res,rej)=>{
+    const rq = indexedDB.open('nwmm-userlayers', 1);
+    rq.onupgradeneeded = ()=>rq.result.createObjectStore('layers', {keyPath:'slug'});
+    rq.onsuccess = ()=>res(rq.result); rq.onerror = ()=>rej(rq.error);
+  });
+  return idbP;
+}
+async function idbAll(){ const db = await idb(); return new Promise((res,rej)=>{
+  const rq = db.transaction('layers').objectStore('layers').getAll();
+  rq.onsuccess = ()=>res(rq.result||[]); rq.onerror = ()=>rej(rq.error); }); }
+async function idbPut(rec){ const db = await idb(); return new Promise((res,rej)=>{
+  const tx = db.transaction('layers','readwrite'); tx.objectStore('layers').put(rec);
+  tx.oncomplete = res; tx.onerror = ()=>rej(tx.error); }); }
+async function idbDel(slug){ const db = await idb(); return new Promise((res,rej)=>{
+  const tx = db.transaction('layers','readwrite'); tx.objectStore('layers').delete(slug);
+  tx.oncomplete = res; tx.onerror = ()=>rej(tx.error); }); }
+
+function ilog(m){ const el = $('ingestLog'); el.innerHTML = `<div>· ${esc(m)}</div>` + el.innerHTML; }
+function parseCSVText(text){
+  const rows=[]; let row=[], cur='', q=false;
+  for (let i=0;i<text.length;i++){
+    const c = text[i];
+    if (q){ if (c==='"'){ if (text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if (c==='"') q=true;
+    else if (c===','){ row.push(cur); cur=''; }
+    else if (c==='\n'||c==='\r'){ if (c==='\r'&&text[i+1]==='\n') i++; row.push(cur); cur='';
+      if (row.length>1||row[0]!=='') rows.push(row); row=[]; }
+    else cur+=c;
+  }
+  if (cur!==''||row.length){ row.push(cur); if (row.length>1||row[0]!=='') rows.push(row); }
+  return rows;
+}
+function utmInverse(E, N, zone, northern=true){
+  const a=6378137, f=1/298.257223563, k0=0.9996;
+  const e2=f*(2-f), ep2=e2/(1-e2);
+  const x=E-500000, y=northern?N:N-1e7;
+  const m=y/k0, mu=m/(a*(1-e2/4-3*e2*e2/64-5*e2*e2*e2/256));
+  const e1=(1-Math.sqrt(1-e2))/(1+Math.sqrt(1-e2));
+  const phi=mu+(3*e1/2-27*e1**3/32)*Math.sin(2*mu)+(21*e1*e1/16-55*e1**4/32)*Math.sin(4*mu)+(151*e1**3/96)*Math.sin(6*mu);
+  const sp=Math.sin(phi), cp=Math.cos(phi), tp=Math.tan(phi);
+  const c1=ep2*cp*cp, t1=tp*tp, n1=a/Math.sqrt(1-e2*sp*sp), r1=a*(1-e2)/Math.pow(1-e2*sp*sp,1.5);
+  const d=x/(n1*k0);
+  const lat=phi-(n1*tp/r1)*(d*d/2-(5+3*t1+10*c1-4*c1*c1-9*ep2)*d**4/24+(61+90*t1+298*c1+45*t1*t1-252*ep2-3*c1*c1)*d**6/720);
+  const lon=(d-(1+2*t1+c1)*d**3/6+(5-2*c1+28*t1-3*c1*c1+8*ep2+24*t1*t1)*d**5/120)/cp;
+  const lon0=((zone-1)*6-180+3)*Math.PI/180;
+  return [lat*180/Math.PI, (lon+lon0)*180/Math.PI];
+}
+async function plssLookup(t, td, r, rd, s){
+  const fid = `ID08${String(t).padStart(3,'0')}0${td}${String(r).padStart(3,'0')}0${rd}0SN${String(s).padStart(2,'0')}0`;
+  if (PLSSIDX && PLSSIDX[fid]) return {fid, ...PLSSIDX[fid]};
+  // live CadNSDI fallback (other meridians/AOIs)
+  try{
+    const url = 'https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer/2/query?'+
+      new URLSearchParams({where:`FRSTDIVID='${fid}'`, outFields:'FRSTDIVID', returnGeometry:'true',
+        outSR:'4326', geometryPrecision:'5', f:'json'});
+    const j = await (await fetch(url)).json();
+    const f = (j.features||[])[0]; if (!f) return null;
+    const ring = f.geometry.rings[0];
+    let sx=0, sy=0; for (const p of ring){ sx+=p[0]; sy+=p[1]; }
+    return {fid, lab:`T${t}${td} R${r}${rd} Sec ${s}`, cx:sx/ring.length, cy:sy/ring.length, rings:f.geometry.rings};
+  }catch(e){ return null; }
+}
+async function rowsToFeatures(headers, rows){
+  const lo = headers.map(h=>String(h||'').toLowerCase().trim());
+  const li = LATH.map(h=>lo.indexOf(h)).find(i=>i>=0);
+  const lni = LONH.map(h=>lo.indexOf(h)).find(i=>i>=0);
+  const ei = EASTH.map(h=>lo.indexOf(h)).find(i=>i>=0);
+  const ni = NORTH_H.map(h=>lo.indexOf(h)).find(i=>i>=0);
+  const zi = ZONEH.map(h=>lo.indexOf(h)).find(i=>i>=0);
+  const feats=[]; let misses=0;
+  for (const row of rows){
+    const props={}; headers.forEach((h,i)=>{ if (h) props[h]=row[i]; });
+    let lon=null, lat=null, method=null;
+    if (li!=null && lni!=null){
+      const la=parseFloat(row[li]), lo2=parseFloat(row[lni]);
+      if (isFinite(la)&&isFinite(lo2)&&Math.abs(la)<=90&&Math.abs(lo2)<=180&&(la||lo2)){ lat=la; lon=lo2; method='latlon'; }
+    }
+    if (lat==null && ei!=null && ni!=null){
+      const E=parseFloat(row[ei]), N=parseFloat(row[ni]);
+      if (isFinite(E)&&isFinite(N)&&E>1e5&&E<9e5&&N>3e6&&N<9e6){
+        const z = zi!=null && row[zi] ? parseInt(String(row[zi]).replace(/\D/g,''))||12 : 12;
+        [lat,lon] = utmInverse(E,N,z); method=`utm z${z}`;
+      }
+    }
+    if (lat==null){
+      const blob = row.join(' ');
+      const m = blob.match(TRS_RE_JS);
+      if (m){
+        const sec = await plssLookup(+m[1], m[2].toUpperCase(), +m[3], m[4].toUpperCase(), +m[5]);
+        if (sec){ lat=sec.cy; lon=sec.cx; method='plss'; props._plss=sec.lab; props._plss_id=sec.fid; }
+      }
+    }
+    if (lat==null){ misses++; continue; }
+    props._geocode = method;
+    feats.push({type:'Feature', properties:props, geometry:{type:'Point', coordinates:[+lon.toFixed(6), +lat.toFixed(6)]}});
+  }
+  return {feats, misses};
+}
+function kmlToFeatures(text){
+  const doc = new DOMParser().parseFromString(text, 'text/xml');
+  const feats=[];
+  for (const pm of doc.querySelectorAll('Placemark')){
+    const name = pm.querySelector('name')?.textContent?.trim();
+    const desc = pm.querySelector('description')?.textContent?.trim();
+    for (const co of pm.querySelectorAll('coordinates')){
+      const pts = co.textContent.trim().split(/\s+/).map(s=>s.split(',').map(Number)).filter(p=>isFinite(p[0]));
+      if (!pts.length) continue;
+      const isPoly = !!pm.querySelector('Polygon');
+      const geom = pts.length===1? {type:'Point', coordinates:[pts[0][0],pts[0][1]]}
+        : isPoly? {type:'Polygon', coordinates:[pts.map(p=>[p[0],p[1]])]}
+        : {type:'LineString', coordinates:pts.map(p=>[p[0],p[1]])};
+      feats.push({type:'Feature', properties:{name, description:desc}, geometry:geom});
+    }
+  }
+  return feats;
+}
+function gpxToFeatures(text){
+  const doc = new DOMParser().parseFromString(text, 'text/xml');
+  const feats=[];
+  for (const w of doc.querySelectorAll('wpt'))
+    feats.push({type:'Feature', properties:{name:w.querySelector('name')?.textContent},
+      geometry:{type:'Point', coordinates:[+w.getAttribute('lon'), +w.getAttribute('lat')]}});
+  for (const trk of doc.querySelectorAll('trk')){
+    const pts=[...trk.querySelectorAll('trkpt')].map(p=>[+p.getAttribute('lon'), +p.getAttribute('lat')]);
+    if (pts.length) feats.push({type:'Feature', properties:{name:trk.querySelector('name')?.textContent||'track'},
+      geometry:{type:'LineString', coordinates:pts}});
+  }
+  return feats;
+}
+function shpToFeatures(shpBuf, dbfBuf){
+  // minimal .shp reader: types 1/11/21 (point), 3/13/23 (polyline), 5/15/25 (polygon)
+  const dv = new DataView(shpBuf); const feats=[]; let off=100;
+  const flen = dv.getInt32(24)*2;
+  const recs=[];
+  while (off < flen){
+    const clen = dv.getInt32(off+4)*2; const shpType = dv.getInt32(off+8, true);
+    const base = off+8; let geom=null;
+    const t = shpType%10;
+    if (t===1) geom={type:'Point', coordinates:[dv.getFloat64(base+4,true), dv.getFloat64(base+12,true)]};
+    else if (t===3||t===5){
+      const numParts=dv.getInt32(base+36,true), numPts=dv.getInt32(base+40,true);
+      const parts=[]; for (let i=0;i<numParts;i++) parts.push(dv.getInt32(base+44+i*4,true));
+      const ptsOff=base+44+numParts*4; const pts=[];
+      for (let i=0;i<numPts;i++) pts.push([dv.getFloat64(ptsOff+i*16,true), dv.getFloat64(ptsOff+i*16+8,true)]);
+      const rings=[]; for (let i=0;i<numParts;i++) rings.push(pts.slice(parts[i], parts[i+1]??numPts));
+      geom = t===5? {type:'Polygon', coordinates:rings} : rings.length===1? {type:'LineString', coordinates:rings[0]} : {type:'MultiLineString', coordinates:rings};
+    }
+    recs.push(geom); off += 8+clen;
+  }
+  // .dbf attributes
+  let attrs=[];
+  if (dbfBuf){
+    const d = new DataView(dbfBuf);
+    const nRec=d.getInt32(4,true), hSize=d.getInt16(8,true), rSize=d.getInt16(10,true);
+    const fields=[]; let fo=32;
+    const dec = new TextDecoder('latin1');
+    while (fo<hSize-1 && d.getUint8(fo)!==0x0d){
+      const name = dec.decode(new Uint8Array(dbfBuf, fo, 11)).replace(/\0.*$/,'');
+      fields.push({name, len:d.getUint8(fo+16)}); fo+=32;
+    }
+    for (let i=0;i<nRec;i++){
+      const ro=hSize+i*rSize; let co=ro+1; const p={};
+      for (const f of fields){ p[f.name]=dec.decode(new Uint8Array(dbfBuf, co, f.len)).trim(); co+=f.len; }
+      attrs.push(p);
+    }
+  }
+  recs.forEach((g,i)=>{ if (g) feats.push({type:'Feature', properties:attrs[i]||{}, geometry:g}); });
+  return feats;
+}
+async function ingestFile(file){
+  const name = file.name, ext = name.split('.').pop().toLowerCase();
+  ilog(`reading ${name}…`);
+  try{
+    let feats=[], misses=0;
+    if (ext==='csv'){
+      const rows = parseCSVText(await file.text());
+      const r = await rowsToFeatures(rows[0], rows.slice(1)); feats=r.feats; misses=r.misses;
+    } else if (ext==='xlsx'||ext==='xls'){
+      const wb = XLSX.read(await file.arrayBuffer(), {type:'array'});
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:false, defval:''});
+      const r = await rowsToFeatures(rows[0], rows.slice(1)); feats=r.feats; misses=r.misses;
+    } else if (ext==='geojson'||ext==='json'){
+      const j = JSON.parse(await file.text());
+      feats = j.type==='FeatureCollection'? j.features : j.type==='Feature'? [j] : [];
+    } else if (ext==='kml'){ feats = kmlToFeatures(await file.text()); }
+    else if (ext==='kmz'){
+      const z = await JSZip.loadAsync(await file.arrayBuffer());
+      const kml = Object.keys(z.files).find(f=>f.toLowerCase().endsWith('.kml'));
+      if (kml) feats = kmlToFeatures(await z.files[kml].async('text'));
+    } else if (ext==='gpx'){ feats = gpxToFeatures(await file.text()); }
+    else if (ext==='zip'){
+      const z = await JSZip.loadAsync(await file.arrayBuffer());
+      const shp = Object.keys(z.files).find(f=>f.toLowerCase().endsWith('.shp'));
+      const dbf = Object.keys(z.files).find(f=>f.toLowerCase().endsWith('.dbf'));
+      if (!shp) throw new Error('no .shp inside zip');
+      feats = shpToFeatures(await z.files[shp].async('arraybuffer'),
+                            dbf? await z.files[dbf].async('arraybuffer') : null);
+    } else throw new Error(`unsupported type .${ext}`);
+    if (!feats.length) throw new Error(`no mappable features${misses?` (${misses} rows had no usable location)`:''}`);
+    const slug = name.replace(/\.[^.]+$/,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'layer';
+    const rec = {slug, name, added:new Date().toISOString().slice(0,10), n:feats.length, misses,
+                 visible:true, fc:{type:'FeatureCollection', features:feats}};
+    await idbPut(rec);
+    addUserLayer(rec, true);
+    ilog(`${name}: ${feats.length} features added${misses?`, ${misses} rows not geocoded`:''}`);
+  }catch(e){ ilog(`${name}: FAILED — ${e.message}`); }
+}
+let ulCount = 0;
+function addUserLayer(rec, fly){
+  const src = 'u-'+rec.slug;
+  if (map.getSource(src)){ map.getSource(src).setData(rec.fc); }
+  else{
+    const color = ULPAL[(ulCount++) % ULPAL.length];
+    rec._color = color;
+    map.addSource(src, {type:'geojson', data:rec.fc});
+    map.addLayer({id:src+'-f', type:'fill', source:src, filter:['==',['geometry-type'],'Polygon'],
+      paint:{'fill-color':color,'fill-opacity':.18}});
+    map.addLayer({id:src+'-l', type:'line', source:src,
+      filter:['any',['==',['geometry-type'],'Polygon'],['==',['geometry-type'],'LineString'],['==',['geometry-type'],'MultiLineString']],
+      paint:{'line-color':color,'line-width':1.6}});
+    map.addLayer({id:src+'-c', type:'circle', source:src, filter:['==',['geometry-type'],'Point'],
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,3,10,5.5,14,8],
+        'circle-color':color,'circle-opacity':.92,'circle-stroke-width':1.4,'circle-stroke-color':'#0b0d10'}});
+    map.on('click', src+'-c', e=>showUserFeature(rec, e.features[0]));
+    map.on('click', src+'-f', e=>showUserFeature(rec, e.features[0]));
+    map.on('mouseenter', src+'-c', ()=>map.getCanvas().style.cursor='pointer');
+    map.on('mouseleave', src+'-c', ()=>map.getCanvas().style.cursor='');
+  }
+  renderUserList();
+  if (fly && rec.fc.features.length){
+    const xs=[], ys=[];
+    for (const f of rec.fc.features){
+      const walk = c => Array.isArray(c[0])? c.forEach(walk) : (xs.push(c[0]), ys.push(c[1]));
+      walk(f.geometry.coordinates);
+    }
+    map.fitBounds([[Math.min(...xs),Math.min(...ys)],[Math.max(...xs),Math.max(...ys)]], {padding:80, maxZoom:12.5, duration:1100});
+  }
+}
+function showUserFeature(rec, f){
+  const p = f.properties||{};
+  const rows = Object.entries(p).filter(([k,v])=>v!==''&&v!=null&&!k.startsWith('_')).slice(0,20)
+    .map(([k,v])=>[esc(k), esc(String(v)).slice(0,220)]);
+  openDetail(`<h2>${esc(p.name||p.Name||rec.name)}</h2>
+    <div class="badges">${badge('exploration','MY DATA')} <span class="badge abandoned">${esc(rec.name)}</span></div>
+    ${kv(rows)}
+    ${p._geocode?`<div class="src">geocoded via ${esc(p._geocode)}${p._plss?` → ${esc(p._plss)} (placed at section centroid — PLSS legals locate to the section, not a point)`:''}</div>`:''}`);
+}
+async function toggleUserLayer(slug, on){
+  const layers = [slug+'-f', slug+'-l', slug+'-c'].map(s=>'u-'+s.replace(slug, slug));
+  for (const suffix of ['-f','-l','-c']){
+    const id = 'u-'+slug+suffix;
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on?'visible':'none');
+  }
+}
+async function renderUserList(){
+  const recs = await idbAll();
+  const el = $('layersUser');
+  el.innerHTML = '';
+  for (const r of recs){
+    const row = document.createElement('div');
+    row.className = 'ulrow' + (r.visible===false?' off':'');
+    row.innerHTML = `<span class="sw" style="background:${r._color||'#888'}"></span>
+      <span class="nm" title="zoom to layer">${esc(r.name)} <span style="color:var(--mut)">(${r.n})</span></span>
+      <button data-a="vis">${r.visible===false?'SHOW':'HIDE'}</button>
+      <button data-a="exp" title="download GeoJSON">⇩</button>
+      <button data-a="del" title="remove">✕</button>`;
+    row.querySelector('.nm').onclick = ()=>addUserLayer(r, true);
+    row.querySelector('[data-a=vis]').onclick = async ()=>{
+      r.visible = r.visible===false; await idbPut(r); toggleUserLayer(r.slug, r.visible); renderUserList(); };
+    row.querySelector('[data-a=exp]').onclick = ()=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(r.fc)], {type:'application/geo+json'}));
+      a.download = r.slug+'.geojson'; a.click(); };
+    row.querySelector('[data-a=del]').onclick = async ()=>{
+      await idbDel(r.slug);
+      for (const sfx of ['-f','-l','-c']) if (map.getLayer('u-'+r.slug+sfx)) map.removeLayer('u-'+r.slug+sfx);
+      if (map.getSource('u-'+r.slug)) map.removeSource('u-'+r.slug);
+      renderUserList(); };
+    el.appendChild(row);
+  }
+}
+async function loadUserLayers(){
+  // server-side inbox layers (pipelines/inbox_ingest.py output) + IndexedDB layers
+  try{
+    const reg = await jget('data/userlayers/registry.json');
+    for (const l of (reg.layers||[])){
+      try{
+        const fc = await jget('data/userlayers/'+l.file);
+        addUserLayer({slug:'inbox-'+l.file.replace(/\W+/g,'-'), name:'📥 '+l.source, added:l.added,
+                      n:l.n, misses:l.misses, visible:true, fc}, false);
+      }catch(e){}
+    }
+  }catch(e){}
+  const recs = await idbAll();
+  for (const r of recs) if (r.visible!==false) addUserLayer(r, false);
+  renderUserList();
+  // wire the UI
+  $('btnData').onclick = ()=>$('fileIn').click();
+  $('fileIn').onchange = e=>{ [...e.target.files].forEach(ingestFile); e.target.value=''; };
+  let dragDepth = 0;
+  window.addEventListener('dragenter', e=>{ e.preventDefault(); if (e.dataTransfer?.types?.includes('Files')){ dragDepth++; $('dropOverlay').classList.add('show'); }});
+  window.addEventListener('dragleave', e=>{ if (--dragDepth<=0){ dragDepth=0; $('dropOverlay').classList.remove('show'); }});
+  window.addEventListener('dragover', e=>e.preventDefault());
+  window.addEventListener('drop', e=>{
+    e.preventDefault(); dragDepth=0; $('dropOverlay').classList.remove('show');
+    [...(e.dataTransfer?.files||[])].forEach(ingestFile);
+  });
+}
+
 (async ()=>{ await ensureAuth(); await boot(); })().catch(e=>{ document.body.innerHTML = `<div style="padding:40px;font-family:monospace;color:#a9aeb6">Failed to start: ${esc(e.message)} — if opened from file://, serve the folder instead (python3 -m http.server) so data files can load.</div>`; });
 </script>
 </body>

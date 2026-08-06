@@ -3,7 +3,13 @@
 
 # build artifacts / staging
 nw-mineral-monitor/infra/updater.zip
+nw-mineral-monitor/infra/ask.zip
+nw-mineral-monitor/infra/watch.zip
 _to_delete/
+__pycache__/
+
+# pipeline fetch cache (regenerates; can be 10s of MB)
+nw-mineral-monitor/pipelines/cache/
 
 # account-specific auth switch lives only in S3, never in git
 auth.json

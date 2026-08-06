@@ -10,6 +10,24 @@ Parameters:
     Default: nw-mineral-monitor
     AllowedPattern: '[a-z0-9-]+'
     Description: Lowercase name used to tag/derive resource names.
+  AlertEmailFrom:
+    Type: String
+    Default: ''
+    Description: >-
+      SES-verified sender for expiration-watch digests (empty = email off).
+      Verify the address in SES first — see RUNBOOK.md step 6.
+  AlertEmailTo:
+    Type: String
+    Default: ''
+    Description: Comma-separated recipient list for watch digests (empty = email off).
+  AlertWebhookUrl:
+    Type: String
+    Default: ''
+    Description: Optional webhook POSTed the alert digest JSON (empty = off).
+  WatchBbox:
+    Type: String
+    Default: '-114.2867,41.9882,-113.0,42.6878'
+    Description: AOI bbox (x0,y0,x1,y1) the expiration watch diffs. Default = Cassia County, ID.
 
 Resources:
 
@@ -230,6 +248,114 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt MonthlyClosedRule3.Arn
 
+  # ---------- WS2d expiration watch ----------
+  WatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: watch-s3-ses
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [ s3:GetObject, s3:PutObject ]
+                Resource:
+                  - !Sub '${SiteBucket.Arn}/data/*'
+                  - !Sub '${SiteBucket.Arn}/watch/*'
+              - Effect: Allow
+                Action: [ ses:SendEmail ]
+                Resource: '*'
+
+  WatchFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-expiration-watch'
+      Runtime: python3.12
+      Handler: index.handler
+      MemorySize: 512
+      Timeout: 900
+      Role: !GetAtt WatchRole.Arn
+      Environment:
+        Variables:
+          BUCKET: !Ref SiteBucket
+          AOI_BBOX: !Ref WatchBbox
+          SES_FROM: !Ref AlertEmailFrom
+          SES_TO: !Ref AlertEmailTo
+          WEBHOOK_URL: !Ref AlertWebhookUrl
+          SITE_URL: !Sub 'https://${Distribution.DomainName}'
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"note": "placeholder - deploy.sh uploads infra/watch_lambda.py"}
+
+  WatchDailyRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-watch-daily'
+      Description: Daily MLRS disposition diff for the AOI (13:10 UTC)
+      ScheduleExpression: cron(10 13 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: watch
+          Arn: !GetAtt WatchFunction.Arn
+          Input: '{"mode":"daily"}'
+
+  # Sept-1 maintenance-fee window: every 6 h from Aug 25 through Sep 10.
+  # EventBridge cron can't span a month boundary in one expression — two rules.
+  WatchSeasonalAugRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-watch-fee-window-aug'
+      Description: Fee-window watch, every 6h Aug 25-31
+      ScheduleExpression: cron(20 */6 25-31 8 ? *)
+      State: ENABLED
+      Targets:
+        - Id: watch
+          Arn: !GetAtt WatchFunction.Arn
+          Input: '{"mode":"seasonal"}'
+
+  WatchSeasonalSepRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-watch-fee-window-sep'
+      Description: Fee-window watch, every 6h Sep 1-10
+      ScheduleExpression: cron(20 */6 1-10 9 ? *)
+      State: ENABLED
+      Targets:
+        - Id: watch
+          Arn: !GetAtt WatchFunction.Arn
+          Input: '{"mode":"seasonal"}'
+
+  PermWatchDaily:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WatchFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WatchDailyRule.Arn
+  PermWatchAug:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WatchFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WatchSeasonalAugRule.Arn
+  PermWatchSep:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WatchFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WatchSeasonalSepRule.Arn
+
   # ---------- AI Q&A (Bedrock relay) ----------
   AskRole:
     Type: AWS::IAM::Role
@@ -387,3 +513,6 @@ Outputs:
   AskFunctionName:
     Description: The AI relay Lambda
     Value: !Ref AskFunction
+  WatchFunctionName:
+    Description: The expiration-watch Lambda
+    Value: !Ref WatchFunction

@@ -15,7 +15,30 @@ Interactive map of mines, mining claims, and mineral sources across **Washington
 | `site/data/claims/` | Per-state claim centroids: `*_active.json` (serial, name, type, disposition, acres) and `*_closed.json` — refreshed by the Lambda when hosted |
 | `site/data/districts/` | `curated.json` (28, cited), `cassia.json` (7 deep-dive), `auto.json` (437 from MRDS tags) |
 | `site/data/manifest.json` | Layer inventory, counts, freshness stamps, live-query spec |
-| `infra/` | CloudFormation template, Lambda updater, deploy script |
+| `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
+| `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
+| `data-inbox/` | Drop files here + run `pipelines/inbox_ingest.py` → permanent map layers |
+| `demo/` | `messy_cassia.csv` acceptance-test file (see DEMO.md) |
+| `infra/` | CloudFormation template, Lambdas (claims updater, AI relay, **expiration watch**), deploy script |
+
+## The four workstreams (2026-08)
+
+**WS1 universal ingest** — drag CSV/XLSX/GeoJSON/KML/KMZ/GPX/zipped-SHP onto
+the map; lat-lon, UTM, and PLSS legal descriptions ("T12S R22E Sec 14")
+auto-geocode; layers persist (IndexedDB) with a registry, export, and
+full-attribute popups. **WS2 open ground** — a section-status grid for the
+AOI (default Cassia County): open-with-history / was-claimed-now-open /
+active / withdrawn / non-federal, from claim legal descriptions × SMA ×
+withdrawal-segregation cases; every section popup shows its evidence.
+**WS2d expiration watch** — daily MLRS disposition diff + Aug 25–Sep 10
+6-hourly fee-window scan, SES email + webhook + on-map WATCH panel with
+deep links. **WS3 dossiers** — per-mine/per-claim research files: cited
+facts, MLRS serial-register path, county-recorder & SoS guidance, Mindat /
+Chronicling America / HathiTrust prefilled searches. **WS4 web scrub** —
+automated Chronicling America + Google Books + MSHA sweep, deduped by
+name-variant, rendered as a chronological history in each dossier.
+
+Judgment calls: `ASSUMPTIONS.md`. Operations: `RUNBOOK.md`. Walkthrough: `DEMO.md`.
 
 ## Auto-updating
 

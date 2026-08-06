@@ -61,6 +61,14 @@ case "${1:-deploy}" in
         --zip-file "fileb://$HERE/ask.zip" >/dev/null
       rm -f "$HERE/ask.zip"
     fi
+    WATCHFN="$(outputs WatchFunctionName)"
+    if [ -n "$WATCHFN" ] && [ "$WATCHFN" != "None" ]; then
+      ( cd "$HERE" && rm -f watch.zip && cp watch_lambda.py index.py && zip -q watch.zip index.py && rm index.py )
+      aws lambda update-function-code --function-name "$WATCHFN" --region "$REGION" \
+        --zip-file "fileb://$HERE/watch.zip" >/dev/null
+      rm -f "$HERE/watch.zip"
+      echo "    expiration watch deployed: $WATCHFN (daily + Aug25-Sep10 6h window)"
+    fi
 
     echo "==> [3/5] Uploading site ($(du -sh "$SITE" | cut -f1)) + enabling Cognito login…"
     aws s3 sync "$SITE" "s3://$BUCKET" --region "$REGION" --delete \
@@ -68,7 +76,7 @@ case "${1:-deploy}" in
     aws s3 cp "$SITE/index.html" "s3://$BUCKET/index.html" --region "$REGION" \
       --cache-control "public, max-age=60" --content-type "text/html"
     aws s3 sync "$SITE/data" "s3://$BUCKET/data" --region "$REGION" --delete \
-      --cache-control "public, max-age=900"
+      --exclude "alerts/*" --cache-control "public, max-age=900"
 
     POOL="$(outputs UserPoolId)"; CLIENT="$(outputs UserPoolClientId)"; ASKURL="$(outputs AskUrl)"
     printf '{"region":"%s","clientId":"%s","askUrl":"%s"}' "$REGION" "$CLIENT" "$ASKURL" > /tmp/auth.json
@@ -103,7 +111,7 @@ case "${1:-deploy}" in
     aws s3 cp "$SITE/index.html" "s3://$BUCKET/index.html" --region "$REGION" \
       --cache-control "public, max-age=60" --content-type "text/html"
     aws s3 sync "$SITE/data" "s3://$BUCKET/data" --region "$REGION" --delete \
-      --cache-control "public, max-age=900"
+      --exclude "alerts/*" --cache-control "public, max-age=900"
     DIST="$(outputs DistributionId)"
     [ -n "$DIST" ] && [ "$DIST" != "None" ] && aws cloudfront create-invalidation \
       --distribution-id "$DIST" --paths "/*" --query 'Invalidation.Id' --output text
@@ -115,6 +123,14 @@ case "${1:-deploy}" in
       $PAYLOAD_FMT --cli-read-timeout 900 \
       --payload '{"mode":"active"}' /tmp/updater-out.json >/dev/null && cat /tmp/updater-out.json && echo
     ;;
+  watch)
+    # run the expiration watch now (mode: daily, or 'watch seasonal' for the fee scan)
+    FN="$(outputs WatchFunctionName)"
+    MODE="${2:-daily}"
+    aws lambda invoke --function-name "$FN" --region "$REGION" \
+      $PAYLOAD_FMT --cli-read-timeout 900 \
+      --payload "{\"mode\":\"$MODE\"}" /tmp/watch-out.json >/dev/null && cat /tmp/watch-out.json && echo
+    ;;
   teardown)
     BUCKET="$(outputs BucketName)"
     echo "This PERMANENTLY deletes stack '$STACK', bucket $BUCKET, the Cognito users, and the site URL."
@@ -124,5 +140,5 @@ case "${1:-deploy}" in
     aws cloudformation delete-stack --stack-name "$STACK" --region "$REGION"
     echo "delete requested — watch progress in the CloudFormation console"
     ;;
-  *) echo "usage: ./deploy.sh [deploy|update-site|refresh|teardown]"; exit 1 ;;
+  *) echo "usage: ./deploy.sh [deploy|update-site|refresh|watch [daily|seasonal]|teardown]"; exit 1 ;;
 esac

@@ -1,0 +1,30 @@
+{
+  "default": "cassia",
+  "aois": {
+    "cassia": {
+      "name": "Cassia County, Idaho",
+      "state": "ID",
+      "county": "Cassia",
+      "county_fips": "16031",
+      "bbox": [-114.2867, 41.9882, -113.0, 42.6878],
+      "plss_state_meridian": "ID08",
+      "meridian_name": "Boise Meridian",
+      "utm_zone": 12,
+      "recorder": {
+        "name": "Cassia County Recorder",
+        "phone": "(208) 878-5240",
+        "address": "1459 Overland Ave, Burley, ID 83318",
+        "url": "https://www.cassiacounty.org/recorder/",
+        "online_index": null,
+        "note": "No public online index verified; pre-1976 location notices are in physical grantor/grantee books. Call ahead; copies ~$1/page."
+      },
+      "sos_business_search": "https://sosbiz.idaho.gov/search/business",
+      "newspapers_hint": ["Oakley Herald", "Burley Bulletin", "Cassia County times", "Idaho Republican"],
+      "webscrub": {
+        "max_features": 60,
+        "chronam_rps": 0.8,
+        "extra_terms": ["mine", "mining"]
+      }
+    }
+  }
+}

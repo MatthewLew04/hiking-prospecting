@@ -34,6 +34,8 @@ SYSTEM = """You are the analyst terminal inside NW Mineral Monitor, a mining-int
 
 A cited ore-grade dataset (query_grades) covers ~2,950 historic mines across the five states plus Nevada and Utah (Great Basin), built from USGS production/resource tables and digitized bulletins & mine-inspector reports; every grade carries a verbatim source quote, and open_m gives distance to the nearest active claim (open ground = none within 400 m).
 
+For Cassia County (the core AOI) there is also a SECTION-LEVEL land-status grid (query_openground: 1,889 PLSS sections — OPEN / was-claimed-now-open / active / withdrawn / non-federal, computed from claim legal descriptions x surface management agency x withdrawal cases) and an expiration watch (get_watch_alerts: daily MLRS disposition diffs; fee-window lapse leads Aug 25-Sep 10). Both are research leads, never title conclusions — always say to verify at BLM and the county recorder before staking. Each mine/claim popup also carries a compiled DOSSIER (facts with sources, county-recorder and serial-register research paths, and an automated newspaper/book history sweep) — point users at it for names, contacts, and history.
+
 Rules:
 - Use the tools for ANY factual claim about the data — never invent records, counts, or coordinates. If a tool returns nothing, say so.
 - Grade caveat: assay-text values are often hand-picked specimens, not mine averages — say so when ranking by grade.
@@ -76,6 +78,15 @@ TOOLS = [
      "open_ground_only": {"type": "boolean", "description": "only mines with no active claim within 400 m"},
      "near_lat": {"type": "number"}, "near_lon": {"type": "number"}, "radius_km": {"type": "number"},
      "limit": {"type": "integer"}}}}}},
+ {"toolSpec": {"name": "query_openground", "description": "Section-level land-status grid for the Cassia County AOI (1,889 PLSS sections): OPEN (historic workings + no active claim + federal locatable surface), CLOSED_ONLY (was claimed, now open), ACTIVE, WITHDRAWN, NONFEDERAL, QUIET. Derived from claim legal descriptions x SMA x withdrawal/segregation cases. Research leads only — patented private land shows no claims; say so when recommending ground.",
+   "inputSchema": {"json": {"type": "object", "properties": {
+     "status": {"enum": ["OPEN","CLOSED_ONLY","ACTIVE","WITHDRAWN","NONFEDERAL","QUIET","ANY"], "description": "default OPEN"},
+     "split_only": {"type": "boolean", "description": "only sections with a mineral-segregation (split-estate) flag"},
+     "min_features": {"type": "integer", "description": "minimum historic mine/prospect features in the section"},
+     "near_lat": {"type": "number"}, "near_lon": {"type": "number"}, "radius_km": {"type": "number"},
+     "limit": {"type": "integer"}}}}}},
+ {"toolSpec": {"name": "get_watch_alerts", "description": "Latest expiration-watch digest for the Cassia AOI: ACTIVE->CLOSED transitions, new FILED locations, and (in the Sept-1 fee window, when fee data was supplied) LIKELY-LAPSED leads. Always relay the lead-not-conclusion caveat.",
+   "inputSchema": {"json": {"type": "object", "properties": {}}}}},
  {"toolSpec": {"name": "resolve_place", "description": "Resolve a district/town name in the five states to lat/lon.",
    "inputSchema": {"json": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}}}},
  {"toolSpec": {"name": "map_control", "description": "Control the user's map: fly to a location and/or apply layer filters.",

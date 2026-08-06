@@ -279,6 +279,10 @@ footer .right{margin-left:auto}
   .msg{font-size:13px}
   .ask-in input{padding:13px 12px;font-size:13px}
   .auth-card{padding:22px 18px 16px}
+  #alertsPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;max-height:55vh;border-radius:14px 14px 0 0;z-index:1600}
+  #dropOverlay .in{padding:26px 20px;font-size:12.5px;text-align:center}
+  .dosbtn{padding:9px 12px;font-size:11px}
+  .ulrow button{padding:4px 8px;font-size:10px}
 }
 </style>
 </head>
@@ -375,7 +379,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-05a';
+const BUILD = '2026-08-06a';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -1211,6 +1215,34 @@ function execTool(name, a){
           prod_size:GR.pz?GR.pz[i]:null, county:GR.cnty?GR.cnty[i]:null,
           open_m:GR.open[i], quote:GR.quote[i], source:GR.src[i], lat:GR.y[i], lon:GR.x[i]}))});
     }
+    if (name==='query_openground'){
+      if (!OG || !PLSSIDX) return {error:'open-ground grid not loaded (Cassia AOI only)'};
+      const want = a.status || 'OPEN';
+      const lim = Math.min(a.limit||10, 25); const rows=[];
+      for (const s of OG.sections){
+        if (want!=='ANY' && s.st!==want) continue;
+        if (a.split_only && !s.split) continue;
+        if (a.min_features && s.nH < a.min_features) continue;
+        const c = PLSSIDX[s.id];
+        if (a.near_lat!=null && (!c || havKm(a.near_lat,a.near_lon,c.cy,c.cx)>(a.radius_km||25))) continue;
+        rows.push([s.nH*10 + s.nC, s, c]);
+      }
+      rows.sort((x,y)=>y[0]-x[0]);
+      return trimJson({aoi:OG.name, generated:OG.generated, stats:OG.stats, count:rows.length,
+        note:OG.note,
+        sample: rows.slice(0,lim).map(([_,s,c])=>({section:s.lab, status:s.st, surface_agency:s.ag,
+          historic_features:s.nH, feature_names:(s.hist||[]).slice(0,5),
+          active_claims:s.nA, closed_claims:s.nC, split_estate:!!s.split,
+          withdrawals:s.wdl&&s.wdl.length?s.wdl:undefined,
+          lat:c?+c.cy.toFixed(5):null, lon:c?+c.cx.toFixed(5):null}))});
+    }
+    if (name==='get_watch_alerts'){
+      return jget('data/alerts/latest.json').then(al=>!al.generated? {error:'no watch digest yet — the expiration-watch Lambda writes one daily once deployed'} : trimJson({generated:al.generated, mode:al.mode,
+        active_cases_in_aoi:al.active_now, lapse_note:al.lapse_note||undefined,
+        alerts:(al.alerts||[]).slice(0,20).map(x=>({kind:x.kind, serial:x.ser, name:x.name,
+          trs:x.trs, evidence:x.evidence})), disclaimer:al.disclaimer}))
+        .catch(()=>({error:'no watch digest yet — the expiration-watch Lambda writes one daily once deployed'}));
+    }
     if (name==='resolve_place'){
       const p = findPlace(String(a.name||''));
       return p? {label:p.label, lat:p.lat, lon:p.lon} : {error:'not found — try a district or larger town in the 5 states'};
@@ -1318,7 +1350,7 @@ async function aiAnswer(q){
       const results = [];
       for (const c of (j.message.content||[])){
         if (!c.toolUse) continue;
-        const out = execTool(c.toolUse.name, c.toolUse.input);
+        const out = await execTool(c.toolUse.name, c.toolUse.input);   // some executors (watch digest) are async
         lines.push(`→ ${c.toolUse.name}${out && out.count!=null? ' · '+fmt(out.count)+' hits' : out && out.error? ' · '+esc(out.error.slice(0,40)) : ''}`);
         paint(null);
         results.push({toolResult:{toolUseId:c.toolUse.toolUseId, content:[{json: out}]}});
@@ -1446,7 +1478,7 @@ function describeFilter(f){
 function answer(q){
   q = q.toLowerCase().trim();
   if (/^(help|\?|what can you do)/.test(q)){
-    botMsg(`I run structured queries over the loaded layers. Combine a <b>commodity</b> (gold, silver, antimony, uranium, coal…), a <b>status</b> (producing / historic), a <b>state</b>, a <b>scope</b> (sites, claims, workings), and a <b>place</b> ("near philipsburg", "within 40 km of butte"). Or: "tell me about ‹district›", "top 10", "where should I prospect".`);
+    botMsg(`I run structured queries over the loaded layers. Combine a <b>commodity</b> (gold, silver, antimony, uranium, coal…), a <b>status</b> (producing / historic), a <b>state</b>, a <b>scope</b> (sites, claims, workings), and a <b>place</b> ("near philipsburg", "within 40 km of butte"). Or: "tell me about ‹district›", "top 10", "where should I prospect", "richest unclaimed gold". Cassia section grid: "open sections", "was claimed now open", "split estate sections", "watch alerts".`);
     return;
   }
   if (/top *10|top ten|interesting|happening|summar/.test(q)){
@@ -1479,6 +1511,13 @@ function answer(q){
         [{label:'GO', fn:()=>{ map.flyTo({center:[p.lon,p.lat], zoom:10.4, duration:1100}); showDistrict(p.d, p.rich?'curated':'auto'); }}]);
       return;
     }
+  }
+  /* section-grid questions (Cassia AOI) — before grades so "sections" doesn't fall through */
+  if (/\bsections?\b|\bgrid\b|was claimed|now open|split.?estate|withdrawn|lapsed|expir|watch list|alerts?\b/.test(q)
+      && !/oz|grade|richest/.test(q)){
+    if (/lapsed|expir|watch|alerts?\b/.test(q)) return void showWatchInAsk();
+    if (OG) return void ogAnswer(q);
+    return void botMsg('The section-status grid covers Cassia County and is still loading (or failed to load) — the OPEN GROUND panel in the sidebar toggles it.');
   }
   /* grade / open-ground questions hit the cited-grades dataset first */
   if (/oz.?(per|\/).?ton|highest.?grade|richest|grade.?sort|sort.*grade|unclaimed|open ground|not permitted|un-?permitted/.test(q)){
@@ -1673,6 +1712,39 @@ function showSection(id){
           ['Closed serials', s.nC? s.cloSer.map(x=>`<a href="#" onclick="showDossier('claim','${x}');return false">${x}</a>`).join(', ')+(s.nC>10?` +${s.nC-10} more`:''):null, s.nC?0:1],
           ['Mineral segregation', s.split? 'yes — minerals segregated; split-estate research needed':null]])}
     <div class="src">${esc(OG.note)}</div>`);
+}
+
+/* ---------- ASK integration: section grid + watch ---------- */
+function ogAnswer(q){
+  const want = /was claimed|now open|closed/.test(q)? 'CLOSED_ONLY'
+    : /withdrawn/.test(q)? 'WITHDRAWN' : 'OPEN';
+  const splitOnly = /split.?estate/.test(q);
+  const rows = OG.sections.filter(s=>s.st===want && (!splitOnly || s.split))
+    .sort((a,b)=>(b.nH*10+b.nC)-(a.nH*10+a.nC));
+  const st = OG.stats||{};
+  const head = {OPEN:`<b>${rows.length}</b> Cassia sections are <b style="color:#34d399">OPEN with historic workings</b> — federal locatable surface, no active claim touches them`,
+    CLOSED_ONLY:`<b>${rows.length}</b> Cassia sections were <b style="color:#fbbf24">claimed and dropped</b> (closed cases only, nothing active today)`,
+    WITHDRAWN:`<b>${rows.length}</b> Cassia sections are <b style="color:#a78bfa">withdrawn / not locatable</b>`}[want];
+  const d = botMsg(head + `${splitOnly?' (split-estate flagged only)':''} · grid totals: ${st.OPEN||0} open / ${st.CLOSED_ONLY||0} was-claimed / ${st.ACTIVE||0} active. <span style="font-size:10.5px;color:var(--mut)">Research leads — not a title search; patented private land shows no claims. Verify at BLM & the recorder.</span>`,
+    [{label:'⚡ show the grid', fn:()=>{ const t=$('ogToggle'); if(t&&!t.checked) t.click(); }}]);
+  rows.slice(0,12).forEach(s=>d.appendChild(hitLink(
+    `${s.lab} — ${s.nH?s.nH+' workings':''}${s.nC?` · ${s.nC} closed case${s.nC>1?'s':''}`:''}${s.split?' · SPLIT':''} (${s.ag||'?'})`, null, ()=>{
+      const c = PLSSIDX[s.id];
+      if (c){ map.flyTo({center:[c.cx,c.cy], zoom:12.6, duration:900}); }
+      const t=$('ogToggle'); if(t&&!t.checked) t.click();
+      showSection(s.id);
+    })));
+}
+async function showWatchInAsk(){
+  let al=null; try{ al = await jget('data/alerts/latest.json'); }catch(e){}
+  if (!al || !al.generated) return void botMsg('No watch digest yet — the expiration-watch Lambda writes one daily once deployed (<code>bash deploy.sh watch</code> runs it now). It diffs MLRS dispositions for Cassia and flags ACTIVE→CLOSED transitions; Aug 25–Sep 10 it also scans the fee window every 6 h.');
+  const d = botMsg(`<b>Expiration watch</b> — ${esc(al.generated)} (${esc(al.mode)}): ${al.active_now} active cases in the AOI, <b>${(al.alerts||[]).length}</b> alert(s).` +
+    (al.lapse_note? `<br><span style="font-size:10.5px;color:var(--gold)">${esc(al.lapse_note)}</span>`:''));
+  (al.alerts||[]).slice(0,10).forEach(a=>d.appendChild(hitLink(
+    `[${a.kind}] ${a.name||'(unnamed)'} — ${a.ser}${a.trs&&a.trs.length?' · '+a.trs[0]:''}`, null, ()=>{
+      if (a.xy) map.flyTo({center:a.xy, zoom:13, duration:900});
+      showDossier('claim', a.ser);
+    })));
 }
 
 /* ---------- WS3: dossiers ---------- */

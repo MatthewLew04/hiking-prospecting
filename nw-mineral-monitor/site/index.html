@@ -317,6 +317,9 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>GEOLOGY TARGETS — CASSIA</h3><div id="layersWS6"></div>
         <div class="oglegend" id="tgLegend" style="display:none"></div>
         <div class="subnote" id="tgNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>GOLD SIGNAL — COUNTIES</h3><div id="layersCG"></div>
+        <div class="oglegend" id="cgLegend" style="display:none"></div>
+        <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
       <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
         <div class="subnote" id="ctyNote" style="padding-left:0"></div>
         <div id="ctyBtns"></div></div>
@@ -387,7 +390,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-06d';
+const BUILD = '2026-08-06e';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -456,6 +459,7 @@ function initMap(){
     await loadGrades();          // small + marquee — never wait behind the NV claims file
     loadOpenGround().then(()=>handleClaimHash())
       .then(()=>loadGeoTargets()).catch(()=>{});                  // WS2 sections + WS6 targets (Cassia AOI)
+    loadCountyGold().catch(()=>{});                               // county gold-signal ranking
     loadUserLayers().catch(()=>{});                               // WS1 ingest + registry
     loadCounty().catch(()=>{}).then(()=>loadAlerts()).catch(()=>{}); // WS5 county + WS2d watch digest
     await loadSites();
@@ -663,6 +667,7 @@ async function loadContext(){
     jget('data/districts/curated.json'), jget('data/districts/cassia.json'), jget('data/districts/auto.json'),
     jget('data/intel.json').catch(()=>null)]);
   map.getSource('states').setData(st); map.getSource('counties').setData(co);
+  COUNTYFC = co;
   curated = cur; cassia = cas.items; auto = au.items; INTEL = intel;
   buildDistrictMarkers(); buildDistrictCards();
   if (INTEL) initIntel();
@@ -909,7 +914,7 @@ function wireMapEvents(){
     clearTimeout(liveTimer); liveTimer = setTimeout(refreshLive, 450); });
   map.on('zoomend', ()=>updateDistrictMarkers());
   map.on('idle', ()=>updateDistrictMarkers());
-  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill'];
+  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill','ctygold-fill'];
   map.on('mousemove', e=>{
     const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
     if (!fs.length){ tipEl.style.display='none'; map.getCanvas().style.cursor=''; return; }
@@ -930,6 +935,7 @@ function tipText(f){
   if (lid==='tg-fill' && TGIDX[p.id]){ const t=TGIDX[p.id];
     return `#${t.rank} · ${t.score} · ${t.nm||'unit'}${t.money?' ★':''} (${(t.tierName||'').split(' — ')[0]})`; }
   if (lid==='geo-fill') return `${p.nm||'geologic unit'}${p.age?' · '+p.age:''}`;
+  if (lid==='ctygold-fill') return `#${p.rank} ${p.name}, ${p.st} — stakeable gold ${p.stake}`;
   if (lid==='grades-c' && GR){ const i=p.i;
     return `${GR.name[i]} — ${GR.au[i]!=null? GR.au[i]+' oz/t Au' : GR.ag[i]!=null? GR.ag[i]+' oz/t Ag' : '$'+GR.usd[i]+'/ton'}${GR.open[i]>=400?' · OPEN':''}`; }
   if (lid==='live-fill') return `${p.name||p.serial} — ${CLAIMTYPE[p.type]} (${p.disp}) · LIVE`;
@@ -953,6 +959,7 @@ function kv(rows){ return '<dl class="kv">'+rows.filter(r=>r[1]).map(([k,v,mono]
 
 function showFeature(f){
   const lid = f.layer.id, p = f.properties;
+  if (lid==='ctygold-fill') return;   // its own click handler runs precedence checks
   if (lid==='tg-fill') return showTarget(p.id);
   if (lid==='geo-fill') return showGeoUnit(p.id);
   if (lid==='grades-c' && GR) return showGrade(p.i);
@@ -1092,6 +1099,7 @@ function buildModals(){
   <tr><td>Geologic map + faults (Cassia)</td><td><a href="https://macrostrat.org/" target="_blank">Macrostrat</a> harmonized polygons (CC-BY 4.0) — serving USGS SGMC 1:500k + IGS DWM-49 1:100k here; verbatim description, citation & scale carried per unit</td><td>304 units</td></tr>
   <tr><td>Geology targets (Cassia)</td><td>WS6 sinter-first engine: tiered lithology regexes × mapped faults & intersections × <a href="https://www.usgs.gov/tools/geographic-names-information-system-gnis" target="_blank">GNIS</a> hot/warm springs × IDWR geothermal wells × MRDS pathfinder commodities × WS2 open ground — every target carries its full scoring rationale</td><td>ranked</td></tr>
   <tr><td>County recorder (Cassia)</td><td>WS5 operator-assisted ingest — Cassia has <b>no online index</b> (verified 2026-08-06; records request / vault visit), instruments fuzzy-matched to MLRS serials by claim name + TRS; COUNTY-COVERAGE.md has the per-county matrix</td><td>per-export</td></tr>
+  <tr><td>County gold signal</td><td>Derived: every gold-commodity site, cited grade, claim centroid and topo working assigned to its county; STAKEABLE score (open cited grades × staked-then-dropped sites × unclaimed occurrences × producers) vs ENDOWMENT, both itemized per county — GOLD-COUNTIES.md has the write-up</td><td>244 counties</td></tr>
   </table>
   <h3>AUTO-UPDATING</h3>
   <p>Two mechanisms keep claims current: (1) when hosted with the included AWS stack, a <b>nightly Lambda job</b> re-pulls every active claim in the five states from BLM MLRS and rewrites the snapshot files (footer shows the snapshot date); (2) at zoom ≥ 10.5 with “Live claim boundaries” on, the map <b>queries BLM directly for the current viewport</b> — those polygons are always current, straight from the source. MRDS is a legacy archive (no updates since ~2011); USMIN and the state databases update on multi-year cycles and are refreshed with site rebuilds.</p>
@@ -1529,6 +1537,9 @@ function answer(q){
       return;
     }
   }
+  /* county gold-signal questions — before grades ("which county has the most gold") */
+  if (/count(y|ies)/.test(q) && /gold|silver|signal|stake|best|most|top/.test(q))
+    return void cgAnswer();
   /* WS6 geology-target questions — before grades ("epithermal gold targets") */
   if (/\btargets?\b|sinter|opalin|epithermal|geolog|rhyolite/.test(q) && !/oz|grade|richest/.test(q))
     return void tgAnswer(q);
@@ -1898,6 +1909,101 @@ function tgAnswer(q){
   TG.targets.slice(0,8).forEach(t=>d.appendChild(hitLink(
     `#${t.rank} ${t.nm||'unit'} — ${t.score}${t.money?' ★':''} (fault ${t.boosts.fault_km!=null?t.boosts.fault_km+' km':'—'})`, null,
     ()=>{ map.flyTo({center:[t.cx,t.cy], zoom:11.4, duration:900}); const g=$('tgToggle'); if(g&&!g.checked) g.click(); showTarget(t.id); })));
+}
+
+/* ---------- county gold-signal ranking ---------- */
+let COUNTYFC = null, CG = null, CGIDX = {};
+async function loadCountyGold(){
+  try{ CG = await jget('data/counties_gold.json'); }
+  catch(e){ $('cgNote').textContent='no ranking built — run pipelines/county_gold.py'; return; }
+  // counties FC arrives via loadContext; wait for it briefly if we raced it
+  for (let i=0; i<40 && !COUNTYFC; i++) await new Promise(r=>setTimeout(r,250));
+  if (!COUNTYFC) return;
+  for (const r of CG.counties) CGIDX[r.st+'|'+r.name] = r;
+  const feats = [];
+  for (const f of COUNTYFC.features){
+    const r = CGIDX[f.properties.st+'|'+f.properties.name];
+    if (!r) continue;
+    feats.push({type:'Feature', properties:{st:r.st, name:r.name, stake:r.stake,
+                endow:r.endow, rank:r.rank}, geometry:f.geometry});
+  }
+  map.addSource('ctygold', {type:'geojson', data:{type:'FeatureCollection', features:feats}});
+  const under = map.getLayer('geo-fill') ? 'geo-fill' : map.getLayer('og-fill') ? 'og-fill' : 'claimsC-dot';
+  map.addLayer({id:'ctygold-fill', type:'fill', source:'ctygold', layout:{visibility:'none'},
+    paint:{'fill-color':['interpolate',['linear'],['get','stake'],
+      0,'#12151a', 15,'#26221a', 40,'#584410', 75,'#9c7100', 105,'#c98500', 130,'#ffd54a'],
+      'fill-opacity':.55}}, under);
+  map.addLayer({id:'ctygold-line', type:'line', source:'ctygold', layout:{visibility:'none'},
+    paint:{'line-color':'#c98500','line-width':.5,'line-opacity':.35}}, under);
+  const row = document.createElement('label');
+  row.className='lrow'; row.innerHTML = `<input type="checkbox" id="cgToggle"> <span>STAKEABLE-GOLD CHOROPLETH</span>`;
+  $('layersCG').appendChild(row);
+  $('cgToggle').onchange = e=>{
+    const v = e.target.checked?'visible':'none';
+    map.setLayoutProperty('ctygold-fill','visibility',v);
+    map.setLayoutProperty('ctygold-line','visibility',v);
+    $('cgLegend').style.display = e.target.checked?'flex':'none';
+    if (e.target.checked && map.getZoom() > 7.5) map.flyTo({zoom:5.6, duration:900});
+  };
+  const listBtn = document.createElement('div');
+  listBtn.className='subnote'; listBtn.style.cssText='padding-left:0;cursor:pointer;color:var(--accent)';
+  listBtn.textContent = '▸ ranked county list';
+  listBtn.onclick = ()=>showCountyGoldList();
+  $('layersCG').appendChild(listBtn);
+  map.on('click','ctygold-fill', e=>{
+    // everything else on the map wins over the county wash
+    const others = map.queryRenderedFeatures(e.point).filter(f=>!['ctygold-fill','ctygold-line'].includes(f.layer.id) && f.source!=='carto');
+    if (others.some(f=>['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','og-fill','geo-fill'].includes(f.layer.id))) return;
+    const p = e.features[0].properties;
+    showCountyGold(p.st, p.name);
+  });
+  $('cgLegend').innerHTML = [['#26221a','low'],['#584410',''],['#9c7100',''],['#c98500',''],['#ffd54a','top']]
+    .map(([c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join('');
+  const top = CG.counties[0];
+  $('cgNote').textContent = `${CG.counties.length} counties ranked by STAKEABLE gold (open cited grades · staked-then-dropped sites · unclaimed occurrences). #1 ${top.name}, ${top.st}. ${CG.generated}.`;
+}
+function showCountyGold(st, name){
+  const r = CGIDX[st+'|'+name]; if (!r) return;
+  const evid = (r.top||[]).map(t=> t.k==='graded'
+    ? `<div class="dc" onclick="map.flyTo({center:[${t.x},${t.y}],zoom:12.5,duration:900})">
+        <div class="t">${esc(t.nm)} <span class="b" style="color:var(--gold)">${t.au} oz/t Au</span></div>
+        <div class="c">cited grade · OPEN (nearest active claim ${t.open_m>=9999?'>10 km':t.open_m+' m'})${t.dist?' · '+esc(t.dist)+' district':''}<br><span style="color:var(--mut)">${esc(t.src||'')}</span></div></div>`
+    : `<div class="dc" onclick="map.flyTo({center:[${t.x},${t.y}],zoom:12.5,duration:900})">
+        <div class="t">${esc(t.nm||'(unnamed)')} <span class="b">${t.prod?'PAST PRODUCER':'site'}</span></div>
+        <div class="c">gold site staked-then-dropped — closed claim ≤~1 km, nothing active now</div></div>`).join('');
+  openDetail(`<h2>${esc(r.name)} County, ${r.st}</h2>
+    <div class="badges"><span class="badge exploration">STAKEABLE #${r.rank} · ${r.stake}</span>
+      <span class="badge abandoned">ENDOWMENT #${r.rank_endow} · ${r.endow}</span></div>
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">STAKEABLE SCORE — ITEMIZED</h3>
+    ${r.why_stake.map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">ENDOWMENT — ITEMIZED</h3>
+    ${r.why_endow.map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
+    ${r.notes&&r.notes.length?`<div class="callout" style="font-size:10.5px">${r.notes.map(esc).join('<br>')}</div>`:''}
+    ${evid?`<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">BEST EVIDENCE — CLICK TO FLY</h3>${evid}`:''}
+    <div class="src">${esc(CG.method||'')}</div>`);
+}
+function showCountyGoldList(){
+  const rows = CG.counties.slice(0,20).map(r=>`<div class="dc" onclick="map.flyTo({center:[${r.cx},${r.cy}],zoom:8.2,duration:1000});showCountyGold('${r.st}','${esc(r.name).replace(/'/g,"\\'")}')">
+      <div class="t"><span style="color:var(--gold);font:600 11px var(--mono)">#${r.rank}</span> ${esc(r.name)}, ${r.st} <span class="b">${r.stake}</span></div>
+      <div class="c">${r.m.gr_rich_open} rich-open grades · ${r.m.au_dropped_open} staked-then-dropped · ${r.m.au_open} open Au sites · endow #${r.rank_endow}</div></div>`).join('');
+  openDetail(`<h2>Stakeable gold — county ranking</h2>
+    <div class="badges"><span class="badge exploration">TOP 20 OF ${CG.counties.length}</span><span class="badge abandoned">7 STATES</span></div>
+    <div style="margin:8px 0">${rows}</div>
+    <div class="src">Full ranking incl. every Idaho county: GOLD-COUNTIES.md in the repo. ${esc(CG.lens||'')}</div>`);
+  const t=$('cgToggle'); if (t&&!t.checked) t.click();
+}
+function cgAnswer(){
+  if (!CG) return void botMsg('County gold ranking not built yet — run pipelines/county_gold.py.');
+  const ida = CG.counties.filter(r=>r.st==='ID').slice(0,5);
+  const d = botMsg(`<b>Stakeable-gold county ranking</b> (open cited grades · staked-then-dropped · unclaimed sites): `
+    + CG.counties.slice(0,5).map(r=>`#${r.rank} ${r.name} ${r.st}`).join(' · ')
+    + `.<br>Idaho: ` + ida.map(r=>`${r.name} (#${r.rank})`).join(' · ')
+    + `. <span style="font-size:10.5px;color:var(--mut)">Not a title search — patented ground reads "open".</span>`,
+    [{label:'⚡ show choropleth', fn:()=>{ const t=$('cgToggle'); if(t&&!t.checked) t.click(); }},
+     {label:'📋 full ranking', fn:()=>showCountyGoldList()}]);
+  CG.counties.slice(0,8).forEach(r=>d.appendChild(hitLink(
+    `#${r.rank} ${r.name}, ${r.st} — ${r.stake} (${r.m.gr_rich_open} rich-open, ${r.m.au_dropped_open} dropped)`, null,
+    ()=>{ map.flyTo({center:[r.cx,r.cy], zoom:8.2, duration:1000}); showCountyGold(r.st, r.name); })));
 }
 
 /* ---------- WS5: county recorder records ---------- */

@@ -13,6 +13,12 @@ Pagination per BLM server quirks (verified 2026-07-30):
   empty page
 - query with a state BBOX ENVELOPE, not a detailed polygon (polygons exhaust
   the server's per-request budget and cause mid-stream empty pages)
+
+Closed layers are pulled NEWEST-FIRST (OBJECTID DESC, where OBJECTID<cursor)
+and capped at CLOSED_CAP (default 250,000) per state — NV alone has 1.23M
+closed cases, which would blow both the Lambda timeout and the site file
+budget. States under the cap are complete; others carry truncated=true +
+total_available.
 """
 import json, os, time, urllib.request, urllib.parse, boto3
 
@@ -33,6 +39,7 @@ TYPE_DECODE = {"384101": "L", "384103": "L", "384201": "P", "384203": "P",
 FIELDS = "OBJECTID,CSE_NR,CSE_NAME,CSE_TYPE_NR,CSE_DISP,RCRD_ACRS"
 PAGE = 2000
 MAX_PAGES = 400          # safety valve per state/layer
+CLOSED_CAP = int(os.environ.get("CLOSED_CAP", "250000"))
 s3 = boto3.client("s3")
 
 
@@ -72,16 +79,29 @@ def pull_state(state, mode):
     xmin, ymin, xmax, ymax = BBOX[state]
     geometry = json.dumps({"xmin": xmin, "ymin": ymin, "xmax": xmax, "ymax": ymax,
                            "spatialReference": {"wkid": 4326}})
+    desc = (mode == "closed")            # closed: newest-first with a cap
+    order = "OBJECTID+DESC" if desc else "OBJECTID"
     base = (f"{EP}/{LAYER[mode]}/query?geometryType=esriGeometryEnvelope"
             f"&geometry={urllib.parse.quote(geometry)}"
             f"&inSR=4326&spatialRel=esriSpatialRelIntersects"
             f"&outFields={FIELDS}&returnGeometry=true&outSR=4326&geometryPrecision=5"
-            f"&orderByFields=OBJECTID&resultRecordCount={PAGE}&f=json")
-    cursor, seen, cols = 0, set(), {"serial": [], "name": [], "type": [], "x": [], "y": []}
+            f"&orderByFields={order}&resultRecordCount={PAGE}&f=json")
+    total = None
+    if desc:
+        j = fetch(f"{EP}/{LAYER[mode]}/query?geometryType=esriGeometryEnvelope"
+                  f"&geometry={urllib.parse.quote(geometry)}&inSR=4326"
+                  f"&spatialRel=esriSpatialRelIntersects&where=1%3D1"
+                  f"&returnCountOnly=true&f=json")
+        total = j.get("count")
+    cursor, seen, cols = None, set(), {"serial": [], "name": [], "type": [], "x": [], "y": []}
     if mode == "active":
         cols["disp"] = []; cols["acres"] = []
     for _ in range(MAX_PAGES):
-        j = fetch(base + "&where=" + urllib.parse.quote(f"OBJECTID>{cursor}"))
+        if desc:
+            where = "1=1" if cursor is None else f"OBJECTID<{cursor}"
+        else:
+            where = f"OBJECTID>{cursor or 0}"
+        j = fetch(base + "&where=" + urllib.parse.quote(where))
         if "error" in j:
             raise RuntimeError(f"BLM error {state}/{mode}: {j['error']}")
         feats = j.get("features", [])
@@ -89,7 +109,8 @@ def pull_state(state, mode):
             break
         for f in feats:
             at = f["attributes"]
-            cursor = max(cursor, at["OBJECTID"])
+            oid = at["OBJECTID"]
+            cursor = oid if cursor is None else (min(cursor, oid) if desc else max(cursor, oid))
             ser = at.get("CSE_NR")
             if not ser or ser in seen:
                 continue
@@ -105,9 +126,17 @@ def pull_state(state, mode):
             if mode == "active":
                 cols["disp"].append(at.get("CSE_DISP"))
                 cols["acres"].append(at.get("RCRD_ACRS"))
+            if desc and len(cols["serial"]) >= CLOSED_CAP:
+                break
+        if desc and len(cols["serial"]) >= CLOSED_CAP:
+            break
     today = time.strftime("%Y-%m-%d")
-    return {"state": state, "layer": mode, "retrieved": today,
-            "n": len(cols["serial"]), **cols}
+    out = {"state": state, "layer": mode, "retrieved": today,
+           "n": len(cols["serial"]), **cols}
+    if desc and total is not None:
+        out["truncated"] = out["n"] < total
+        out["total_available"] = total
+    return out
 
 
 def handler(event, context):

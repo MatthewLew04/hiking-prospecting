@@ -52,7 +52,8 @@ To watch a different area: `WatchBbox="x0,y0,x1,y1"` in the overrides
 |---|---|---|
 | claims updater (5 NW states) | daily 09:10 | active-claim snapshots |
 | claims updater (NV+UT) | daily 09:40 | active-claim snapshots |
-| closed-claims refresh | monthly, 1st | three batches 10:00–11:00 |
+| closed-claims refresh | monthly, 1st | WA+OR / ID+MT / WY batches 10:00–11:00 |
+| closed-claims refresh (NV, UT) | monthly, 2nd | 10:00 / 11:00 — newest 250k each (NV has 1.23M, UT 452k; DESC pull, `CLOSED_CAP` env) |
 | **expiration watch — daily** | daily 13:10 | AOI disposition diff → alerts |
 | **expiration watch — fee window** | **every 6 h, Aug 25 – Sep 10** | diff + LIKELY-LAPSED scan |
 

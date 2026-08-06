@@ -40,9 +40,13 @@ def links_for(name, serial, aoi):
         L.append({'label': f'Chronicling America — "{name}"',
                   'url': f'https://www.loc.gov/collections/chronicling-america/?q={q}+idaho',
                   'note': 'Full-text newspapers 1770–1963.'})
+        L.append({'label': f'Internet Archive full-text — "{name}"',
+                  'url': f'https://archive.org/search?query=%22{q}%22&sin=TXT',
+                  'note': 'Search INSIDE 150 Mining & Scientific Press volumes, 3,800+ '
+                          'E&MJ issues, and thousands of mining reports (open, no wall).'})
         L.append({'label': f'HathiTrust full-text — "{name}"',
                   'url': f'https://babel.hathitrust.org/cgi/ls?q1={q}%20idaho;a=srchls;anyall1=all',
-                  'note': 'Mining & Scientific Press / E&MJ runs live here (bot-walled).'})
+                  'note': 'Second full-text corpus for MSP/E&MJ (bot-walled; open in browser).'})
         L.append({'label': 'USGS NGMDB / MapView',
                   'url': f'https://ngmdb.usgs.gov/mapview/?q={q}',
                   'note': 'Geologic maps + bulletin citations for the district.'})

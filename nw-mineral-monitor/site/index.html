@@ -379,7 +379,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-06a';
+const BUILD = '2026-08-06b';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
 const GROUPS = [
@@ -722,7 +722,7 @@ function buildUI(){
   lyr('layersSites','grades','Cited ore grades (oz/t)', MAN.grades? fmt(MAN.grades.n):'', '<span class="sw dot" style="background:#ecc94b"></span>','from USGS tables + digitized bulletins & inspector reports — WA/OR/ID/MT/WY + NV/UT');
   lyr('layersClaims','claimsA','Active claims (nightly snapshot)',fmt(T.claims_active),'<span class="sw dot" style="background:#2dd4bf"></span>');
   lyr('layersClaims','live','Live claim boundaries (BLM)','z≥10.5','<span class="sw" style="background:rgba(45,212,191,.25);border:1px solid #2dd4bf"></span>','queries BLM MLRS for the current view — always current');
-  lyr('layersClaims','claimsC','Closed claims (historic)',fmt(T.claims_closed),'<span class="sw dot" style="background:#8a6060"></span>','heavy: ~40 MB across 5 states, loads on demand');
+  lyr('layersClaims','claimsC','Closed claims (historic)',fmt(T.claims_closed),'<span class="sw dot" style="background:#8a6060"></span>','heavy: ~65 MB across 7 states, loads on demand; WY/NV/UT keep the most recent 250k each');
   lyr('layersCtx','distCur','Famous districts','28','<span class="sw" style="background:transparent;border:2px dashed #fab219;border-radius:50%"></span>');
   lyr('layersCtx','distDeep','Cassia deep-dive districts','7','<span class="sw" style="background:transparent;border:2px dashed #98a0a8;border-radius:50%"></span>');
   lyr('layersCtx','distAuto','All MRDS district labels',String(MAN.districts.auto.n),'<span class="sw" style="background:transparent;color:#b9c2cc;font-size:9px;line-height:12px;text-align:center">abc</span>','derived from MRDS district tags · z≥8.5');
@@ -1083,7 +1083,7 @@ function buildModals(){
   <h3>CAVEATS</h3>
   <p>· MRDS coordinates can be off by hundreds of meters; its "Producer" flags are frozen in time.<br>
   · USMIN features date from 1958–2001 maps — expect collapse, reclamation, fencing.<br>
-  · Wyoming closed claims are truncated to the most recent 250,000 of 287,066.<br>
+  · Closed claims are truncated to the most recent 250,000 per state where the total exceeds it: WY (of 287k), NV (of 1.23M), UT (of 452k). Older NV/UT closures exist in MLRS but not on this map.<br>
   · WA/OR/MT/WY survey databases differ in scope (MT = abandoned-mine inventory; OR MILO mixes occurrences and borrow pits; WA has no per-record status; WY is explicitly incomplete). A site in two layers is corroboration, not duplication.<br>
   · Claim polygons are PLSS-snapped; claimant names aren't in the public GIS — search serials in <a href="https://mlrs.blm.gov/s/" target="_blank">MLRS</a>.</p>
   <div class="callout"><b style="color:var(--warn)">⚠ Safety & legality.</b> Never enter adits, shafts, or open workings. An active claim is a property right — prospecting on one without permission is claim jumping. Verify surface ownership (BLM / USFS / state / private) before digging; National Parks, most National Monuments, and City of Rocks NR are closed to mineral entry. This is a research aid, not a legal land-status document.</div>`;
@@ -1761,7 +1761,8 @@ function jsLinksFor(name, ser){
   if (name){
     L.push({label:`Mindat search “${name}”`, url:`https://www.mindat.org/search.php?search=${q}`, note:'Mineralogy + locality write-ups.'});
     L.push({label:`Chronicling America — “${name}”`, url:`https://www.loc.gov/collections/chronicling-america/?q=${q}+idaho`, note:'Full-text newspapers 1770–1963.'});
-    L.push({label:`HathiTrust full-text — “${name}”`, url:`https://babel.hathitrust.org/cgi/ls?q1=${q}%20idaho;a=srchls;anyall1=all`, note:'Mining & Scientific Press / E&MJ live here.'});
+    L.push({label:`Internet Archive full-text — “${name}”`, url:`https://archive.org/search?query=%22${q}%22&sin=TXT`, note:'Search inside 150 MSP volumes + 3,800+ E&MJ issues — open, no wall.'});
+    L.push({label:`HathiTrust full-text — “${name}”`, url:`https://babel.hathitrust.org/cgi/ls?q1=${q}%20idaho;a=srchls;anyall1=all`, note:'Second MSP / E&MJ corpus.'});
   }
   if (DOS && DOS.recorder) L.push({label:DOS.recorder.name, url:DOS.recorder.url,
     note:`${DOS.recorder.note||''} ${DOS.recorder.phone||''} · ${DOS.recorder.address||''} — location notices, assessment-work affidavits, quitclaims.`});

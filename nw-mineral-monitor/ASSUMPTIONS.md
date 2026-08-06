@@ -103,9 +103,15 @@ if you want it differently.
     OCR is noisy — hits are leads; the UI says so.
 
 14. **Google Books is best-effort:** the shared egress IP here is usually
-    429'd. The fetcher retries once, caches, and the run proceeds without
-    it. Running `webscrub.py` from any residential connection (or Lambda)
-    fills the gap on the next pass — idempotent by design.
+    429'd (retested 2026-08-06 — still limited). The fetcher retries once,
+    caches, and the run proceeds without it. Running `webscrub.py` from any
+    residential connection (or Lambda) fills the gap on the next pass —
+    idempotent by design. Partial mitigation shipped instead: Internet
+    Archive hosts 150 Mining & Scientific Press volumes and 3,800+ E&MJ
+    issues with open *browser* full-text search; its cross-collection FTS
+    API is not public (metadata backend only; fts params 400), so dossiers
+    carry a prefilled `archive.org/search?…&sin=TXT` deep link rather than
+    automated hits.
 
 15. **HathiTrust/MSP/E&MJ runs are link-outs** (no public full-text API,
     bot-walled). MSHA is fully automated (their open-data Mines.zip),

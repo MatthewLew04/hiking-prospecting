@@ -427,10 +427,10 @@ def run(aoi_key=None):
         'stats': stats, 'targets': targets,
     }
     write_json(f'data/targets/{k}.json', out)
-    update_manifest('geology', {'file': f'data/geology/{k}.json',
-                                'units': len(geo['units']), 'retrieved': geo['generated']})
-    update_manifest('targets', {'file': f'data/targets/{k}.json',
-                                'n': len(targets), 'retrieved': TODAY})
+    update_manifest(f'geology_{k}', {'file': f'data/geology/{k}.json',
+                                     'units': len(geo['units']), 'retrieved': geo['generated']})
+    update_manifest(f'targets_{k}', {'file': f'data/targets/{k}.json',
+                                     'n': len(targets), 'retrieved': TODAY})
     print(json.dumps(stats, indent=1))
     print('\nTOP 12:')
     for t in targets[:12]:

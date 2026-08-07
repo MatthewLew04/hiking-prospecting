@@ -460,8 +460,8 @@ def run(aoi_key=None, demo=False):
                        'official record and the MLRS serial register, not a conclusion.'),
     }
     write_json(f'data/county/{k}.json', out)
-    update_manifest('county', {'file': f'data/county/{k}.json', 'records': len(records),
-                               'demo': bool(demo), 'retrieved': TODAY})
+    update_manifest(f'county_{k}', {'file': f'data/county/{k}.json', 'records': len(records),
+                                    'demo': bool(demo), 'retrieved': TODAY})
     write_coverage_md()
     print(json.dumps(out['stats'], indent=1))
     return out

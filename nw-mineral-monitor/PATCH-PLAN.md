@@ -38,18 +38,18 @@ COVERAGE AUDIT + direct-source fallback where Macrostrat is thin:
 
 | State | Primary (direct) | Status |
 |---|---|---|
-| WA | WGS statewide 1:100k surface-geology GIS + map portal quads | PLANNED |
-| OR | DOGAMI OGDC (latest release, geodatabase) | PLANNED |
-| ID | IGS GM/DWM digital maps (REST 502s from pipeline env — arrives via Macrostrat today) | DONE via Macrostrat |
-| MT | MBMG geologic GIS + district maps | PLANNED |
-| WY | WSGS statewide GIS + quad series | PLANNED |
-| CA | CGS GMC 1:750k (Jennings) + Regional 1:250k + 7.5'/15' quads | partial via Macrostrat (750k + Napa/Lake 100k verified) |
+| WA | WGS statewide surface-geology GIS | **DONE via Macrostrat** (src 19 = WGS statewide, verified Republic district 2026-08-07) |
+| OR | DOGAMI OGDC (latest release) | **DONE via Macrostrat** (src 20 = OGDC release 6, verified Bohemia district) |
+| ID | IGS GM/DWM digital maps (REST 502s from pipeline env) | DONE via Macrostrat (DWM-49 verified in Cassia) |
+| MT | MBMG geologic GIS | **DONE via Macrostrat** (src 25 = Zientek/MBMG spatial databases, verified Butte–Boulder) |
+| WY | WSGS statewide GIS + quad series | **DONE via Macrostrat** (src 157 = WSGS Lander 30×60, verified South Pass) |
+| CA | CGS GMC 1:750k + Regional 1:250k + quads | **THE GAP STATE** — Mother Lode audit shows SGMC-500k only (no CGS 250k in Macrostrat); Clear Lake has USGS 100k quads. Direct CGS regional-series ingest is the one genuinely needed WS6a campaign |
 | all | USGS SGMC (mrdata WFS `sgmc2`, coded fallback) + Macrostrat | DONE |
 | all | NGMDB scanned quads, georeferenced raster fallback | PLANNED — the Tier-1 upgrade path everywhere |
 
-Audit method per state: run `fetch_geology.py` on 2-3 test bboxes, read
-`sources` in the output — if only source 133 (SGMC 500k) appears where the
-state has finer published mapping, wire the direct source.
+Audit run 2026-08-07 (point-sampled Macrostrat refs over Republic WA,
+Butte–Boulder MT, Mother Lode CA, South Pass WY, Bohemia OR): every state's
+own compilation is already served EXCEPT California's — see table.
 
 ## WS6(b) — dedicated FAULTS layer, full AOI — PARTIAL
 

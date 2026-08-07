@@ -192,6 +192,30 @@ Lemhi (endowment #1 of all 244) / Valley / Idaho County / Elmore. Cassia is
 inherits MRDS coordinate slop; NV/UT/WY dropped-ground undercounts
 (truncated closed files); patented land reads "open."
 
+## 7b · GEOPHYSICS — WS7
+
+Two USGS rasters stream live (no processing, no hosting): **MAGNETIC
+ANOMALY** (North America compilation — reds high, blues low; epithermal
+alteration often destroys magnetite, so hunt discrete lows on structure)
+and **RADIOMETRIC K** (potassium — adularia is K-feldspar, potassic
+alteration lights up). One at a time, opacity slider, best over the SAT
+basemap. **SURVEY COVERAGE** is the trust layer: 819 airborne-survey
+footprints — hover for year, type (M/R/G/EM), line spacing, altitude,
+line-km, because a 1969 8-km regional and a modern drape survey look
+identical in a pretty raster. High-res Earth MRI grids: PATCH-PLAN.md.
+
+## 7c · CALIFORNIA (phase 1)
+
+CA is in the state chips (42,771 MRDS sites incl. 24k gold and the full
+Hg belt live now; claims arrive automatically once the CA nightly/monthly
+schedules fire after deploy). The engine's CA rules: Coast Ranges Hg
+pathfinder emphasis and the Knoxville-type serpentinite+Hg+fault
+association — validated by the Clear Lake blind test (`python3
+geology_targets.py clearlake`; Wilbur Springs and Knoxville INSIDE targets
+#1/#4, Sulphur Bank 0.13 km, McLaughlin 0.54 km). Napa and Yolo recorders
+run official online index search (operator-export); see
+config/county_portals.json. Full CA campaign status: PATCH-PLAN.md.
+
 ## 8 · WATCH, ASK, dossiers, INTEL
 
 **WATCH** (header; appears once there's a digest or county signals): the

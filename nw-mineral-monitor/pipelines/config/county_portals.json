@@ -127,12 +127,13 @@
       "fips": "06055",
       "in_aoi": false,
       "recorder": {
-        "name": "Napa County Recorder"
+        "name": "Napa County Recorder-County Clerk",
+        "url": "https://www.napacounty.gov/1297/Recorder-County-Clerk"
       },
-      "access": "unverified",
+      "access": "operator-export",
       "verified": false,
-      "vendor": null,
-      "notes": "Clear Lake\u2013Knoxville test AOI county (CA patch). CA recorders often run self-hosted or vendor index search \u2014 verify in a browser, record vendor + ToS here BEFORE any automation, per the WS5 rules.",
+      "vendor": "self-hosted (services.napacounty.gov/OfficialRecords)",
+      "notes": "Official Records index search at services.napacounty.gov/OfficialRecords (found via county site 2026-08-07; confirm search fields + export in a browser). Browser search \u2192 copy/export results to data-inbox/county/napa/. Do not script it without reading ToS.",
       "adapter": null
     },
     "yolo": {
@@ -141,12 +142,13 @@
       "fips": "06113",
       "in_aoi": false,
       "recorder": {
-        "name": "Yolo County Recorder"
+        "name": "Yolo County Clerk-Recorder (ACE)",
+        "url": "https://ace.yolocounty.gov/222/Official-Records-Search"
       },
-      "access": "unverified",
+      "access": "operator-export",
       "verified": false,
-      "vendor": null,
-      "notes": "Clear Lake\u2013Knoxville test AOI county (CA patch). CA recorders often run self-hosted or vendor index search \u2014 verify in a browser, record vendor + ToS here BEFORE any automation, per the WS5 rules.",
+      "vendor": "self-hosted (Yolo ACE Official Records Search)",
+      "notes": "Official Records Search page on the county ACE site (ace.yolocounty.gov/222, found 2026-08-07). Browser search \u2192 export to data-inbox/county/yolo/. Confirm index date coverage in a browser.",
       "adapter": null
     },
     "lake_ca": {

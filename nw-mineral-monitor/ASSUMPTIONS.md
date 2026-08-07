@@ -230,3 +230,35 @@ if you want it differently.
     needs scene selection + cloud masking to avoid painting false
     confidence over 2,600 mi². The target JSON schema already has room
     (`boosts`) for a satellite term.
+
+## CA patch + WS7 (2026-08-07)
+
+32. **The Clear Lake blind test failed first, passed second — both runs are
+    the record.** v1 lexicon found zero T1/T2 (no map unit in the AOI says
+    "sinter"/"opal" at any published scale) and drowned in mélange noise.
+    v2 fixes are each grounded in the maps themselves: silica-carbonate →
+    Tier 2 (135 units); mélange block-inventory guard; the Knoxville-type
+    ASSOCIATION rule (serpentinite + ≥3 Hg ≤2 km + fault ≤1 km ⇒ Tier 2,
+    labeled as association, never dressed up as description-based — needed
+    because McLaughlin's corner is SGMC-500k-only and says just
+    "serpentine"). Result: Wilbur Springs and Knoxville INSIDE targets #1/#4,
+    Sulphur Bank 0.13 km, McLaughlin 0.54 km. See PATCH-PLAN.md.
+
+33. **WS7 rasters stream; nothing is reprocessed.** Magnetic = mrdata
+    mapcache WMTS `magnetic` (GoogleMapsCompatible), K% = `aerorad` WMS —
+    both verified tile-serving from the pipeline environment. Earth MRI
+    high-res GeoTIFF→COG tiling is specced (PATCH-PLAN) but deliberately
+    not shipped untested. The trust layer (819 airborne footprints w/ year,
+    spacing, altitude) ships because a 1949 5-mile-spacing survey and a
+    modern 200 m block look identical in a pretty raster.
+
+34. **Earth MRI WFS GetFeature 400s** on every parameter variant tried
+    (GetCapabilities fine) — outlines will come from the ScienceBase
+    collection instead. **USGS Qfaults national service still answers
+    "Service not started"** — active-fault styling waits; geology-map fault
+    arcs (already scored) carry structure meanwhile.
+
+35. **CA claims wiring is schedule-only until first deploy+run.** BBOX +
+    nightly/monthly rules ship now; snapshots appear when the rules fire
+    (CA active likely chains 2-4 legs; closed capped at newest 250k like
+    NV). The CA state chip is live and simply shows nothing until then.

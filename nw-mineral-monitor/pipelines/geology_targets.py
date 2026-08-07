@@ -34,13 +34,32 @@ from collections import defaultdict
 from common import load_aoi, SITE, TODAY, write_json, point_in_poly, update_manifest
 
 # ---------------------------------------------------------------- tiers
-T1_RX = re.compile(r'sinter|opalin|opalized|opal\b|chalcedon|'
+T1_RX = re.compile(r'sinter|opalin|opalized|opalite|opal\b|chalcedon|'
                    r'(?:hot|thermal)[\s-]spring|spring\sdeposit|siliceous\sspring', re.I)
 TRAV_RX = re.compile(r'travertine|tufa\b|calcareous\sspring', re.I)
+# silica[- ]carbonate added after the Clear Lake blind test: it is the mapped
+# expression of Knoxville-type Hg-Au systems (serpentinite altered by the same
+# fluids that build sinter above) and appears on 135 units in that AOI
 T2_RX = re.compile(r'silicif|jasperoid|hydrothermal(?:ly)?\s?alter|argilli[cz]|'
-                   r'propylit|alunite|adularia|quartz[\s-]sericite', re.I)
+                   r'propylit|alunite|adularia|quartz[\s-]sericite|'
+                   r'silica[\s-]?carbonate', re.I)
 T3_RX = re.compile(r'rhyolit|quartz\slatite|tuff\b|tuffs\b|tuffaceous|ignimbrite|welded|'
-                   r'bimodal|felsic\svolcan|volcanic\sdome', re.I)
+                   r'bimodal|felsic\svolcan|volcanic\sdome|obsidian', re.I)
+# mélange guard (Clear Lake blind test): Franciscan mélange descriptions list
+# "blocks and lenses of ... rhyolite ..." — an inventory of exotic blocks, not
+# a volcanic center. Matrix-hosted matches don't make a Tier-3 host unless the
+# unit also reads as an actual volcanic body.
+MELANGE_RX = re.compile(r'm[ée]lange|blocks\s+and\s+lenses|sheared\s+argillite', re.I)
+VOLCBODY_RX = re.compile(r'\bflows?\b|\bdome|welded|ash[\s-]flow|\blava\b|volcanic\s+(?:center|rocks?\s+of)|'
+                         r'pyroclastic', re.I)
+# Knoxville-type association (Clear Lake blind test): where mapping is too
+# coarse to carry alteration words (SGMC 500k says just "serpentine"), a
+# serpentinite/ultramafic body carrying a mercury-occurrence cluster on
+# structure IS the mapped expression of the system — McLaughlin itself sits
+# on exactly such a unit. Requires ≥3 Hg-class pathfinders ≤2 km AND a
+# mapped fault ≤1 km; labeled as an association, never as description-based.
+ULTRAMAFIC_RX = re.compile(r'serpentin|ultramafic|peridotite|ophiolit', re.I)
+HG_CODES = {'HG', 'MERCURY', 'CINNABAR', 'QUICKSILVER'}
 PATHFINDER = {'HG': 2.0, 'MERCURY': 2.0, 'CINNABAR': 2.0,
               'SB': 2.0, 'ANTIMONY': 2.0, 'STIBNITE': 2.0,
               'AS': 2.0, 'ARSENIC': 2.0,
@@ -60,6 +79,8 @@ def classify(blob):
     if T2_RX.search(blob):
         return 2, terms(T2_RX)
     if T3_RX.search(blob):
+        if MELANGE_RX.search(blob) and not VOLCBODY_RX.search(blob):
+            return 0, []                # exotic blocks in mélange matrix — noise
         return 3, terms(T3_RX)
     return 0, []
 
@@ -106,8 +127,21 @@ def run(aoi_key=None):
     k = aoi['key']
     st = aoi['state'].lower()
     geo = json.load(open(os.path.join(SITE, f'data/geology/{k}.json')))
-    og = json.load(open(os.path.join(SITE, f'data/openground/{k}.json')))
-    plss = json.load(open(os.path.join(SITE, f'data/plss/{k}.json')))
+    # WS2 layers exist only where the full AOI pipelines have run (Cassia).
+    # Elsewhere — e.g. the Clear Lake blind acceptance test — degrade
+    # gracefully: geology + structure still score; land-status boosts skip.
+    degraded = []
+    try:
+        og = json.load(open(os.path.join(SITE, f'data/openground/{k}.json')))
+    except FileNotFoundError:
+        og = {'sections': []}
+        degraded.append('open-ground grid absent — land-status boost + money flag disabled')
+    try:
+        plss = json.load(open(os.path.join(SITE, f'data/plss/{k}.json')))
+    except FileNotFoundError:
+        plss = {'features': []}
+        if not degraded:
+            degraded.append('PLSS grid absent — section overlap disabled')
     lat0 = (aoi['bbox'][1] + aoi['bbox'][3]) / 2
     KX, KY = 111.320 * math.cos(math.radians(lat0)), 110.574
     xy = lambda lon, lat: (lon * KX, lat * KY)
@@ -157,6 +191,8 @@ def run(aoi_key=None):
     pgrid = Grid(2.0)
     for i, p in enumerate(paths):
         pgrid.add(*xy(p[0], p[1]), i)
+    if not paths:
+        degraded.append(f'no site snapshots for state {st.upper()} — pathfinder boost disabled')
     print(f'pathfinder-commodity sites in state files: {len(paths)}')
 
     # ---- springs & wells ----
@@ -185,7 +221,8 @@ def run(aoi_key=None):
     for u in geo['units']:
         blob = ' '.join(str(u.get(kk) or '') for kk in ('nm', 'sn', 'li', 'de', 'co'))
         tier, terms = classify(blob)
-        if not tier:
+        assoc = tier == 0 and bool(ULTRAMAFIC_RX.search(blob))
+        if not tier and not assoc:
             continue
         # geometry samples (exterior rings only)
         pts = []
@@ -230,6 +267,16 @@ def run(aoi_key=None):
                     pseen.add(pi)
                     near_paths.append({'nm': nm, 'c': com, 'km': round(d, 2), 'w': w})
         near_paths.sort(key=lambda p: (-p['w'], p['km']))
+        # resolve the Knoxville-type association gate now that boosts exist
+        if assoc:
+            hg_n = sum(1 for p in near_paths
+                       if HG_CODES & {t.strip().upper() for t in re.split(r'[,;/]', p['c'])})
+            if hg_n >= 3 and fault_km <= 1.0:
+                tier = 2
+                terms = [f'serpentinite + {hg_n}-mercury cluster on structure '
+                         f'(Knoxville-type association — not description-based)']
+            else:
+                continue
 
         # thermal springs / wells within 4 km
         near_spr = []
@@ -293,12 +340,18 @@ def run(aoi_key=None):
             score += b
             why.append(f'{fx_n} mapped fault intersection{"s" if fx_n > 1 else ""} within 2 km (+{b})')
         if near_paths:
-            b = min(15.0, sum(3 * p['w'] * math.exp(-p['km'] / 1.5) for p in near_paths))
+            # CA Coast Ranges: the Hg belt IS the epithermal pathfinder trail —
+            # weight mercury heavier and let the cap breathe (per the CA patch)
+            hg_x = 1.5 if aoi['state'] == 'CA' else 1.0
+            cap = 22.0 if aoi['state'] == 'CA' else 15.0
+            # 1.6/site (not 3): dense belts must DIFFERENTIATE, not insta-cap
+            b = min(cap, sum(1.6 * p['w'] * hg_x * math.exp(-p['km'] / 1.5) for p in near_paths))
             score += b
             top = near_paths[0]
             why.append(f'{len(near_paths)} pathfinder-commodity occurrence'
                        f'{"s" if len(near_paths) > 1 else ""} ≤2 km — nearest: {top["nm"]} '
-                       f'[{top["c"]}] {top["km"]} km (+{b:.0f}; Hg/Sb/As weighted 2×)')
+                       f'[{top["c"]}] {top["km"]} km (+{b:.0f}; Hg/Sb/As weighted 2×'
+                       + (', CA Coast Ranges Hg emphasis' if hg_x > 1 else '') + ')')
         if near_spr:
             b = min(16.0, sum({'hot': 12, 'warm': 7, 'thermal': 7}[s['cls']] *
                               math.exp(-s['km'] / 2.0) for s in near_spr))
@@ -343,7 +396,7 @@ def run(aoi_key=None):
             'g': u['g'],
         })
 
-    targets.sort(key=lambda t: -t['score'])
+    targets.sort(key=lambda t: (-t['score'], -t['area_km2']))
     for i, t in enumerate(targets):
         t['rank'] = i + 1
     stats = {'scored_units': len(geo['units']), 'targets': len(targets),
@@ -352,7 +405,7 @@ def run(aoi_key=None):
                          for t in (1, 2, 3, 9) if any(x['tier'] == t for x in targets)},
              'money': sum(1 for t in targets if t['money'])}
     out = {
-        'aoi': k, 'generated': TODAY,
+        'aoi': k, 'generated': TODAY, 'degraded': degraded or None,
         'method': ('Every geologic-map unit in the AOI is scored: TIER 1 sinter/opaline/'
                    'chalcedonic hot-spring deposits (base 100, flagged regardless of anything '
                    'else), travertine separately (calcareous — related system, wrong chemistry, '

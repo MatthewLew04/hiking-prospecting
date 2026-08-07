@@ -1,59 +1,167 @@
 {
-  "_doc": "WS5 coverage matrix — one entry per county recorder. access: scrape | bulk-export | operator-export | manual-request | unavailable | unverified. Only counties with verified=true had their access level confirmed (date + method recorded); 'unverified' entries carry the best-known lead and MUST be checked in a browser before relying on them (several portals block automated verification via robots.txt — respected, not bypassed).",
-  "law_note": "Mining claims become public record at the county recorder FIRST: location notices are recorded under state law (Idaho Code tit. 47, ch. 15), and the federal FLPMA filing with BLM is due within 90 days of location (43 U.S.C. § 1744). BLM adjudication + MLRS indexing add more lag, so the county index can lead MLRS by weeks to months — that gap is the WS5 signal.",
-  "doc_types": ["NOTICE OF LOCATION", "MINING CLAIM (LODE/PLACER/MILLSITE)", "AMENDED LOCATION", "AFFIDAVIT OF ASSESSMENT WORK / PROOF OF LABOR / INTENT TO HOLD", "QUITCLAIM (mining)", "DEED (mining context)"],
+  "_doc": "WS5 coverage matrix \u2014 one entry per county recorder. access: scrape | bulk-export | operator-export | manual-request | unavailable | unverified. Only counties with verified=true had their access level confirmed (date + method recorded); 'unverified' entries carry the best-known lead and MUST be checked in a browser before relying on them (several portals block automated verification via robots.txt \u2014 respected, not bypassed).",
+  "law_note": "Mining claims become public record at the county recorder FIRST: location notices are recorded under state law (Idaho Code tit. 47, ch. 15), and the federal FLPMA filing with BLM is due within 90 days of location (43 U.S.C. \u00a7 1744). BLM adjudication + MLRS indexing add more lag, so the county index can lead MLRS by weeks to months \u2014 that gap is the WS5 signal.",
+  "doc_types": [
+    "NOTICE OF LOCATION",
+    "MINING CLAIM (LODE/PLACER/MILLSITE)",
+    "AMENDED LOCATION",
+    "AFFIDAVIT OF ASSESSMENT WORK / PROOF OF LABOR / INTENT TO HOLD",
+    "QUITCLAIM (mining)",
+    "DEED (mining context)"
+  ],
   "counties": {
     "cassia": {
-      "county": "Cassia", "state": "ID", "fips": "16031", "in_aoi": true,
-      "recorder": {"name": "Cassia County Recorder", "phone": "(208) 878-5240",
-                   "email": "recorder@cassia.gov",
-                   "address": "1459 Overland Ave RM 105, Burley, ID 83318",
-                   "url": "https://www.cassia.gov/recorder"},
-      "access": "manual-request", "verified": true, "verified_date": "2026-08-06",
+      "county": "Cassia",
+      "state": "ID",
+      "fips": "16031",
+      "in_aoi": true,
+      "recorder": {
+        "name": "Cassia County Recorder",
+        "phone": "(208) 878-5240",
+        "email": "recorder@cassia.gov",
+        "address": "1459 Overland Ave RM 105, Burley, ID 83318",
+        "url": "https://www.cassia.gov/recorder"
+      },
+      "access": "manual-request",
+      "verified": true,
+      "verified_date": "2026-08-06",
       "verify_method": "cassia.gov/recorder fetched: no online index or vendor portal listed; public computer + records vault by appointment (call/email ahead); Public Records Request form (fillable PDF) to recorder@cassia.gov",
-      "vendor": null, "online_index": null,
-      "notes": "Copies ~$1/page. Pre-1976 location notices live in physical grantor/grantee books (no digital index). Ask specifically for the mining index if one exists — many Idaho recorders keep a separate mining-locations index book.",
+      "vendor": null,
+      "online_index": null,
+      "notes": "Copies ~$1/page. Pre-1976 location notices live in physical grantor/grantee books (no digital index). Ask specifically for the mining index if one exists \u2014 many Idaho recorders keep a separate mining-locations index book.",
       "adapter": "operator-assisted"
     },
     "twin_falls": {
-      "county": "Twin Falls", "state": "ID", "fips": "16083", "in_aoi": false,
-      "recorder": {"name": "Twin Falls County Recorder", "url": "https://twinfallscounty.org/recorder/"},
-      "access": "unverified", "verified": false,
+      "county": "Twin Falls",
+      "state": "ID",
+      "fips": "16083",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Twin Falls County Recorder",
+        "url": "https://twinfallscounty.org/recorder/"
+      },
+      "access": "unverified",
+      "verified": false,
       "vendor": null,
       "notes": "No vendor confirmed from sandbox. Check the recorder page in a browser; third-party indexes (deeds.com, NETR) list the office but not a public search portal.",
       "adapter": null
     },
     "minidoka": {
-      "county": "Minidoka", "state": "ID", "fips": "16067", "in_aoi": false,
-      "recorder": {"name": "Minidoka County Recorder", "url": "https://www.minidoka.id.us/162/Recorders-Office"},
-      "access": "unverified", "verified": false,
+      "county": "Minidoka",
+      "state": "ID",
+      "fips": "16067",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Minidoka County Recorder",
+        "url": "https://www.minidoka.id.us/162/Recorders-Office"
+      },
+      "access": "unverified",
+      "verified": false,
       "vendor": "iDoc Market (reported)",
-      "notes": "County site has a 'Recorded Land Records' page (minidoka.id.us/448) that reportedly points to iDoc Market (idocmarket.com — subscription; index search typically free after signup). Site blocked automated verification (robots.txt/timeout) — confirm in a browser. If confirmed: access becomes operator-export (search the index in the browser, export/copy results to data-inbox/county/minidoka/).",
+      "notes": "County site has a 'Recorded Land Records' page (minidoka.id.us/448) that reportedly points to iDoc Market (idocmarket.com \u2014 subscription; index search typically free after signup). Site blocked automated verification (robots.txt/timeout) \u2014 confirm in a browser. If confirmed: access becomes operator-export (search the index in the browser, export/copy results to data-inbox/county/minidoka/).",
       "adapter": null
     },
     "power": {
-      "county": "Power", "state": "ID", "fips": "16077", "in_aoi": false,
-      "recorder": {"name": "Power County Recorder", "url": "https://www.co.power.id.us/"},
-      "access": "unverified", "verified": false, "vendor": null,
-      "notes": "Small county; likely manual-request. Not probed.", "adapter": null
+      "county": "Power",
+      "state": "ID",
+      "fips": "16077",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Power County Recorder",
+        "url": "https://www.co.power.id.us/"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Small county; likely manual-request. Not probed.",
+      "adapter": null
     },
     "oneida": {
-      "county": "Oneida", "state": "ID", "fips": "16071", "in_aoi": false,
-      "recorder": {"name": "Oneida County Recorder", "url": "https://oneidacountyid.gov/"},
-      "access": "unverified", "verified": false, "vendor": null,
-      "notes": "Small county; likely manual-request. Not probed.", "adapter": null
+      "county": "Oneida",
+      "state": "ID",
+      "fips": "16071",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Oneida County Recorder",
+        "url": "https://oneidacountyid.gov/"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Small county; likely manual-request. Not probed.",
+      "adapter": null
     },
     "box_elder": {
-      "county": "Box Elder", "state": "UT", "fips": "49003", "in_aoi": false,
-      "recorder": {"name": "Box Elder County Recorder", "url": "https://www.boxeldercounty.org/recorder.htm"},
-      "access": "unverified", "verified": false, "vendor": null,
-      "notes": "Adjacent to Cassia across the UT line (Black Pine / Raft River trend continues south). Confirm portal in a browser.", "adapter": null
+      "county": "Box Elder",
+      "state": "UT",
+      "fips": "49003",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Box Elder County Recorder",
+        "url": "https://www.boxeldercounty.org/recorder.htm"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Adjacent to Cassia across the UT line (Black Pine / Raft River trend continues south). Confirm portal in a browser.",
+      "adapter": null
     },
     "elko": {
-      "county": "Elko", "state": "NV", "fips": "32007", "in_aoi": false,
-      "recorder": {"name": "Elko County Recorder", "url": "https://elkocountynv.net/departments/recorder/index.php"},
-      "access": "unverified", "verified": false, "vendor": null,
-      "notes": "Elko County has historically run a self-hosted recorded-document search — worth a browser check; NV recorders commonly index mining locations well (huge claim volume).", "adapter": null
+      "county": "Elko",
+      "state": "NV",
+      "fips": "32007",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Elko County Recorder",
+        "url": "https://elkocountynv.net/departments/recorder/index.php"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Elko County has historically run a self-hosted recorded-document search \u2014 worth a browser check; NV recorders commonly index mining locations well (huge claim volume).",
+      "adapter": null
+    },
+    "napa": {
+      "county": "Napa",
+      "state": "CA",
+      "fips": "06055",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Napa County Recorder"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Clear Lake\u2013Knoxville test AOI county (CA patch). CA recorders often run self-hosted or vendor index search \u2014 verify in a browser, record vendor + ToS here BEFORE any automation, per the WS5 rules.",
+      "adapter": null
+    },
+    "yolo": {
+      "county": "Yolo",
+      "state": "CA",
+      "fips": "06113",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Yolo County Recorder"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Clear Lake\u2013Knoxville test AOI county (CA patch). CA recorders often run self-hosted or vendor index search \u2014 verify in a browser, record vendor + ToS here BEFORE any automation, per the WS5 rules.",
+      "adapter": null
+    },
+    "lake_ca": {
+      "county": "Lake",
+      "state": "CA",
+      "fips": "06033",
+      "in_aoi": false,
+      "recorder": {
+        "name": "Lake County Recorder"
+      },
+      "access": "unverified",
+      "verified": false,
+      "vendor": null,
+      "notes": "Clear Lake\u2013Knoxville test AOI county (CA patch). CA recorders often run self-hosted or vendor index search \u2014 verify in a browser, record vendor + ToS here BEFORE any automation, per the WS5 rules.",
+      "adapter": null
     }
   }
 }

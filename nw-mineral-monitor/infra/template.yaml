@@ -234,6 +234,30 @@ Resources:
           Arn: !GetAtt UpdaterFunction.Arn
           Input: '{"mode":"closed","states":["NV"]}'
 
+  NightlyActiveCaRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-nightly-active-ca'
+      Description: Refresh active-claim snapshot, CA (10:10 UTC — big state, runs alone; chains as needed)
+      ScheduleExpression: cron(10 10 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"active","states":["CA"]}'
+
+  MonthlyClosedRule6:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-6'
+      Description: Refresh closed-claim snapshot for CA (3rd of month - newest 250k kept)
+      ScheduleExpression: cron(0 10 3 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["CA"]}'
+
   MonthlyClosedRule5:
     Type: AWS::Events::Rule
     Properties:
@@ -295,6 +319,20 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt MonthlyClosedRule5.Arn
+  PermNightlyCa:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyActiveCaRule.Arn
+  PermClosed6:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedRule6.Arn
 
   # ---------- WS2d expiration watch ----------
   WatchRole:

@@ -1,6 +1,18 @@
 {
   "default": "cassia",
   "aois": {
+    "clearlake": {
+      "name": "Clear Lake–Knoxville district, California",
+      "state": "CA",
+      "county": "Napa/Yolo/Lake",
+      "county_fips": null,
+      "bbox": [-122.95, 38.7, -122.1, 39.15],
+      "plss_state_meridian": "CA21",
+      "meridian_name": "Mount Diablo Meridian",
+      "utm_zone": 10,
+      "note": "WS6 blind acceptance-test AOI: the engine must rediscover the McLaughlin sinter-gold system from unit descriptions + structure alone. Also covers Sulphur Bank, Knoxville Hg district, Wilbur Springs.",
+      "recorder": null
+    },
     "cassia": {
       "name": "Cassia County, Idaho",
       "state": "ID",

@@ -292,7 +292,7 @@ footer .right{margin-left:auto}
 <div id="app">
   <header>
     <button id="menuBtn" title="layers & filters">☰</button>
-    <div class="brand"><b><span class="pick">⛏</span> NW MINERAL MONITOR</b><span>WA · OR · ID · MT · WY · NV · UT — MINES · CLAIMS · GRADES</span></div>
+    <div class="brand"><b><span class="pick">⛏</span> NW MINERAL MONITOR</b><span>WA·OR·ID·MT·WY·NV·UT·CA — MINES · CLAIMS · GRADES</span></div>
     <div class="hstats" id="hstats"></div>
     <div id="searchWrap"><input id="search" placeholder="search mines, claims, districts…" autocomplete="off"><div id="results"></div></div>
     <div class="hbtns">
@@ -320,6 +320,9 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>GOLD SIGNAL — COUNTIES</h3><div id="layersCG"></div>
         <div class="oglegend" id="cgLegend" style="display:none"></div>
         <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>GEOPHYSICS — WS7</h3><div id="layersGP"></div>
+        <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
+        <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
       <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
         <div class="subnote" id="ctyNote" style="padding-left:0"></div>
         <div id="ctyBtns"></div></div>
@@ -390,9 +393,9 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-06e';
+const BUILD = '2026-08-07f';
 console.log('NW Mineral Monitor build', BUILD);
-const STATES = ['WA','OR','ID','MT','WY','NV','UT'];
+const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
   {k:'GOLD',  c:'#c98500', label:'Gold'},
   {k:'AGBASE',c:'#3987e5', label:'Silver & base metals'},
@@ -460,6 +463,7 @@ function initMap(){
     loadOpenGround().then(()=>handleClaimHash())
       .then(()=>loadGeoTargets()).catch(()=>{});                  // WS2 sections + WS6 targets (Cassia AOI)
     loadCountyGold().catch(()=>{});                               // county gold-signal ranking
+    loadGeophys().catch(()=>{});                                  // WS7 aeromag / radiometrics
     loadUserLayers().catch(()=>{});                               // WS1 ingest + registry
     loadCounty().catch(()=>{}).then(()=>loadAlerts()).catch(()=>{}); // WS5 county + WS2d watch digest
     await loadSites();
@@ -914,7 +918,7 @@ function wireMapEvents(){
     clearTimeout(liveTimer); liveTimer = setTimeout(refreshLive, 450); });
   map.on('zoomend', ()=>updateDistrictMarkers());
   map.on('idle', ()=>updateDistrictMarkers());
-  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill','ctygold-fill'];
+  const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill','ctygold-fill','gp-surv-fill'];
   map.on('mousemove', e=>{
     const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
     if (!fs.length){ tipEl.style.display='none'; map.getCanvas().style.cursor=''; return; }
@@ -936,6 +940,7 @@ function tipText(f){
     return `#${t.rank} · ${t.score} · ${t.nm||'unit'}${t.money?' ★':''} (${(t.tierName||'').split(' — ')[0]})`; }
   if (lid==='geo-fill') return `${p.nm||'geologic unit'}${p.age?' · '+p.age:''}`;
   if (lid==='ctygold-fill') return `#${p.rank} ${p.name}, ${p.st} — stakeable gold ${p.stake}`;
+  if (lid==='gp-surv-fill') return gpSurvTip(p);
   if (lid==='grades-c' && GR){ const i=p.i;
     return `${GR.name[i]} — ${GR.au[i]!=null? GR.au[i]+' oz/t Au' : GR.ag[i]!=null? GR.ag[i]+' oz/t Ag' : '$'+GR.usd[i]+'/ton'}${GR.open[i]>=400?' · OPEN':''}`; }
   if (lid==='live-fill') return `${p.name||p.serial} — ${CLAIMTYPE[p.type]} (${p.disp}) · LIVE`;
@@ -960,6 +965,7 @@ function kv(rows){ return '<dl class="kv">'+rows.filter(r=>r[1]).map(([k,v,mono]
 function showFeature(f){
   const lid = f.layer.id, p = f.properties;
   if (lid==='ctygold-fill') return;   // its own click handler runs precedence checks
+  if (lid==='gp-surv-fill') return;   // hover-only provenance layer
   if (lid==='tg-fill') return showTarget(p.id);
   if (lid==='geo-fill') return showGeoUnit(p.id);
   if (lid==='grades-c' && GR) return showGrade(p.i);
@@ -1909,6 +1915,77 @@ function tgAnswer(q){
   TG.targets.slice(0,8).forEach(t=>d.appendChild(hitLink(
     `#${t.rank} ${t.nm||'unit'} — ${t.score}${t.money?' ★':''} (fault ${t.boosts.fault_km!=null?t.boosts.fault_km+' km':'—'})`, null,
     ()=>{ map.flyTo({center:[t.cx,t.cy], zoom:11.4, duration:900}); const g=$('tgToggle'); if(g&&!g.checked) g.click(); showTarget(t.id); })));
+}
+
+/* ---------- WS7: aeromagnetic + radiometric overlays ---------- */
+let GP = null, gpActive = null;
+const GP_RASTERS = {
+  mag: {label:'MAGNETIC ANOMALY', src:'gp-mag',
+        tiles:['https://mrdata.usgs.gov/mapcache/wmts/1.0.0/magnetic/default/GoogleMapsCompatible/{z}/{y}/{x}.png'],
+        attribution:'USGS magnetic anomaly map of North America (mrdata WMTS)',
+        note:'Total-field magnetic anomaly, North America compilation (~1 km grid). Reds = highs, blues = lows. Epithermal alteration often DESTROYS magnetite — look for discrete lows on structure.'},
+  rad: {label:'RADIOMETRIC K (POTASSIUM)', src:'gp-rad',
+        tiles:['https://mrdata.usgs.gov/services/aerorad?service=WMS&request=GetMap&version=1.1.1&layers=Potassium&styles=&format=image/png&transparent=true&srs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}'],
+        attribution:'USGS/NURE aeroradiometric compilation (mrdata WMS)',
+        note:'Potassium (K%) from NURE aeroradiometrics. Adularia is K-feldspar — potassic alteration in epithermal systems lights up in K. Coarse legacy data; check the survey layer for line spacing.'},
+};
+async function loadGeophys(){
+  // rasters go under everything data-ish, over the basemaps
+  for (const k of Object.keys(GP_RASTERS)){
+    const r = GP_RASTERS[k];
+    map.addSource(r.src, {type:'raster', tiles:r.tiles, tileSize:256, attribution:r.attribution});
+    map.addLayer({id:r.src, type:'raster', source:r.src, layout:{visibility:'none'},
+      paint:{'raster-opacity':.65}}, 'county-line');
+    const row = document.createElement('label');
+    row.className='lrow'; row.innerHTML = `<input type="checkbox" id="${r.src}-tgl"> <span>${r.label}</span>`;
+    $('layersGP').appendChild(row);
+    $(r.src+'-tgl').onchange = e=>{
+      if (e.target.checked){
+        // one geophys raster at a time — they'd just occlude each other
+        for (const k2 of Object.keys(GP_RASTERS)){
+          if (k2!==k){ const t=$(GP_RASTERS[k2].src+'-tgl'); if (t.checked){ t.checked=false; map.setLayoutProperty(GP_RASTERS[k2].src,'visibility','none'); } }
+        }
+        gpActive = k;
+        map.setLayoutProperty(r.src,'visibility','visible');
+        map.setPaintProperty(r.src,'raster-opacity', (+$('gpOpacity').value)/100);
+        $('gpSlider').style.display='';
+        $('gpNote').textContent = r.note;
+      } else {
+        gpActive = null;
+        map.setLayoutProperty(r.src,'visibility','none');
+        $('gpSlider').style.display='none';
+        $('gpNote').textContent = '';
+      }
+    };
+  }
+  $('gpOpacity').oninput = e=>{
+    if (gpActive) map.setPaintProperty(GP_RASTERS[gpActive].src,'raster-opacity',(+e.target.value)/100);
+  };
+  // survey provenance polygons — how much to trust the pixel under the cursor
+  try{ GP = await jget('data/geophys/surveys.json'); }catch(e){ $('gpNote').textContent='(survey index not built — run pipelines/fetch_geophys.py)'; return; }
+  map.addSource('gp-surveys', {type:'geojson', data:{type:'FeatureCollection', features:
+    GP.surveys.map((s,i)=>({type:'Feature', properties:{i, nm:s.nm, yr:s.yr||'?', kind:s.kind||'',
+      spc:s.spacing||'', alt:s.alt||''}, geometry:{type:'Polygon', coordinates:[s.g]}}))}});
+  map.addLayer({id:'gp-surv-line', type:'line', source:'gp-surveys', layout:{visibility:'none'},
+    paint:{'line-color':'#38bdf8','line-width':.8,'line-opacity':.6,'line-dasharray':[4,2]}}, 'county-line');
+  map.addLayer({id:'gp-surv-fill', type:'fill', source:'gp-surveys', layout:{visibility:'none'},
+    paint:{'fill-color':'#38bdf8','fill-opacity':.03}}, 'county-line');
+  const row = document.createElement('label');
+  row.className='lrow'; row.innerHTML = `<input type="checkbox" id="gp-surv-tgl"> <span>SURVEY COVERAGE (TRUST LAYER)</span>`;
+  $('layersGP').appendChild(row);
+  $('gp-surv-tgl').onchange = e=>{
+    const v = e.target.checked?'visible':'none';
+    map.setLayoutProperty('gp-surv-line','visibility',v);
+    map.setLayoutProperty('gp-surv-fill','visibility',v);
+    if (e.target.checked) $('gpNote').textContent = `${GP.n} airborne surveys (USGS inventory). Hover a boundary: year, type (M=mag R=rad G=grav EM), line spacing, altitude. A 1970s 5-km-spacing regional and a modern 200-m block look identical in the raster — this layer says which you're looking at.`;
+  };
+}
+function gpSurvTip(p){
+  const s = GP && GP.surveys[p.i]; if (!s) return '';
+  const bits = [s.nm, s.yr?`${s.yr}`:null, s.kind||null,
+    s.spacing?`${s.spacing} km lines`:null, s.alt?`${s.alt} m ${s.alt_type||''}`:null,
+    s.lnkm?`${s.lnkm} line-km`:null].filter(Boolean);
+  return bits.join(' · ');
 }
 
 /* ---------- county gold-signal ranking ---------- */

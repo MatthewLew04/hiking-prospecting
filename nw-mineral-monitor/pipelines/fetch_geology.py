@@ -272,6 +272,37 @@ def fetch_faults(bbox, notes):
     return out
 
 
+CGS_FAM = 'https://gis.conservation.ca.gov/server/rest/services/CGS/FaultActivityMapCA/FeatureServer'
+
+
+def fetch_cgs_fam(bbox, notes):
+    """CGS Fault Activity Map of California — the authoritative CA fault
+    overlay (patch WS6b). Layer 14 = state fault classification (age-classed
+    traces), 16 = pre-Quaternary. Merged into the AOI fault set with the age
+    class carried in `ty` so display/scoring can weight active structure."""
+    out = []
+    for lid in (14, 16):
+        try:
+            first = True
+            for f in arcgis_query(CGS_FAM, lid, dict(envelope(bbox), outFields='*',
+                                  returnGeometry='true', geometryPrecision=5,
+                                  outSR=4326), ttl_days=60):
+                at = {k.lower(): v for k, v in f['attributes'].items()}
+                if first:
+                    print(f'  CGS FAM layer {lid} fields:', sorted(at.keys())[:10])
+                    first = False
+                nm = at.get('name') or at.get('fault_name') or at.get('label')
+                age = at.get('age') or at.get('fault_age') or at.get('activity') or \
+                      ('pre-Quaternary' if lid == 16 else '')
+                for path in (f.get('geometry') or {}).get('paths') or []:
+                    out.append({'nm': nm, 'ty': f'CGS FAM: {age}'[:60], 'src': 'CGS-FAM',
+                                'path': [(round(p[0], 5), round(p[1], 5)) for p in path]})
+        except Exception as e:                    # noqa: BLE001
+            notes.append(f'CGS FAM layer {lid} unavailable: {e}')
+    print(f'  CGS FAM fault paths: {len(out)}')
+    return out
+
+
 def fetch_springs(bbox, notes):
     out = []
     # GNIS named springs — physical-point layers carry gaz_featureclass;
@@ -419,7 +450,8 @@ def run(aoi_key=None):
 
     units_raw, ms_lines, refs = fetch_units(bbox, notes)
     scales = source_scales(units_raw, notes)
-    faults = fetch_faults(bbox, notes) + [
+    cgs_faults = fetch_cgs_fam(bbox, notes) if aoi['state'] == 'CA' else []
+    faults = fetch_faults(bbox, notes) + cgs_faults + [
         {'nm': l['nm'], 'ty': l['ty'], 'src': l['src'],
          'path': simplify([p for p in l['path']
                            if bbox[0] - .05 <= p[0] <= bbox[2] + .05 and

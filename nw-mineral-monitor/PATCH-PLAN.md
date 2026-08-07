@@ -63,16 +63,22 @@ own compilation is already served EXCEPT California's — see table.
   reachable but hazard-model-only. When qfaults comes back, add it as the
   age/slip-rate-styled ACTIVE fault layer; until then the Qfaults_GIS.zip
   (shapefile) is the manual path.
-- **PLANNED**: CGS Fault Activity Map of California as the authoritative CA
-  overlay (CGS ArcGIS services); style active faults by age class.
+- **DONE (2026-08-07)**: CGS Fault Activity Map of California wired into
+  `fetch_geology.py` for CA AOIs (FeatureServer layers 14 + 16; age class
+  carried per trace) — Clear Lake now scores against 2,273 fault paths incl.
+  298 CGS-FAM age-classed traces. Qfaults national: third strike
+  ("Service not started"), still waiting.
 
 ## CALIFORNIA-SPECIFIC dossier/scrub sources — PLANNED
 
-CGS MinesOnline, DOC AML inventory, and the CGS/CDMG "Mines and Mineral
-Resources of <County>" bulletins join WS3 dossier links + WS4 scrub. WS5:
-CA county-recorder coverage matrix BEFORE any scraping — Napa/Yolo/Lake
-seeded in `config/county_portals.json` (unverified); same
-operator-assisted rules as Idaho.
+**DONE (2026-08-07)**: CGS/DOC **Mines Online is live as stategeo_ca**
+(`fetch_ca_mol.py` — 1,975 SMARA mines, 748 ACTIVE, status-coded so active
+ones render as circles). **USMIN CA fetched via the mrdata WFS**
+(`fetch_usmin_wfs.py`, bbox-tiled because the server ignores startIndex) —
+but USGS's CA digitization is PARTIAL: 3,182 features statewide (vs 121k NV),
+noted in-file. Napa + Yolo recorders verified to official online index
+search (operator-export). STILL PLANNED: DOC AML inventory detail, CGS/CDMG
+county bulletin series into dossiers/scrub, Lake County recorder check.
 
 ## ACCEPTANCE TEST — Clear Lake–Knoxville blind sinter scan — **PASSED (v2 lexicon)**
 

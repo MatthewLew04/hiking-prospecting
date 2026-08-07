@@ -31,7 +31,7 @@ from collections import defaultdict
 from common import SITE, TODAY, write_json, point_in_poly, update_manifest
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-STATES = ['wa', 'or', 'id', 'mt', 'wy', 'nv', 'ut']
+STATES = ['wa', 'or', 'id', 'mt', 'wy', 'nv', 'ut', 'ca']
 TRUNCATED_CLOSED = {'NV': 1230906, 'UT': 451957, 'WY': 287066}   # total_available
 
 
@@ -91,6 +91,7 @@ def run():
     # ---- claim-point grids (0.01° ≈ 1 km cells) for the 400 m tests ----
     act_grid, clo_grid = defaultdict(int), defaultdict(int)
     act_by_cty, clo_by_cty = [0] * N, [0] * N
+    have_active = set()
     for st in STATES:
         for kind, grid, per in (('active', act_grid, act_by_cty),
                                 ('closed', clo_grid, clo_by_cty)):
@@ -98,6 +99,8 @@ def run():
                 d = load(f'data/claims/{st}_{kind}.json')
             except FileNotFoundError:
                 continue
+            if kind == 'active':
+                have_active.add(st.upper())
             xs, ys = d['x'], d['y']
             for i in range(d['n']):
                 x, y = xs[i], ys[i]
@@ -207,6 +210,7 @@ def run():
     out_rows = []
     for i, r in enumerate(counties.rows):
         m = M[i]
+        pending = r['st'] not in have_active   # no claims snapshot => stakeable unmeasurable
         why_s, why_e = [], []
         def add(lst, pts, txt):
             if pts >= 0.5:
@@ -242,15 +246,33 @@ def run():
         if r['st'] in TRUNCATED_CLOSED:
             notes.append(f"closed-claim file truncated to newest 250k of "
                          f"{TRUNCATED_CLOSED[r['st']]:,} — dropped-ground UNDERCOUNTED")
+        if pending:
+            notes.append('NO CLAIMS SNAPSHOT for this state yet — stakeable is UNMEASURABLE '
+                         '(every site would falsely read "unclaimed"). Endowment shown '
+                         'instead; stakeable computes automatically once the claims sync '
+                         'lands (CA: first scheduled Lambda run, then copy the s3 snapshots '
+                         'into the repo and re-run county_gold.py).')
+        elif r['st'] == 'CA':
+            notes.append('CA partial: closed claims + cited grades pending — staked-then-'
+                         'dropped and rich-open floored at zero, not measured.')
         out_rows.append({'st': r['st'], 'name': r['name'], 'cx': round(r['cx'], 4),
-                         'cy': round(r['cy'], 4), 'stake': round(stake, 1),
+                         'cy': round(r['cy'], 4),
+                         'stake': None if pending else round(stake, 1),
+                         'pending': pending or None,
+                         'disp': round(endow * 0.55, 1) if pending else round(stake, 1),
                          'endow': round(endow, 1), 'm': m,
-                         'why_stake': why_s, 'why_endow': why_e,
+                         'why_stake': (['stakeable unmeasurable — no claims snapshot for '
+                                        'this state yet (see note)'] if pending else why_s),
+                         'why_endow': why_e,
                          'top': top[i][:8], 'notes': notes})
 
-    out_rows.sort(key=lambda r: -r['stake'])
-    for i, r in enumerate(out_rows):
-        r['rank'] = i + 1
+    out_rows.sort(key=lambda r: -(r['stake'] if r['stake'] is not None else -1))
+    rk = 0
+    for r in out_rows:
+        if r['stake'] is not None:
+            rk += 1; r['rank'] = rk
+        else:
+            r['rank'] = None               # pending states rank by endowment only
     by_endow = sorted(range(len(out_rows)), key=lambda i: -out_rows[i]['endow'])
     for pos, i in enumerate(by_endow):
         out_rows[i]['rank_endow'] = pos + 1

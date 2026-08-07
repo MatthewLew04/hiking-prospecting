@@ -1,6 +1,6 @@
 # County gold signal — stakeable-first ranking (7 states)
 
-_Generated 2026-08-06 by `pipelines/county_gold.py` from the repo's own snapshots. Ranking lens: **stakeable gold** — see the map layer (GOLD SIGNAL — COUNTIES) for the same data interactively._
+_Generated 2026-08-07 by `pipelines/county_gold.py` from the repo's own snapshots. Ranking lens: **stakeable gold** — see the map layer (GOLD SIGNAL — COUNTIES) for the same data interactively._
 
 **Method.** Every MRDS/state-survey site with a gold commodity, every cited gold grade (open distances precomputed against the active-claim snapshot), every claim centroid and every USMIN working assigned to its county (TIGER 500k). "Claimed" = active-claim centroid within ~400 m (grid test, inherits MRDS coordinate slop); "dropped" = closed claim that near with nothing active. NV/UT/WY closed files hold only the newest 250k records — dropped-ground undercounts there. Patented private ground shows no claims and reads "open" — verify ownership, always.
 
@@ -26,10 +26,10 @@ _Generated 2026-08-06 by `pipelines/county_gold.py` from the repo's own snapshot
 | 16 | **Lincoln, NV** | 93.1 | 97.6 (#7) | 9 | 43 | 145 | 214 |
 | 17 | **Whatcom, WA** | 91.0 | 90.0 (#23) | 10 | 144 | 231 | 104 |
 | 18 | **Boise, ID** | 87.4 | 92.2 (#15) | 7 | 214 | 281 | 434 |
-| 19 | **Esmeralda, NV** | 86.5 | 100.0 (#2) | 10 | 35 | 80 | 317 |
-| 20 | **Clark, NV** | 82.1 | 91.8 (#17) | 6 | 112 | 195 | 215 |
+| 19 | **Esmeralda, NV** | 86.6 | 100.0 (#2) | 10 | 35 | 84 | 317 |
+| 20 | **Clark, NV** | 82.5 | 91.8 (#17) | 6 | 117 | 200 | 216 |
 | 21 | **Lewis and Clark, MT** | 79.4 | 68.7 (#45) | 3 | 306 | 445 | 265 |
-| 22 | **Nye, NV** | 78.8 | 99.0 (#6) | 5 | 61 | 362 | 518 |
+| 22 | **Nye, NV** | 78.8 | 99.0 (#6) | 5 | 61 | 363 | 518 |
 | 23 | **Salt Lake, UT** | 76.8 | 83.1 (#31) | 6 | 54 | 179 | 160 |
 | 24 | **Eureka, NV** | 75.9 | 100.0 (#3) | 7 | 5 | 29 | 218 |
 | 25 | **Gem, ID** | 75.4 | 73.3 (#39) | 9 | 58 | 70 | 56 |
@@ -51,37 +51,37 @@ _Generated 2026-08-06 by `pipelines/county_gold.py` from the repo's own snapshot
 | 56 | **Bonner, ID** | 33.8 | 65.7 (#48) | 1 | 55 | 150 | 81 |
 | 57 | **Camas, ID** | 31.6 | 63.8 (#51) | 1 | 66 | 98 | 63 |
 | 59 | **Owyhee, ID** | 30.9 | 83.4 (#30) | 0 | 40 | 78 | 264 |
-| 61 | **Adams, ID** | 29.0 | 46.0 (#69) | 0 | 97 | 145 | 58 |
-| 68 | **Power, ID** | 23.6 | 38.6 (#74) | 0 | 69 | 98 | 57 |
-| 69 | **Cassia, ID** | 23.5 | 33.8 (#84) | 0 | 18 | 43 | 40 |
-| 71 | **Butte, ID** | 22.9 | 50.2 (#63) | 1 | 26 | 34 | 31 |
-| 81 | **Ada, ID** | 19.6 | 35.4 (#79) | 0 | 39 | 69 | 46 |
-| 92 | **Washington, ID** | 16.3 | 37.5 (#76) | 0 | 7 | 19 | 30 |
-| 94 | **Latah, ID** | 15.8 | 39.7 (#71) | 0 | 17 | 40 | 27 |
-| 110 | **Boundary, ID** | 12.6 | 25.4 (#100) | 0 | 16 | 31 | 17 |
-| 113 | **Bonneville, ID** | 12.2 | 31.7 (#88) | 0 | 4 | 14 | 34 |
-| 114 | **Bannock, ID** | 11.7 | 15.7 (#124) | 0 | 13 | 16 | 8 |
-| 115 | **Clark, ID** | 10.9 | 17.8 (#119) | 0 | 9 | 14 | 9 |
-| 117 | **Jerome, ID** | 9.7 | 18.7 (#115) | 0 | 6 | 23 | 13 |
-| 122 | **Kootenai, ID** | 8.9 | 16.9 (#120) | 0 | 5 | 23 | 7 |
-| 123 | **Bear Lake, ID** | 8.6 | 15.1 (#127) | 0 | 6 | 17 | 8 |
-| 124 | **Bingham, ID** | 8.6 | 16.1 (#123) | 0 | 5 | 14 | 11 |
-| 125 | **Benewah, ID** | 8.4 | 16.5 (#121) | 0 | 4 | 19 | 10 |
-| 126 | **Nez Perce, ID** | 8.2 | 15.0 (#128) | 0 | 5 | 23 | 6 |
-| 127 | **Twin Falls, ID** | 7.7 | 21.3 (#109) | 0 | 0 | 24 | 20 |
-| 130 | **Gooding, ID** | 7.1 | 13.0 (#134) | 0 | 4 | 10 | 7 |
-| 134 | **Canyon, ID** | 6.7 | 15.5 (#125) | 0 | 1 | 14 | 10 |
-| 146 | **Jefferson, ID** | 4.4 | 8.8 (#145) | 0 | 1 | 5 | 3 |
-| 154 | **Oneida, ID** | 3.5 | 2.8 (#180) | 0 | 3 | 3 | 0 |
-| 159 | **Minidoka, ID** | 3.1 | 8.8 (#146) | 0 | 0 | 5 | 3 |
-| 163 | **Lewis, ID** | 2.9 | 8.0 (#149) | 0 | 0 | 3 | 3 |
-| 179 | **Teton, ID** | 1.9 | 4.6 (#168) | 0 | 0 | 1 | 1 |
-| 193 | **Lincoln, ID** | 0.9 | 2.7 (#184) | 0 | 0 | 1 | 0 |
-| 198 | **Payette, ID** | 0.7 | 1.6 (#198) | 0 | 0 | 1 | 0 |
-| 200 | **Caribou, ID** | 0.5 | 0.2 (#202) | 0 | 0 | 0 | 0 |
-| 213 | **Franklin, ID** | 0.2 | 0.1 (#204) | 0 | 0 | 0 | 0 |
-| 219 | **Fremont, ID** | 0.2 | 0.0 (#222) | 0 | 0 | 0 | 0 |
-| 244 | **Madison, ID** | 0.0 | 0.0 (#244) | 0 | 0 | 0 | 0 |
+| 61 | **Adams, ID** | 29.0 | 46.0 (#90) | 0 | 97 | 145 | 58 |
+| 68 | **Power, ID** | 23.6 | 38.6 (#100) | 0 | 69 | 98 | 57 |
+| 69 | **Cassia, ID** | 23.5 | 33.8 (#112) | 0 | 18 | 43 | 40 |
+| 71 | **Butte, ID** | 22.9 | 50.2 (#84) | 1 | 26 | 34 | 31 |
+| 81 | **Ada, ID** | 19.6 | 35.4 (#107) | 0 | 39 | 69 | 46 |
+| 92 | **Washington, ID** | 16.3 | 37.5 (#103) | 0 | 7 | 19 | 30 |
+| 94 | **Latah, ID** | 15.8 | 39.7 (#96) | 0 | 17 | 40 | 27 |
+| 110 | **Boundary, ID** | 12.6 | 25.4 (#131) | 0 | 16 | 31 | 17 |
+| 113 | **Bonneville, ID** | 12.2 | 31.7 (#117) | 0 | 4 | 14 | 34 |
+| 114 | **Bannock, ID** | 11.7 | 15.7 (#160) | 0 | 13 | 16 | 8 |
+| 115 | **Clark, ID** | 10.9 | 17.8 (#155) | 0 | 9 | 14 | 9 |
+| 117 | **Jerome, ID** | 9.7 | 18.7 (#149) | 0 | 6 | 23 | 13 |
+| 122 | **Kootenai, ID** | 8.9 | 16.9 (#156) | 0 | 5 | 23 | 7 |
+| 123 | **Bear Lake, ID** | 8.6 | 15.1 (#163) | 0 | 6 | 17 | 8 |
+| 124 | **Bingham, ID** | 8.6 | 16.1 (#159) | 0 | 5 | 14 | 11 |
+| 125 | **Benewah, ID** | 8.4 | 16.5 (#157) | 0 | 4 | 19 | 10 |
+| 126 | **Nez Perce, ID** | 8.2 | 15.0 (#164) | 0 | 5 | 23 | 6 |
+| 127 | **Twin Falls, ID** | 7.7 | 21.3 (#142) | 0 | 0 | 24 | 20 |
+| 130 | **Gooding, ID** | 7.1 | 13.0 (#174) | 0 | 4 | 10 | 7 |
+| 134 | **Canyon, ID** | 6.7 | 15.5 (#161) | 0 | 1 | 14 | 10 |
+| 146 | **Jefferson, ID** | 4.4 | 8.8 (#193) | 0 | 1 | 5 | 3 |
+| 154 | **Oneida, ID** | 3.5 | 2.8 (#235) | 0 | 3 | 3 | 0 |
+| 159 | **Minidoka, ID** | 3.1 | 8.8 (#194) | 0 | 0 | 5 | 3 |
+| 163 | **Lewis, ID** | 2.9 | 8.0 (#197) | 0 | 0 | 3 | 3 |
+| 179 | **Teton, ID** | 1.9 | 4.6 (#219) | 0 | 0 | 1 | 1 |
+| 193 | **Lincoln, ID** | 0.9 | 2.7 (#239) | 0 | 0 | 1 | 0 |
+| 198 | **Payette, ID** | 0.7 | 1.6 (#253) | 0 | 0 | 1 | 0 |
+| 200 | **Caribou, ID** | 0.5 | 0.2 (#258) | 0 | 0 | 0 | 0 |
+| 213 | **Franklin, ID** | 0.2 | 0.1 (#260) | 0 | 0 | 0 | 0 |
+| 219 | **Fremont, ID** | 0.2 | 0.0 (#278) | 0 | 0 | 0 | 0 |
+| 244 | **Madison, ID** | 0.0 | 0.0 (#300) | 0 | 0 | 0 | 0 |
 
 ## Reading the components
 

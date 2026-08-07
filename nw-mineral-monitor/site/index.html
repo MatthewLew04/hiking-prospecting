@@ -320,6 +320,8 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>GOLD SIGNAL — COUNTIES</h3><div id="layersCG"></div>
         <div class="oglegend" id="cgLegend" style="display:none"></div>
         <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>GEOLOGY — LIVE, ALL STATES</h3><div id="layersMS"></div>
+        <div class="subnote" id="msNote" style="padding-left:0"></div></div>
       <div class="sec"><h3>GEOPHYSICS — WS7</h3><div id="layersGP"></div>
         <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
         <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
@@ -393,7 +395,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-07f';
+const BUILD = '2026-08-07g';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -463,6 +465,7 @@ function initMap(){
     loadOpenGround().then(()=>handleClaimHash())
       .then(()=>loadGeoTargets()).catch(()=>{});                  // WS2 sections + WS6 targets (Cassia AOI)
     loadCountyGold().catch(()=>{});                               // county gold-signal ranking
+    loadMsGeo();                                                  // live geology+faults, all states
     loadGeophys().catch(()=>{});                                  // WS7 aeromag / radiometrics
     loadUserLayers().catch(()=>{});                               // WS1 ingest + registry
     loadCounty().catch(()=>{}).then(()=>loadAlerts()).catch(()=>{}); // WS5 county + WS2d watch digest
@@ -939,7 +942,9 @@ function tipText(f){
   if (lid==='tg-fill' && TGIDX[p.id]){ const t=TGIDX[p.id];
     return `#${t.rank} · ${t.score} · ${t.nm||'unit'}${t.money?' ★':''} (${(t.tierName||'').split(' — ')[0]})`; }
   if (lid==='geo-fill') return `${p.nm||'geologic unit'}${p.age?' · '+p.age:''}`;
-  if (lid==='ctygold-fill') return `#${p.rank} ${p.name}, ${p.st} — stakeable gold ${p.stake}`;
+  if (lid==='ctygold-fill') return p.pend
+    ? `${p.name}, ${p.st} — endowment ${p.endow} (claims pending; stakeable not yet measurable)`
+    : `#${p.rank} ${p.name}, ${p.st} — stakeable gold ${p.stake}`;
   if (lid==='gp-surv-fill') return gpSurvTip(p);
   if (lid==='grades-c' && GR){ const i=p.i;
     return `${GR.name[i]} — ${GR.au[i]!=null? GR.au[i]+' oz/t Au' : GR.ag[i]!=null? GR.ag[i]+' oz/t Ag' : '$'+GR.usd[i]+'/ton'}${GR.open[i]>=400?' · OPEN':''}`; }
@@ -1917,6 +1922,84 @@ function tgAnswer(q){
     ()=>{ map.flyTo({center:[t.cx,t.cy], zoom:11.4, duration:900}); const g=$('tgToggle'); if(g&&!g.checked) g.click(); showTarget(t.id); })));
 }
 
+/* ---------- live geologic map + faults, all states (Macrostrat tiles) ----------
+   The same harmonized stack the AOI target engines score, streamed as vector
+   tiles: every unit carries its color, name, age, lithology, description AND
+   source citation IN the tile — full cards with zero API calls, any state,
+   any zoom. Zooming in swaps in finer source maps automatically. Created
+   lazily and torn down on toggle-off, same GPU hygiene as the geophysics. */
+let msGeoOn = {fill:false, fault:false};
+function msGeoEnsure(){
+  if (map.getSource('msgeo')) return;
+  map.addSource('msgeo', {type:'vector',
+    tiles:['https://tiles.macrostrat.org/carto/{z}/{x}/{y}.mvt'],
+    minzoom:0, maxzoom:13, attribution:'Geology © Macrostrat (CC-BY 4.0)'});
+}
+function msGeoTeardown(){
+  if (!msGeoOn.fill && !msGeoOn.fault && map.getSource('msgeo')){
+    for (const l of ['msgeo-fill','msgeo-fault']) if (map.getLayer(l)) map.removeLayer(l);
+    map.removeSource('msgeo');
+  }
+}
+function loadMsGeo(){
+  const mk = (id, label, on) => {
+    const row = document.createElement('label');
+    row.className='lrow'; row.innerHTML = `<input type="checkbox" id="${id}"> <span>${label}</span>`;
+    $('layersMS').appendChild(row);
+    $(id).onchange = on;
+  };
+  mk('msFillTgl','GEOLOGIC MAP (LIVE)', e=>{
+    msGeoOn.fill = e.target.checked;
+    if (e.target.checked){
+      msGeoEnsure();
+      if (!map.getLayer('msgeo-fill'))
+        map.addLayer({id:'msgeo-fill', type:'fill', source:'msgeo', 'source-layer':'units',
+          paint:{'fill-color':['coalesce',['get','color'],'#4b5563'],'fill-opacity':.32}}, 'county-line');
+    } else { if (map.getLayer('msgeo-fill')) map.removeLayer('msgeo-fill'); msGeoTeardown(); }
+    $('msNote').textContent = (msGeoOn.fill||msGeoOn.fault)?
+      'Macrostrat harmonized tiles — the SAME stack the AOI target engines score. Zoom in: finer source maps swap in automatically. Click any unit for its verbatim description + citation.':'';
+  });
+  mk('msFaultTgl','FAULTS (LIVE)', e=>{
+    msGeoOn.fault = e.target.checked;
+    if (e.target.checked){
+      msGeoEnsure();
+      if (!map.getLayer('msgeo-fault'))
+        map.addLayer({id:'msgeo-fault', type:'line', source:'msgeo', 'source-layer':'lines',
+          filter:['!=',['index-of','fault',['coalesce',['get','type'],'']],-1],
+          paint:{'line-color':'#d4a53f','line-width':['interpolate',['linear'],['zoom'],5,.4,10,1.1],
+                 'line-opacity':.7,'line-dasharray':[3,2]}}, 'county-line');
+    } else { if (map.getLayer('msgeo-fault')) map.removeLayer('msgeo-fault'); msGeoTeardown(); }
+  });
+  map.on('click', e=>{
+    if (!msGeoOn.fill && !msGeoOn.fault) return;
+    const layers = ['msgeo-fill','msgeo-fault'].filter(l=>map.getLayer(l));
+    if (!layers.length) return;
+    // everything else wins over the live-geology background
+    const others = map.queryRenderedFeatures(e.point).filter(f=>f.source!=='msgeo' && f.source!=='carto');
+    if (others.some(f=>['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','og-fill','geo-fill','ctygold-fill'].includes(f.layer.id))) return;
+    const fs = map.queryRenderedFeatures(e.point, {layers});
+    if (!fs.length) return;
+    const p = fs[0].properties;
+    if (fs[0].layer.id==='msgeo-fault'){
+      openDetail(`<h2>${esc(p.name||'Fault')}</h2>
+        <div class="badges"><span class="badge abandoned">MAPPED STRUCTURE</span></div>
+        <div class="desc">${esc(p.descrip||p.type||'')}</div>
+        <div class="src">Macrostrat harmonized structure (CC-BY 4.0), source ${esc(String(p.source_id||''))}.</div>`);
+      return;
+    }
+    const ref = [p.ref_authors, p.ref_year? `(${p.ref_year})`:'' , p.ref_title, p.ref_source]
+      .filter(Boolean).join(' ');
+    openDetail(`<h2>${esc(p.name||'Geologic unit')}</h2>
+      <div class="badges"><span class="badge abandoned">GEOLOGIC MAP — LIVE</span>${p.age?`<span class="badge abandoned">${esc(p.age)}</span>`:''}</div>
+      <div class="desc" style="border-left:2px solid ${esc(p.color||'#4b5563')};padding-left:8px">${esc(p.descrip||p.lith||'(no description at this zoom — zoom in for a finer source map)')}</div>
+      ${kv([['Lithology', esc(p.lith||'')],['Age', esc(p.age||'')],
+            ['Ages (Ma)', p.best_age_top!=null? `${p.best_age_top} – ${p.best_age_bottom}`:null]])}
+      <div class="links">${p.ref_url?`<a href="${esc(p.ref_url)}" target="_blank">Source map ↗</a>`:''}
+        <a href="https://macrostrat.org/api/v2/geologic_units/map?map_id=${esc(String(p.map_id||''))}&format=json" target="_blank">Unit record ↗</a></div>
+      <div class="src">${esc(ref||'Macrostrat source '+(p.source_id||''))} — served live; the map shown depends on zoom (finest published source wins).</div>`);
+  });
+}
+
 /* ---------- WS7: aeromagnetic + radiometric overlays ---------- */
 let GP = null, gpActive = null;
 const GP_RASTERS = {
@@ -1929,13 +2012,31 @@ const GP_RASTERS = {
         attribution:'USGS/NURE aeroradiometric compilation (mrdata WMS)',
         note:'Potassium (K%) from NURE aeroradiometrics. Adularia is K-feldspar — potassic alteration in epithermal systems lights up in K. Coarse legacy data; check the survey layer for line spacing.'},
 };
+/* GPU-crash hygiene: raster overlays are created ONLY while enabled and are
+   fully torn down (removeLayer+removeSource frees their tile textures) on
+   disable — stacking idle raster sources on top of 400k-point layers +
+   heatmaps + a SAT basemap is what pushed weaker GPUs over the edge. */
+function gpEnable(k){
+  const r = GP_RASTERS[k];
+  if (!map.getSource(r.src)){
+    map.addSource(r.src, {type:'raster', tiles:r.tiles, tileSize:256, maxzoom:11,
+                          attribution:r.attribution});
+    map.addLayer({id:r.src, type:'raster', source:r.src,
+      paint:{'raster-opacity':(+$('gpOpacity').value)/100}}, 'county-line');
+  }
+}
+function gpDisable(k){
+  const r = GP_RASTERS[k];
+  if (map.getLayer(r.src)) map.removeLayer(r.src);
+  if (map.getSource(r.src)) map.removeSource(r.src);
+}
 async function loadGeophys(){
-  // rasters go under everything data-ish, over the basemaps
+  // surface WebGL context loss instead of a silent white map
+  map.on('webglcontextlost', ()=>{
+    loadbar('⚠ graphics context lost — this GPU ran out of memory. Reload and enable fewer layers (heavy: closed claims × all states, SAT + geophysics together).');
+  });
   for (const k of Object.keys(GP_RASTERS)){
     const r = GP_RASTERS[k];
-    map.addSource(r.src, {type:'raster', tiles:r.tiles, tileSize:256, attribution:r.attribution});
-    map.addLayer({id:r.src, type:'raster', source:r.src, layout:{visibility:'none'},
-      paint:{'raster-opacity':.65}}, 'county-line');
     const row = document.createElement('label');
     row.className='lrow'; row.innerHTML = `<input type="checkbox" id="${r.src}-tgl"> <span>${r.label}</span>`;
     $('layersGP').appendChild(row);
@@ -1943,23 +2044,23 @@ async function loadGeophys(){
       if (e.target.checked){
         // one geophys raster at a time — they'd just occlude each other
         for (const k2 of Object.keys(GP_RASTERS)){
-          if (k2!==k){ const t=$(GP_RASTERS[k2].src+'-tgl'); if (t.checked){ t.checked=false; map.setLayoutProperty(GP_RASTERS[k2].src,'visibility','none'); } }
+          if (k2!==k){ const t=$(GP_RASTERS[k2].src+'-tgl'); if (t.checked){ t.checked=false; gpDisable(k2); } }
         }
         gpActive = k;
-        map.setLayoutProperty(r.src,'visibility','visible');
-        map.setPaintProperty(r.src,'raster-opacity', (+$('gpOpacity').value)/100);
+        gpEnable(k);
         $('gpSlider').style.display='';
         $('gpNote').textContent = r.note;
       } else {
         gpActive = null;
-        map.setLayoutProperty(r.src,'visibility','none');
+        gpDisable(k);
         $('gpSlider').style.display='none';
         $('gpNote').textContent = '';
       }
     };
   }
   $('gpOpacity').oninput = e=>{
-    if (gpActive) map.setPaintProperty(GP_RASTERS[gpActive].src,'raster-opacity',(+e.target.value)/100);
+    if (gpActive && map.getLayer(GP_RASTERS[gpActive].src))
+      map.setPaintProperty(GP_RASTERS[gpActive].src,'raster-opacity',(+e.target.value)/100);
   };
   // survey provenance polygons — how much to trust the pixel under the cursor
   try{ GP = await jget('data/geophys/surveys.json'); }catch(e){ $('gpNote').textContent='(survey index not built — run pipelines/fetch_geophys.py)'; return; }
@@ -2002,16 +2103,21 @@ async function loadCountyGold(){
     const r = CGIDX[f.properties.st+'|'+f.properties.name];
     if (!r) continue;
     feats.push({type:'Feature', properties:{st:r.st, name:r.name, stake:r.stake,
-                endow:r.endow, rank:r.rank}, geometry:f.geometry});
+                endow:r.endow, rank:r.rank, disp:(r.disp!=null?r.disp:r.stake),
+                pend:r.pending?1:0}, geometry:f.geometry});
   }
   map.addSource('ctygold', {type:'geojson', data:{type:'FeatureCollection', features:feats}});
   const under = map.getLayer('geo-fill') ? 'geo-fill' : map.getLayer('og-fill') ? 'og-fill' : 'claimsC-dot';
   map.addLayer({id:'ctygold-fill', type:'fill', source:'ctygold', layout:{visibility:'none'},
-    paint:{'fill-color':['interpolate',['linear'],['get','stake'],
+    paint:{'fill-color':['interpolate',['linear'],['get','disp'],
       0,'#12151a', 15,'#26221a', 40,'#584410', 75,'#9c7100', 105,'#c98500', 130,'#ffd54a'],
-      'fill-opacity':.55}}, under);
+      // pending states (no claims snapshot yet) render muted — endowment preview only
+      'fill-opacity':['case',['==',['get','pend'],1],.3,.55]}}, under);
   map.addLayer({id:'ctygold-line', type:'line', source:'ctygold', layout:{visibility:'none'},
-    paint:{'line-color':'#c98500','line-width':.5,'line-opacity':.35}}, under);
+    paint:{'line-color':['case',['==',['get','pend'],1],'#38bdf8','#c98500'],
+      'line-width':['case',['==',['get','pend'],1],1.1,.5],
+      'line-dasharray':[2,2],
+      'line-opacity':['case',['==',['get','pend'],1],.5,.35]}}, under);
   const row = document.createElement('label');
   row.className='lrow'; row.innerHTML = `<input type="checkbox" id="cgToggle"> <span>STAKEABLE-GOLD CHOROPLETH</span>`;
   $('layersCG').appendChild(row);
@@ -2049,7 +2155,9 @@ function showCountyGold(st, name){
         <div class="t">${esc(t.nm||'(unnamed)')} <span class="b">${t.prod?'PAST PRODUCER':'site'}</span></div>
         <div class="c">gold site staked-then-dropped — closed claim ≤~1 km, nothing active now</div></div>`).join('');
   openDetail(`<h2>${esc(r.name)} County, ${r.st}</h2>
-    <div class="badges"><span class="badge exploration">STAKEABLE #${r.rank} · ${r.stake}</span>
+    <div class="badges">${r.pending
+      ? `<span class="badge exploration">CLAIMS PENDING — ENDOWMENT ONLY</span>`
+      : `<span class="badge exploration">STAKEABLE #${r.rank} · ${r.stake}</span>`}
       <span class="badge abandoned">ENDOWMENT #${r.rank_endow} · ${r.endow}</span></div>
     <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">STAKEABLE SCORE — ITEMIZED</h3>
     ${r.why_stake.map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
@@ -2060,7 +2168,7 @@ function showCountyGold(st, name){
     <div class="src">${esc(CG.method||'')}</div>`);
 }
 function showCountyGoldList(){
-  const rows = CG.counties.slice(0,20).map(r=>`<div class="dc" onclick="map.flyTo({center:[${r.cx},${r.cy}],zoom:8.2,duration:1000});showCountyGold('${r.st}','${esc(r.name).replace(/'/g,"\\'")}')">
+  const rows = CG.counties.filter(r=>!r.pending).slice(0,20).map(r=>`<div class="dc" onclick="map.flyTo({center:[${r.cx},${r.cy}],zoom:8.2,duration:1000});showCountyGold('${r.st}','${esc(r.name).replace(/'/g,"\\'")}')">
       <div class="t"><span style="color:var(--gold);font:600 11px var(--mono)">#${r.rank}</span> ${esc(r.name)}, ${r.st} <span class="b">${r.stake}</span></div>
       <div class="c">${r.m.gr_rich_open} rich-open grades · ${r.m.au_dropped_open} staked-then-dropped · ${r.m.au_open} open Au sites · endow #${r.rank_endow}</div></div>`).join('');
   openDetail(`<h2>Stakeable gold — county ranking</h2>

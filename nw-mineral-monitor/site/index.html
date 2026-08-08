@@ -234,6 +234,11 @@ footer .right{margin-left:auto}
   font:600 11px var(--mono);letter-spacing:.12em;color:var(--accent)}
 .ask-head button{margin-left:auto;background:none;border:none;color:var(--mut);font-size:14px;cursor:pointer}
 #askMsgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+#askMsgs .mdt{border-collapse:collapse;margin:6px 0;font-size:10.5px;max-width:100%;display:block;overflow-x:auto}
+#askMsgs .mdt th,#askMsgs .mdt td{border:1px solid var(--line);padding:3px 6px;text-align:left;vertical-align:top}
+#askMsgs .mdt th{color:var(--accent);font-weight:600;background:rgba(45,212,191,.06);white-space:nowrap}
+#askMsgs .mdli{display:block;margin:1.5px 0}
+#askMsgs code{background:#151a20;border:1px solid var(--line);border-radius:3px;padding:0 3px;font-family:var(--mono);font-size:10.5px}
 #askMsgs::-webkit-scrollbar{width:8px}
 #askMsgs::-webkit-scrollbar-thumb{background:#2a2f37;border-radius:4px}
 .msg{max-width:88%;padding:7px 10px;border-radius:8px;font-size:12px;line-height:1.5}
@@ -395,7 +400,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-08c';
+const BUILD = '2026-08-08d';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -1563,11 +1568,40 @@ async function aiAnswer(q){
       continue;
     }
     const text = (j.message.content||[]).filter(c=>c.text).map(c=>c.text).join('\n').trim();
-    paint(esc(text || '(no answer)').replace(/\n/g,'<br>'));
+    paint(mdToHtml(text || '(no answer)'));
     AI.hist = msgs.slice(-12);
     return;
   }
   throw new Error('gave up after 7 tool rounds');
+}
+/* Minimal, XSS-safe markdown for AI answers: escape first, then convert
+   tables, bold/italic, inline code, headers, bullets, and links. */
+function mdCells(l){ return l.replace(/^\s*\|/,'').replace(/\|\s*$/,'').split('|').map(c=>c.trim()); }
+function mdToHtml(t){
+  t = esc(t);
+  const lines = t.split('\n'), out = [];
+  for (let i=0; i<lines.length; ){
+    if (/^\s*\|.*\|\s*$/.test(lines[i]) && i+1<lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i+1])){
+      const head = mdCells(lines[i]); i += 2;
+      const rows = [];
+      while (i<lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(mdCells(lines[i++]));
+      out.push('<table class="mdt"><thead><tr>'+head.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+
+        rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>');
+      continue;
+    }
+    out.push(lines[i++]);
+  }
+  t = out.join('\n')
+    .replace(/^#{1,4}\s+(.+)$/gm, '<b>$1</b>')
+    .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')
+    .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, '$1<i>$2</i>')
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    .replace(/^\s*[-*•]\s+(.+)$/gm, '<span class="mdli">· $1</span>')
+    .replace(/^\s*(\d+)\.\s+(.+)$/gm, '<span class="mdli">$1. $2</span>');
+  return t.replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>')
+          .replace(/<\/table><br>/g, '</table>')
+          .replace(/<\/span><br>/g, '</span>');
 }
 function routeAI(q, localNote){
   if (aiAvailable() && AI.on){

@@ -279,3 +279,26 @@ if you want it differently.
     ground (Empire State Historic Park!) still reads "open" until the
     withdrawal overlay lands; CA staked-then-dropped stays 0 until
     ca_closed.json (Sept 3 rule, or manual closed pull).
+
+37. **The 2026-08-08 tab crash ("Aw, Snap error 5" + FILE_ERROR_NO_SPACE)
+    was RAM + a full disk — NOT the app writing storage.** Code audit:
+    the app persists only the auth token (localStorage) and user-imported
+    layers (IndexedDB `nwmm-userlayers`); bulk claims/geology were never
+    written to browser storage — the LevelDB NO_SPACE lines came from a
+    browser extension failing on a full disk. Our real bug: every state's
+    claims were built into permanent Feature arrays AND handed statewide
+    to the GL worker (with CA live: ~743k active + 1.3M closed features,
+    twice over) — on a disk-full Mac (no swap) the renderer gets killed.
+    Reproduced headless: the 08-07g build's renderer died at the
+    closed-claims toggle; the 08-08b build ran the same script at a
+    113–211 MB heap plateau. Fix (build 2026-08-08b): columnar files are
+    the only resident copy; pushes are banded (grid-decimated summary
+    below z7 with weighted heatmaps, viewport-only detail above, 200k
+    cap); layer-off frees the worker index; geojson sources capped at
+    maxzoom 12; storage governance (150 MB userlayers budget with
+    eviction, legacy-cache purge, quota-safe writes, global
+    unhandledrejection handler); `?debug=1` panel shows heap/storage/
+    pushed counts live. Server-side vector tiles (tippecanoe→PMTiles on
+    S3) remain the tier-2 upgrade in PATCH-PLAN — right architecture,
+    not needed to stop the crash. `tools/measure.js` is the Playwright
+    harness that produced the numbers.

@@ -395,7 +395,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-08a';
+const BUILD = '2026-08-08b';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -434,9 +434,77 @@ let map, tipEl, liveAbort = null;
 async function jget(u){ const r = await fetch(u); if(!r.ok) throw new Error(u+' '+r.status); return r.json(); }
 const loadbar = m => { $('loadbar').textContent = m || ''; };
 
+/* ---------- storage governance + diagnostics (hotfix 2026-08-08b) ----------
+   The app deliberately persists almost nothing: localStorage = auth token,
+   IndexedDB 'nwmm-userlayers' = user-imported layers only. Bulk data
+   (claims/geology/faults/mag) is NEVER written to browser storage. These
+   guards make that stance self-enforcing and observable. */
+let DBG_REJ = 0;
+window.addEventListener('unhandledrejection', e => {
+  DBG_REJ++;
+  console.warn('[nwmm unhandled]', e.reason && (e.reason.message||e.reason));
+  e.preventDefault();                       // never let one bad fetch cascade
+});
+const UL_CAP = 150*1024*1024;               // userlayers DB budget (150 MB)
+async function guardStorage(){
+  try{                                      // drop any cache/DB an old build or experiment left behind
+    if ('caches' in window) for (const k of await caches.keys())
+      if (/^nwmm/i.test(k)) await caches.delete(k);
+    if (indexedDB.databases) for (const db of await indexedDB.databases())
+      if (db.name && /^nwmm/i.test(db.name) && db.name!=='nwmm-userlayers')
+        indexedDB.deleteDatabase(db.name);
+    // size-audit the one legitimate DB; evict biggest-first over budget
+    const recs = await idbAll().catch(()=>[]);
+    let sizes = recs.map(r=>({slug:r.slug, b:JSON.stringify(r).length}));
+    let tot = sizes.reduce((a,r)=>a+r.b,0);
+    if (tot > UL_CAP){
+      sizes.sort((a,b)=>b.b-a.b);
+      for (const s of sizes){
+        if (tot <= UL_CAP*.7) break;
+        await idbDel(s.slug).catch(()=>{}); tot -= s.b;
+        console.warn(`[nwmm] evicted user layer "${s.slug}" (${(s.b/1048576).toFixed(1)} MB) — storage budget`);
+      }
+    }
+  }catch(e){ console.warn('[nwmm] storage guard:', e.message||e); }
+}
+async function dbgSnapshot(){
+  const o = {build:BUILD, rejections:DBG_REJ, heapMB:null, storage:{}, dbs:[], ls:0, caches:[], sources:{}, stores:{}, zoom:null};
+  try{ if (performance.memory) o.heapMB = +(performance.memory.usedJSHeapSize/1048576).toFixed(1); }catch(e){}
+  try{ const est = await navigator.storage.estimate();
+       o.storage = {usedMB:+(est.usage/1048576).toFixed(2), quotaMB:Math.round(est.quota/1048576)}; }catch(e){}
+  try{ if (indexedDB.databases) for (const db of await indexedDB.databases()){
+        let n=0,b=0; if (db.name==='nwmm-userlayers'){ const rs=await idbAll().catch(()=>[]); n=rs.length; b=rs.reduce((a,r)=>a+JSON.stringify(r).length,0); }
+        o.dbs.push({name:db.name, records:n, approxMB:+(b/1048576).toFixed(2)}); } }catch(e){}
+  try{ for (const k of Object.keys(localStorage)) o.ls += (localStorage.getItem(k)||'').length; }catch(e){}
+  try{ if ('caches' in window) for (const k of await caches.keys()) o.caches.push(k); }catch(e){}
+  try{ o.zoom = +map.getZoom().toFixed(2);
+       for (const k of ['mrds','stategeo','usmin','claimsA','claimsC','grades']){
+         const s = map.getSource(k); o.sources[k] = s && s._data && s._data.features ? s._data.features.length : 0; } }catch(e){}
+  try{ for (const [k,d] of Object.entries(stores)) o.stores[k] = d.n; }catch(e){}
+  return o;
+}
+function dbgPanel(){
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;background:#0b0d10e6;color:#9fe8d9;'+
+    'font:11px/1.5 ui-monospace,monospace;padding:8px 10px;border:1px solid #2dd4bf55;border-radius:6px;max-width:340px;white-space:pre-wrap';
+  document.body.appendChild(el);
+  const tick = async () => {
+    const s = await dbgSnapshot();
+    el.textContent = `DEBUG ${s.build}  z${s.zoom}\n`+
+      `heap ${s.heapMB??'?'} MB   rejections ${s.rejections}\n`+
+      `origin storage ${s.storage.usedMB??'?'} / ${s.storage.quotaMB??'?'} MB\n`+
+      `IDB ${s.dbs.map(d=>`${d.name}:${d.records}rec/${d.approxMB}MB`).join(' ')||'none'}  LS ${s.ls} B  caches [${s.caches.join(',')}]\n`+
+      `pushed ${Object.entries(s.sources).map(([k,v])=>`${k} ${fmt(v)}`).join(' · ')}\n`+
+      `loaded ${Object.entries(s.stores).map(([k,v])=>`${k.replace(/_/,' ')} ${fmt(v)}`).join(' · ')||'—'}`;
+  };
+  tick(); setInterval(tick, 4000);
+  window.dbgSnapshot = dbgSnapshot;         // console + Playwright access
+}
 async function boot(){
+  guardStorage();                           // fire-and-forget, never blocks boot
   MAN = await jget('data/manifest.json');
   initMap();
+  if (/[?&]debug=1/.test(location.search)) dbgPanel();
 }
 
 function baseStyle(){
@@ -483,7 +551,7 @@ const EMPTY = {type:'FeatureCollection', features:[]};
 function addDataLayers(){
   map.addSource('states', {type:'geojson', data:EMPTY});
   map.addSource('counties', {type:'geojson', data:EMPTY});
-  for (const k of ['mrds','stategeo','usmin','claimsA','claimsC']) map.addSource(k, {type:'geojson', data:EMPTY});
+  for (const k of ['mrds','stategeo','usmin','claimsA','claimsC']) map.addSource(k, {type:'geojson', data:EMPTY, maxzoom:12, buffer:0});
   map.addSource('liveClaims', {type:'geojson', data:EMPTY});
 
   map.addLayer({id:'county-line', type:'line', source:'counties', minzoom:6.2,
@@ -492,12 +560,14 @@ function addDataLayers(){
     paint:{'line-color':'#aab4be','line-width':1.4,'line-dasharray':[5,4],'line-opacity':.75}});
 
   // closed claims — tiny embers under everything else
+  const wC = ['min',1.2,['*',.03,['-',['coalesce',['get','w'],1],1]]];
   map.addLayer({id:'claimsC-dot', type:'circle', source:'claimsC',
-    paint:{'circle-radius':['interpolate',['linear'],['zoom'],6,.9,10,2,14,3.5],
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],6,['+',.9,wC],10,['+',2,wC],14,3.5],
            'circle-color':'#8a6060','circle-opacity':.4}});
   // active claim snapshot centroids
+  const wA = ['min',1.4,['*',.03,['-',['coalesce',['get','w'],1],1]]];
   map.addLayer({id:'claimsA-dot', type:'circle', source:'claimsA',
-    paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,1,8,2.2,11,4,14,6],
+    paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,['+',1,wA],8,['+',2.2,wA],11,['+',4,wA],14,6],
            'circle-color':'#2dd4bf',
            'circle-opacity':['interpolate',['linear'],['zoom'],5,.35,9,.7],
            'circle-stroke-width':['step',['zoom'],0,10,1],'circle-stroke-color':'#0b0d10'}});
@@ -511,7 +581,8 @@ function addDataLayers(){
 
   // heatmaps at low zoom
   const heat = (id, src, hue) => map.addLayer({id, type:'heatmap', source:src, maxzoom:7.6,
-    paint:{'heatmap-weight':.32,'heatmap-intensity':['interpolate',['linear'],['zoom'],4,.35,7,1.1],
+    paint:{'heatmap-weight':['min',2.2,['*',.32,['coalesce',['get','w'],1]]],
+      'heatmap-intensity':['interpolate',['linear'],['zoom'],4,.35,7,1.1],
       'heatmap-radius':['interpolate',['linear'],['zoom'],4,2.5,7,10],
       'heatmap-opacity':['interpolate',['linear'],['zoom'],6.6,.6,7.6,0],
       'heatmap-color':['interpolate',['linear'],['heatmap-density'],0,'rgba(0,0,0,0)',.35,hue[0],.7,hue[1],1,hue[2]]}});
@@ -551,18 +622,20 @@ function addDataLayers(){
 }
 
 /* ============ data loading ============ */
-function colToFeatures(key, d){
-  const out = [];
-  const kind = d.src === 'stategeo' ? 'stategeo' : d.src;
-  for (let i=0;i<d.n;i++){
-    let ex = 0, g = 5, a = 0;
-    if (d.src==='mrds'){ g = d.g[i]; ex = d.st[i]==='P'?1:0; }
-    else if (d.src==='stategeo'){ g = d.g[i]; ex = isEx(d.stx[i])?1:0; }
-    else if (d.src==='usmin'){ a = /gravel|borrow|sand pit|disturbed/i.test(d.types[d.t[i]])?1:0; }
-    out.push({type:'Feature', properties:{f:key, i, st:d.state, g, ex, a},
-      geometry:{type:'Point', coordinates:[d.x[i], d.y[i]]}});
-  }
-  return {kind, features:out};
+/* MEMORY MODEL (hotfix 2026-08-08b): columnar files are the ONLY resident
+   copy. Feature objects are built transiently per push and pushed banded:
+   below DETAIL_Z the map gets a grid-decimated summary (one weighted dot
+   per ~3.5 km cell — heatmaps use the weight, so density is preserved);
+   at/above DETAIL_Z it gets full detail for the padded viewport only,
+   hard-capped at MAXF features. Nothing statewide is ever handed to the
+   GL worker again, and nothing bulk is ever written to browser storage. */
+const DETAIL_Z = 7, COARSE_CELL = 0.04, MAXF = 200000, PUSH = {};
+function rowProps(d, i){
+  let ex = 0, g = 5, a = 0;
+  if (d.src==='mrds'){ g = d.g[i]; ex = d.st[i]==='P'?1:0; }
+  else if (d.src==='stategeo'){ g = d.g[i]; ex = isEx(d.stx[i])?1:0; }
+  else if (d.src==='usmin'){ a = /gravel|borrow|sand pit|disturbed/i.test(d.types[d.t[i]])?1:0; }
+  return {g, ex, a};
 }
 async function loadStateFile(kind, st){
   const key = `${kind}_${st.toLowerCase()}`;
@@ -571,24 +644,79 @@ async function loadStateFile(kind, st){
   if (!meta) return;
   loadbar(`loading ${key}…`);
   const d = await jget(meta.file);
-  d.key = key; stores[key] = d;
-  if (kind==='claimsA'||kind==='claimsC'){
-    const fs = [];
-    for (let i=0;i<d.n;i++) fs.push({type:'Feature', properties:{f:key, i, st:d.state},
-      geometry:{type:'Point', coordinates:[d.x[i], d.y[i]]}});
-    d._feats = fs;
-  } else {
-    d._feats = colToFeatures(key, d).features;
+  d.key = key;
+  // coarse grid: one representative point + count per cell (for low zoom)
+  const cells = new Map();
+  for (let i=0;i<d.n;i++){
+    const x = d.x[i], y = d.y[i];
+    if (x==null) continue;
+    const c = ((x/COARSE_CELL)|0)+':'+((y/COARSE_CELL)|0);
+    const e = cells.get(c);
+    if (e){ e.w++; } else cells.set(c, {x, y, w:1, i});
   }
+  d._cx=[]; d._cy=[]; d._cw=[]; d._ci=[];
+  for (const e of cells.values()){ d._cx.push(e.x); d._cy.push(e.y); d._cw.push(e.w); d._ci.push(e.i); }
+  stores[key] = d;
 }
-function pushKind(kind){
-  const fs = [];
-  for (const st of STATES){
-    if (!S.states[st]) continue;
-    const d = stores[`${kind}_${st.toLowerCase()}`];
-    if (d) for (const f of d._feats) fs.push(f);   // no spread: 275k args overflows the call stack
+function pushKind(kind, force){
+  const src = map.getSource(kind);
+  if (!src) return;
+  if (S.layers[kind]===false){                 // layer off → free the worker index
+    if (PUSH[kind]){ src.setData(EMPTY); delete PUSH[kind];
+      (window.__pushed = window.__pushed || {})[kind] = 0; }
+    return;
   }
-  map.getSource(kind).setData({type:'FeatureCollection', features:fs});
+  const z = map.getZoom(), detail = z >= DETAIL_Z;
+  let key;
+  if (detail){
+    const b = map.getBounds(), padx = (b.getEast()-b.getWest())*.6, pady = (b.getNorth()-b.getSouth())*.6;
+    const x0=b.getWest()-padx, x1=b.getEast()+padx, y0=b.getSouth()-pady, y1=b.getNorth()+pady;
+    key = 'd:'+x0.toFixed(2)+','+y0.toFixed(2)+','+x1.toFixed(2)+','+y1.toFixed(2)
+        + ':' + STATES.filter(s=>S.states[s]).join('');
+    if (!force && PUSH[kind]===key) return;
+    const fs = []; let capped = false;
+    outer:
+    for (const st of STATES){
+      if (!S.states[st]) continue;
+      const d = stores[`${kind}_${st.toLowerCase()}`];
+      if (!d) continue;
+      const isClaims = kind==='claimsA'||kind==='claimsC';
+      for (let i=0;i<d.n;i++){
+        const x = d.x[i], y = d.y[i];
+        if (x==null || x<x0 || x>x1 || y<y0 || y>y1) continue;
+        if (fs.length>=MAXF){ capped = true; break outer; }
+        const p = isClaims ? {f:d.key, i, st:d.state} : Object.assign({f:d.key, i, st:d.state}, rowProps(d, i));
+        fs.push({type:'Feature', properties:p, geometry:{type:'Point', coordinates:[x, y]}});
+      }
+    }
+    if (capped) loadbar(`${kind}: showing first ${fmt(MAXF)} in view — zoom in for the rest`);
+    src.setData({type:'FeatureCollection', features:fs});
+    (window.__pushed = window.__pushed || {})[kind] = fs.length;
+  } else {
+    key = 'c:' + STATES.filter(s=>S.states[s]).join('');
+    if (!force && PUSH[kind]===key) return;
+    const fs = [];
+    for (const st of STATES){
+      if (!S.states[st]) continue;
+      const d = stores[`${kind}_${st.toLowerCase()}`];
+      if (!d) continue;
+      for (let j=0;j<d._cx.length;j++){
+        const p = {f:d.key, i:d._ci[j], st:d.state, w:d._cw[j]};
+        if (!(kind==='claimsA'||kind==='claimsC')) Object.assign(p, rowProps(d, d._ci[j]));
+        fs.push({type:'Feature', properties:p, geometry:{type:'Point', coordinates:[d._cx[j], d._cy[j]]}});
+      }
+    }
+    src.setData({type:'FeatureCollection', features:fs});
+    (window.__pushed = window.__pushed || {})[kind] = fs.length;
+  }
+  PUSH[kind] = key;
+}
+let _repushT = null;
+function repushAll(force){
+  clearTimeout(_repushT);
+  _repushT = setTimeout(()=>{
+    for (const k of ['mrds','stategeo','usmin','claimsA','claimsC']) pushKind(k, force);
+  }, 160);
 }
 async function loadSites(){
   for (const kind of ['mrds','stategeo','usmin']){
@@ -728,6 +856,7 @@ function buildUI(){
       S.layers[k]=!S.layers[k]; row.classList.toggle('on'); row.classList.toggle('off');
       if (k==='claimsC'&&S.layers.claimsC) await loadClaimsClosed();
       if (['mrds','stategeo','usmin'].includes(k)&&S.layers[k]) { await loadSites(); }
+      if (['mrds','stategeo','usmin'].includes(k)) pushKind(k);   // off → frees the GL worker index
       applyFilters();
     };
     $(parent).appendChild(row);
@@ -917,9 +1046,10 @@ async function refreshLive(){
 
 /* ============ events ============ */
 function wireMapEvents(){
-  map.on('moveend', ()=>{ updateDistrictMarkers();
+  map.on('moveend', ()=>{ repushAll();
+    updateDistrictMarkers();
     clearTimeout(liveTimer); liveTimer = setTimeout(refreshLive, 450); });
-  map.on('zoomend', ()=>updateDistrictMarkers());
+  map.on('zoomend', ()=>{ repushAll(); updateDistrictMarkers(); });
   map.on('idle', ()=>updateDistrictMarkers());
   const hoverLayers = ['grades-c','mrds-c','mrds-ex','stategeo-c','stategeo-ex','usmin-c','claimsA-dot','claimsC-dot','live-fill','tg-fill','geo-fill','ctygold-fill','gp-surv-fill'];
   map.on('mousemove', e=>{
@@ -2383,7 +2513,14 @@ async function idbAll(){ const db = await idb(); return new Promise((res,rej)=>{
   rq.onsuccess = ()=>res(rq.result||[]); rq.onerror = ()=>rej(rq.error); }); }
 async function idbPut(rec){ const db = await idb(); return new Promise((res,rej)=>{
   const tx = db.transaction('layers','readwrite'); tx.objectStore('layers').put(rec);
-  tx.oncomplete = res; tx.onerror = ()=>rej(tx.error); }); }
+  tx.oncomplete = res;
+  tx.onerror = ()=>{                        // quota / disk-full: keep the layer session-only, keep running
+    const e = tx.error;
+    if (e && /quota|space|io error/i.test(String(e.name)+String(e.message))){
+      ilog(`storage full — "${rec.slug}" stays session-only (free disk space to persist layers)`);
+      res('session-only');
+    } else rej(e);
+  }; }); }
 async function idbDel(slug){ const db = await idb(); return new Promise((res,rej)=>{
   const tx = db.transaction('layers','readwrite'); tx.objectStore('layers').delete(slug);
   tx.oncomplete = res; tx.onerror = ()=>rej(tx.error); }); }

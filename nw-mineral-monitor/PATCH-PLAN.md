@@ -145,6 +145,22 @@ clearlake`. History, recorded honestly:
   under Tier-1/2 targets; discrete magnetic low coincident with structure →
   boost, recorded in the why-card like every other term.
 
+## HOTFIX 2026-08-08b — renderer crash / "storage exhaustion" — **DONE**
+
+User's tab died ("Aw, Snap! error 5") with extension LevelDB
+FILE_ERROR_NO_SPACE spam. Diagnosis (see ASSUMPTIONS #37): disk full on
+the machine + our genuine RAM bomb — statewide Feature arrays held twice
+(app + GL worker), which CA's 312k claims pushed over the edge. The
+storage-bloat theory was checked and REFUTED (app never persisted bulk
+data). Fix shipped in build 2026-08-08b: banded viewport/coarse pushes,
+single columnar copy, layer-off frees GL index, storage governance +
+`?debug=1` diagnostics. Measured (tools/measure.js, headless Chromium):
+08-07g renderer KILLED at the closed-claims toggle; 08-08b full script —
+boot all-8-states 113 MB → worst step 211 MB heap, origin storage 0.0 MB,
+every toggle survives. PMTiles server-side tiling stays PLANNED as the
+tier-2 upgrade (single-file archives + HTTP range requests fit the
+S3/CloudFront static stack).
+
 ## Verification ledger (this commit)
 
 - Endpoints probed live: mapcache WMTS tile fetch (PNG), aerorad GetMap

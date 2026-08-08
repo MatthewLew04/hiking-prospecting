@@ -1,0 +1,182 @@
+[
+ {
+  "key": "logan_b108",
+  "title": "Logan 1934, Mother Lode Gold Belt (CDMG B 108)",
+  "states": "CA",
+  "pdf_pages": 294,
+  "triaged_hit_pages": 145,
+  "pages_extracted": 59,
+  "rows": 93
+ },
+ {
+  "key": "cjmg29",
+  "title": "CJMG v.29 1933 \u2014 Tucker & Sampson Kern + Averill Redding-Weaverville",
+  "states": "CA",
+  "pdf_pages": 496,
+  "triaged_hit_pages": 126,
+  "pages_extracted": 62,
+  "rows": 90
+ },
+ {
+  "key": "cjmg49",
+  "title": "CJMG v.49 1953 \u2014 Wright et al. San Bernardino register",
+  "states": "CA",
+  "pdf_pages": 784,
+  "triaged_hit_pages": 129,
+  "pages_extracted": 41,
+  "rows": 60
+ },
+ {
+  "key": "csmb_b78",
+  "title": "Bradley 1918, Quicksilver Resources (CSMB B 78)",
+  "states": "CA",
+  "pdf_pages": 458,
+  "triaged_hit_pages": 174,
+  "pages_extracted": 36,
+  "rows": 39
+ },
+ {
+  "key": "pp73",
+  "title": "Lindgren 1911, Tertiary Gravels (PP 73) \u2014 placer",
+  "states": "CA",
+  "pdf_pages": 272,
+  "triaged_hit_pages": 65,
+  "pages_extracted": 26,
+  "rows": 40
+ },
+ {
+  "key": "pp610",
+  "title": "Koschmann & Bergendahl 1968 (PP 610) \u2014 CA+ID districts",
+  "states": "CA+ID",
+  "pdf_pages": 290,
+  "triaged_hit_pages": 81,
+  "pages_extracted": 35,
+  "rows": 48
+ },
+ {
+  "key": "igs_b11",
+  "title": "Piper & Laney 1926, Silver City (IBMG B 11)",
+  "states": "ID",
+  "pdf_pages": 98,
+  "triaged_hit_pages": 50,
+  "pages_extracted": 17,
+  "rows": 27
+ },
+ {
+  "key": "b528",
+  "title": "Umpleby 1913, Lemhi County (USGS B 528)",
+  "states": "ID",
+  "pdf_pages": 203,
+  "triaged_hit_pages": 70,
+  "pages_extracted": 21,
+  "rows": 26
+ },
+ {
+  "key": "pp97",
+  "title": "Umpleby 1917, Mackay (USGS PP 97)",
+  "states": "ID",
+  "pdf_pages": 152,
+  "triaged_hit_pages": 46,
+  "pages_extracted": 7,
+  "rows": 9
+ },
+ {
+  "key": "b877",
+  "title": "Ross 1937, Bayhorse (USGS B 877)",
+  "states": "ID",
+  "pdf_pages": 187,
+  "triaged_hit_pages": 48,
+  "pages_extracted": 11,
+  "rows": 14
+ },
+ {
+  "key": "b969f",
+  "title": "Cooper 1951, Stibnite Sb-W-Au (USGS B 969-F)",
+  "states": "ID",
+  "pdf_pages": 49,
+  "triaged_hit_pages": 30,
+  "pages_extracted": 8,
+  "rows": 9
+ },
+ {
+  "key": "ismir1915",
+  "title": "Idaho Mine Inspector 1915 \u2014 round-2 deeper cuts",
+  "states": "ID",
+  "pdf_pages": 137,
+  "triaged_hit_pages": 56,
+  "pages_extracted": 9,
+  "rows": 15
+ },
+ {
+  "key": "ismir1917",
+  "title": "Idaho Mine Inspector 1917 \u2014 round-2 deeper cuts",
+  "states": "ID",
+  "pdf_pages": 135,
+  "triaged_hit_pages": 63,
+  "pages_extracted": 13,
+  "rows": 14
+ },
+ {
+  "key": "ismir1918",
+  "title": "Idaho Mine Inspector 1918 \u2014 round-2 deeper cuts",
+  "states": "ID",
+  "pdf_pages": 151,
+  "triaged_hit_pages": 45,
+  "pages_extracted": 13,
+  "rows": 14
+ },
+ {
+  "key": "igs_b14",
+  "title": "Anderson 1931, Eastern Cassia County (IBMG B 14) \u2014 completion sweep",
+  "states": "ID",
+  "pdf_pages": 200,
+  "triaged_hit_pages": 23,
+  "pages_extracted": 4,
+  "rows": 5
+ },
+ {
+  "key": "igs_p26",
+  "title": "Ballard 1928, Rocky Bar quadrangle (IBMG P 26) \u2014 OCR",
+  "states": "ID",
+  "pdf_pages": 44,
+  "triaged_hit_pages": 27,
+  "pages_extracted": 9,
+  "rows": 16
+ },
+ {
+  "key": "igs_p49",
+  "title": "Anderson 1939, Atlanta district (IBMG P 49) \u2014 OCR",
+  "states": "ID",
+  "pdf_pages": 86,
+  "triaged_hit_pages": 34,
+  "pages_extracted": 13,
+  "rows": 16
+ },
+ {
+  "key": "igs_p61",
+  "title": "Anderson 1943, Blackbird cobalt (IBMG P 61) \u2014 OCR",
+  "states": "ID",
+  "pdf_pages": 42,
+  "triaged_hit_pages": 17,
+  "pages_extracted": 4,
+  "rows": 6
+ },
+ {
+  "key": "igs_p72",
+  "title": "Staley 1945, Snake River fine gold (IBMG P 72) \u2014 OCR",
+  "states": "ID",
+  "pdf_pages": 14,
+  "triaged_hit_pages": 3,
+  "pages_extracted": 1,
+  "rows": 1
+ },
+ {
+  "key": "web_liberty",
+  "title": "Liberty Gold 2026 Black Pine MRE (news release)",
+  "states": "ID",
+  "pdf_pages": 0,
+  "triaged_hit_pages": 0,
+  "pages_extracted": 0,
+  "rows": 2
+ }
+]

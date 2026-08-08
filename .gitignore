@@ -8,8 +8,11 @@ nw-mineral-monitor/infra/watch.zip
 _to_delete/
 __pycache__/
 
-# pipeline fetch cache (regenerates; can be 10s of MB)
-nw-mineral-monitor/pipelines/cache/
+# pipeline fetch cache (regenerates; can be 10s of MB) — EXCEPT pagetext,
+# the committed page-indexed source text the WS9 grade rebuild validates
+# quotes against (PDFs + mrds.csv re-fetch by URL and stay ignored)
+nw-mineral-monitor/pipelines/cache/*
+!nw-mineral-monitor/pipelines/cache/pagetext/
 
 # account-specific auth switch lives only in S3, never in git
 auth.json

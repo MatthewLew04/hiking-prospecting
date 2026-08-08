@@ -1,160 +1,21 @@
-# RUNBOOK — deploy & operate NW Mineral Monitor (WS1–WS4 edition)
 
-Everything below assumes the repo checked out on your Mac and the AWS CLI
-configured (`aws sts get-caller-identity` works). Region: us-west-2.
+## Grades rebuild (WS9 — rounds 1+2, CA + ID)
 
-## 1. One-shot deploy / update
+Order matters; each step is idempotent:
 
-```bash
-cd nw-mineral-monitor/infra
-bash deploy.sh
+```
+python3 pipelines/grades_ca.py     # CA round 1 (embedded rows) + round 2 (rows_ca_r2.json)
+python3 pipelines/grades_id.py     # ID round 2 (rows_id_r2.json) + county backfill
+python3 pipelines/county_gold.py   # richOpen / stakeable ranking rerun
 ```
 
-This creates/updates the CloudFormation stack (now 35 resources: site,
-CloudFront, Cognito, claims updater, AI relay, **expiration watch**),
-uploads all three Lambda code bundles, syncs `site/` (including the new
-`data/plss`, `data/openground`, `data/dossiers`, `data/history`,
-`data/alerts`, `data/userlayers`), sets the login password, runs a claims
-refresh, and invalidates CloudFront. Footer must read **build 2026-08-05a**.
-
-An unchanged template prints "No changes to deploy" and keeps going — that's
-normal (fixed 2026-08).
-
-## 2. Enable the alert email (SES) — one-time
-
-SES accounts start in sandbox: both sender and recipient must be verified.
-
-```bash
-aws sesv2 create-email-identity --email-address you@example.com --region us-west-2
-# click the verification link AWS emails you, then (sandbox) verify the
-# recipient the same way if it's a different address
-```
-
-Then pass the addresses into the stack:
-
-```bash
-aws cloudformation deploy --template-file template.yaml \
-  --stack-name nw-mineral-monitor --region us-west-2 \
-  --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset \
-  --parameter-overrides AlertEmailFrom=you@example.com AlertEmailTo=you@example.com
-bash deploy.sh   # re-uploads lambda code after the parameter change
-```
-
-Optional webhook (Slack/Discord/ntfy relay, anything that takes a JSON POST):
-add `AlertWebhookUrl=https://...` to the same `--parameter-overrides`.
-
-To watch a different area: `WatchBbox="x0,y0,x1,y1"` in the overrides
-(default is Cassia County).
-
-## 3. What runs when (all UTC)
-
-| job | schedule | what |
-|---|---|---|
-| claims updater (5 NW states) | daily 09:10 | active-claim snapshots |
-| claims updater (NV+UT) | daily 09:40 | active-claim snapshots |
-| closed-claims refresh | monthly, 1st | WA+OR / ID+MT / WY batches 10:00–11:00 |
-| closed-claims refresh (NV, UT) | monthly, 2nd | 10:00 / 11:00 — newest 250k each (NV has 1.23M, UT 452k; DESC pull, `CLOSED_CAP` env) |
-| **expiration watch — daily** | daily 13:10 | AOI disposition diff → alerts |
-| **expiration watch — fee window** | **every 6 h, Aug 25 – Sep 10** | diff + LIKELY-LAPSED scan |
-
-Manual runs:
-
-```bash
-bash deploy.sh watch            # daily-mode diff right now
-bash deploy.sh watch seasonal   # fee-window scan right now
-bash deploy.sh refresh          # claims snapshot refresh
-```
-
-First watch run seeds the baseline; transitions alert from the second run.
-Alerts also land on the map: the **WATCH** button in the header (badge shows
-the count), each alert deep-links `#claim=SERIAL`.
-
-## 4. The LIKELY-LAPSED fee scan (manual 2-minute step each August)
-
-The public GIS layers carry no fee-payment actions, so once a year, when the
-fee window opens (~Aug 25):
-
-1. Open https://reports.blm.gov → Mining Claims reports → run the fee/case
-   report for ID (or your AOI state), export CSV.
-2. `aws s3 cp <export>.csv s3://<bucket>/watch/fee_status.csv`
-3. Done — the 6-hourly seasonal runs now flag active claims with no
-   current-year fee action as "LIKELY LAPSED — verify", with the
-   lead-not-conclusion caveat in every alert. Without the file the digest
-   says fee data was unavailable (it never fakes it).
-
-Bucket name: `aws cloudformation describe-stacks --stack-name nw-mineral-monitor \
---query 'Stacks[0].Outputs' --output table`
-
-## 5. Refreshing the AOI research bundles (pipelines/)
-
-Idempotent, cached (pipelines/cache/), safe to re-run any time:
-
-```bash
-cd nw-mineral-monitor/pipelines
-python3 fetch_plss.py          # PLSS sections (cache 90 d)
-python3 fetch_claims_aoi.py    # AOI claims w/ legal descriptions (active cache 1 d)
-python3 fetch_landstatus.py    # SMA + withdrawals + segregations (cache 30-90 d)
-python3 open_ground.py         # recompute section statuses
-python3 webscrub.py            # ChronAm/GBooks/MSHA sweep (cache 30-60 d)
-python3 dossier.py             # rebuild mine dossiers (fold in new history)
-python3 inbox_ingest.py        # convert anything dropped in data-inbox/
-bash ../infra/deploy.sh update-site
-```
-
-Google Books often rate-limits shared IPs; re-running from home fills the
-gaps (cached, so only misses re-fetch). New AOI: add a block to
-`config/aoi.json`, then `AOI=<key> python3 <each script>`.
-
-## 6. Demo
-
-`DEMO.md` walks each workstream end-to-end on Cassia County, including the
-messy-CSV acceptance test (`demo/messy_cassia.csv`).
-
-## 7. Troubleshooting
-
-- **Stack says UPDATE_ROLLBACK_COMPLETE** — rerun `bash deploy.sh`; if it
-  persists, check the CloudFormation events tab for the failing resource.
-- **No alert email** — SES identity unverified, or params empty. The digest
-  still writes to `data/alerts/latest.json` (WATCH button) regardless.
-- **Watch found 0 active cases** — check `WatchBbox` parameter; the Lambda
-  logs (`/aws/lambda/nw-mineral-monitor-expiration-watch`) print counts.
-- **Ingest says "no usable location"** — the row needs lat/lon, UTM
-  easting+northing, or a TRS legal ("T12S R22E Sec 14"). Outside Idaho's
-  cached sections the browser queries CadNSDI live; offline it reports the
-  row unmatched.
-- **git push HTTP 400** — `git config http.postBuffer 524288000` then retry.
-
-## 9. WS5 — county recorder workflow (operator-assisted)
-
-Cassia has **no online index** (verified 2026-08-06). The loop:
-
-```bash
-cd pipelines && python3 county_records.py     # writes site/data/county/cassia.json
-```
-
-1. Open the map → COUNTY RECORDS → "coverage matrix + records request" and
-   send the prefilled request to recorder@cassia.gov (or visit the vault —
-   call (208) 878-5240 first).
-2. Drop whatever comes back (CSV/TSV/JSON, any sane headers — see
-   `data-inbox/county/README.md`) into `data-inbox/county/cassia/`.
-3. Re-run the script, then `bash deploy.sh` (sync only is fine). Matched
-   instruments appear in claim dossiers; unmatched new locations appear in
-   WATCH as **COUNTY-RECORDED — NOT IN MLRS**; the daily watch Lambda folds
-   them into email/webhook digests and auto-retires ones that reach MLRS.
-
-`python3 county_records.py --demo` exercises the whole flow with synthetic
-`demo/county_sample.csv` (clearly flagged DEMO in the UI — don't deploy it).
-Coverage for neighboring counties: `COUNTY-COVERAGE.md`.
-
-## 10. WS6 — geology + targets refresh
-
-```bash
-cd pipelines && python3 fetch_geology.py && python3 geology_targets.py
-```
-
-First run pulls ~20 Macrostrat tiles + ~1,000 unit records (a few minutes;
-everything lands in `pipelines/cache/`, so re-runs are instant). Then
-deploy-sync. Sources, scales, and citations ride inside
-`site/data/geology/cassia.json`; scoring rationale inside
-`site/data/targets/cassia.json`. Re-run cadence: whenever IGS publishes new
-mapping for the area (Macrostrat picks it up) — yearly is plenty.
+Inputs: `grades-research/rows_{ca,id}_r2.json` (curated rows, page-cited),
+`pipelines/cache/pagetext/*.json.gz` (page-indexed source text — committed;
+quotes are re-validated against it on every run and a failure aborts),
+`site/data/sites/mrds_{ca,id}.json` + the full MRDS dump (auto-fetched to
+`pipelines/cache/mrds.csv` if absent) for county-scoped geolocation, and
+`site/data/claims/{ca,id}_active.json` for open distances. Source PDFs
+re-fetch by URL into `pipelines/cache/pdfs/` (gitignored) only when a
+pagetext file needs rebuilding. If `build_grades.py` (round 0) is ever
+rerun, run grades_ca.py + grades_id.py again afterward — they own the
+'ca-r1'/'ca-r2'/'id-r2' row tags and the schema migration.

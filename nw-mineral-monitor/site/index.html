@@ -754,10 +754,17 @@ function showGrade(i){
     : GR.open[i]>=0? badge('closed', `ACTIVE CLAIMS ${fmt(GR.open[i])} m AWAY`)
     : badge('abandoned','CLAIM STATUS UNKNOWN HERE');
   openDetail(`<h2>${esc(GR.name[i])}</h2>
-    <div class="badges">${badge('exploration','CITED GRADE')} ${openB} <span class="badge abandoned">${GR.st[i]}</span></div>
+    <div class="badges">${badge('exploration','CITED GRADE')} ${openB} <span class="badge abandoned">${GR.st[i]}</span>${GR.plc&&GR.plc[i]?' <span class="badge exploration">PLACER</span>':''}</div>
     ${kv([['Gold', GR.au[i]!=null? GR.au[i]+' oz/ton':null],
           ['Silver', GR.ag[i]!=null? GR.ag[i]+' oz/ton':null],
           ['Ore value', GR.usd[i]!=null? '$'+fmt(GR.usd[i])+' per ton (historic dollars)':null],
+          ['Lead', GR.pb&&GR.pb[i]!=null? GR.pb[i]+' %':null],
+          ['Zinc', GR.zn&&GR.zn[i]!=null? GR.zn[i]+' %':null],
+          ['Copper', GR.cu&&GR.cu[i]!=null? GR.cu[i]+' %':null],
+          ['Antimony', GR.sb&&GR.sb[i]!=null? GR.sb[i]+' %':null],
+          ['Tungsten', GR.wo3&&GR.wo3[i]!=null? GR.wo3[i]+' units WO₃':null],
+          ['Quicksilver', GR.hgf&&GR.hgf[i]!=null? fmt(GR.hgf[i])+' flasks produced':null],
+          ['Placer value', GR.yd3&&GR.yd3[i]!=null? '$'+GR.yd3[i]+' per cu yd (historic)':null],
           ['Basis', esc(GR.basis[i])],['Years', esc(GR.yrs[i])],
           ['Tonnage', GR.ton&&GR.ton[i]? esc(GR.ton[i]):null],
           ['MRDS status', GR.ds&&GR.ds[i]? esc(GR.ds[i]) + (GR.pz&&GR.pz[i]? ' · '+esc(GR.pz[i])+' producer':''):null],
@@ -767,6 +774,8 @@ function showGrade(i){
           ['County', GR.cnty&&GR.cnty[i]? esc(GR.cnty[i])+' Co.':null],
           ['Records', GR.nrec[i]>1? GR.nrec[i]+' grade records for this mine':null]])}
     <div class="desc" style="border-left:2px solid var(--gold);padding-left:9px;font-style:italic">“${esc(GR.quote[i])}”</div>
+    ${GR.conv&&GR.conv[i]?`<div class="src" style="margin-top:4px">Conversion: ${esc(GR.conv[i])}</div>`:''}
+    ${GR.xq&&GR.xq[i]? GR.xq[i].map(q=>`<div class="desc" style="border-left:2px solid var(--teal,#4fd1c5);padding-left:9px;font-style:italic;margin-top:6px">“${esc(q.q)}”<div class="src" style="font-style:normal;margin-top:2px">${esc(q.s||'')}${q.u?` <a href="${esc(q.u)}" target="_blank">↗</a>`:''}</div></div>`).join(''):''}
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
     <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
@@ -1377,6 +1386,11 @@ function execTool(name, a){
       return trimJson({count:rows.length, note:'assay-text values can be hand-picked specimens — quote is the evidence; open_m: metres to nearest active claim (5000=none within 5km, -1=unknown/no claims data)',
         sample: rows.slice(0,lim).map(([v,i])=>({mine:GR.name[i], state:GR.st[i], district:GR.dist[i],
           au_opt:GR.au[i], ag_opt:GR.ag[i], usd_per_ton:GR.usd[i], basis:GR.basis[i], years:GR.yrs[i],
+          pb_pct:GR.pb?GR.pb[i]:null, zn_pct:GR.zn?GR.zn[i]:null, cu_pct:GR.cu?GR.cu[i]:null,
+          sb_pct:GR.sb?GR.sb[i]:null, wo3_units:GR.wo3?GR.wo3[i]:null, hg_flasks:GR.hgf?GR.hgf[i]:null,
+          usd_per_yd3:GR.yd3?GR.yd3[i]:null, placer:GR.plc?GR.plc[i]:null,
+          native_units:GR.nat?GR.nat[i]:null, conversion:GR.conv?GR.conv[i]:null,
+          more_quotes:GR.xq&&GR.xq[i]? GR.xq[i].map(q=>({quote:q.q, source:q.s})) : null,
           tonnage:GR.ton?GR.ton[i]:null, status:GR.ds?GR.ds[i]:null, workings:GR.wt?GR.wt[i]:null,
           prod_size:GR.pz?GR.pz[i]:null, county:GR.cnty?GR.cnty[i]:null,
           open_m:GR.open[i], quote:GR.quote[i], source:GR.src[i], lat:GR.y[i], lon:GR.x[i]}))});

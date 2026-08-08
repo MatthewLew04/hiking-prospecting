@@ -1,32 +1,41 @@
 #!/usr/bin/env python3
 """CA cited gold grades -> spliced into site/data/grades/grades.json.
 
-Curated the same way the NV/ID/MT/WA/OR/UT/WY set was built: verbatim
-grade statements hand-extracted from the primary literature, one row per
-mine (best cited grade), page-cited, with the quote carried in full.
+ROUND 1 (2026-08-08, unchanged below): verbatim grade statements hand-
+extracted from PP 157 / PP 172 / PP 194 / B 430 / B 540, one row per mine,
+page-cited, $-per-ton at $20.67/oz (all pre-1934), bonanza lots kept per
+ASSUMPTIONS #36 (grandfathered from the round-2 caps), MRDS name-match
+coordinates near district anchors, open = metres to nearest active CA claim.
 
-Sources (all fetched + read for this dataset, 2026-08-08):
-  PP 157  Knopf, The Mother Lode System of California (1929)
-  PP 172  Ferguson & Gannett, Gold Quartz Veins of the Alleghany District (1932)
-  PP 194  Johnston, The Gold Quartz Veins of Grass Valley (1940)
-  B 430   Hess, Gold Mining in the Randsburg Quadrangle (1910)
-  B 540   Ferguson, Gold Lodes of the Weaverville Quadrangle (1914)
+ROUND 2 (WS9): the CSMB/CJMG source queue — Logan's Mother Lode belt
+bulletin (CDMG B 108), Tucker & Sampson's Kern County register (CJMG v.29)
+plus Averill's Redding-Weaverville chapter in the same volume, the San
+Bernardino County register (CJMG v.49), Bradley's quicksilver bulletin
+(CSMB B 78, production in flasks), Lindgren's Tertiary Gravels (PP 73,
+placer $/yd3, flagged plc), and PP 610 district production roll-ups.
+Round-2 rows live in grades-research/rows_ca_r2.json, are validated
+verbatim against the cached page-indexed PDFs (pipelines/cache/pagetext/),
+multi-commodity normalized, county-scoped MRDS-geolocated, and MERGED into
+existing rows by mine+county key — a mine already in the dataset gains the
+new quote (and a primary upgrade only when richer at equal-or-better
+basis), never a duplicate row.
 
-$-per-ton -> oz/t conversion at $20.67/oz (all figures here predate 1934);
-PP 194 states most grades directly in ounces. Bonanza/specimen-lot values
-(basis 'assay-text'/'ore shipped') are the lot arithmetic from the quote,
-same convention as the Nevada bonanza rows.
+Not fetchable from this sandbox (queue items noted in coverage_ws9.md):
+Julihn & Horton's USBM southern-Mother-Lode bulletin (UNT robots-blocked,
+no IA copy) and Clark's Gold Districts of California (CDMG B 193 —
+IA lending-restricted); PP 610 carries the district roll-ups instead.
 
-Coordinates: matched to MRDS CA sites by name within a district anchor
-radius — never invented. No confident match => x=None (row documents the
-mine but cannot score). 'open' = metres to nearest ACTIVE CA claim
-centroid (5000 = none within ~5 km; -1 = unlocated), computed against
-site/data/claims/ca_active.json.
+Idempotent: round 1 owns 'ca-r1' rows (legacy untagged CA rows are retagged
+on first run), round 2 owns 'ca-r2' rows + enrichment tags; each phase
+drops and rebuilds exactly its own.
 """
-import json, math, os, re, sys
+import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import gradeslib as G
 SITE = os.path.join(HERE, '..', 'site')
+
 OZ = 20.67          # $ per oz Au for every pre-1934 figure quoted here
 
 PP157 = ('USGS Professional Paper 157, The Mother Lode System of California '
@@ -436,114 +445,129 @@ row('Craig mine', 'Dedrick (Trinity)', 'dedrick', ['craig'],
     'and cyanide plant are being erected on the property.')
 
 
+
+
 # ======================================================================
-def canon(s):
-    s = re.sub(r'[^a-z0-9 ]+', ' ', (s or '').lower().replace('-', ' '))
-    s = re.sub(r'\b(the|mine|mines|mining|group|claim|claims|lode|quartz|'
-               r'consolidated|con|no|inc|co|company)\b', ' ', s)
-    return re.sub(r'\s+', ' ', s).strip()
+R1_KEYS = {id(PP157): 'pp157', id(PP172): 'pp172', id(PP194): 'pp194',
+           id(B430): 'b430', id(B540): 'b540'}
+ROWS_R2 = os.path.join(HERE, '..', 'grades-research', 'rows_ca_r2.json')
+
+SOURCES_R2 = {
+ 'logan_b108': ('Logan, C.A., 1934, Mother Lode Gold Belt of California: '
+                'Calif. Div. Mines Bulletin 108',
+                'https://archive.org/details/motherlodegoldbe00logarich'),
+ 'cjmg29': ('California Journal of Mines and Geology, v. 29 (Report XXIX of '
+            'the State Mineralogist, 1933)',
+            'https://archive.org/details/californiajourna29cali'),
+ 'cjmg49': ('California Journal of Mines and Geology, v. 49 (1953)',
+            'https://archive.org/details/californiajourna49cali'),
+ 'csmb_b78': ('Bradley, W.W., 1918, Quicksilver Resources of California: '
+              'CSMB Bulletin 78',
+              'https://archive.org/details/quicksilverresou00bradrich'),
+ 'pp73': ('Lindgren, W., 1911, The Tertiary Gravels of the Sierra Nevada of '
+          'California: USGS Professional Paper 73',
+          'https://pubs.usgs.gov/pp/0073/report.pdf'),
+ 'pp610': ('Koschmann, A.H. & Bergendahl, M.H., 1968, Principal '
+           'Gold-Producing Districts of the United States: USGS Professional '
+           'Paper 610', 'https://pubs.usgs.gov/pp/0610/report.pdf'),
+}
 
 
-def locate(rows):
-    m = json.load(open(os.path.join(SITE, 'data/sites/mrds_ca.json')))
-    pts = [(canon(m['nm'][i]), m['x'][i], m['y'][i]) for i in range(m['n'])
-           if m['x'][i] is not None and m['nm'][i]]
-    for r in rows:
-        ax, ay = A[r['anchor']]
-        coslat = math.cos(math.radians(ay))
-        best, bs = None, 1e9
-        for cn, x, y in pts:
-            dk = math.hypot((x - ax) * 111.32 * coslat, (y - ay) * 111.32)
-            if dk > 20:
-                continue
-            q = 0
-            for k in r['keys']:
-                ck = canon(k)
-                if cn == ck:
-                    q = 2; break
-                if ck and ck in cn:
-                    q = max(q, 1)
-            if q == 0 or any(e in cn for e in r['excl']):
-                continue
-            score = dk - 25 * q
-            if score < bs:
-                bs, best = score, (x, y)
-        r['x'], r['y'] = best if best else (None, None)
-    hit = sum(1 for r in rows if r['x'] is not None)
-    print(f'located {hit}/{len(rows)} via MRDS CA name match')
-    for r in rows:
-        if r['x'] is None:
-            print(f"  UNLOCATED: {r['name']}")
+def county_of(dist):
+    m = re.search(r'\(([^)]+)\)', dist or '')
+    return m.group(1) if m else None
 
 
-def open_metres(rows):
-    c = json.load(open(os.path.join(SITE, 'data/claims/ca_active.json')))
-    assert c['layer'] == 'active' and c['state'] == 'CA'
-    grid = {}
-    for x, y in zip(c['x'], c['y']):
-        if x is None:
-            continue
-        grid.setdefault((int(x / 0.02), int(y / 0.02)), []).append((x, y))
-    print(f"open-distance vs {c['n']:,} active CA claims")
-    for r in rows:
-        if r['x'] is None:
-            r['open'] = -1
-            continue
-        x, y = r['x'], r['y']
-        coslat = math.cos(math.radians(y))
-        gx, gy = int(x / 0.02), int(y / 0.02)
-        best = 1e12
-        for dx in (-3, -2, -1, 0, 1, 2, 3):
-            for dy in (-3, -2, -1, 0, 1, 2, 3):
-                for cx, cy in grid.get((gx + dx, gy + dy), ()):
-                    d = math.hypot((cx - x) * 111320 * coslat,
-                                   (cy - y) * 111320)
-                    if d < best:
-                        best = d
-        r['open'] = 5000 if best > 5000 else int(round(best))
+def r1_rows():
+    """Adapt the round-1 R entries to curated-row dicts (values untouched)."""
+    out = []
+    for r in R:
+        page_no = int(re.sub(r'[^0-9]', '', r['page']))
+        out.append(dict(
+            name=r['name'], district=r['dist'], county=county_of(r['dist']),
+            state='CA', keys=r['keys'], excl=list(r['excl']),
+            anchor=r['anchor'], au_opt=r['au'], usd_per_ton=r['usd'],
+            basis=r['basis'], years=r['yrs'], tonnage=r['ton'],
+            price_year=1933, commodities='Gold',
+            src_key=R1_KEYS[id(r['src'])], page=page_no,
+            quote=r['quote'],
+            src_cite=f"{r['src'][0]}, {r['page']}", src_url=r['src'][1]))
+    return out
 
 
-def splice(rows):
-    p = os.path.join(SITE, 'data/grades/grades.json')
-    g = json.load(open(p))
-    # idempotent: drop any prior CA rows
-    keep = [i for i in range(g['n']) if g['st'][i] != 'CA']
-    cols = [k for k, v in g.items() if isinstance(v, list) and k != 'name'
-            or k == 'name']
-    cols = [k for k in g if isinstance(g[k], list)]
-    for k in cols:
-        g[k] = [g[k][i] for i in keep]
-    dropped = g['n'] - len(keep)
-    for r in rows:
-        g['name'].append(r['name']); g['st'].append('CA')
-        g['dist'].append(r['dist'])
-        g['x'].append(round(r['x'], 5) if r['x'] is not None else None)
-        g['y'].append(round(r['y'], 5) if r['y'] is not None else None)
-        g['au'].append(r['au']); g['ag'].append(None)
-        g['usd'].append(r['usd']); g['basis'].append(r['basis'])
-        g['yrs'].append(r['yrs']); g['open'].append(r['open'])
-        g['nrec'].append(1); g['dep'].append(None)
-        g['quote'].append(r['quote'])
-        g['src'].append(f"{r['src'][0]}, {r['page']}")
-        g['url'].append(r['src'][1])
-        g['ton'].append(r['ton']); g['ds'].append(None); g['wt'].append(None)
-        g['pz'].append(None); g['com'].append(None); g['cnty'].append(None)
-    g['n'] = len(g['name'])
-    g['generated'] = '2026-08-08'
-    if 'CA rows' not in g['note']:
-        g['note'] += (' CA rows added 2026-08-08 from PP 157/172/194 + '
-                      'Bulls 430/540 ($20.67/oz conversions, all figures '
-                      'pre-1934); CA open distances vs ca_active.json.')
+def main():
+    # ---- migration: retag legacy CA rows as round-1-owned ----
+    g, p = G.load_grades()
+    n = 0
+    for i in range(g['n']):
+        if g['st'][i] == 'CA' and g['own'][i] is None:
+            g['own'][i] = 'ca-r1'
+            n += 1
+    if n:
+        json.dump(g, open(p, 'w'), separators=(',', ':'))
+        print(f'  migration: {n} legacy CA rows tagged ca-r1')
+
+    # ---- pre-drop round 2 so round 1 rebuilds against a clean base ----
+    g, p = G.load_grades()
+    g = G.drop_own(g, 'ca-r2')
     json.dump(g, open(p, 'w'), separators=(',', ':'))
-    from collections import Counter
+
+    # ---- round 1 (verbatim rows above) ----
+    rows1 = r1_rows()
+    ok, low = G.validate_rows(rows1, min_fuzzy=0.0, slack=3)
+    weak = [r for r in ok if (r['_vscore'] or 0) < 0.8]
+    if weak:
+        print(f'  note: {len(weak)} round-1 quotes match their cited page '
+              f'only fuzzily (degraded OCR) — kept, they were verified '
+              f'against page images when curated:')
+        for r in weak:
+            print(f"    {r['_vscore']:.2f} {r['name']}")
+    for r in rows1:
+        G.normalize_row(r, cap=False)          # grandfathered bonanza rows
+    G.locate(rows1, A, 'CA')
+    G.open_metres(rows1, 'CA')
+    G.splice(rows1, 'CA', 'ca-r1',
+             'CA rows added 2026-08-08 from PP 157/172/194 + Bulls 430/540 '
+             '($20.67/oz conversions, all figures pre-1934); CA open '
+             'distances vs ca_active.json.')
+
+    # ---- round 2 (WS9 queue) ----
+    rows2 = G.curated(ROWS_R2)
+    for r in rows2:
+        if r.get('src_key'):
+            cite, url = SOURCES_R2[r['src_key']]
+            if r.get('chapter'):
+                cite = f"{r['chapter']}: {cite}"
+            r['src_cite'] = f"{cite}, p. {r['page']}"
+            r['src_url'] = url
+    ok, bad = G.validate_rows(rows2, min_fuzzy=0.85, slack=3)
+    if bad:
+        for r in bad:
+            print(f"  DROP quote-fail ({r['_vscore']}): {r['name']} "
+                  f"[{r['src_key']} p.{r['page']}]")
+        raise SystemExit(f'{len(bad)} round-2 rows failed verbatim-quote '
+                         'validation — fix rows_ca_r2.json before splicing')
+    rows2 = [r for r in ok if G.normalize_row(r)]
+    print(f'  round 2: {len(ok)} validated, {len(ok) - len(rows2)} '
+          f'cap-dropped')
+    G.locate_by_county(rows2, 'CA')
+    G.open_metres(rows2, 'CA')
+    G.splice(rows2, 'CA', 'ca-r2',
+             'CA round-2 rows added 2026-08-08 (WS9): Logan B 108 Mother '
+             'Lode register, CJMG v.29 Kern (Tucker & Sampson) + '
+             'Redding-Weaverville (Averill), CJMG v.49 San Bernardino, '
+             'CSMB B 78 quicksilver (flasks), PP 73 Tertiary-gravel placer '
+             '($/yd3, plc flag), PP 610 district roll-ups; multi-commodity '
+             'fields; merged by mine+county.')
+
+    # ---- summary ----
+    g, _ = G.load_grades()
     ca = [i for i in range(g['n']) if g['st'][i] == 'CA']
     rich = [i for i in ca if (g['au'][i] or 0) >= 0.3]
     ro = [i for i in rich if (g['open'][i] or 0) >= 400]
-    print(f"grades.json: {g['n']} rows ({dropped} old CA dropped, "
-          f"{len(ca)} CA added); CA rich {len(rich)}, rich+open {len(ro)}")
+    print(f'grades.json: {g["n"]} rows total; CA {len(ca)} '
+          f'(rich {len(rich)}, rich+open {len(ro)})')
 
 
 if __name__ == '__main__':
-    locate(R)
-    open_metres(R)
-    splice(R)
+    main()

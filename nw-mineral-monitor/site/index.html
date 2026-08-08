@@ -395,7 +395,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-08b';
+const BUILD = '2026-08-08c';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -754,17 +754,10 @@ function showGrade(i){
     : GR.open[i]>=0? badge('closed', `ACTIVE CLAIMS ${fmt(GR.open[i])} m AWAY`)
     : badge('abandoned','CLAIM STATUS UNKNOWN HERE');
   openDetail(`<h2>${esc(GR.name[i])}</h2>
-    <div class="badges">${badge('exploration','CITED GRADE')} ${openB} <span class="badge abandoned">${GR.st[i]}</span>${GR.plc&&GR.plc[i]?' <span class="badge exploration">PLACER</span>':''}</div>
+    <div class="badges">${badge('exploration','CITED GRADE')} ${openB} <span class="badge abandoned">${GR.st[i]}</span></div>
     ${kv([['Gold', GR.au[i]!=null? GR.au[i]+' oz/ton':null],
           ['Silver', GR.ag[i]!=null? GR.ag[i]+' oz/ton':null],
           ['Ore value', GR.usd[i]!=null? '$'+fmt(GR.usd[i])+' per ton (historic dollars)':null],
-          ['Lead', GR.pb&&GR.pb[i]!=null? GR.pb[i]+' %':null],
-          ['Zinc', GR.zn&&GR.zn[i]!=null? GR.zn[i]+' %':null],
-          ['Copper', GR.cu&&GR.cu[i]!=null? GR.cu[i]+' %':null],
-          ['Antimony', GR.sb&&GR.sb[i]!=null? GR.sb[i]+' %':null],
-          ['Tungsten', GR.wo3&&GR.wo3[i]!=null? GR.wo3[i]+' units WO₃':null],
-          ['Quicksilver', GR.hgf&&GR.hgf[i]!=null? fmt(GR.hgf[i])+' flasks produced':null],
-          ['Placer value', GR.yd3&&GR.yd3[i]!=null? '$'+GR.yd3[i]+' per cu yd (historic)':null],
           ['Basis', esc(GR.basis[i])],['Years', esc(GR.yrs[i])],
           ['Tonnage', GR.ton&&GR.ton[i]? esc(GR.ton[i]):null],
           ['MRDS status', GR.ds&&GR.ds[i]? esc(GR.ds[i]) + (GR.pz&&GR.pz[i]? ' · '+esc(GR.pz[i])+' producer':''):null],
@@ -774,8 +767,6 @@ function showGrade(i){
           ['County', GR.cnty&&GR.cnty[i]? esc(GR.cnty[i])+' Co.':null],
           ['Records', GR.nrec[i]>1? GR.nrec[i]+' grade records for this mine':null]])}
     <div class="desc" style="border-left:2px solid var(--gold);padding-left:9px;font-style:italic">“${esc(GR.quote[i])}”</div>
-    ${GR.conv&&GR.conv[i]?`<div class="src" style="margin-top:4px">Conversion: ${esc(GR.conv[i])}</div>`:''}
-    ${GR.xq&&GR.xq[i]? GR.xq[i].map(q=>`<div class="desc" style="border-left:2px solid var(--teal,#4fd1c5);padding-left:9px;font-style:italic;margin-top:6px">“${esc(q.q)}”<div class="src" style="font-style:normal;margin-top:2px">${esc(q.s||'')}${q.u?` <a href="${esc(q.u)}" target="_blank">↗</a>`:''}</div></div>`).join(''):''}
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
     <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
@@ -804,6 +795,44 @@ function gradeAnswer(q, f){
         setTimeout(()=>map.getSource('hl').setData(EMPTY), 3200); }
       showGrade(i);
     })));
+}
+/* "top 10 mines we should go claim" — ranked ACTIONABLE staking picks:
+   cited grade ≥0.3 oz/t Au AND no active claim within 400 m. Ranked by
+   capped grade (5 oz/t ceiling so specimen lots don't run the table),
+   with production/shipment records outranking one-off assays, plus a
+   small openness bonus. Every pick carries its quote + source page. */
+function stakeAnswer(q){
+  if (!GR) return void botMsg('The grade dataset is still loading — ask again in a few seconds.');
+  const f = parseQuery(q);
+  const n = Math.min(25, +(q.match(/top\s*(\d{1,2})/)||[])[1] || 10);
+  const rows = [];
+  for (let i=0;i<GR.n;i++){
+    if (f.states && !f.states.includes(GR.st[i])) continue;
+    if (f.near && (GR.x[i]==null || havKm(f.near.lat, f.near.lon, GR.y[i], GR.x[i])>f.km)) continue;
+    if (GR.au[i]==null || GR.au[i]<0.3 || GR.open[i]<400) continue;
+    const solid = /production|shipped/.test(GR.basis[i]||'')? 1.35 : 1;
+    rows.push([Math.min(GR.au[i],5)*solid + Math.min(GR.open[i],5000)/12500, i]);
+  }
+  rows.sort((a,b)=>b[0]-a[0]);
+  if (!rows.length){
+    botMsg(`No cited-grade gold mines on open ground match${f.states?' in '+f.states.join('+'):''}${f.near?' near '+esc(f.near.label.split('(')[0]):''}. Widen it — drop the state filter, or ask "richest unclaimed gold" for the full ranked list.`,
+      [{label:'county ranking instead', fn:()=>cgAnswer()}]);
+    return;
+  }
+  const d = botMsg(`<b>Top ${Math.min(n,rows.length)} stakeable gold picks</b> — mines with a <b>cited grade ≥0.3 oz/t</b> and <b>no active claim within 400 m</b> of the workings${f.states?' in '+f.states.join('+'):''}. Ranked by grade (capped at 5 oz/t; production averages outrank one-off assays) + openness. Click any pick for the verbatim quote, source page, and dossier:`,
+    [{label:'county ranking', fn:()=>cgAnswer()},
+     {label:'full richest-unclaimed list', fn:()=>gradeAnswer('richest unclaimed gold', f)}]);
+  rows.slice(0,n).forEach(([s,i],k)=>d.insertBefore(hitLink(
+    `${k+1}. ${GR.name[i]} — ${GR.dist[i]&&GR.dist[i]!==GR.st[i]? GR.dist[i]+', ':''}${GR.st[i]} — ${GR.au[i]>=100?fmt(Math.round(GR.au[i])):GR.au[i]} oz/t (${GR.basis[i]}) · nearest claim ${GR.open[i]>=5000?'>5 km':fmt(GR.open[i])+' m'}`, null, ()=>{
+      if (GR.x[i]!=null){ map.flyTo({center:[GR.x[i],GR.y[i]], zoom:12.5, duration:900});
+        map.getSource('hl').setData({type:'Feature',properties:{},geometry:{type:'Point',coordinates:[GR.x[i],GR.y[i]]}});
+        setTimeout(()=>map.getSource('hl').setData(EMPTY), 3200); }
+      showGrade(i);
+    }), d.querySelector('.chiprow')));
+  const cav = document.createElement('div');
+  cav.style.cssText = 'font-size:10.5px;color:var(--mut);margin-top:6px';
+  cav.textContent = '"No claims" ≠ "open to staking": famous districts are often PATENTED private land (Grass Valley, Alleghany cores), and parks/withdrawals carry no claims either. Verify ownership + withdrawals on MLRS/county records before boots hit the ground. CA staked-then-dropped signal arrives with the Sept closed-claims pull.';
+  d.appendChild(cav);
 }
 async function loadContext(){
   const [st, co, cur, cas, au, intel] = await Promise.all([
@@ -1386,11 +1415,6 @@ function execTool(name, a){
       return trimJson({count:rows.length, note:'assay-text values can be hand-picked specimens — quote is the evidence; open_m: metres to nearest active claim (5000=none within 5km, -1=unknown/no claims data)',
         sample: rows.slice(0,lim).map(([v,i])=>({mine:GR.name[i], state:GR.st[i], district:GR.dist[i],
           au_opt:GR.au[i], ag_opt:GR.ag[i], usd_per_ton:GR.usd[i], basis:GR.basis[i], years:GR.yrs[i],
-          pb_pct:GR.pb?GR.pb[i]:null, zn_pct:GR.zn?GR.zn[i]:null, cu_pct:GR.cu?GR.cu[i]:null,
-          sb_pct:GR.sb?GR.sb[i]:null, wo3_units:GR.wo3?GR.wo3[i]:null, hg_flasks:GR.hgf?GR.hgf[i]:null,
-          usd_per_yd3:GR.yd3?GR.yd3[i]:null, placer:GR.plc?GR.plc[i]:null,
-          native_units:GR.nat?GR.nat[i]:null, conversion:GR.conv?GR.conv[i]:null,
-          more_quotes:GR.xq&&GR.xq[i]? GR.xq[i].map(q=>({quote:q.q, source:q.s})) : null,
           tonnage:GR.ton?GR.ton[i]:null, status:GR.ds?GR.ds[i]:null, workings:GR.wt?GR.wt[i]:null,
           prod_size:GR.pz?GR.pz[i]:null, county:GR.cnty?GR.cnty[i]:null,
           open_m:GR.open[i], quote:GR.quote[i], source:GR.src[i], lat:GR.y[i], lon:GR.x[i]}))});
@@ -1596,6 +1620,7 @@ function parseQuery(q){
   if(/wyoming|\bwy\b/.test(q)) st.push('WY');
   if(/nevada|\bnv\b/.test(q)) st.push('NV');
   if(/\butah\b|\but\b/.test(q)) st.push('UT');
+  if(/california|\bca\b|\bcali\b/.test(q)) st.push('CA');
   if (st.length) f.states=st;
   for (const [re,g,term] of COMTERMS) if (re.test(q)){ f.g=g; f.term=term; break; }
   if (/producer|producing|operating|active mine/.test(q)) f.ex=1;
@@ -1658,9 +1683,17 @@ function describeFilter(f){
 function answer(q){
   q = q.toLowerCase().trim();
   if (/^(help|\?|what can you do)/.test(q)){
-    botMsg(`I run structured queries over the loaded layers. Combine a <b>commodity</b> (gold, silver, antimony, uranium, coal…), a <b>status</b> (producing / historic), a <b>state</b>, a <b>scope</b> (sites, claims, workings), and a <b>place</b> ("near philipsburg", "within 40 km of butte"). Or: "tell me about ‹district›", "top 10", "where should I prospect", "richest unclaimed gold". Cassia section grid: "open sections", "was claimed now open", "split estate sections", "watch alerts".`);
+    botMsg(`I run structured queries over the loaded layers. Combine a <b>commodity</b> (gold, silver, antimony, uranium, coal…), a <b>status</b> (producing / historic), a <b>state</b>, a <b>scope</b> (sites, claims, workings), and a <b>place</b> ("near philipsburg", "within 40 km of butte"). Or: "tell me about ‹district›", "top 10", "where should I prospect", "richest unclaimed gold", "top 10 mines to stake for gold". Cassia section grid: "open sections", "was claimed now open", "split estate sections", "watch alerts".`);
     return;
   }
+  /* actionable staking picks — "top 10 mines we should go and claim to
+     maximize gold", "best ground to stake for gold". Must outrank the
+     top-10 news route AND stay clear of county questions. */
+  if (!/count(y|ies)/.test(q)
+      && /\b(stake|staking|claims?|claiming|maximize|acquire)\b/.test(q)
+      && /\b(mines?|spots?|targets?|ground|sites?|places?|top|best|richest|actual|specific|list)\b/.test(q)
+      && /\b(gold|au|maximize)\b/.test(q))
+    return void stakeAnswer(q);
   if (/top *10|top ten|interesting|happening|summar/.test(q)){
     if (!INTEL) return void botMsg('Intel bundle not loaded.');
     botMsg(`<b>Top 10, July 2026</b> — data + verified news (full briefing under INTEL):`,
@@ -1731,6 +1764,15 @@ function answer(q){
   const {count, hits} = runQuery(f);
   const desc = describeFilter(f);
   if (!count) return routeAI(q, `No ${desc} matched in the loaded layers.`);
+  /* an unfiltered claims dump ("give me claims") is never what anyone
+     wants — route to the useful answers instead of listing 431k names */
+  if (f.scope==='claims' && !f.states && !f.term && !f.near && count > 5000){
+    botMsg(`<b>${fmt(count)}</b> claims are loaded — listing them raw isn't useful. What people usually mean:`,
+      [{label:'⛏ top stakeable gold picks', fn:()=>stakeAnswer('top 10 gold to stake')},
+       {label:'county gold ranking', fn:()=>cgAnswer()},
+       {label:'richest unclaimed grades', fn:()=>gradeAnswer('richest unclaimed gold', parseQuery('richest unclaimed gold'))}]);
+    return;
+  }
   const chips = [];
   if (f.g!=null || f.ex!=null || f.states) chips.push({label:'⚡ apply to map', fn:()=>{
     if (f.states) setUiStates(f.states); else setUiStates([...STATES]);

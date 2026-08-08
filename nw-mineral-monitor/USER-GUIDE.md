@@ -233,6 +233,9 @@ guessed), teal **COUNTY-RECORDED — NOT IN MLRS**, green **ASSESSMENT FILED
 by SES email / webhook daily at 13:10 UTC (6-hourly Aug 25–Sep 10).
 
 **ASK** (header): deterministic Q&A over the loaded data. Worth typing:
+- "top 10 mines we should go and claim to maximize gold" → ranked stakeable
+  picks: cited grade ≥0.3 oz/t + no active claim within 400 m, production
+  records outranking one-off assays; each pick opens the quote + dossier
 - "which county has the most gold" → the stakeable ranking, with fly-links
 - "show me targets" / "sinter" / "epithermal" → WS6 targets
 - "open sections" / "was claimed now open" / "split estate" → section grid

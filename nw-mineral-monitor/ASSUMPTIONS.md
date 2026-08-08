@@ -262,3 +262,20 @@ if you want it differently.
     nightly/monthly rules ship now; snapshots appear when the rules fire
     (CA active likely chains 2-4 legs; closed capped at newest 250k like
     NV). The CA state chip is live and simply shows nothing until then.
+
+36. **CA cited grades are curated literature extraction, not a database
+    dump.** 60 mines hand-extracted 2026-08-08 from PP 157 (Mother Lode),
+    PP 172 (Alleghany), PP 194 (Grass Valley), Bull 430 (Randsburg), Bull
+    540 (Weaverville quad) — every row carries the verbatim quote + page.
+    $/ton → oz/t at $20.67 (all quoted figures predate 1934); PP 194
+    states most grades in ounces directly. Bonanza lots (Sixteen to One's
+    80-lb $5,000 lot, Rainbow's 1,953-lb $116,337 shipment) convert to
+    absurd-looking oz/t on purpose — same convention as the NV bonanza
+    rows, and the endowment term caps at 5 oz/t. Coordinates come from
+    MRDS CA name-matching inside a 20 km district anchor (57/60 matched;
+    Chilena, Mascot, Craig unlocated → documented, unscored). Rebuild any
+    time with `python3 pipelines/grades_ca.py` (idempotent — drops CA rows
+    and re-splices). Caveat carried in the county notes: patented/park
+    ground (Empire State Historic Park!) still reads "open" until the
+    withdrawal overlay lands; CA staked-then-dropped stays 0 until
+    ca_closed.json (Sept 3 rule, or manual closed pull).

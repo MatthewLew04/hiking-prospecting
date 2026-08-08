@@ -80,6 +80,20 @@ noted in-file. Napa + Yolo recorders verified to official online index
 search (operator-export). STILL PLANNED: DOC AML inventory detail, CGS/CDMG
 county bulletin series into dossiers/scrub, Lake County recorder check.
 
+**DONE (2026-08-08)**: **CA claims live** — first full `ca_active.json`
+pulled (312,453 claims, the biggest layer in the system; lock-v2 chains held
+against an all-day BLM throttle, manual takeover after a dead chain's 3 h
+TTL). County choropleth flipped from pending to real STAKE scores.
+**CA cited grades live** (`grades_ca.py` — 60 mines, 10 counties, from
+PP 157/172/194 + Bulls 430/540, all quote-backed + page-cited, MRDS-located,
+open-distances vs the new active snapshot; see ASSUMPTIONS #36). Result:
+Nevada Co jumps to CA-best #17 overall with 13 rich-open graded mines (+58);
+Amador #23 (Sutter Creek belt reads open); Sierra stays muted at #67 because
+Alleghany is staked wall-to-wall today — the money layer working as
+designed. Remaining CA handicap: `ca_closed.json` (Sept 3 monthly rule or
+manual `{"mode":"closed","states":["CA"]}`) — every top-15 county carries
++14 to +30 from staked-then-dropped that CA counties currently get as 0.
+
 ## ACCEPTANCE TEST — Clear Lake–Knoxville blind sinter scan — **PASSED (v2 lexicon)**
 
 Run `python3 fetch_geology.py clearlake && python3 geology_targets.py

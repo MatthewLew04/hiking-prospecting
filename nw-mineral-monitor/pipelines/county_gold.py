@@ -253,8 +253,10 @@ def run():
                          'lands (CA: first scheduled Lambda run, then copy the s3 snapshots '
                          'into the repo and re-run county_gold.py).')
         elif r['st'] == 'CA':
-            notes.append('CA partial: closed claims + cited grades pending — staked-then-'
-                         'dropped and rich-open floored at zero, not measured.')
+            notes.append('CA partial: closed claims pending (first monthly pull Sept 3) — '
+                         'staked-then-dropped floored at zero. Cited grades live '
+                         '(PP 157/172/194, Bulls 430/540); patented/park ground not yet '
+                         'screened out of "open".')
         out_rows.append({'st': r['st'], 'name': r['name'], 'cx': round(r['cx'], 4),
                          'cy': round(r['cy'], 4),
                          'stake': None if pending else round(stake, 1),
@@ -318,7 +320,7 @@ def write_report(out):
         return '\n'.join(lines)
     ida = [r for r in rows if r['st'] == 'ID']
     md = [
-        '# County gold signal — stakeable-first ranking (7 states)\n',
+        '# County gold signal — stakeable-first ranking (8 states)\n',
         f'_Generated {out["generated"]} by `pipelines/county_gold.py` from the repo\'s own '
         'snapshots. Ranking lens: **stakeable gold** — see the map layer '
         '(GOLD SIGNAL — COUNTIES) for the same data interactively._\n',

@@ -395,7 +395,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-07g';
+const BUILD = '2026-08-08a';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -658,7 +658,7 @@ function gradeAnswer(q, f){
     rows.push([v, i]);
   }
   rows.sort((a,b)=>b[0]-a[0]);
-  if (!rows.length) return void botMsg(`No cited ${silver?'silver':'gold'} grades match${openOnly?' with open ground':''}${f.states?' in '+f.states.join('+'):''}${f.near?' near '+esc(f.near.label.split('(')[0]):''}. The grade set covers ${fmt(GR.n)} mines (WA OR ID MT WY NV UT) — try widening the radius ("within 60 km"), dropping "unclaimed", or the other metal (${silver?'gold':'silver'}).`);
+  if (!rows.length) return void botMsg(`No cited ${silver?'silver':'gold'} grades match${openOnly?' with open ground':''}${f.states?' in '+f.states.join('+'):''}${f.near?' near '+esc(f.near.label.split('(')[0]):''}. The grade set covers ${fmt(GR.n)} mines (WA OR ID MT WY NV UT CA) — try widening the radius ("within 60 km"), dropping "unclaimed", or the other metal (${silver?'gold':'silver'}).`);
   const d = botMsg(`<b>${fmt(rows.length)}</b> cited ${silver?'silver':'gold'} grades${openOnly?' on OPEN ground (no active claim within 400 m — but patented private parcels also show no claims; verify ownership)':''}, richest first — specimen assays rank high, so read each quote:`);
   rows.slice(0,12).forEach(([v,i])=>d.appendChild(hitLink(
     `${GR.name[i]} ${GR.st[i]} — ${v} oz/t ${silver?'Ag':'Au'}${GR.open[i]>=400?' · OPEN':''}`, null, ()=>{
@@ -740,7 +740,7 @@ function buildUI(){
   lyr('layersSites','stategeo','State geo-survey databases',fmt(cnt('stategeo')),'<span class="sw dot" style="background:#3987e5;border:1px solid #e8e6df"></span>','IGS DD-1 · WGS DDS-30 · DOGAMI MILO-4 · MBMG AIM · WSGS');
   lyr('layersSites','usmin','Topo-map workings (USMIN)',fmt(cnt('usmin')),'<span class="sw dot" style="background:#93a7b8"></span>');
   lyr('layersSites','usminAgg','· include aggregate/borrow pits','','<span class="sw dot" style="background:#5c6770"></span>');
-  lyr('layersSites','grades','Cited ore grades (oz/t)', MAN.grades? fmt(MAN.grades.n):'', '<span class="sw dot" style="background:#ecc94b"></span>','from USGS tables + digitized bulletins & inspector reports — WA/OR/ID/MT/WY + NV/UT');
+  lyr('layersSites','grades','Cited ore grades (oz/t)', MAN.grades? fmt(MAN.grades.n):'', '<span class="sw dot" style="background:#ecc94b"></span>','from USGS tables + digitized bulletins & inspector reports — WA/OR/ID/MT/WY + NV/UT + CA');
   lyr('layersClaims','claimsA','Active claims (nightly snapshot)',fmt(T.claims_active),'<span class="sw dot" style="background:#2dd4bf"></span>');
   lyr('layersClaims','live','Live claim boundaries (BLM)','z≥10.5','<span class="sw" style="background:rgba(45,212,191,.25);border:1px solid #2dd4bf"></span>','queries BLM MLRS for the current view — always current');
   lyr('layersClaims','claimsC','Closed claims (historic)',fmt(T.claims_closed),'<span class="sw dot" style="background:#8a6060"></span>','heavy: ~65 MB across 7 states, loads on demand; WY/NV/UT keep the most recent 250k each');
@@ -1099,7 +1099,7 @@ function buildModals(){
   <tr><th>Layer</th><th>Source</th><th>Records</th></tr>
   <tr><td>MRDS mineral sites</td><td><a href="https://mrdata.usgs.gov/mrds/" target="_blank">USGS Mineral Resources Data System</a> (legacy; 2022 dump) — 7 states incl. NV/UT</td><td>81,827</td></tr>
   <tr><td>Topo-map workings</td><td><a href="https://mrdata.usgs.gov/usmin/" target="_blank">USGS USMIN</a> v10 (2023), DOI 10.5066/F78W3CHG — 24k/48k/62.5k series</td><td>212,115</td></tr>
-  <tr><td>Cited ore grades</td><td>USGS MRDS relational tables + digitized bulletins & inspector reports (see GRADES-PLAN in the repo) — every value quote-backed</td><td>2,948</td></tr>
+  <tr><td>Cited ore grades</td><td>USGS MRDS relational tables + digitized bulletins & inspector reports (see GRADES-PLAN in the repo) — every value quote-backed; CA from PP 157/172/194 + Bulls 430/540</td><td>3,008</td></tr>
   <tr><td>State surveys</td><td><a href="https://www.idahogeology.org/product/dd-1" target="_blank">IGS DD-1</a> · <a href="https://gis.dnr.wa.gov/site1/rest/services/Public_Geology/Mines_and_Minerals/MapServer" target="_blank">WGS DDS-30</a> · <a href="https://www.oregon.gov/dogami/milo/pages/index.aspx" target="_blank">DOGAMI MILO-4</a> · <a href="https://www.mbmg.mtech.edu/MontanaGeology/AbandonedMines/main.asp" target="_blank">MBMG AIM</a> · <a href="https://main.wsgs.wyo.gov/mineral-resources/overview" target="_blank">WSGS</a></td><td>52,831</td></tr>
   <tr><td>Mining claims</td><td><a href="https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer" target="_blank">BLM MLRS GIS</a> — nightly snapshot + live viewport queries</td><td>${fmt(T.claims_active)} / ${fmt(T.claims_closed)}</td></tr>
   <tr><td>Districts</td><td>28 curated (2–3 sources each) + 7 Cassia County deep-dive + ${MAN.districts.auto.n} auto-derived from MRDS tags</td><td>${28+7+MAN.districts.auto.n}</td></tr>

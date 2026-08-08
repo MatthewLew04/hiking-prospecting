@@ -204,11 +204,17 @@ footprints — hover for year, type (M/R/G/EM), line spacing, altitude,
 line-km, because a 1969 8-km regional and a modern drape survey look
 identical in a pretty raster. High-res Earth MRI grids: PATCH-PLAN.md.
 
-## 7c · CALIFORNIA (phase 1)
+## 7c · CALIFORNIA (phase 1 → claims + grades live 2026-08-08)
 
 CA is in the state chips (42,771 MRDS sites incl. 24k gold and the full
-Hg belt live now; claims arrive automatically once the CA nightly/monthly
-schedules fire after deploy). The engine's CA rules: Coast Ranges Hg
+Hg belt; **312,453 active claims** since 2026-08-08 — closed claims arrive
+with the Sept 3 monthly rule). The **cited-grades layer now covers CA**:
+60 quote-backed mines from the Mother Lode, Alleghany, Grass Valley,
+Randsburg and Weaverville-quad literature (PP 157/172/194, Bulls 430/540),
+so ASK queries like "richest unclaimed gold in CA" work, and the county
+choropleth scores CA on real rich-open grades (Nevada Co = CA's best at
+#17 overall; its staked-then-dropped term stays 0 until closed claims
+land — expect it to climb). The engine's CA rules: Coast Ranges Hg
 pathfinder emphasis and the Knoxville-type serpentinite+Hg+fault
 association — validated by the Clear Lake blind test (`python3
 geology_targets.py clearlake`; Wilbur Springs and Knoxville INSIDE targets

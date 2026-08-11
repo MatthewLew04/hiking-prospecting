@@ -17,7 +17,10 @@ Interactive map of mines, mining claims, and mineral sources across **Washington
 | `site/data/manifest.json` | Layer inventory, counts, freshness stamps, live-query spec |
 | `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
 | `site/data/geology/` · `targets/` · `county/` | WS5–WS6 bundles: harmonized geologic map + faults + springs (cited per unit), ranked sinter-first targets with scoring rationale, county-recorder instruments + coverage |
+| `site/data/geology-quads/inventory.json` | WS10 top-grade-target map inventory, quad/candidate metadata, overlay pointers, provenance, georeference confidence, gaps, and 24k rescan references |
+| `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
+| `pipelines/cache/ws10/assets/` | Gitignored staging for quad scans, COGs, legends, and XYZ tiles; upload explicitly to S3 `ws10-assets/` — rasters never enter git |
 | `data-inbox/` | Drop files here + run `pipelines/inbox_ingest.py` → permanent map layers |
 | `demo/` | `messy_cassia.csv` acceptance-test file (see DEMO.md) |
 | `infra/` | CloudFormation template, Lambdas (claims updater, AI relay, **expiration watch**), deploy script |
@@ -62,6 +65,36 @@ target renders an explanation card: verbatim unit description, source-map
 citation + scale, the arithmetic of its score, and the land status under it.
 
 Judgment calls: `ASSUMPTIONS.md`. Operations: `RUNBOOK.md`. Walkthrough: `DEMO.md`.
+
+## WS10 — quad-scale geology (2026-08-11)
+
+**Geology (quad)** brings the best available detailed mapping to the targets
+that rise to the top of the rich-open grade score. The committed inventory
+covers the top 15 grade targets plus the four required seed areas, records
+their containing and adjacent USGS 7.5-minute quads, ranks catalog results,
+and shows a gap explicitly when no qualifying map is available. Ready maps
+render as independently toggleable XYZ overlays with opacity, legend, full
+citation, retrieval date, and source link. Cataloged, processing, and
+low-confidence/manual-review records remain visible in the inventory without
+being presented as trustworthy live warps.
+
+The implemented overlays are IGS DWM-193 at De Lamar–Swisher Mountain,
+Anderson's 1931 Plate XVIII at Black Pine, and Johnston PP 194 Plate 1 at
+Grass Valley. DWM-193's native GIS is normalized into the WS6 unit schema and
+feeds a 1:24,000 rescan. Jackson PGM-19-01 remains explicitly blocked: the
+source is email-gated, its CGS request has not been sent, and web-tile/database
+reuse rights are pending. Source PDFs, working rasters, COGs, and tiles stay
+under the ignored `pipelines/cache/` tree and in S3 only.
+
+The current builder uses Pillow, NumPy, tifffile, Fiona, pyproj, Shapely, and
+Poppler; it does not require GDAL command-line tools. Anderson and Johnston
+pocket plates retain native 400-ppi provenance, while their 600-ppi web/COG
+output is explicitly recorded as a resample that adds no source detail.
+Build, QA, two-phase upload/readiness order, and the draft-only CGS database
+request are documented in `RUNBOOK.md`. Final prepublish QA runs
+`pipelines/validate_quad_geology.py` with the dependency-capable Python; it
+checks inventory, assets, native-vector rescan, outbox/UI guardrails, and the
+no-raster-in-git policy before site deployment.
 
 ## Auto-updating
 

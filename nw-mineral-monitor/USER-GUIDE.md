@@ -1,6 +1,6 @@
 # NW Mineral Monitor — user guide
 
-_Build 2026-08-06e · covers everything through the WS5/WS6 + county-gold releases._
+_Build 2026-08-11 · covers everything through WS10 quad-scale geology._
 
 The Monitor is one self-contained map app (`site/index.html`, MapLibre GL) over
 seven states — WA · OR · ID · MT · WY · NV · UT — fusing 346,773 mineral-site
@@ -36,9 +36,23 @@ freshness).
 
 ---
 
-## 2 · What changed in the latest releases (2026-08-06, commits 35c2243 + b90757d)
+## 2 · What changed in the latest releases
 
-**WS5 — county-direct claim extraction.** Claims become public record at the
+**WS10 — quad-scale geology (2026-08-11).** The top 15 rich-open grade
+targets now have a per-target map inventory based on their containing and
+adjacent USGS 7.5-minute quads. The four required detailed-map seeds (De
+Lamar–Swisher Mountain, Jackson, Black Pine, and Grass Valley) stay in the
+inventory even when they fall outside that score cutoff. Ready maps appear
+under **GEOLOGY (QUAD)** with an opacity control, collar legend, full
+provenance, and a direct source link. Missing modern mapping is displayed as
+a gap; catalog and low-confidence records are not quietly passed off as live
+overlays. See §7d.
+
+The live WS10 raster set is DWM-193, Anderson Plate XVIII, and Johnston PP
+194 Plate 1. Jackson PGM-19-01 remains visible but blocked pending the unsent
+CGS source/database request and written reuse rights.
+
+**WS5 — county-direct claim extraction (2026-08-06).** Claims become public record at the
 county recorder weeks-to-months before they appear in BLM's MLRS (state
 recording first; the FLPMA filing is due within 90 days, then adjudication
 lag). The new pipeline turns that gap into a signal: ingest recorder index
@@ -222,6 +236,48 @@ geology_targets.py clearlake`; Wilbur Springs and Knoxville INSIDE targets
 run official online index search (operator-export); see
 config/county_portals.json. Full CA campaign status: PATCH-PLAN.md.
 
+## 7d · GEOLOGY (QUAD) — WS10
+
+Open **GEOLOGY (QUAD)** in the sidebar. Each map marked ready has its own
+toggle; the opacity slider lets structure, workings, grades, and live claims
+remain visible beneath the scanned sheet. Open a map's provenance card for
+its full citation, year, scale, retrieval date, source/product link, and
+cropped collar legend. The associated cited-grade target is shown with the
+layer, so a regional sheet is not mistaken for evidence tied to every mine
+inside its bounds.
+
+The **MAP INVENTORY** is useful even before a raster is ready. For each of
+the top 15 rich-open grade targets it lists the containing and adjacent
+7.5-minute quads, catalog candidates, format (GIS / GeoTIFF / scan /
+unpublished), selection status, and notes. Its status words are deliberate:
+
+- **ready** — georeferenced asset is published and can be toggled;
+- **processing / built-awaiting-upload** — reviewed local products exist, but
+  their S3/CloudFront objects have not yet been verified and promoted;
+- **cataloged** — a source is known, but no reviewed live warp is promised;
+- **review** — an irregular plate or weak fit needs manual control-point
+  review and is withheld from the trusted live set;
+- **blocked** — acquisition or publication cannot proceed yet (Jackson is
+  email-gated and still needs CGS source delivery plus reuse permission);
+- **gap** — no qualifying geologic map at 1:62,500 or larger was found in
+  the searched catalogs; this means “not found,” not “no useful geology.”
+
+Standard 7.5-minute sheets snap to official quad corners. Pocket plates are
+extracted at their native resolution. Anderson Plate XVIII and Johnston PP
+194 Plate 1 embed native 400-ppi images; provenance retains that value, and
+the generated 600-ppi output is explicitly labeled as a resample that adds no
+source detail. Irregular plates use reviewed control metadata and stop before
+`ready` when confidence is insufficient. DWM-193's real GIS database also
+feeds the WS6 unit schema and a 24k-resolution rescan instead of using raster
+pixels as the analytical layer.
+
+The inventory includes a watch-list link for areas such as Grass Valley,
+where the modern CGS quad is an explicit gap. The CGS Jackson database email
+shown in the outbox is a **draft only**: the app cannot send it, and nobody
+should send it without the operator's review and approval. Until CGS supplies
+the email-gated source and written web-tile/database reuse rights are reviewed,
+Jackson stays blocked and non-toggleable.
+
 ## 8 · WATCH, ASK, dossiers, INTEL
 
 **WATCH** (header; appears once there's a digest or county signals): the
@@ -258,15 +314,22 @@ Mines with cited grades get the same treatment via their popups.
 
 ## 9 · Operating it (pipelines · RUNBOOK)
 
-All pipelines are stdlib-only Python, cached and idempotent (`pipelines/cache/`),
-config-driven by `pipelines/config/aoi.json` (add a county entry + run with
-`AOI=<key>` to spin up a second AOI).
+The existing data pipelines are cached and idempotent (`pipelines/cache/`)
+and mostly stdlib-only. WS10 raster preparation is the exception: it uses
+Pillow, NumPy, tifffile, Fiona, pyproj, and Shapely plus Poppler's
+`pdftoppm`/`pdfimages`. The current equivalent requires no GDAL command-line
+tools. AOI pipelines remain config-driven by `pipelines/config/aoi.json`
+(add a county entry + run with `AOI=<key>` to spin up a second AOI).
 
 | Task | Command |
 |---|---|
 | County recorder cycle (WS5) | `python3 pipelines/county_records.py` (add `--demo` to test) |
 | Geology + targets refresh (WS6) | `python3 pipelines/fetch_geology.py && python3 pipelines/geology_targets.py` |
 | County gold ranking | `python3 pipelines/county_gold.py` |
+| WS10 map inventory | `python3 pipelines/geology_quads.py` |
+| WS10 acquire/georeference/build | `python3 pipelines/prepare_quad_geology.py --download` (first run; outputs `processing` / `built-awaiting-upload`) |
+| Upload WS10 rasters/tiles | `cd infra && WS10_UPLOAD_DRY_RUN=1 bash deploy.sh upload-ws10-assets`, then rerun without the dry-run variable and verify remote objects |
+| Promote + validate verified WS10 layers | `python3 pipelines/prepare_quad_geology.py --mark-ready dwm-193 anderson-1931-plate-xviii johnston-pp194-plate-1 && python3 pipelines/geology_quads.py && /Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py && bash infra/deploy.sh update-site` |
 | Claims / PLSS / land status / open ground | `fetch_claims_aoi.py` → `fetch_plss.py` → `fetch_landstatus.py` → `open_ground.py` |
 | Dossiers + history sweep | `webscrub.py` → `dossier.py` |
 | Permanent layer from a file | drop in `data-inbox/` → `inbox_ingest.py` |
@@ -277,8 +340,8 @@ county records whenever you get an export; geology ~yearly; county gold after
 any claims refresh. September: upload the MLRS fee CSV (RUNBOOK §4) so the
 fee-window scan can flag lapses honestly.
 
-Full docs in the repo: `RUNBOOK.md` (ops, §9 county / §10 geology),
-`ASSUMPTIONS.md` (all 31 judgment calls and why), `COUNTY-COVERAGE.md`,
+Full docs in the repo: `RUNBOOK.md` (including the WS10 build/upload order),
+`ASSUMPTIONS.md` (judgment calls and confidence semantics), `COUNTY-COVERAGE.md`,
 `GOLD-COUNTIES.md`, `DEPLOY.md`, `DEMO.md`, `GRADES-PLAN.md`.
 
 ## 10 · A workflow that uses all of it

@@ -156,6 +156,15 @@ footer .right{margin-left:auto}
 .modal-body table{width:100%;border-collapse:collapse;font-size:11.5px;margin:6px 0}
 .modal-body td,.modal-body th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
 .modal-body th{color:var(--ink);font-weight:600}
+.modal-card.qwide{width:min(1120px,96vw)}
+.qtablewrap{overflow-x:auto;margin:6px 0}
+.qtablewrap table{min-width:920px;margin:0}
+.qactions{display:flex;gap:5px;flex-wrap:wrap;padding:5px 0}
+.qactions .dosbtn{margin:0;padding:4px 8px}
+.qinfo{background:none;border:1px solid var(--line2);border-radius:4px;color:var(--mut);font:10px var(--mono);padding:1px 5px;cursor:pointer}
+.qinfo:hover{color:var(--accent);border-color:var(--accent)}
+.qlegend{display:block;max-width:100%;max-height:300px;margin:7px 0;border:1px solid var(--line2);border-radius:5px;background:#fff}
+.qdraft{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:9px;font:10.5px/1.5 var(--mono);color:var(--ink2);max-height:42vh;overflow:auto}
 .pub{padding:7px 0;border-bottom:1px solid var(--line)}
 .pub b{color:var(--ink);font-weight:600}
 .pub .m{font:10.5px var(--mono);color:var(--mut)}
@@ -327,6 +336,10 @@ footer .right{margin-left:auto}
         <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
       <div class="sec"><h3>GEOLOGY — LIVE, ALL STATES</h3><div id="layersMS"></div>
         <div class="subnote" id="msNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>GEOLOGY (QUAD)</h3><div id="layersQuad"></div>
+        <div id="quadSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="quadOpacity" min="0" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">shared quad-overlay opacity</div></div>
+        <div class="subnote" id="quadNote" style="padding-left:0">loading quad inventory…</div>
+        <div class="qactions" id="quadBtns"></div></div>
       <div class="sec"><h3>GEOPHYSICS — WS7</h3><div id="layersGP"></div>
         <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
         <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
@@ -379,6 +392,12 @@ footer .right{margin-left:auto}
 <div class="modal" id="intelModal"><div class="modal-card">
   <div class="modal-head"><h2>INTEL — TOP 10 · JULY 2026</h2><button onclick="toggleModal('intelModal',0)">✕</button></div>
   <div class="modal-body" id="intelBody"></div></div></div>
+<div class="modal" id="quadInventoryModal"><div class="modal-card qwide">
+  <div class="modal-head"><h2>GEOLOGY (QUAD) — MAP INVENTORY</h2><button onclick="toggleModal('quadInventoryModal',0)">✕</button></div>
+  <div class="modal-body" id="quadInventoryBody">Loading inventory…</div></div></div>
+<div class="modal" id="quadOutboxModal"><div class="modal-card qwide">
+  <div class="modal-head"><h2>GEOLOGY (QUAD) — DRAFT OUTBOX</h2><button onclick="toggleModal('quadOutboxModal',0)">✕</button></div>
+  <div class="modal-body" id="quadOutboxBody">Loading draft outbox…</div></div></div>
 
 <div id="authGate"><div class="auth-card">
   <div class="ab"><span class="pick">⛏</span> NW MINERAL MONITOR</div>
@@ -400,7 +419,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-08d';
+const BUILD = '2026-08-11a';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -431,6 +450,11 @@ const S = {
 };
 const stores = {};        // key -> columnar data (+kind)
 let GR = null;            // cited ore-grade dataset (grades.json)
+let QUAD = null;          // WS10 quad map inventory + raster pointers
+let QGRADE = [];          // grade row index -> inventory target index
+let QTARGETIDX = {}, QLAYERIDX = {};
+const QSTATE = {status:'loading', enabled:new Set(), opacity:.65, errors:{}, loaded:{}};
+const QSOURCE = {};       // MapLibre source id -> inventory layer id
 const feats  = {mrds:[], stategeo:[], usmin:[], claimsA:[], claimsC:[]}; // geojson features by kind
 let MAN = null, curated = [], cassia = [], auto = [];
 let map, tipEl, liveAbort = null;
@@ -535,6 +559,7 @@ function initMap(){
     wireMapEvents();
     await loadContext();
     await loadGrades();          // small + marquee — never wait behind the NV claims file
+    loadQuadGeology().catch(()=>{}); // WS10 starts after grades, but cannot stall the rest of the app
     loadOpenGround().then(()=>handleClaimHash())
       .then(()=>loadGeoTargets()).catch(()=>{});                  // WS2 sections + WS6 targets (Cassia AOI)
     loadCountyGold().catch(()=>{});                               // county gold-signal ranking
@@ -754,6 +779,394 @@ async function loadGrades(){
     map.getSource('grades').setData({type:'FeatureCollection', features:fs});
   }catch(e){ GR = null; }
 }
+
+/* ---------- WS10: quad-scale geologic map inventory + lazy rasters ----------
+   Inventory metadata stays small and local. Raster pixels stay outside git and
+   enter MapLibre only while a user has that layer checked. */
+const quadArr = v => Array.isArray(v) ? v : [];
+const quadTexts = v => Array.isArray(v) ? v : v==null||v==='' ? [] : [v];
+function quadList(v){
+  if (Array.isArray(v)) return v.filter(x=>x!=null&&x!=='').map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(', ');
+  if (v && typeof v==='object') return JSON.stringify(v);
+  return v==null ? '' : String(v);
+}
+function quadGapHtml(g,compact){
+  if (!g) return compact?'—':'';
+  if (typeof g!=='object') return compact?esc(g):`<div class="callout"><b style="color:var(--warn)">MAP GAP</b> — ${esc(g)}</div>`;
+  const kind=g.kind||'MAP GAP', note=g.note||'';
+  return compact?`<b>${esc(kind)}</b>${note?'<br>'+esc(note):''}`
+    :`<div class="callout"><b style="color:var(--warn)">${esc(kind)}</b>${note?' — '+esc(note):''}</div>`;
+}
+function quadMethodHtml(v){
+  if (!v) return '';
+  if (typeof v!=='object' || Array.isArray(v)) return `<p>${esc(quadList(v))}</p>`;
+  return Object.entries(v).map(([k,x])=>`<p><b style="color:var(--ink)">${esc(k.replace(/_/g,' '))}:</b> ${esc(quadList(x))}</p>`).join('');
+}
+function quadAssetUrl(u){
+  if (!u) return '';
+  u = String(u);
+  if (/^(?:https?:|data:|blob:|\/)/i.test(u) || /^\.?\/?data\//.test(u)) return u;
+  const base = QUAD && QUAD.asset_base_url ? String(QUAD.asset_base_url).replace(/\/$/,'') : '';
+  return base ? base+'/'+u.replace(/^\.\//,'').replace(/^\//,'') : u;
+}
+function quadLayerIndex(id){
+  const i = QLAYERIDX[String(id)];
+  return Number.isInteger(i) ? i : -1;
+}
+function quadNumber(v){
+  if (v==null || v==='') return null;
+  const n=Number(v); return Number.isFinite(n)?n:null;
+}
+function quadBounds(v){
+  const a=quadArr(v); if(a.length!==4)return null;
+  const b=a.map(quadNumber); return b.every(x=>x!=null)?b:null;
+}
+function quadSourceId(i){ return 'quad-src-'+i; }
+function quadMapLayerId(i){ return 'quad-raster-'+i; }
+function quadNormDep(v){ return v==null ? '' : String(v).trim().toLowerCase().replace(/\s+/g,''); }
+function quadGradeDep(t){
+  const r=t&&t.grade_ref; return r ? (r.dep!=null?r.dep:r.dep_id) : null;
+}
+function quadCode(q){ return q ? (q.code||q.mapcode||'') : ''; }
+function quadNormName(v){
+  return String(v||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/\([^)]*\)/g,' ').replace(/&/g,' and ')
+    .replace(/\b(?:the|mine|mines|mining|claim|claims|group|property|prospect)\b/g,' ')
+    .replace(/[^a-z0-9]+/g,'');
+}
+function quadTargetLayers(t){
+  if (!QUAD || !t) return [];
+  const tid = String(t.id);
+  const selected = new Set(quadArr(t.selected_layer_ids).map(String));
+  return quadArr(QUAD.layers).filter(l=>quadArr(l.target_ids).map(String).includes(tid) || selected.has(String(l.id)));
+}
+function quadIndexGrades(){
+  QGRADE = GR ? new Array(GR.n) : [];
+  if (!GR || !QUAD) return;
+  const byDep = Object.create(null);
+  quadArr(QUAD.targets).forEach((t,ti)=>{
+    const d = quadNormDep(quadGradeDep(t));
+    if (d && byDep[d]==null) byDep[d]=ti; // inventory is rank ordered; first exact dep wins
+  });
+  for (let i=0;i<GR.n;i++){
+    const d = quadNormDep(GR.dep && GR.dep[i]);
+    if (d && byDep[d]!=null) QGRADE[i]=byDep[d];
+  }
+  // Some source rows have no deposit id. Require both a normalized name and
+  // nearby coordinates so common mine names cannot cross-associate.
+  for (let i=0;i<GR.n;i++){
+    if (QGRADE[i]!=null || GR.x[i]==null || GR.y[i]==null) continue;
+    const gn = quadNormName(GR.name[i]); if (!gn) continue;
+    let best=null, bestKm=Infinity;
+    for (let ti=0;ti<QUAD.targets.length;ti++){
+      const t=QUAD.targets[ti], c=quadArr(t.grade_ref&&t.grade_ref.coordinates||t.coordinates);
+      const tn=quadNormName((t.grade_ref&&t.grade_ref.name)||t.name);
+      if (!tn || tn!==gn || c.length<2 || !isFinite(+c[0]) || !isFinite(+c[1])) continue;
+      // Legacy mine coordinates routinely vary within a map collar; 2.5 km
+      // keeps the fallback local while exact deposit ids above remain primary.
+      const km=havKm(+GR.y[i],+GR.x[i],+c[1],+c[0]);
+      if (km<=2.5 && km<bestKm){ best=ti; bestKm=km; }
+    }
+    if (best!=null) QGRADE[i]=best;
+  }
+}
+function quadWireShell(){
+  $('quadOpacity').value = Math.round(QSTATE.opacity*100);
+  $('quadOpacity').oninput = e=>{
+    QSTATE.opacity=(+e.target.value)/100;
+    for (const id of QSTATE.enabled){
+      const i=quadLayerIndex(id), lid=i>=0?quadMapLayerId(i):'';
+      if (lid && map.getLayer(lid)) map.setPaintProperty(lid,'raster-opacity',QSTATE.opacity);
+    }
+  };
+  const tn=QUAD?quadArr(QUAD.targets).length:0;
+  const dn=QUAD?quadArr(QUAD.outbox&&QUAD.outbox.drafts).length:0;
+  $('quadBtns').innerHTML = `<button class="dosbtn" id="quadInvBtn">MAP INVENTORY${tn?' · '+tn:''}</button><button class="dosbtn" id="quadOutBtn">DRAFT OUTBOX${dn?' · '+dn:''}</button>`;
+  $('quadInvBtn').onclick=quadShowInventory;
+  $('quadOutBtn').onclick=quadShowOutbox;
+}
+function quadRenderNote(){
+  const n=$('quadNote');
+  if (QSTATE.status==='loading'){ n.textContent='loading quad inventory…'; return; }
+  if (!QUAD){ n.textContent='Quad inventory unavailable — no raster overlay was loaded. Inventory links cannot be assumed.'; return; }
+  const layers=quadArr(QUAD.layers);
+  const usable=layers.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
+  const processing=layers.filter(l=>l.raster&&l.raster.status==='processing');
+  const blocked=layers.filter(l=>l.raster&&l.raster.status==='blocked');
+  const unavailable=layers.filter(l=>l.raster&& !['ready','processing','blocked'].includes(l.raster.status));
+  const misconfigured=layers.filter(l=>l.raster&&l.raster.status==='ready'&&!l.raster.tile_url_template);
+  const active=[...QSTATE.enabled].length;
+  const errs=[...QSTATE.enabled].filter(id=>QSTATE.errors[id]).length;
+  let s = usable.length
+    ? `${usable.length} ready · ${processing.length} processing · ${blocked.length} blocked${unavailable.length?' · '+unavailable.length+' other unavailable':''}${active?' · '+active+' active':''}.`
+    : `No ready quad raster overlays · ${processing.length} processing · ${blocked.length} blocked${unavailable.length?' · '+unavailable.length+' other unavailable':''}.`;
+  if (misconfigured.length) s += ` ${misconfigured.length} ready record${misconfigured.length===1?'':'s'} lack${misconfigured.length===1?'s':''} a tile URL.`;
+  s += errs
+    ? ` ⚠ ${errs} active layer${errs===1?' has':'s have'} tile errors; blank tiles are not evidence of absent geology. Open ⓘ for the recorded error.`
+    : ` Blank or out-of-bounds tiles are not evidence of absent geology.`;
+  n.textContent=s;
+}
+function quadRenderSidebar(){
+  const el=$('layersQuad'); el.innerHTML='';
+  if (!QUAD){ $('quadSlider').style.display='none'; quadRenderNote(); return; }
+  const layers=quadArr(QUAD.layers);
+  const ready=layers.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
+  ready.forEach(l=>{
+    const i=quadLayerIndex(l.id), key=String(l.id), on=QSTATE.enabled.has(key);
+    const row=document.createElement('div'); row.className='lrow';
+    row.innerHTML=`<input type="checkbox" ${on?'checked':''}><span style="flex:1">${esc(l.label||l.id)}</span><span class="ct" style="font:9px var(--mono);color:${QSTATE.errors[key]?'#e07373':'var(--mut)'}">${QSTATE.errors[key]?'TILE ERROR':on?'ON':'READY'}</span><button class="qinfo" title="provenance, georeference and legend">ⓘ</button>`;
+    const box=row.querySelector('input');
+    box.onchange=()=>{ quadSetLayer(key,box.checked); };
+    row.addEventListener('click',e=>{ if(e.target!==box&&!e.target.closest('button')) box.click(); });
+    row.querySelector('button').onclick=e=>{ e.stopPropagation(); quadShowLayer(i); };
+    el.appendChild(row);
+  });
+  layers.filter(l=>!ready.includes(l)).forEach(l=>{
+    const d=document.createElement('div'); d.className='subnote'; d.style.paddingLeft='6px';
+    const st=l.raster&&l.raster.status ? String(l.raster.status).toUpperCase() : 'NO RASTER';
+    const why=l.raster&&l.raster.status==='ready'&&!l.raster.tile_url_template ? ' · TILE URL NOT LISTED'
+      : l.raster&&l.raster.block_reason ? ' · '+String(l.raster.block_reason) : '';
+    d.textContent=`${l.label||l.id} — ${st}${why}`; el.appendChild(d);
+  });
+  if (!ready.length && !layers.length){
+    const d=document.createElement('div'); d.className='subnote'; d.style.paddingLeft='6px';
+    d.textContent='No ready quad raster overlays are listed.'; el.appendChild(d);
+  }
+  $('quadSlider').style.display=ready.length?'':'none';
+  quadRenderNote();
+}
+function quadMapError(e){
+  const sid=e&&e.sourceId || e&&e.source&&e.source.id;
+  const id=sid&&QSOURCE[sid];
+  if (!id || !QSTATE.enabled.has(String(id)) || QSTATE.errors[id]) return;
+  const msg=e&&e.error&&(e.error.message||e.error.statusText) || 'tile request failed or returned an unreadable image';
+  QSTATE.errors[id]=String(msg).slice(0,260);
+  quadRenderSidebar();
+}
+function quadSetLayer(id,on){
+  id=String(id); const i=quadLayerIndex(id), l=i>=0&&QUAD&&QUAD.layers[i];
+  if (!l) return false;
+  const r=l.raster||{}, sid=quadSourceId(i), lid=quadMapLayerId(i);
+  if (on){
+    if (r.status!=='ready' || !r.tile_url_template){
+      QSTATE.errors[id]='Layer is not ready or has no tile URL in the inventory.'; quadRenderSidebar(); return false;
+    }
+    try{
+      if (!map.getSource(sid)){
+        const src={type:'raster',tiles:[quadAssetUrl(r.tile_url_template)],tileSize:256,scheme:'xyz'};
+        const b=quadBounds(r.bounds);
+        if (b) src.bounds=b;
+        const min=quadNumber(r.minzoom), max=quadNumber(r.maxzoom);
+        if (min!=null) src.minzoom=min;
+        if (max!=null) src.maxzoom=max;
+        if (l.citation) src.attribution=esc(l.citation);
+        map.addSource(sid,src); QSOURCE[sid]=id;
+      }
+      if (!map.getLayer(lid)){
+        const spec={id:lid,type:'raster',source:sid,paint:{'raster-opacity':QSTATE.opacity,'raster-fade-duration':0}};
+        const min=quadNumber(r.minzoom);
+        if (min!=null) spec.minzoom=min;
+        // Keep maxzoom on the source, not the style layer. MapLibre hides a
+        // style layer at zoom >= maxzoom, which would suppress the highest
+        // generated tile level instead of allowing normal source overzoom.
+        map.addLayer(spec,map.getLayer('county-line')?'county-line':undefined);
+      }
+      QSTATE.enabled.add(id); delete QSTATE.errors[id]; delete QSTATE.loaded[id];
+    }catch(e){
+      if (map.getLayer(lid)) map.removeLayer(lid);
+      if (map.getSource(sid)) map.removeSource(sid);
+      delete QSOURCE[sid]; QSTATE.enabled.delete(id);
+      QSTATE.errors[id]=String(e&&e.message||e).slice(0,260); quadRenderSidebar(); return false;
+    }
+  }else{
+    if (map.getLayer(lid)) map.removeLayer(lid);
+    if (map.getSource(sid)) map.removeSource(sid);
+    delete QSOURCE[sid]; QSTATE.enabled.delete(id); delete QSTATE.loaded[id];
+  }
+  quadRenderSidebar(); return true;
+}
+function quadToggleFromGrade(li,gi){
+  const l=QUAD&&QUAD.layers[li]; if(!l)return;
+  quadSetLayer(l.id,!QSTATE.enabled.has(String(l.id))); showGrade(gi);
+}
+function quadToggleFromTarget(li,ti){
+  const l=QUAD&&QUAD.layers[li]; if(!l)return;
+  quadSetLayer(l.id,!QSTATE.enabled.has(String(l.id))); quadShowTarget(ti);
+}
+function quadToggleFromLayer(li){
+  const l=QUAD&&QUAD.layers[li]; if(!l)return;
+  quadSetLayer(l.id,!QSTATE.enabled.has(String(l.id))); quadShowLayer(li);
+}
+function quadZoomLayer(li){
+  const l=QUAD&&QUAD.layers[li], b=l&&l.raster&&quadBounds(l.raster.bounds);
+  if (b) map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:45,duration:900});
+}
+function quadGradeBlock(i){
+  if (QSTATE.status==='loading') return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">GEOLOGY (QUAD)</h3><div class="desc">Quad map inventory is loading…</div>`;
+  if (!QUAD) return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">GEOLOGY (QUAD)</h3><div class="desc">Quad inventory is unavailable; no overlay is being implied for this grade row.</div><button class="dosbtn" onclick="quadShowInventory()">MAP INVENTORY</button>`;
+  const ti=QGRADE[i];
+  if (ti==null) return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">GEOLOGY (QUAD)</h3><div class="desc">No quad-inventory target is associated with this grade row.</div><button class="dosbtn" onclick="quadShowInventory()">MAP INVENTORY</button>`;
+  const t=QUAD.targets[ti], ls=quadTargetLayers(t);
+  const ready=ls.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
+  const processing=ls.filter(l=>l.raster&&l.raster.status==='processing');
+  const unavailable=ls.filter(l=>!ready.includes(l)&&!processing.includes(l));
+  const q=t.quads&&t.quads.containing;
+  const buttons=ready.map(l=>{
+    const li=quadLayerIndex(l.id), on=QSTATE.enabled.has(String(l.id));
+    return `<button class="dosbtn" onclick="quadToggleFromGrade(${li},${i})">${on?'HIDE':'SHOW'} · ${esc(l.label||l.id)}</button>`;
+  }).join('');
+  return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">GEOLOGY (QUAD)</h3>
+    <div class="desc">${esc(t.name)}${q?` · ${esc([q.name,quadCode(q)].filter(Boolean).join(' · '))}`:''} · ${ready.length} ready${processing.length?' · '+processing.length+' processing':''}${unavailable.length?' · '+unavailable.length+' unavailable':''}</div>
+    <button class="dosbtn" onclick="quadShowTarget(${ti})">TARGET MAP INVENTORY</button>${buttons}`;
+}
+function quadCandidateHtml(c){
+  const title=c.source_url?`<a href="${esc(c.source_url)}" target="_blank">${esc(c.title)}</a>`:esc(c.title);
+  const meta=[quadList(c.authors),c.year,quadList(c.scale),c.series,c.publisher].filter(v=>v!=null&&v!=='').map(esc).join(' · ');
+  return `<div class="pub"><b>${title||'—'}</b>${meta?`<br><span class="m">${meta}</span>`:''}${c.formats&&quadList(c.formats)?`<br><span class="m">formats: ${esc(quadList(c.formats))}</span>`:''}${c.status?`<br><span class="m">status: ${esc(c.status)}</span>`:''}${c.catalog_url?`<br><a href="${esc(c.catalog_url)}" target="_blank">catalog record ↗</a>`:''}</div>`;
+}
+function quadStateCatalogHtml(t){
+  const s=t&&t.state_catalog; if(!s)return '';
+  const label=s.label||'State survey catalog';
+  const title=s.url?`<a href="${esc(s.url)}" target="_blank">${esc(label)} ↗</a>`:esc(label);
+  return `<div class="pub"><b>Authoritative state catalog: ${title}</b>${s.retrieved?`<br><span class="m">retrieved ${esc(s.retrieved)}</span>`:''}${s.note?`<br><span class="m">${esc(s.note)}</span>`:''}</div>`;
+}
+function quadShowTarget(ti){
+  if (!QUAD || !QUAD.targets[ti]) return quadShowInventory();
+  toggleModal('quadInventoryModal',0);
+  const t=QUAD.targets[ti], c=quadArr(t.coordinates), containing=t.quads&&t.quads.containing;
+  const adjacent=t.quads&&quadArr(t.quads.adjacent);
+  const ls=quadTargetLayers(t), ready=ls.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
+  const layerBtns=ready.map(l=>{
+    const li=quadLayerIndex(l.id), on=QSTATE.enabled.has(String(l.id));
+    return `<button class="dosbtn" onclick="quadToggleFromTarget(${li},${ti})">${on?'HIDE':'SHOW'} · ${esc(l.label||l.id)}</button><button class="qinfo" onclick="quadShowLayer(${li})">ⓘ</button>`;
+  }).join(' ');
+  const unavailable=ls.filter(l=>!ready.includes(l)).map(l=>`${l.label||l.id} — ${l.raster&&l.raster.status||'no raster'}`).join('; ');
+  const gap=quadGapHtml(t.gap,false);
+  openDetail(`<h2>${esc(t.name)}</h2>
+    <div class="badges"><span class="badge exploration">QUAD TARGET${t.rank!=null?' #'+esc(t.rank):''}</span>${t.state?`<span class="badge abandoned">${esc(t.state)}</span>`:''}${t.forced_seed?'<span class="badge exploration">SEED SOURCE</span>':''}</div>
+    ${kv([['Target ID',esc(t.id),1],['Score',t.score!=null?esc(t.score):null],['Grade reference',t.grade_ref?esc([quadGradeDep(t),t.grade_ref.name].filter(x=>x!=null&&x!=='').join(' · ')):null],['County',esc(t.county||'')],['District',esc(t.district||'')],['Containing quad',containing?esc([containing.name,quadCode(containing)].filter(Boolean).join(' · ')):null],['Adjacent quads',adjacent.length?esc(adjacent.map(q=>[q.name,quadCode(q)].filter(Boolean).join(' · ')).join('; ')):null],['Coordinates',c.length>=2?esc(c[1]+', '+c[0]):null,1]])}
+    ${gap}<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">OVERLAYS</h3>
+    <div class="qactions">${layerBtns||'<span style="color:var(--mut)">No ready raster overlay for this target.</span>'}</div>${unavailable?`<div class="src" style="border-top:0;margin-top:2px">${esc(unavailable)}</div>`:''}
+    <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">MAP CANDIDATES</h3>${quadStateCatalogHtml(t)}${quadArr(t.candidates).length?t.candidates.map(quadCandidateHtml).join(''):'<div class="desc">No candidates are listed.</div>'}
+    <div class="links">${t.catalog_query_url?`<a href="${esc(t.catalog_query_url)}" target="_blank">Catalog query ↗</a>`:''}${c.length>=2?`<a href="${gmaps(c[1],c[0])}" target="_blank">Google Maps ↗</a>`:''}</div>
+    ${quadTexts(t.notes).length?`<div class="src">${quadTexts(t.notes).map(esc).join('<br>')}</div>`:''}`);
+}
+function quadShowLayer(li){
+  if (!QUAD || !QUAD.layers[li]) return;
+  toggleModal('quadInventoryModal',0);
+  const l=QUAD.layers[li], r=l.raster||{}, g=l.georef||{}, v=l.vector||null, key=String(l.id);
+  const extraction=l.build&&l.build.extraction||{};
+  const reviewText=[r.build_status,g.status,g.confidence].filter(Boolean).join(' ');
+  const reviewRequired=g.review_required===true || /review[- ]required|review pending|pending review/i.test(reviewText);
+  const targets=quadArr(l.target_ids).map(id=>{
+    const ti=QTARGETIDX[String(id)], t=Number.isInteger(ti)&&QUAD.targets[ti]; return t?t.name:id;
+  });
+  const links=[
+    l.source_url?`<a href="${esc(l.source_url)}" target="_blank">Source ↗</a>`:'',
+    l.product_url?`<a href="${esc(l.product_url)}" target="_blank">Product page ↗</a>`:'',
+    r.cog_url?`<a href="${esc(quadAssetUrl(r.cog_url))}" target="_blank">COG ↗</a>`:'',
+    r.legend_url?`<a href="${esc(quadAssetUrl(r.legend_url))}" target="_blank">Legend ↗</a>`:''
+  ].join('');
+  const legend=r.legend_url?`<img class="qlegend" src="${esc(quadAssetUrl(r.legend_url))}" alt="Legend for ${esc(l.label||l.id)}"><div style="display:none;color:#e07373;font-size:11px">Legend image failed to load; use the source or product link for the map collar.</div>`
+    :'<div class="desc">No standalone legend URL is listed; use the source or product map for its collar legend.</div>';
+  const err=QSTATE.errors[key]?`<div class="callout"><b style="color:#e07373">TILE ERROR.</b> ${esc(QSTATE.errors[key])}<br>Blank tiles are not interpreted as “no geology”; use the source/COG links while the tile endpoint is unavailable.</div>`:'';
+  openDetail(`<h2>${esc(l.label||l.id)}</h2>
+    <div class="badges"><span class="badge ${r.status==='ready'?'active':r.status==='processing'?'exploration':'closed'}">RASTER ${esc(String(r.status||'UNLISTED').toUpperCase())}</span>${QSTATE.enabled.has(key)?'<span class="badge active">ACTIVE</span>':''}${reviewRequired?'<span class="badge exploration">REVIEW REQUIRED</span>':''}</div>
+    <div class="desc">${esc(l.citation||'No citation is listed in the inventory.')}</div>
+    ${kv([['Layer ID',esc(l.id),1],['Kind',esc(l.kind||'')],['Authors',esc(quadList(l.authors))],['Year',l.year!=null?esc(l.year):null],['Scale',l.scale!=null?esc(quadList(l.scale)):null],['Series',esc(l.series||'')],['Retrieved',esc(l.retrieved||'')],['Formats',esc(quadList(l.formats))],['Targets',targets.length?esc(targets.join('; ')):null],['Tile zooms',r.minzoom!=null||r.maxzoom!=null?esc([r.minzoom,r.maxzoom].filter(x=>x!=null&&x!=='').join(' – ')):null],['Tile bounds',quadBounds(r.bounds)?esc(quadArr(r.bounds).join(', ')):null,1],['Default opacity',r.default_opacity!=null?esc(r.default_opacity):null],['Block reason',esc(r.block_reason||'')],['Source native PPI',extraction.source_native_ppi!=null?esc(extraction.source_native_ppi):null],['Output PPI',extraction.output_ppi!=null?esc(extraction.output_ppi):null],['Upsampled',extraction.upsampled===true?'yes':extraction.upsampled===false?'no':null],['Georeference',g.method?esc(g.method):null],['CRS',esc(g.crs||'')],['Fit status',g.status?esc(g.status):null],['Confidence',g.confidence!=null?esc(g.confidence):null],['GCP count',g.gcp_count!=null?esc(g.gcp_count):null],['RMSE',g.rmse_px!=null?esc(g.rmse_px+' px'):g.rmse!=null?esc(g.rmse+(g.rmse_units?' '+g.rmse_units:'')):null],['Vector',v?esc([v.status,v.rescan_id,v.source_layer].filter(Boolean).join(' · ')):null],['Vector stats',v&&v.stats?esc(quadList(v.stats)):null]])}
+    ${l.rights?`<div class="desc"><b>Rights / reuse:</b> ${esc(l.rights)}</div>`:''}${extraction.upsample_note?`<div class="callout"><b>RESOLUTION NOTE.</b> ${esc(extraction.upsample_note)}</div>`:''}${g.note?`<div class="desc">${esc(g.note)}</div>`:''}${err}
+    <div class="qactions">${r.status==='ready'&&r.tile_url_template?`<button class="dosbtn" onclick="quadToggleFromLayer(${li})">${QSTATE.enabled.has(key)?'HIDE':'SHOW'} OVERLAY</button>`:''}${quadBounds(r.bounds)?`<button class="dosbtn" onclick="quadZoomLayer(${li})">ZOOM TO MAP</button>`:''}</div>
+    <div class="links">${links}</div><h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">LEGEND</h3>${legend}
+    <div class="src">${v&&(v.data_url||v.file)?`Vector data: <a href="${esc(quadAssetUrl(v.data_url||v.file))}" target="_blank">download ↗</a><br>`:''}${v&&(v.targets_url||v.targets_file)?`Vector rescan targets: <a href="${esc(quadAssetUrl(v.targets_url||v.targets_file))}" target="_blank">open ↗</a><br>`:''}Tiles are loaded from the inventory's XYZ pointer only while enabled. A missing tile is surfaced as an error, never silently treated as unmapped ground.</div>`);
+  const img=dInner.querySelector('.qlegend'); if(img) img.onerror=()=>{ img.style.display='none'; if(img.nextElementSibling) img.nextElementSibling.style.display='block'; };
+}
+function quadRenderInventory(){
+  const body=$('quadInventoryBody');
+  if (!QUAD){ body.innerHTML=QSTATE.status==='loading'?'<p>Loading quad inventory…</p>':'<div class="callout">Quad inventory could not be loaded. No target, candidate, gap, watch, or rescan records are being inferred.</div>'; return; }
+  const targetRows=quadArr(QUAD.targets).map((t,ti)=>{
+    const q=t.quads&&t.quads.containing, adj=t.quads&&quadArr(t.quads.adjacent);
+    const candidates=quadArr(t.candidates);
+    const gap=quadGapHtml(t.gap,true);
+    return `<tr><td>${t.rank!=null?'#'+esc(t.rank)+' ':''}<button class="qinfo" onclick="quadShowTarget(${ti})">${esc(t.name)}</button><br><span style="color:var(--mut)">${esc([t.county,t.state,t.district].filter(Boolean).join(' · '))}${t.score!=null?' · score '+esc(t.score):''}</span></td>
+      <td>${q?esc([q.name,quadCode(q)].filter(Boolean).join(' · ')):'—'}${adj.length?`<br><span style="color:var(--mut)">adjacent: ${esc(adj.map(x=>[x.name,quadCode(x)].filter(Boolean).join(' · ')).join('; '))}</span>`:''}</td>
+      <td>${quadStateCatalogHtml(t)}${candidates.length?candidates.map(quadCandidateHtml).join(''):'No saved candidates.'}</td><td>${gap}</td></tr>`;
+  }).join('');
+  const layerRows=quadArr(QUAD.layers).map((l,li)=>`<tr><td><button class="qinfo" onclick="quadShowLayer(${li})">${esc(l.label||l.id)}</button></td><td>${esc(l.raster&&l.raster.status||'—')}</td><td>${l.vector?esc([l.vector.status,l.vector.rescan_id].filter(Boolean).join(' · ')||'listed'):'—'}</td><td>${esc(quadList(l.formats)||'—')}</td><td>${esc(l.citation||'—')}</td></tr>`).join('');
+  const watchRows=quadArr(QUAD.watchlist).map(w=>`<tr><td>${w.url?`<a href="${esc(w.url)}" target="_blank">${esc(w.title||w.label)}</a>`:esc(w.title||w.label)}</td><td>${esc(w.status||'—')}</td><td>${esc(w.last_checked||w.checked||'—')}</td><td>${esc(w.note||w.gap||'—')}</td></tr>`).join('');
+  const rescanRows=quadArr(QUAD.rescans).map(r=>{
+    const ti=QTARGETIDX[String(r.target_id)], t=Number.isInteger(ti)&&QUAD.targets[ti];
+    const gu=r.geology_url||r.geology_file, tu=r.targets_url||r.targets_file;
+    const stats=quadList(r.stats)||[
+      r.targets!=null?r.targets+' targets':'',
+      r.by_tier?Object.entries(r.by_tier).map(([k,n])=>k+': '+n).join('; '):'',
+      r.money!=null?'money: '+r.money:''
+    ].filter(Boolean).join(' · ')||r.status||'—';
+    return `<tr><td>${esc(r.id)}</td><td>${esc(t?t.name:r.target_id)}</td><td>${esc(r.source_layer_id||'—')}</td><td>${esc(quadList(r.scale||r.resolution)||'—')}</td><td>${esc(stats)}</td><td>${gu?`<a href="${esc(quadAssetUrl(gu))}" target="_blank">geology ↗</a> `:''}${tu?`<a href="${esc(quadAssetUrl(tu))}" target="_blank">targets ↗</a>`:''}<br>${esc(r.method||'')}${r.note?'<br>'+esc(r.note):''}</td></tr>`;
+  }).join('');
+  body.innerHTML=`<p><b style="color:var(--ink)">${quadArr(QUAD.targets).length} targets</b>${QUAD.generated?' · generated '+esc(QUAD.generated):''}.</p>${quadMethodHtml(QUAD.methodology)}
+    ${QUAD.stats?`<p style="font:10.5px var(--mono)">${esc(quadList(QUAD.stats))}</p>`:''}
+    <h3>TARGETS · CANDIDATES · EXPLICIT GAPS</h3><div class="qtablewrap"><table><tr><th>Target</th><th>Containing + adjacent quads</th><th>Candidate map inventory</th><th>Gap</th></tr>${targetRows||'<tr><td colspan="4">No targets are listed.</td></tr>'}</table></div>
+    <h3>DELIVERED / PROCESSING LAYERS</h3><div class="qtablewrap"><table><tr><th>Layer</th><th>Raster status</th><th>Vector status / rescan</th><th>Formats</th><th>Citation</th></tr>${layerRows||'<tr><td colspan="5">No layers are listed.</td></tr>'}</table></div>
+    <h3>WATCH LIST</h3><div class="qtablewrap"><table><tr><th>Title</th><th>Status</th><th>Last checked</th><th>Note</th></tr>${watchRows||'<tr><td colspan="4">No watch entries are listed.</td></tr>'}</table></div>
+    <h3>VECTOR / 24K RESCAN SUMMARY</h3><div class="qtablewrap"><table><tr><th>Rescan</th><th>Target</th><th>Source layer</th><th>Scale</th><th>Stats</th><th>Method / outputs</th></tr>${rescanRows||'<tr><td colspan="6">No vector rescans are listed.</td></tr>'}</table></div>`;
+}
+function quadShowInventory(){ quadRenderInventory(); toggleModal('quadInventoryModal',1); }
+let quadDraftSeq=0;
+function quadDraftUrl(d){ return d&&(d.data_url||d.file)||''; }
+function quadRenderOutbox(){
+  const body=$('quadOutboxBody');
+  if (!QUAD){ body.innerHTML=QSTATE.status==='loading'?'<p>Loading draft outbox…</p>':'<div class="callout">Draft outbox is unavailable because the quad inventory did not load. Nothing can be sent from this UI.</div>'; return; }
+  const drafts=quadArr(QUAD.outbox&&QUAD.outbox.drafts);
+  const rows=drafts.map((d,i)=>`<tr><td>${esc(d.id)}</td><td>${esc(d.status||'—')}</td><td>${d.sendable===true?'yes':d.sendable===false?'no':'—'}</td><td>${esc(quadList(d.to)||'—')}</td><td>${esc(d.subject||'—')}</td><td>${quadDraftUrl(d)?`<button class="qinfo" onclick="quadLoadDraft(${i})">VIEW DRAFT</button>`:'—'}</td></tr>`).join('');
+  body.innerHTML=`<div class="callout"><b style="color:var(--warn)">DRAFTS ONLY.</b> “Sendable” is inventory metadata; this app provides no send action and transmits nothing.</div>
+    <div class="qtablewrap"><table><tr><th>ID</th><th>Status</th><th>Sendable</th><th>To</th><th>Subject</th><th>Details</th></tr>${rows||'<tr><td colspan="6">No drafts are listed.</td></tr>'}</table></div><div id="quadDraftDetail"></div>`;
+}
+function quadShowOutbox(){ quadRenderOutbox(); toggleModal('quadOutboxModal',1); }
+async function quadLoadDraft(i){
+  const d=QUAD&&QUAD.outbox&&quadArr(QUAD.outbox.drafts)[i], el=$('quadDraftDetail'); if(!d||!el)return;
+  const seq=++quadDraftSeq;
+  el.innerHTML=`<h3>${esc(d.subject||d.id||'DRAFT DETAILS')}</h3><p>Loading draft data…</p>`;
+  const dataUrl=quadDraftUrl(d);
+  if(!dataUrl){ el.innerHTML='<div class="callout">No data URL is listed for this draft.</div>'; return; }
+  try{
+    const r=await fetch(quadAssetUrl(dataUrl)); if(!r.ok) throw new Error('HTTP '+r.status);
+    let text=await r.text();
+    try{ text=JSON.stringify(JSON.parse(text),null,2); }catch(e){}
+    if(seq!==quadDraftSeq)return;
+    el.innerHTML=`<h3>${esc(d.subject||d.id||'DRAFT DETAILS')}</h3><pre class="qdraft">${esc(text)}</pre><p style="font-size:10.5px;color:var(--mut)">Read-only preview from ${esc(dataUrl)}. No send action is implemented.</p>`;
+  }catch(e){
+    if(seq!==quadDraftSeq)return;
+    el.innerHTML=`<div class="callout"><b style="color:#e07373">Draft details could not be loaded.</b> ${esc(e&&e.message||e)}. No send was attempted.</div>`;
+  }
+}
+async function loadQuadGeology(){
+  QSTATE.status='loading'; quadWireShell(); quadRenderSidebar();
+  try{
+    QUAD=await jget('data/geology-quads/inventory.json');
+    if (!QUAD || !Array.isArray(QUAD.targets) || !Array.isArray(QUAD.layers)) throw new Error('invalid inventory shape');
+    QSTATE.status='ready'; QTARGETIDX=Object.create(null); QLAYERIDX=Object.create(null);
+    QUAD.targets.forEach((t,i)=>{ QTARGETIDX[String(t.id)]=i; });
+    QUAD.layers.forEach((l,i)=>{ QLAYERIDX[String(l.id)]=i; });
+    const firstOpacity=QUAD.layers.filter(l=>l.raster&&l.raster.status==='ready').map(l=>quadNumber(l.raster.default_opacity)).find(v=>v!=null);
+    if (firstOpacity!=null) QSTATE.opacity=Math.max(0,Math.min(1,firstOpacity>1?firstOpacity/100:firstOpacity));
+    quadIndexGrades(); quadWireShell(); quadRenderSidebar();
+    if ($('quadInventoryModal').classList.contains('open')) quadRenderInventory();
+    if ($('quadOutboxModal').classList.contains('open')) quadRenderOutbox();
+    if (!loadQuadGeology._wired){
+      map.on('error',quadMapError);
+      map.on('sourcedata',e=>{
+        const id=e&&QSOURCE[e.sourceId];
+        if(id&&e.isSourceLoaded){ QSTATE.loaded[id]=true; quadRenderNote(); }
+      });
+      loadQuadGeology._wired=true;
+    }
+  }catch(e){
+    QUAD=null; QSTATE.status='error'; quadWireShell(); quadRenderSidebar();
+    if ($('quadInventoryModal').classList.contains('open')) quadRenderInventory();
+    if ($('quadOutboxModal').classList.contains('open')) quadRenderOutbox();
+    console.warn('[nwmm quad inventory]',e&&e.message||e);
+  }
+}
 function showGrade(i){
   const openB = GR.open[i]>=400? badge('active', `OPEN GROUND — nearest active claim ${GR.open[i]>=5000?'>5 km':fmt(GR.open[i])+' m'}`)
     : GR.open[i]>=0? badge('closed', `ACTIVE CLAIMS ${fmt(GR.open[i])} m AWAY`)
@@ -775,6 +1188,7 @@ function showGrade(i){
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
     <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
+    ${quadGradeBlock(i)}
     <div class="src">${esc(GR.src[i])}. Bonanza assay-text numbers are hand-picked specimens, not mine averages — the quote is the evidence. Open-ground uses the claims snapshot only: famous old districts are often PATENTED (private land carries no BLM claims — Goldfield is the classic trap), so "no claims" ≠ "open to staking". Verify ownership & withdrawals on the ground.</div>`);
 }
 function gradeAnswer(q, f){
@@ -1107,7 +1521,9 @@ function wireMapEvents(){
     const fs = map.queryRenderedFeatures(e.point, {layers:hoverLayers.filter(l=>map.getLayer(l))});
     if (fs.length) showFeature(fs[0]);
   });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeDetail(); toggleModal('aboutModal',0); toggleModal('readingModal',0); $('results').style.display='none'; }});
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){
+    closeDetail(); document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); $('results').style.display='none';
+  }});
 }
 function rec(f){ const p=f.properties; const d=stores[p.f]; return {d, i:p.i}; }
 function tipText(f){
@@ -1266,7 +1682,7 @@ function buildLegend(){
 function buildModals(){
   const T = MAN.totals;
   $('aboutBody').innerHTML = `
-  <p><b style="color:var(--ink)">NW Mineral Monitor</b> fuses seven government datasets plus original research into one picture of where minerals have been found, dug, and claimed across Washington, Oregon, Idaho, Montana and Wyoming. ${fmt(T.sites)} sites · ${fmt(T.claims_active)} active claims · ${fmt(T.claims_closed)} closed claims · ${28+7+MAN.districts.auto.n} districts.</p>
+  <p><b style="color:var(--ink)">NW Mineral Monitor</b> fuses government datasets plus original research into one picture of where minerals have been found, dug, mapped, and claimed across Washington, Oregon, Idaho, Montana, Wyoming, Nevada, Utah and California. ${fmt(T.sites)} sites · ${fmt(T.claims_active)} active claims · ${fmt(T.claims_closed)} closed claims · ${28+7+MAN.districts.auto.n} districts · build ${BUILD}.</p>
   <h3>DATA SOURCES</h3>
   <table>
   <tr><th>Layer</th><th>Source</th><th>Records</th></tr>
@@ -1282,6 +1698,7 @@ function buildModals(){
   <tr><td>Historic press & records</td><td><a href="https://www.loc.gov/collections/chronicling-america/" target="_blank">Chronicling America</a> · Google Books · <a href="https://arlweb.msha.gov/OpenGovernmentData/OGIMSHA.asp" target="_blank">MSHA open data</a> — automated sweep w/ citations (dossiers)</td><td>per-mine</td></tr>
   <tr><td>Geologic map + faults (Cassia)</td><td><a href="https://macrostrat.org/" target="_blank">Macrostrat</a> harmonized polygons (CC-BY 4.0) — serving USGS SGMC 1:500k + IGS DWM-49 1:100k here; verbatim description, citation & scale carried per unit</td><td>304 units</td></tr>
   <tr><td>Geology targets (Cassia)</td><td>WS6 sinter-first engine: tiered lithology regexes × mapped faults & intersections × <a href="https://www.usgs.gov/tools/geographic-names-information-system-gnis" target="_blank">GNIS</a> hot/warm springs × IDWR geothermal wells × MRDS pathfinder commodities × WS2 open ground — every target carries its full scoring rationale</td><td>ranked</td></tr>
+  <tr><td>Quad-scale geologic maps</td><td>WS10 per-target inventory from <a href="https://ngmdb.usgs.gov/ngmdb/ngmdb_home.html" target="_blank">USGS NGMDB</a> and state-survey catalogs; acquired scans are georeferenced with recorded method, confidence, GCP count and fit error, then served as external COG/XYZ assets. Explicit gaps, processing states, watch entries, vector rescans and read-only draft outbox records remain visible in the inventory. Raster pixels are not stored in this site.</td><td>per inventory</td></tr>
   <tr><td>County recorder (Cassia)</td><td>WS5 operator-assisted ingest — Cassia has <b>no online index</b> (verified 2026-08-06; records request / vault visit), instruments fuzzy-matched to MLRS serials by claim name + TRS; COUNTY-COVERAGE.md has the per-county matrix</td><td>per-export</td></tr>
   <tr><td>County gold signal</td><td>Derived: every gold-commodity site, cited grade, claim centroid and topo working assigned to its county; STAKEABLE score (open cited grades × staked-then-dropped sites × unclaimed occurrences × producers) vs ENDOWMENT, both itemized per county — GOLD-COUNTIES.md has the write-up</td><td>244 counties</td></tr>
   </table>
@@ -1294,6 +1711,7 @@ function buildModals(){
   · USMIN features date from 1958–2001 maps — expect collapse, reclamation, fencing.<br>
   · Closed claims are truncated to the most recent 250,000 per state where the total exceeds it: WY (of 287k), NV (of 1.23M), UT (of 452k). Older NV/UT closures exist in MLRS but not on this map.<br>
   · WA/OR/MT/WY survey databases differ in scope (MT = abandoned-mine inventory; OR MILO mixes occurrences and borrow pits; WA has no per-record status; WY is explicitly incomplete). A site in two layers is corroboration, not duplication.<br>
+  · Quad rasters load from external tile pointers only while enabled. A blank, out-of-bounds, failed, processing, or blocked tile is never evidence that geology is absent; review the inventory, provenance and georeference status.<br>
   · Claim polygons are PLSS-snapped; claimant names aren't in the public GIS — search serials in <a href="https://mlrs.blm.gov/s/" target="_blank">MLRS</a>.</p>
   <div class="callout"><b style="color:var(--warn)">⚠ Safety & legality.</b> Never enter adits, shafts, or open workings. An active claim is a property right — prospecting on one without permission is claim jumping. Verify surface ownership (BLM / USFS / state / private) before digging; National Parks, most National Monuments, and City of Rocks NR are closed to mineral entry. This is a research aid, not a legal land-status document.</div>`;
   const PUBS = [

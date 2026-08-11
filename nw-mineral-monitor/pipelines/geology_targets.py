@@ -27,6 +27,9 @@ occurrences with pathfinder commodities (Hg Sb As ×2, Au Ag ×1) within
 open ground. tier ≤ 2 + open ground = the money flag.
 
 Output: site/data/targets/{aoi}.json
+
+Only attributed vector unit polygons are scored. Georeferenced scans, COGs,
+and XYZ raster overlays are display context and are explicitly excluded.
 """
 import json, math, os, re, sys
 from collections import defaultdict
@@ -68,6 +71,143 @@ PATHFINDER = {'HG': 2.0, 'MERCURY': 2.0, 'CINNABAR': 2.0,
 BASE = {1: 100, 2: 60, 3: 30, 9: 15}            # 9 = travertine label
 TIER_NAME = {1: 'TIER 1 — HOT-SPRING SINTER', 2: 'TIER 2 — HYDROTHERMAL ALTERATION',
              3: 'TIER 3 — EPITHERMAL HOST', 9: 'TRAVERTINE (CALCAREOUS)'}
+
+
+def source_record(geo, source_id):
+    """Return source metadata while tolerating numeric/string JSON ids."""
+    sources = geo.get('sources') or {}
+    return sources.get(source_id) or sources.get(str(source_id)) or {}
+
+
+def raster_only_source(src):
+    """True only when metadata explicitly describes raster with no vector form."""
+    descriptor = ' '.join(str(src.get(key) or '')
+                          for key in ('kind', 'format', 'data_type')).lower()
+    raster = bool(re.search(r'\braster\b|\bscan(?:ned)?\b|geotiff|geopdf|\bcog\b|xyz',
+                            descriptor))
+    vector = bool(re.search(r'\bvector\b|\bgis\b|geodatabase|\bgdb\b|\bgpkg\b|\bgems\b|polygon',
+                            descriptor))
+    return raster and not vector
+
+
+def _positive_int(value):
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return int(value) if value > 0 else None
+    text = str(value).strip().lower().replace(',', '')
+    match = re.fullmatch(r'(?:1\s*:\s*)?(\d+(?:\.\d+)?)\s*(k)?', text)
+    if not match:
+        return None
+    number = float(match.group(1)) * (1000 if match.group(2) else 1)
+    return int(number) if number > 0 else None
+
+
+def _exact_text_scale(src):
+    """Parse one exact map scale, rejecting broad range metadata."""
+    scale_rx = re.compile(r'1\s*:\s*([\d,]+(?:\.\d+)?)\s*(k)?', re.I)
+    denominators = []
+    for key in ('scale', 'scale_note'):
+        text = str(src.get(key) or '')
+        matches = scale_rx.findall(text)
+        # A range such as 1:24k–1:250k is not proof of native 1:24k data.
+        if len(matches) != 1 or re.search(r'[–—]|\bto\b', text, re.I):
+            continue
+        number, thousands = matches[0]
+        value = float(number.replace(',', '')) * (1000 if thousands else 1)
+        denominators.append(int(value))
+    return denominators[0] if len(set(denominators)) == 1 else None
+
+
+def native_24k_vector_source(src):
+    """Conservatively identify native 1:24k-or-better attributed vectors."""
+    if raster_only_source(src) or src.get('scoring_source') is False:
+        return False
+    native_scale = _positive_int(src.get('native_scale'))
+    if src.get('scoring_source') is True and native_scale is not None:
+        return native_scale <= 24000
+    denominator = (_positive_int(src.get('scale_denominator'))
+                   or native_scale or _exact_text_scale(src))
+    return denominator is not None and denominator <= 24000
+
+
+def _tier12_counts(items):
+    return (sum(1 for item in items if item['tier'] == 1),
+            sum(1 for item in items if item['tier'] == 2))
+
+
+def _source_scales(geo):
+    source_ids = {unit.get('src') for unit in geo.get('units', [])}
+    labels = []
+    for source_id in source_ids:
+        src = source_record(geo, source_id)
+        if raster_only_source(src):
+            continue
+        label = src.get('scale_note') or src.get('scale')
+        if label and label not in labels:
+            labels.append(str(label))
+    return ', '.join(labels) or 'the recorded vector scales'
+
+
+def honesty_statement(geo, targets):
+    """Describe Tier-1/2 evidence according to the vector source actually used."""
+    tier12 = [target for target in targets if target['tier'] in (1, 2)]
+    native_ids = {
+        unit.get('src') for unit in geo.get('units', [])
+        if native_24k_vector_source(source_record(geo, unit.get('src')))
+    }
+    native_hits = [target for target in tier12 if target['src']['id'] in native_ids]
+    fallback_hits = [target for target in tier12 if target['src']['id'] not in native_ids]
+    native_t1, native_t2 = _tier12_counts(native_hits)
+    fallback_t1, fallback_t2 = _tier12_counts(fallback_hits)
+    scales = _source_scales(geo)
+
+    if native_hits:
+        statement = (
+            f'Native 1:24,000-scale attributed vector mapping contains '
+            f'{native_t1} Tier-1 and {native_t2} Tier-2 classified unit '
+            f'{"hit" if len(native_hits) == 1 else "hits"} in this AOI. '
+            'These are mapped-unit description/association matches, not discoveries. '
+        )
+        if fallback_hits:
+            statement += (
+                f'Fallback vector sources add {fallback_t1} Tier-1 and '
+                f'{fallback_t2} Tier-2 scale-limited hits. '
+            )
+    elif native_ids:
+        statement = (
+            'No Tier-1 sinter or Tier-2 alteration hit was detected in the native '
+            '1:24,000-scale attributed vector units in this AOI. Their absence is '
+            'a statement about mapped unit attributes and lexicon coverage, not about '
+            'the ground. '
+        )
+        if fallback_hits:
+            statement += (
+                f'Available fallback vectors contain {fallback_t1} Tier-1 and '
+                f'{fallback_t2} Tier-2 hits, but those are not native-24k confirmation. '
+            )
+    elif tier12:
+        statement = (
+            f'Available fallback vector mapping ({scales}) contains {fallback_t1} '
+            f'Tier-1 and {fallback_t2} Tier-2 classified unit hits, but no native '
+            '1:24,000 attributed vector source backs them in this AOI. Treat them as '
+            'scale-limited research leads, not native-quad confirmation. '
+        )
+    else:
+        statement = (
+            'No Tier-1 sinter and no Tier-2 alteration units are mapped in this AOI '
+            f'at the available vector scales ({scales}) — their absence here is a '
+            'statement about map scale and unit attributes, not about the ground. '
+        )
+
+    return (
+        statement
+        + 'Plain “altered” is excluded on purpose (weathered-basalt false positive). '
+        + 'Attributed vector polygons are the only geology scored: georeferenced raster '
+          'scans, COGs, and XYZ overlays are display context and are explicitly excluded. '
+        + 'Scores are research leads, not discoveries; land status follows WS2 rules '
+          '(verify before staking).'
+    )
 
 
 def classify(blob):
@@ -217,8 +357,15 @@ def run(aoi_key=None):
         sgrid.add(*xy(s['cx'], s['cy']), i)
 
     # ---- score every unit ----
-    targets, dropped = [], 0
+    targets, dropped, raster_units_excluded = [], 0, 0
     for u in geo['units']:
+        src = source_record(geo, u.get('src'))
+        # Normal geology bundles contain polygons only. This defensive gate
+        # prevents a future scan/COG catalog record from becoming scoreable
+        # merely because it was accidentally represented in the units array.
+        if raster_only_source(src):
+            raster_units_excluded += 1
+            continue
         blob = ' '.join(str(u.get(kk) or '') for kk in ('nm', 'sn', 'li', 'de', 'co'))
         tier, terms = classify(blob)
         assoc = tier == 0 and bool(ULTRAMAFIC_RX.search(blob))
@@ -377,7 +524,6 @@ def run(aoi_key=None):
         if tier == 3 and score < 42:
             dropped += 1
             continue
-        src = geo['sources'].get(u['src'], {})
         targets.append({
             'id': u['id'], 'tier': tier, 'tierName': TIER_NAME[tier], 'money': money,
             'score': round(score, 1), 'nm': u.get('nm'), 'sn': u.get('sn'),
@@ -385,7 +531,11 @@ def run(aoi_key=None):
             'terms': terms, 'cx': round(cx, 5), 'cy': round(cy, 5),
             'area_km2': round(area_km2, 1),
             'src': {'id': u['src'], 'ref': src.get('ref'), 'scale': src.get('scale'),
-                    'scale_note': src.get('scale_note')},
+                    'scale_note': src.get('scale_note'), 'kind': src.get('kind'),
+                    'format': src.get('format'),
+                    'scale_denominator': src.get('scale_denominator'),
+                    'native_scale': src.get('native_scale'),
+                    'scoring_source': src.get('scoring_source')},
             'why': why,
             'boosts': {'fault_km': round(fault_km, 2) if fault_km < 90 else None,
                        'fx': fx_n, 'paths': near_paths[:6], 'springs': near_spr[:4],
@@ -399,8 +549,11 @@ def run(aoi_key=None):
     targets.sort(key=lambda t: (-t['score'], -t['area_km2']))
     for i, t in enumerate(targets):
         t['rank'] = i + 1
-    stats = {'scored_units': len(geo['units']), 'targets': len(targets),
+    stats = {'input_units': len(geo['units']),
+             'scored_units': len(geo['units']) - raster_units_excluded,
+             'targets': len(targets),
              'dropped_low_t3': dropped,
+             'raster_units_excluded': raster_units_excluded,
              'by_tier': {TIER_NAME[t]: sum(1 for x in targets if x['tier'] == t)
                          for t in (1, 2, 3, 9) if any(x['tier'] == t for x in targets)},
              'money': sum(1 for t in targets if t['money'])}
@@ -416,14 +569,7 @@ def run(aoi_key=None):
                    '(max 3); MRDS/IGS pathfinder commodities ≤2 km (Hg,Sb,As ×2 — Au,Ag ×1, '
                    'max +15); GNIS hot/warm springs (max +16); IDWR geothermal wells '
                    '(max +16); +15 × open-ground fraction under the polygon.'),
-        'honesty': ('No Tier-1 sinter and no Tier-2 alteration units are MAPPED in this AOI '
-                    'at the available vector scales (SGMC 1:500k + IGS DWM-49 1:100k) — their '
-                    'absence here is a statement about map scale, not about the ground. '
-                    'Plain “altered” is excluded on purpose (weathered basalt false positive). '
-                    'Tier-1/2 detection improves with quad-scale raster maps (NGMDB) and '
-                    'satellite alteration indices — both recorded as WS6 future work. '
-                    'Scores are research leads, not discoveries; land status per WS2 rules '
-                    '(verify before staking).'),
+        'honesty': honesty_statement(geo, targets),
         'stats': stats, 'targets': targets,
     }
     write_json(f'data/targets/{k}.json', out)

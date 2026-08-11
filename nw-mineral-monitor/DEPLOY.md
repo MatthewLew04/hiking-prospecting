@@ -2,7 +2,11 @@
 
 You'll end up with: your map at a public `https://` URL, served from S3 through CloudFront (fast + cheap), with a Lambda job that re-pulls **active mining claims from BLM every night** and closed claims monthly. The map also queries BLM live for whatever you're looking at when zoomed in — so claim boundaries are always current even between refreshes.
 
-**Estimated cost: roughly $1–3/month** (S3: ~60 MB stored + per-GB transfer to CloudFront; CloudFront: first 1 TB/month free for the first year, then pennies at hobby traffic; Lambda + EventBridge: comfortably inside the always-free tier — the nightly job runs ~3 minutes/day). Teardown instructions at the bottom if you ever want out.
+**Estimated base cost: roughly $1–3/month** (S3 + CloudFront transfer;
+Lambda + EventBridge are comfortably inside the always-free tier at this
+traffic). WS10 COGs and tile pyramids can be much larger than the base site,
+so their storage and egress are additional and depend on the number and
+resolution of published sheets. Teardown instructions are at the bottom.
 
 There are two paths. **Path A (recommended)** uses one script and takes ~15 minutes. **Path B** is every console click, if you'd rather see and understand each piece. Both produce identical results.
 
@@ -46,9 +50,69 @@ First run takes 5–10 minutes (CloudFront distributions are slow to create). Wh
 That's it. Later:
 ```bash
 ./deploy.sh update-site   # after editing site files
+./deploy.sh upload-ws10-assets  # explicit add/update of ignored quad rasters/tiles
 ./deploy.sh refresh       # force a claims re-pull right now
 ./deploy.sh teardown      # delete everything
 ```
+
+---
+
+## WS10 quad rasters — separate, protected upload
+
+Quad source scans, COGs, legends, and XYZ tiles do not live in `site/` or in
+git. The build stages publishable objects under
+`pipelines/cache/ws10/assets/`; the deploy script copies that tree to the
+fixed bucket prefix `ws10-assets/`:
+
+```bash
+cd nw-mineral-monitor/infra
+WS10_UPLOAD_DRY_RUN=1 bash deploy.sh upload-ws10-assets
+bash deploy.sh upload-ws10-assets
+cd ..
+# After verifying remote COG/legend/tile objects and alignment:
+python3 pipelines/prepare_quad_geology.py --mark-ready dwm-193 anderson-1931-plate-xviii johnston-pp194-plate-1
+python3 pipelines/geology_quads.py
+/Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py
+bash infra/deploy.sh update-site
+```
+
+This order matters. A local build deliberately emits `processing` /
+`built-awaiting-upload`, so upload and verify the objects before promoting
+their pointers. The asset command refuses a missing or empty staging
+directory and any symlink, follows no symlinks, never uses `--delete`, applies
+a one-day cache header to binary map products and a 15-minute header to
+JSON/GeoJSON, then invalidates `/ws10-assets/*` in CloudFront. It cannot prune
+older remote versions. `--mark-ready` validates the local build again and
+records `uploaded-and-verified`; `geology_quads.py` merges that state into the
+inventory that `update-site` publishes. The final validator checks inventory
+rank/quad/gap invariants, three ready layers plus blocked Jackson, local asset
+hashes/counts/GeoTIFF tags, remote-verification stamps, the native-vector
+rescan, guarded outbox, UI syntax, and the no-raster-in-git rule. Replace the
+shown Miniconda path with another dependency-capable Python when necessary;
+do not publish after a validator failure.
+
+Both the full deploy and `update-site` exclude `ws10-assets/*` from every
+`aws s3 sync --delete`. That prefix is S3-owned, so an ordinary site/data
+deploy cannot erase it even though no matching local files exist. `teardown`
+is the exception: after its typed confirmation it intentionally empties the
+whole bucket, including WS10 assets.
+
+For a console-only deployment, upload the *contents* of
+`pipelines/cache/ws10/assets/` into a bucket folder named exactly
+`ws10-assets/` before uploading the current `site/data/geology-quads/`
+inventory. Preserve the directory/key layout: XYZ URLs depend on
+`{z}/{x}/{y}` matching those keys.
+
+Rasters never belong in `site/`, even temporarily. Doing so bloats git and
+also turns the root site sync into an accidental lifecycle manager. Full
+acquisition, Python/Poppler prerequisites, alignment review, and verification
+steps are in `RUNBOOK.md`. The current builder uses Pillow, NumPy, tifffile,
+Fiona, pyproj, and Shapely; it requires no GDAL command-line tools.
+
+Jackson PGM-19-01 is not part of the promotion command. It remains blocked
+because the source is email-gated and CGS publication/database reuse rights
+are pending. Its CGS request is an unsent draft, not permission to acquire,
+publish, or mark the layer ready.
 
 ---
 
@@ -68,7 +132,7 @@ That's it. Later:
 
 ### B3. Upload the site
 1. Console → **S3** → open the bucket from `BucketName` (looks like `nw-mineral-monitor-123456789012`).
-2. Click **Upload** → **Add files / Add folder** → select the *contents* of the `site/` folder: `index.html`, the `assets` folder, and the `data` folder. (Important: `index.html` must land at the top level of the bucket, not inside a `site/` prefix.)
+2. Click **Upload** → **Add files / Add folder** → select the *contents* of the `site/` folder: `index.html`, the `assets` folder, and the `data` folder. (Important: `index.html` must land at the top level of the bucket, not inside a `site/` prefix.) Upload WS10 raster assets separately as described above; do not mix them into `site/`.
 3. Upload (~65 MB — a few minutes on ordinary broadband).
 
 ### B4. First refresh + verify
@@ -128,9 +192,10 @@ Facts worth knowing: requests require a signed-in Cognito session (the Lambda ve
 - **ASK chat says "Bedrock could not serve <model>"** — first-time Anthropic use-case form (see the AI section above: playground once, then retry), or an IAM/SCP restriction, or a bad MODEL_ID. **"session expired"** — sign out/in (the AI endpoint checks your Cognito token). **"model is throttled"** — Bedrock burst limit; retry in a few seconds.
 - **Stack create failed with "BucketName already exists"** — you deployed before; either reuse that stack (CloudFormation → update) or delete the old one first.
 - **Changed a file but the site didn't update** — CloudFront caching. Data refreshes within 15 min; for `index.html` changes either wait an hour, or CloudFront console → your distribution → Invalidations → create invalidation for `/*`.
+- **A GEOLOGY (QUAD) toggle returns 403/404** — the inventory pointer was deployed before its S3 object, or its key does not match the local asset layout. Run `upload-ws10-assets` first, verify the object under the bucket's `ws10-assets/` prefix, then `update-site`. A low-confidence plate should stay in review rather than being patched around with a misleading URL.
 
 ## Optional: custom domain
 Buy/hold a domain in **Route 53** (or elsewhere) → **ACM** (in us-east-1!) → request a public certificate for `mines.yourdomain.com` → validate via DNS → CloudFront console → your distribution → Edit → add the Alternate domain name + attach the certificate → create a Route 53 **A record (alias)** pointing at the distribution. ~20 minutes, mostly waiting on certificate validation.
 
 ## Teardown
-Path A: `./deploy.sh teardown`. Path B: empty the S3 bucket (S3 → bucket → Empty), then CloudFormation → select the stack → **Delete**. This removes everything the stack created; total cost stops immediately.
+Path A: `./deploy.sh teardown`. Path B: empty the S3 bucket (S3 → bucket → Empty), then CloudFormation → select the stack → **Delete**. This removes everything the stack created, including S3-only `ws10-assets/`; total cost stops immediately.

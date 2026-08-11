@@ -1,6 +1,18 @@
 {
   "default": "cassia",
   "aois": {
+    "delamar24k": {
+      "name": "De Lamar–Swisher Mountain 24k map area, Idaho",
+      "state": "ID",
+      "county": "Owyhee",
+      "county_fips": "16073",
+      "bbox": [-117.0011, 42.9973, -116.7508, 43.1275],
+      "plss_state_meridian": "ID08",
+      "meridian_name": "Boise Meridian",
+      "utm_zone": 11,
+      "note": "WS10 native-vector rescan AOI from IGS DWM-193 MapUnitPolys and mapped sinter/silicification overlays at 1:24,000. Raster pixels are excluded from scoring.",
+      "recorder": null
+    },
     "clearlake": {
       "name": "Clear Lake–Knoxville district, California",
       "state": "CA",

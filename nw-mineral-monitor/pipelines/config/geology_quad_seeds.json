@@ -1,0 +1,422 @@
+{
+  "schema": "nwmm.ws10.quad-geology-config.v1",
+  "asset_base_url": "/ws10-assets",
+  "methodology": {
+    "target_selection": "Top 15 eligible grade rows using the app's exact stakeAnswer formula, plus four mandatory seed districts. Eligibility is cited Au >= 0.3 oz/ton and nearest active-claim centroid >= 400 m. score = min(Au,5) * (1.35 when basis contains production or shipped, otherwise 1) + min(open_m,5000)/12500.",
+    "target_identity": "MRDS dep_id when present; otherwise a deterministic state + county + canonical name + rounded-coordinate hash. Array indexes are retained only as transient conveniences.",
+    "quad_selection": "Official USGS 7.5-minute map-index polygon containing each target plus the eight touching cells.",
+    "catalog_search": "NGMDB geologic bedrock, surficial, and structural records intersecting the 3x3 quad neighborhood, representative fraction 1:1 through 1:62,500. Candidates sort newest first, then largest scale.",
+    "acquisition": "Prefer GIS/GeoTIFF, then GeoPDF or the highest-resolution scan. Extract pocket plates at >=600 output dpi but record native source ppi so upsampling is never described as added detail.",
+    "georeferencing": "Standard 7.5-minute neatlines snap to official quad corners. Irregular plates require reviewable GCPs; low-confidence fits remain disabled.",
+    "scoring_boundary": "Raster visibility never changes WS6 scores. Only normalized native GIS unit polygons may feed a lexicon rescan.",
+    "gap_semantics": "A gap is shown explicitly when no <=1:62,500 catalog record exists, no modern state-survey quad exists, acquisition is gated, reuse permission is unresolved, or georeferencing awaits review."
+  },
+  "official_sources": {
+    "usgs_quad_index": "https://carto.nationalmap.gov/arcgis/rest/services/map_indices/MapServer/10",
+    "ngmdb_catalog": "https://ngmdb.usgs.gov/ngm-bin/ngm_compsearch.pl",
+    "idaho_geological_survey": "https://www.idahogeology.org/products",
+    "california_preliminary_maps": "https://www.conservation.ca.gov/cgs/maps-data/rgm/preliminary/",
+    "california_information_warehouse": "https://maps.conservation.ca.gov/cgs/informationwarehouse/",
+    "washington_geology": "https://www.dnr.wa.gov/geologyportal",
+    "oregon_dogami": "https://www.oregon.gov/dogami/pubs/pages/gisdata.aspx",
+    "montana_mbmg": "https://www.mbmg.mtech.edu/mbmgcat/",
+    "nevada_nbmg": "https://pubs.nbmg.unr.edu/",
+    "wyoming_wsgs": "https://www.wsgs.wyo.gov/pubs-maps/gis",
+    "retrieved": "2026-08-11"
+  },
+  "forced_seeds": [
+    {
+      "id": "seed-delamar",
+      "order": 1,
+      "name": "De Lamar–Swisher Mountain flagship",
+      "state": "ID",
+      "county": "Owyhee",
+      "district": "De Lamar–Silver City",
+      "coordinates": [-116.79, 43.012],
+      "grade_match": {"name": "De Lamar mine (lower-grade ore, 1898)", "state": "ID"},
+      "selected_layer_ids": ["dwm-193"],
+      "gap": null,
+      "notes": "Mandatory seed. DWM-193 covers both De Lamar and Swisher Mountain and has a verified GeMS Level 1 file geodatabase.",
+      "priority_candidates": [
+        {
+          "catalog_id": "IGS-DWM-193",
+          "title": "Geologic Map of the De Lamar and Swisher Mountain Quadrangles, Owyhee County, Idaho",
+          "authors": "Gillerman, V.S.; Feeney, D.M.; Canada, A.S.; Schmidt, K.L.",
+          "year": 2021,
+          "scale": "1:24,000",
+          "scale_denominator": 24000,
+          "series": "Idaho Geological Survey Digital Web Map 193",
+          "publisher": "Idaho Geological Survey",
+          "formats": ["GIS (GeMS file geodatabase)", "PDF"],
+          "status": "acquired",
+          "catalog_url": "https://www.idahogeology.org/product/DWM-193",
+          "source_url": "https://www.idahogeology.org/pub/Digital_Data/Digital_Web_Maps/DWM-193.pdf",
+          "gis_url": "https://www.idahogeology.org/pub/Digital_Data/Digital_Web_Maps/DWM193_DeLamarSwisherMountain_GIS.zip"
+        },
+        {
+          "catalog_id": "IGS-P-161",
+          "title": "Geology and ore deposits of the Silver City–De Lamar–Flint region",
+          "authors": "Pansze, A.J.",
+          "year": 1975,
+          "scale": "1:36,576",
+          "scale_denominator": 36576,
+          "series": "Idaho Bureau of Mines and Geology Pamphlet 161",
+          "publisher": "Idaho Geological Survey",
+          "formats": ["scan"],
+          "status": "cataloged",
+          "catalog_url": "https://www.idahogeology.org/product/P-161"
+        },
+        {
+          "catalog_id": "IGS-P-162",
+          "title": "Geology and mineral resources of the Owyhee region",
+          "authors": "Bennett, E.H.; Galbraith, J.H.",
+          "year": 1975,
+          "scale": "1:62,500",
+          "scale_denominator": 62500,
+          "series": "Idaho Bureau of Mines and Geology Pamphlet 162",
+          "publisher": "Idaho Geological Survey",
+          "formats": ["scan"],
+          "status": "cataloged",
+          "catalog_url": "https://www.idahogeology.org/product/P-162"
+        },
+        {
+          "catalog_id": "IGS-P-138",
+          "title": "Geology and mineral resources of a portion of the Silver City region",
+          "authors": "Asher, R.R.",
+          "year": 1968,
+          "scale": "1:48,040",
+          "scale_denominator": 48040,
+          "series": "Idaho Bureau of Mines and Geology Pamphlet 138 (four sheets)",
+          "publisher": "Idaho Geological Survey",
+          "formats": ["scan"],
+          "status": "cataloged",
+          "catalog_url": "https://www.idahogeology.org/product/P-138"
+        },
+        {
+          "catalog_id": "IGS-T-83-4",
+          "title": "Geologic context of the De Lamar–Silver City volcanic field",
+          "authors": "Bonnichsen, B.",
+          "year": 1983,
+          "scale": null,
+          "scale_denominator": null,
+          "series": "Idaho Geological Survey Technical Report T-83-4",
+          "publisher": "Idaho Geological Survey",
+          "formats": ["scan"],
+          "status": "cataloged",
+          "catalog_url": "https://www.idahogeology.org/product/T-83-4"
+        }
+      ]
+    },
+    {
+      "id": "seed-jackson",
+      "order": 2,
+      "name": "Jackson quadrangle — Argonaut/Kennedy belt",
+      "state": "CA",
+      "county": "Amador/Calaveras",
+      "district": "Mother Lode",
+      "coordinates": [-120.783, 38.365],
+      "grade_match": {"dep": "10028230"},
+      "selected_layer_ids": ["jackson-pgm-2019"],
+      "gap": "Acquisition gap: CGS delivers the PDF by email and supplies the native GIS database on request. The request is drafted but intentionally unsent; no raster is published without the file and its reuse terms.",
+      "notes": "Mandatory seed. Inventory also follows Ione, Irish Hill, Valley Springs, Wallace, San Andreas and other flanking preliminary maps.",
+      "priority_candidates": [
+        {
+          "catalog_id": 108920,
+          "title": "Preliminary geologic map of the Jackson 7.5-minute quadrangle, Amador and Calaveras Counties, California",
+          "authors": "Holland, P.J.; O'Neal, M.D.",
+          "year": 2019,
+          "scale": "1:24,000",
+          "scale_denominator": 24000,
+          "series": "California Geological Survey PGM-19-01",
+          "publisher": "California Geological Survey",
+          "formats": ["PDF by email", "GIS database on request"],
+          "status": "email-gated",
+          "catalog_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_108920.htm",
+          "source_url": "https://filerequest.conservation.ca.gov/?q=Jackson_24k_v1.0.pdf"
+        },
+        {
+          "catalog_id": "USGS-PP-827",
+          "title": "Geology of the Sierra Nevada foothills melange and adjacent areas",
+          "authors": "Duffield, W.A.; Sharp, R.V.",
+          "year": 1975,
+          "scale": "1:24,000",
+          "scale_denominator": 24000,
+          "series": "U.S. Geological Survey Professional Paper 827",
+          "publisher": "U.S. Geological Survey",
+          "formats": ["scan"],
+          "status": "cataloged",
+          "catalog_url": "https://pubs.usgs.gov/publication/pp827"
+        }
+      ]
+    },
+    {
+      "id": "seed-black-pine",
+      "order": 3,
+      "name": "Black Pine district",
+      "state": "ID",
+      "county": "Cassia",
+      "district": "Black Pine",
+      "coordinates": [-113.047, 42.09],
+      "grade_match": {"dep": "10143667"},
+      "selected_layer_ids": ["anderson-1931-plate-xviii"],
+      "gap": null,
+      "notes": "Mandatory seed. Anderson Plate XVIII is regional reconnaissance (1:125,000), while Smith I-1403 is the preferred detailed 1:62,500 source but has no verified digital plate download.",
+      "priority_candidates": [
+        {
+          "catalog_id": "IBMG-B-14-PLATE-XVIII",
+          "title": "Reconnaissance Geologic Map of Eastern Cassia County, Idaho (Plate XVIII)",
+          "authors": "Anderson, A.L.; assisted by Livingston, D.C.",
+          "year": 1931,
+          "scale": "1:125,000",
+          "scale_denominator": 125000,
+          "series": "Idaho Bureau of Mines and Geology Bulletin 14, Plate XVIII",
+          "publisher": "Idaho Bureau of Mines and Geology",
+          "formats": ["scan; native image 400 ppi"],
+          "status": "acquired; georeference review",
+          "catalog_url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf",
+          "source_url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf",
+          "extraction": "PDF page 199 one-based (index 198); Plate XIX on page 200 is structure sections only."
+        },
+        {
+          "catalog_id": 9186,
+          "title": "Geologic map of the Strevell 15-minute quadrangle, Cassia County, Idaho",
+          "authors": "Smith, J.F., Jr.",
+          "year": 1982,
+          "scale": "1:62,500",
+          "scale_denominator": 62500,
+          "series": "U.S. Geological Survey Miscellaneous Investigations Map I-1403",
+          "publisher": "U.S. Geological Survey",
+          "formats": ["metadata; copy request"],
+          "status": "digital plate unavailable",
+          "catalog_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_9186.htm",
+          "source_url": "https://pubs.usgs.gov/publication/i1403"
+        },
+        {
+          "catalog_id": "USU-ETD-1903",
+          "title": "Geology and Mineralization of the Southeastern Part of the Black Pine Mountains, Cassia County, Idaho (Plate 1)",
+          "authors": "French, D.E.",
+          "year": 1975,
+          "scale": "1:12,000",
+          "scale_denominator": 12000,
+          "series": "Utah State University M.S. thesis, ETD 1903",
+          "publisher": "Utah State University",
+          "formats": ["scan; native image 150 ppi"],
+          "status": "acquired; student copyright blocks public tiling",
+          "catalog_url": "https://digitalcommons.usu.edu/etd/1903/",
+          "source_url": "https://digitalcommons.usu.edu/cgi/viewcontent.cgi?article=2902&context=etd",
+          "extraction": "PDF page 82 one-based; conventional planar Plate 1 with sections."
+        },
+        {
+          "catalog_id": "USGS-B-1536",
+          "title": "Paleozoic rocks in the Black Pine Mountains, Cassia County, Idaho",
+          "authors": "Smith, J.F., Jr.",
+          "year": 1983,
+          "scale": "generalized figure; no RF",
+          "scale_denominator": null,
+          "series": "U.S. Geological Survey Bulletin 1536",
+          "publisher": "U.S. Geological Survey",
+          "formats": ["PDF; generalized figure on pages 10–11"],
+          "status": "context only; not a precise overlay",
+          "catalog_url": "https://pubs.usgs.gov/publication/b1536",
+          "source_url": "https://pubs.usgs.gov/bul/1536/report.pdf"
+        },
+        {
+          "catalog_id": "USGS-B-1382-E",
+          "title": "Gold in the Black Pine mining district, southeast Cassia County, Idaho",
+          "authors": "Brady, B.T.",
+          "year": 1984,
+          "scale": "generalized figure; no RF",
+          "scale_denominator": null,
+          "series": "U.S. Geological Survey Bulletin 1382-E",
+          "publisher": "U.S. Geological Survey",
+          "formats": ["PDF; generalized figure on page 10"],
+          "status": "context only; not a precise overlay",
+          "catalog_url": "https://pubs.usgs.gov/publication/b1382E",
+          "source_url": "https://pubs.usgs.gov/bul/1382e/report.pdf"
+        }
+      ]
+    },
+    {
+      "id": "seed-grass-valley",
+      "order": 4,
+      "name": "Grass Valley district",
+      "state": "CA",
+      "county": "Nevada",
+      "district": "Grass Valley",
+      "coordinates": [-121.06, 39.21],
+      "grade_match": {"name": "Brock vein", "state": "CA"},
+      "selected_layer_ids": ["johnston-pp194-plate-1"],
+      "gap": "Modern-map gap: CGS has no modern Grass Valley quadrangle; North Bloomfield (2024) is adjacent. Johnston PP194 Plate 1 is the public-domain historical substitute.",
+      "notes": "Mandatory seed. Only PP194 Plate 1 is a planar overlay; Plate 2 is a section and Plates 27/32/35 are isometric mine diagrams.",
+      "priority_candidates": [
+        {
+          "catalog_id": 341,
+          "title": "Geologic map of the Grass Valley quadrangle and adjacent area, Nevada County, California (Plate 1)",
+          "authors": "Johnston, W.D., Jr.; geology by Lindgren, W. with minor additions by Johnston",
+          "year": 1940,
+          "scale": "1:14,400",
+          "scale_denominator": 14400,
+          "series": "U.S. Geological Survey Professional Paper 194, Plate 1",
+          "publisher": "U.S. Geological Survey",
+          "formats": ["scan; native image 400 ppi"],
+          "status": "acquired",
+          "catalog_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_341.htm",
+          "source_url": "https://pubs.usgs.gov/pp/0194/plate-01.pdf",
+          "extraction": "Single-page planar plate. Plate 2 and isometric Plates 27/32/35 are not basemap overlays."
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "id": "dwm-193",
+      "label": "DWM-193 — De Lamar & Swisher Mountain",
+      "target_ids": ["seed-delamar"],
+      "kind": "geologic map",
+      "citation": "Gillerman, V.S., Feeney, D.M., Canada, A.S., and Schmidt, K.L., 2021, Geologic Map of the De Lamar and Swisher Mountain Quadrangles, Idaho Geological Survey DWM-193.",
+      "authors": "Gillerman, V.S.; Feeney, D.M.; Canada, A.S.; Schmidt, K.L.",
+      "year": 2021,
+      "scale": "1:24,000",
+      "series": "IGS DWM-193",
+      "retrieved": "2026-08-11",
+      "source_url": "https://www.idahogeology.org/pub/Digital_Data/Digital_Web_Maps/DWM-193.pdf",
+      "product_url": "https://www.idahogeology.org/product/DWM-193",
+      "formats": ["PDF", "GeMS Level 1 file geodatabase"],
+      "rights": "IGS metadata access constraints: none; no named open-content license. Preserve citation and nonsite-specific-use disclaimer.",
+      "raster": {
+        "status": "processing",
+        "tile_url_template": "/ws10-assets/tiles/dwm-193/{z}/{x}/{y}.webp",
+        "bounds": [-117.0, 43.0, -116.75, 43.125],
+        "minzoom": 8,
+        "maxzoom": 15,
+        "default_opacity": 0.72,
+        "legend_url": "/ws10-assets/legends/dwm-193.webp",
+        "cog_url": "/ws10-assets/cogs/dwm-193.tif"
+      },
+      "georef": {"crs": "EPSG:4326", "gcp_count": 6, "rmse": null, "confidence": "high", "status": "two-quadrangle neatline fit cross-checked against native DWM-193 GIS"},
+      "vector": {"status": "ready", "data_url": "data/geology/delamar24k.json", "file": "data/geology/delamar24k.json", "targets_file": "data/targets/delamar24k.json", "rescan_id": "delamar24k", "source_layer": "MapUnitPolys"}
+    },
+    {
+      "id": "jackson-pgm-2019",
+      "label": "Jackson PGM-19-01 (2019)",
+      "target_ids": ["seed-jackson"],
+      "kind": "preliminary geologic map",
+      "citation": "Holland, P.J., and O'Neal, M.D., 2019, Preliminary geologic map of the Jackson 7.5-minute quadrangle, California Geological Survey PGM-19-01.",
+      "authors": "Holland, P.J.; O'Neal, M.D.",
+      "year": 2019,
+      "scale": "1:24,000",
+      "series": "CGS PGM-19-01",
+      "retrieved": "2026-08-11",
+      "source_url": "https://filerequest.conservation.ca.gov/?q=Jackson_24k_v1.0.pdf",
+      "product_url": "https://www.conservation.ca.gov/cgs/maps-data/rgm/preliminary/",
+      "formats": ["PDF by email", "GIS database on request"],
+      "rights": "Pending product-specific collar terms and written public web-tile permission from CGS.",
+      "raster": {
+        "status": "blocked",
+        "block_reason": "email-gated source and reuse permission pending",
+        "tile_url_template": null,
+        "bounds": [-120.875013, 38.2500051, -120.750013, 38.3750051],
+        "minzoom": 10,
+        "maxzoom": 16,
+        "default_opacity": 0.72,
+        "legend_url": null,
+        "cog_url": null
+      },
+      "georef": {"crs": null, "gcp_count": 0, "rmse": null, "confidence": "blocked", "status": "source not acquired; request drafted, not sent"}
+    },
+    {
+      "id": "anderson-1931-plate-xviii",
+      "label": "Anderson 1931 — Plate XVIII",
+      "target_ids": ["seed-black-pine"],
+      "kind": "reconnaissance geologic map",
+      "citation": "Anderson, A.L., 1931, Reconnaissance Geologic Map of Eastern Cassia County, Idaho, in Idaho Bureau of Mines and Geology Bulletin 14, Plate XVIII.",
+      "authors": "Anderson, A.L.; assisted by Livingston, D.C.",
+      "year": 1931,
+      "scale": "1:125,000",
+      "series": "IBMG Bulletin 14, Plate XVIII",
+      "retrieved": "2026-08-11",
+      "source_url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf",
+      "product_url": "https://idwr.idaho.gov/wp-content/uploads/sites/2/projects/raft-river/193109-Anderson-EasternCassia-Geology-Mineral.pdf",
+      "formats": ["pocket-plate scan; native image 400 ppi"],
+      "rights": "Historic Idaho state publication; no explicit scan license found. Preserve attribution and confirm reuse terms.",
+      "raster": {
+        "status": "processing",
+        "build_status": "review-required",
+        "tile_url_template": "/ws10-assets/tiles/anderson-1931-plate-xviii/{z}/{x}/{y}.webp",
+        "bounds": [-113.8333333333, 42.0, -113.0, 42.6666666667],
+        "minzoom": 7,
+        "maxzoom": 14,
+        "default_opacity": 0.68,
+        "legend_url": "/ws10-assets/legends/anderson-1931-plate-xviii.webp",
+        "cog_url": "/ws10-assets/cogs/anderson-1931-plate-xviii.tif"
+      },
+      "georef": {"crs": "EPSG:4326", "gcp_count": 30, "rmse": 170, "rmse_units": "metres", "confidence": "medium", "status": "reviewed affine graticule fit; reconnaissance only, not parcel work"}
+    },
+    {
+      "id": "johnston-pp194-plate-1",
+      "label": "Johnston PP194 — Plate 1",
+      "target_ids": ["seed-grass-valley"],
+      "kind": "mine-scale geologic map",
+      "citation": "Johnston, W.D., Jr., 1940, The gold quartz veins of Grass Valley, California, U.S. Geological Survey Professional Paper 194, Plate 1.",
+      "authors": "Johnston, W.D., Jr.; Lindgren, W.",
+      "year": 1940,
+      "scale": "1:14,400",
+      "series": "USGS Professional Paper 194, Plate 1",
+      "retrieved": "2026-08-11",
+      "source_url": "https://pubs.usgs.gov/pp/0194/plate-01.pdf",
+      "product_url": "https://pubs.usgs.gov/publication/pp194",
+      "formats": ["single-page scan; native image 400 ppi"],
+      "rights": "U.S. Geological Survey government work; credit USGS and check separately credited material.",
+      "raster": {
+        "status": "processing",
+        "tile_url_template": "/ws10-assets/tiles/johnston-pp194-plate-1/{z}/{x}/{y}.webp",
+        "bounds": [-121.0847222222, 39.1727777778, -121.0, 39.2472222222],
+        "minzoom": 10,
+        "maxzoom": 17,
+        "default_opacity": 0.72,
+        "legend_url": "/ws10-assets/legends/johnston-pp194-plate-1.webp",
+        "cog_url": "/ws10-assets/cogs/johnston-pp194-plate-1.tif"
+      },
+      "georef": {"crs": "EPSG:4326", "gcp_count": 4, "rmse": null, "confidence": "medium", "status": "reviewed printed neatline-corner fit; no independent checkpoints"}
+    }
+  ],
+  "rescans": [
+    {
+      "id": "delamar24k",
+      "target_id": "seed-delamar",
+      "source_layer_id": "dwm-193",
+      "resolution": "1:24,000",
+      "status": "ready",
+      "geology_file": "data/geology/delamar24k.json",
+      "targets_file": "data/targets/delamar24k.json",
+      "method": "DWM-193 MapUnitPolys normalized to WS6 units, then the existing lexicon scorer rerun. Raster content was not scored."
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "cgs-preliminary-grass-valley",
+      "target_ids": ["seed-grass-valley"],
+      "label": "CGS Preliminary Geologic Maps — Grass Valley region",
+      "url": "https://www.conservation.ca.gov/cgs/maps-data/rgm/preliminary/",
+      "status": "watching",
+      "checked": "2026-08-11",
+      "gap": "No modern Grass Valley quadrangle. North Bloomfield (2024) is adjacent, not a substitute for the target quad."
+    }
+  ],
+  "outbox": {
+    "drafts": [
+      {
+        "id": "cgs-jackson-digital-database",
+        "type": "email",
+        "status": "draft",
+        "sendable": false,
+        "data_url": "data/outbox/cgs-jackson-digital-database.json",
+        "file": "data/outbox/cgs-jackson-digital-database.json",
+        "repository_copy": "outbox/cgs-jackson-gis-request.md",
+        "target_ids": ["seed-jackson"],
+        "to": ["Brian.Swanson@conservation.ca.gov"],
+        "subject": "GIS data request — Jackson quadrangle PGM-19-01"
+      }
+    ]
+  }
+}

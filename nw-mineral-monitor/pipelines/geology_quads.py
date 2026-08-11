@@ -25,6 +25,7 @@ GRADES = os.path.join(SITE, "data", "grades", "grades.json")
 OUTPUT_REL = os.path.join("data", "geology-quads", "inventory.json")
 OUTPUT = os.path.join(SITE, OUTPUT_REL)
 CONFIG = os.path.join(HERE, "config", "geology_quad_seeds.json")
+TARGET_OVERLAYS = os.path.join(HERE, "config", "geology_quad_target_overlays.json")
 ASSET_STATE = os.path.join(HERE, "config", "geology_quad_assets.json")
 MANIFEST = os.path.join(SITE, "data", "manifest.json")
 
@@ -320,6 +321,34 @@ def apply_rescan_state(rescans: list[dict], state: dict) -> list[dict]:
     return [deep_merge(item, generated.get(item["id"], {})) for item in rescans]
 
 
+def apply_target_overlay_selection(targets: list[dict], overlay_config: dict) -> None:
+    """Attach one reviewed overlay selection to every ranked target.
+
+    The reviewed config records exact NGMDB GroundOverlay bounds.  Refuse to
+    emit a target checkbox if its coordinate falls outside the selected
+    footprint; a working-but-wrong checkbox is worse than an explicit gap.
+    """
+    layers = {layer["id"]: layer for layer in overlay_config.get("layers", [])}
+    mapping = overlay_config.get("target_layers", {})
+    for target in targets:
+        layer_id = mapping.get(target["id"])
+        if not layer_id:
+            continue
+        layer = layers.get(layer_id)
+        if layer is None:
+            raise RuntimeError(f"selected overlay {layer_id!r} is not defined")
+        bounds = (layer.get("raster") or {}).get("bounds")
+        if not isinstance(bounds, list) or len(bounds) != 4:
+            raise RuntimeError(f"selected overlay {layer_id!r} has invalid bounds")
+        x, y = (float(value) for value in target["coordinates"])
+        west, south, east, north = (float(value) for value in bounds)
+        if not (west <= x <= east and south <= y <= north):
+            raise RuntimeError(
+                f"selected overlay {layer_id!r} does not contain {target['id']} at {x},{y}"
+            )
+        target["selected_layer_ids"] = [layer_id]
+
+
 def base_target(
     row: dict,
     index: int,
@@ -404,6 +433,8 @@ def main() -> None:
         grades = json.load(handle)
     with open(CONFIG) as handle:
         config = json.load(handle)
+    with open(TARGET_OVERLAYS) as handle:
+        overlay_config = json.load(handle)
     existing = load_existing()
     existing_by_id = {target["id"]: target for target in existing.get("targets", [])}
 
@@ -459,8 +490,14 @@ def main() -> None:
         if not target["candidates"] and not target["gap"]:
             target["gap"] = "No ≤1:62,500 geologic-map record returned by NGMDB for the 3×3 quad neighborhood."
 
+    apply_target_overlay_selection(targets, overlay_config)
+
     asset_state = load_asset_state()
-    layers = apply_asset_state(config["layers"], asset_state)
+    configured_layers = list(config["layers"]) + list(overlay_config.get("layers", []))
+    layer_ids = [layer["id"] for layer in configured_layers]
+    if len(layer_ids) != len(set(layer_ids)):
+        raise RuntimeError("duplicate quad-geology layer id in reviewed configs")
+    layers = apply_asset_state(configured_layers, asset_state)
     rescans = apply_rescan_state(config.get("rescans", []), asset_state)
     ready_layers = sum(
         1 for layer in layers if layer.get("raster", {}).get("status") == "ready"
@@ -476,10 +513,16 @@ def main() -> None:
             "total_targets": len(targets),
             "layers": len(layers),
             "ready_layers": ready_layers,
+            "mapped_targets": sum(bool(target.get("selected_layer_ids")) for target in targets),
             "explicit_gaps": sum(bool(target.get("gap")) for target in targets),
         },
         "methodology": config["methodology"],
         "sources": config["official_sources"],
+        "overlay_selection": {
+            "config_schema": overlay_config.get("schema"),
+            "reviewed": overlay_config.get("generated"),
+            "note": overlay_config.get("note"),
+        },
         "targets": targets,
         "layers": layers,
         "rescans": rescans,

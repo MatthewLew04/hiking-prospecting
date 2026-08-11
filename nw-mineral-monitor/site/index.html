@@ -161,6 +161,20 @@ footer .right{margin-left:auto}
 .qtablewrap table{min-width:920px;margin:0}
 .qactions{display:flex;gap:5px;flex-wrap:wrap;padding:5px 0}
 .qactions .dosbtn{margin:0;padding:4px 8px}
+.qtargetswitch{border:1px solid var(--line);border-radius:7px;overflow:hidden;margin:7px 0 12px}
+.qtargetrow{display:grid;grid-template-columns:minmax(260px,1fr) auto auto auto;align-items:center;gap:7px;padding:8px 9px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.012)}
+.qtargetrow:last-child{border-bottom:0}
+.qtargetrow:hover{background:rgba(255,255,255,.03)}
+.qtargetcontrol{display:flex;align-items:flex-start;gap:8px;min-width:0;color:var(--ink2);cursor:pointer}
+.qtargetcontrol.no-toggle{cursor:default}
+.qtargetcontrol input{flex:none;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.qtargetplaceholder{width:13px;flex:none;text-align:center;color:var(--mut);font:11px var(--mono)}
+.qtargetcopy{min-width:0}
+.qtargetcopy b{display:block;color:var(--ink);font-size:11.5px;line-height:1.3}
+.qtargetcopy .m{display:block;color:var(--mut);font:10px/1.35 var(--mono);margin-top:2px;overflow-wrap:anywhere}
+.qtargetrow>.badge,.qtargetrow>.qinfo{white-space:nowrap}
+.qtargetswitch.compact .qtargetrow{display:flex;flex-wrap:wrap;align-items:flex-start}
+.qtargetswitch.compact .qtargetcontrol{flex:1 1 210px}
 .qinfo{background:none;border:1px solid var(--line2);border-radius:4px;color:var(--mut);font:10px var(--mono);padding:1px 5px;cursor:pointer}
 .qinfo:hover{color:var(--accent);border-color:var(--accent)}
 .qlegend{display:block;max-width:100%;max-height:300px;margin:7px 0;border:1px solid var(--line2);border-radius:5px;background:#fff}
@@ -298,6 +312,8 @@ footer .right{margin-left:auto}
   #alertsPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;max-height:55vh;border-radius:14px 14px 0 0;z-index:1600}
   #dropOverlay .in{padding:26px 20px;font-size:12.5px;text-align:center}
   .dosbtn{padding:9px 12px;font-size:11px}
+  .qtargetrow{display:flex;flex-wrap:wrap;align-items:flex-start}
+  .qtargetcontrol{flex:1 1 100%}
   .ulrow button{padding:4px 8px;font-size:10px}
 }
 </style>
@@ -419,7 +435,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-11b';
+const BUILD = '2026-08-11c';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -840,6 +856,82 @@ function quadTargetLayers(t){
   const selected = new Set(quadArr(t.selected_layer_ids).map(String));
   return quadArr(QUAD.layers).filter(l=>quadArr(l.target_ids).map(String).includes(tid) || selected.has(String(l.id)));
 }
+function quadTargetLayerSelection(t){
+  const wanted=[];
+  const add=id=>{ if(id!=null&&id!==''&&!wanted.includes(String(id))) wanted.push(String(id)); };
+  add(t&&t.preferred_layer_id);
+  quadArr(t&&t.preferred_layer_ids).forEach(add);
+  add(t&&t.selected_layer_id);
+  quadArr(t&&t.selected_layer_ids).forEach(add);
+  for (const id of wanted){
+    const index=quadLayerIndex(id);
+    if (index>=0) return {id,index,layer:QUAD.layers[index],explicit:true,associated:[]};
+  }
+  if (wanted.length) return {id:wanted[0],index:-1,layer:null,explicit:true,associated:[]};
+  // A lone reverse association is unambiguous. If several maps merely name
+  // the target, require an explicit preferred/selected id instead of silently
+  // choosing whichever layer happens to appear first in the inventory.
+  const associated=quadTargetLayers(t);
+  if (associated.length===1){
+    const layer=associated[0], index=quadLayerIndex(layer.id);
+    return {id:String(layer.id),index,layer,explicit:false,associated};
+  }
+  return {id:null,index:-1,layer:null,explicit:false,associated};
+}
+function quadTargetOverlayRowHtml(t,ti,compact){
+  const pick=quadTargetLayerSelection(t), l=pick.layer, r=l&&l.raster||{};
+  const toggleable=!!(l&&r.status==='ready'&&r.tile_url_template), key=l?String(l.id):String(pick.id||'');
+  const on=toggleable&&QSTATE.enabled.has(key);
+  const title=`${t.rank!=null?'#'+esc(t.rank)+' ':t.forced_seed?'SEED · ':''}${esc(t.name||t.id)}`;
+  let meta='', state='', stateClass='abandoned';
+  if (toggleable){
+    meta=`${esc(l.label||l.id)} · enabling pans to its map footprint`;
+    state=on?'ON':'READY'; stateClass=on?'active':'abandoned';
+  }else if (l){
+    const status=String(r.status||'no raster').toUpperCase();
+    const why=r.status==='ready'&&!r.tile_url_template?' · tile URL not listed':r.block_reason?' · '+r.block_reason:'';
+    meta=esc(`${l.label||l.id} · ${status}${why}`);
+    state=r.status==='processing'?'PROCESSING':r.status==='blocked'?'BLOCKED':r.status==='ready'?'TILE URL MISSING':status;
+    stateClass=r.status==='processing'?'exploration':r.status==='blocked'||r.status==='ready'?'closed':'abandoned';
+  }else if (pick.id){
+    meta=`Selected map ${esc(pick.id)} is not present in the delivered layer inventory.`;
+    state='MAPPING MISSING'; stateClass='closed';
+  }else if (pick.associated.length>1){
+    meta=`${pick.associated.length} maps are associated; no preferred map is selected.`;
+    state='SELECT MAP'; stateClass='exploration';
+  }else{
+    meta='No selected map has been assigned yet.';
+    state='NOT MAPPED';
+  }
+  const control=toggleable
+    ? `<label class="qtargetcontrol"><input type="checkbox" data-quad-target-layer="${esc(key)}" data-quad-target-index="${ti}" ${on?'checked':''} title="${on?'disable overlay':'enable overlay and pan to its map footprint'}" onchange="quadSetTargetLayer(${ti},this.checked)"><span class="qtargetcopy"><b>${title}</b><span class="m">${meta}</span></span></label>`
+    : `<div class="qtargetcontrol no-toggle"><span class="qtargetplaceholder" aria-hidden="true">—</span><span class="qtargetcopy"><b>${title}</b><span class="m">${meta}</span></span></div>`;
+  const statusAttr=toggleable?` data-quad-target-state="${esc(key)}"`:'';
+  const targetInfo=compact?'':`<button class="qinfo" title="target details" onclick="quadShowTarget(${ti})">TARGET ⓘ</button>`;
+  const layerInfo=l?`<button class="qinfo" title="map details, preview or legend, and zoom" onclick="quadShowLayer(${pick.index})">MAP ⓘ</button>`:'';
+  return `<div class="qtargetrow">${control}<span class="badge ${stateClass}"${statusAttr}>${esc(state)}</span>${targetInfo}${layerInfo}</div>`;
+}
+function quadSyncTargetControls(){
+  document.querySelectorAll('input[data-quad-target-layer]').forEach(box=>{
+    const on=QSTATE.enabled.has(String(box.getAttribute('data-quad-target-layer')));
+    box.checked=on;
+    box.title=on?'disable overlay':'enable overlay and pan to its map footprint';
+  });
+  document.querySelectorAll('[data-quad-target-state]').forEach(el=>{
+    const on=QSTATE.enabled.has(String(el.getAttribute('data-quad-target-state')));
+    el.textContent=on?'ON':'READY';
+    el.classList.toggle('active',on);
+    el.classList.toggle('abandoned',!on);
+  });
+}
+function quadSetTargetLayer(ti,on){
+  const t=QUAD&&QUAD.targets[ti], pick=t&&quadTargetLayerSelection(t), l=pick&&pick.layer, r=l&&l.raster||{};
+  if (!l || r.status!=='ready' || !r.tile_url_template){ quadSyncTargetControls(); return false; }
+  const ok=quadSetLayer(l.id,!!on);
+  quadSyncTargetControls();
+  if (ok&&on&&$('quadInventoryModal').classList.contains('open')) toggleModal('quadInventoryModal',0);
+  return ok;
+}
 function quadIndexGrades(){
   QGRADE = GR ? new Array(GR.n) : [];
   if (!GR || !QUAD) return;
@@ -918,7 +1010,7 @@ function quadRenderSidebar(){
   ready.forEach(l=>{
     const i=quadLayerIndex(l.id), key=String(l.id), on=QSTATE.enabled.has(key);
     const row=document.createElement('div'); row.className='lrow';
-    row.innerHTML=`<input type="checkbox" ${on?'checked':''} title="${on?'disable overlay':'enable overlay and zoom to its map footprint'}"><span style="flex:1">${esc(l.label||l.id)}</span><span class="ct" style="font:9px var(--mono);color:${QSTATE.errors[key]?'#e07373':'var(--mut)'}">${QSTATE.errors[key]?'TILE ERROR':on?'ON':'READY'}</span><button class="qinfo" title="details, legend and zoom to map">ⓘ</button>`;
+    row.innerHTML=`<input type="checkbox" ${on?'checked':''} title="${on?'disable overlay':'enable overlay and zoom to its map footprint'}"><span style="flex:1">${esc(l.label||l.id)}</span><span class="ct" style="font:9px var(--mono);color:${QSTATE.errors[key]?'#e07373':'var(--mut)'}">${QSTATE.errors[key]?'TILE ERROR':on?'ON':'READY'}</span><button class="qinfo" title="details, preview or legend, and zoom to map">ⓘ</button>`;
     const box=row.querySelector('input');
     box.onchange=()=>{ quadSetLayer(key,box.checked); };
     row.addEventListener('click',e=>{ if(e.target!==box&&!e.target.closest('button')) box.click(); });
@@ -938,6 +1030,7 @@ function quadRenderSidebar(){
   }
   $('quadSlider').style.display=ready.length?'':'none';
   quadRenderNote();
+  quadSyncTargetControls();
 }
 function quadMapError(e){
   const sid=e&&e.sourceId || e&&e.source&&e.source.id;
@@ -1066,17 +1159,18 @@ function quadShowTarget(ti){
   const t=QUAD.targets[ti], c=quadArr(t.coordinates), containing=t.quads&&t.quads.containing;
   const adjacent=t.quads&&quadArr(t.quads.adjacent);
   const ls=quadTargetLayers(t), ready=ls.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
-  const layerBtns=ready.map(l=>{
+  const pick=quadTargetLayerSelection(t);
+  const layerBtns=ready.filter(l=>!pick.layer||String(l.id)!==String(pick.layer.id)).map(l=>{
     const li=quadLayerIndex(l.id), on=QSTATE.enabled.has(String(l.id));
     return `<button class="dosbtn" onclick="quadToggleFromTarget(${li},${ti})">${on?'HIDE':'SHOW'} · ${esc(l.label||l.id)}</button><button class="qinfo" onclick="quadShowLayer(${li})">ⓘ</button>`;
   }).join(' ');
-  const unavailable=ls.filter(l=>!ready.includes(l)).map(l=>`${l.label||l.id} — ${l.raster&&l.raster.status||'no raster'}`).join('; ');
+  const unavailable=ls.filter(l=>!ready.includes(l)&&(!pick.layer||String(l.id)!==String(pick.layer.id))).map(l=>`${l.label||l.id} — ${l.raster&&l.raster.status||'no raster'}`).join('; ');
   const gap=quadGapHtml(t.gap,false);
   openDetail(`<h2>${esc(t.name)}</h2>
     <div class="badges"><span class="badge exploration">QUAD TARGET${t.rank!=null?' #'+esc(t.rank):''}</span>${t.state?`<span class="badge abandoned">${esc(t.state)}</span>`:''}${t.forced_seed?'<span class="badge exploration">SEED SOURCE</span>':''}</div>
     ${kv([['Target ID',esc(t.id),1],['Score',t.score!=null?esc(t.score):null],['Grade reference',t.grade_ref?esc([quadGradeDep(t),t.grade_ref.name].filter(x=>x!=null&&x!=='').join(' · ')):null],['County',esc(t.county||'')],['District',esc(t.district||'')],['Containing quad',containing?esc([containing.name,quadCode(containing)].filter(Boolean).join(' · ')):null],['Adjacent quads',adjacent.length?esc(adjacent.map(q=>[q.name,quadCode(q)].filter(Boolean).join(' · ')).join('; ')):null],['Coordinates',c.length>=2?esc(c[1]+', '+c[0]):null,1]])}
     ${gap}<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">OVERLAYS</h3>
-    <div class="qactions">${layerBtns||'<span style="color:var(--mut)">No ready raster overlay for this target.</span>'}</div>${unavailable?`<div class="src" style="border-top:0;margin-top:2px">${esc(unavailable)}</div>`:''}
+    <div class="qtargetswitch compact">${quadTargetOverlayRowHtml(t,ti,true)}</div>${layerBtns?`<div class="qactions"><span style="color:var(--mut);align-self:center">Other associated maps:</span>${layerBtns}</div>`:''}${unavailable?`<div class="src" style="border-top:0;margin-top:2px">${esc(unavailable)}</div>`:''}
     <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">MAP CANDIDATES</h3>${quadStateCatalogHtml(t)}${quadArr(t.candidates).length?t.candidates.map(quadCandidateHtml).join(''):'<div class="desc">No candidates are listed.</div>'}
     <div class="links">${t.catalog_query_url?`<a href="${esc(t.catalog_query_url)}" target="_blank">Catalog query ↗</a>`:''}${c.length>=2?`<a href="${gmaps(c[1],c[0])}" target="_blank">Google Maps ↗</a>`:''}</div>
     ${quadTexts(t.notes).length?`<div class="src">${quadTexts(t.notes).map(esc).join('<br>')}</div>`:''}`);
@@ -1091,29 +1185,38 @@ function quadShowLayer(li){
   const targets=quadArr(l.target_ids).map(id=>{
     const ti=QTARGETIDX[String(id)], t=Number.isInteger(ti)&&QUAD.targets[ti]; return t?t.name:id;
   });
+  const supplementUrl=r.legend_url||r.preview_url;
+  const supplementKind=r.legend_url?'LEGEND':r.preview_url?'MAP PREVIEW':'LEGEND / PREVIEW';
   const links=[
     l.source_url?`<a href="${esc(l.source_url)}" target="_blank">Source ↗</a>`:'',
     l.product_url?`<a href="${esc(l.product_url)}" target="_blank">Product page ↗</a>`:'',
     r.cog_url?`<a href="${esc(quadAssetUrl(r.cog_url))}" target="_blank">COG ↗</a>`:'',
-    r.legend_url?`<a href="${esc(quadAssetUrl(r.legend_url))}" target="_blank">Legend ↗</a>`:''
+    r.legend_url?`<a href="${esc(quadAssetUrl(r.legend_url))}" target="_blank">Legend ↗</a>`:'',
+    !r.legend_url&&r.preview_url?`<a href="${esc(quadAssetUrl(r.preview_url))}" target="_blank">Map preview ↗</a>`:''
   ].join('');
-  const legend=r.legend_url?`<img class="qlegend" src="${esc(quadAssetUrl(r.legend_url))}" alt="Legend for ${esc(l.label||l.id)}"><div style="display:none;color:#e07373;font-size:11px">Legend image failed to load; use the source or product link for the map collar.</div>`
-    :'<div class="desc">No standalone legend URL is listed; use the source or product map for its collar legend.</div>';
+  const supplement=supplementUrl?`<img class="qlegend" src="${esc(quadAssetUrl(supplementUrl))}" alt="${supplementKind==='LEGEND'?'Legend':'Map preview'} for ${esc(l.label||l.id)}"><div style="display:none;color:#e07373;font-size:11px">${supplementKind==='LEGEND'?'Legend':'Map preview'} image failed to load; use the source or product link.</div>${supplementKind==='MAP PREVIEW'?'<div class="desc">Downsampled map-panel preview only—not a collar legend. Use the source or product map for unit descriptions and symbols.</div>':''}`
+    :'<div class="desc">No standalone legend or map-preview URL is listed; use the source or product map for its collar legend.</div>';
   const err=QSTATE.errors[key]?`<div class="callout"><b style="color:#e07373">TILE ERROR.</b> ${esc(QSTATE.errors[key])}<br>Blank tiles are not interpreted as “no geology”; use the source/COG links while the tile endpoint is unavailable.</div>`:'';
   openDetail(`<h2>${esc(l.label||l.id)}</h2>
     <div class="badges"><span class="badge ${r.status==='ready'?'active':r.status==='processing'?'exploration':'closed'}">RASTER ${esc(String(r.status||'UNLISTED').toUpperCase())}</span>${QSTATE.enabled.has(key)?'<span class="badge active">ACTIVE</span>':''}${reviewRequired?'<span class="badge exploration">REVIEW REQUIRED</span>':''}</div>
     <div class="desc">${esc(l.citation||'No citation is listed in the inventory.')}</div>
     ${kv([['Layer ID',esc(l.id),1],['Kind',esc(l.kind||'')],['Authors',esc(quadList(l.authors))],['Year',l.year!=null?esc(l.year):null],['Scale',l.scale!=null?esc(quadList(l.scale)):null],['Series',esc(l.series||'')],['Retrieved',esc(l.retrieved||'')],['Formats',esc(quadList(l.formats))],['Targets',targets.length?esc(targets.join('; ')):null],['Tile zooms',r.minzoom!=null||r.maxzoom!=null?esc([r.minzoom,r.maxzoom].filter(x=>x!=null&&x!=='').join(' – ')):null],['Tile bounds',quadBounds(r.bounds)?esc(quadArr(r.bounds).join(', ')):null,1],['Default opacity',r.default_opacity!=null?esc(r.default_opacity):null],['Block reason',esc(r.block_reason||'')],['Source native PPI',extraction.source_native_ppi!=null?esc(extraction.source_native_ppi):null],['Output PPI',extraction.output_ppi!=null?esc(extraction.output_ppi):null],['Upsampled',extraction.upsampled===true?'yes':extraction.upsampled===false?'no':null],['Georeference',g.method?esc(g.method):null],['CRS',esc(g.crs||'')],['Fit status',g.status?esc(g.status):null],['Confidence',g.confidence!=null?esc(g.confidence):null],['GCP count',g.gcp_count!=null?esc(g.gcp_count):null],['RMSE',g.rmse_px!=null?esc(g.rmse_px+' px'):g.rmse!=null?esc(g.rmse+(g.rmse_units?' '+g.rmse_units:'')):null],['Vector',v?esc([v.status,v.rescan_id,v.source_layer].filter(Boolean).join(' · ')):null],['Vector stats',v&&v.stats?esc(quadList(v.stats)):null]])}
-    ${l.rights?`<div class="desc"><b>Rights / reuse:</b> ${esc(l.rights)}</div>`:''}${extraction.upsample_note?`<div class="callout"><b>RESOLUTION NOTE.</b> ${esc(extraction.upsample_note)}</div>`:''}${g.note?`<div class="desc">${esc(g.note)}</div>`:''}${err}
+    ${l.selection_note?`<div class="callout"><b>MAP SELECTION.</b> ${esc(l.selection_note)}</div>`:''}${l.rights?`<div class="desc"><b>Rights / reuse:</b> ${esc(l.rights)}</div>`:''}${extraction.upsample_note?`<div class="callout"><b>RESOLUTION NOTE.</b> ${esc(extraction.upsample_note)}</div>`:''}${g.note?`<div class="desc">${esc(g.note)}</div>`:''}${err}
     <div class="qactions">${r.status==='ready'&&r.tile_url_template?`<button class="dosbtn" onclick="quadToggleFromLayer(${li})">${QSTATE.enabled.has(key)?'HIDE':'SHOW'} OVERLAY</button>`:''}${quadBounds(r.bounds)?`<button class="dosbtn" onclick="quadZoomLayer(${li})">ZOOM TO MAP</button>`:''}</div>
-    <div class="links">${links}</div><h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">LEGEND</h3>${legend}
+    <div class="links">${links}</div><h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">${supplementKind}</h3>${supplement}
     <div class="src">${v&&(v.data_url||v.file)?`Vector data: <a href="${esc(quadAssetUrl(v.data_url||v.file))}" target="_blank">download ↗</a><br>`:''}${v&&(v.targets_url||v.targets_file)?`Vector rescan targets: <a href="${esc(quadAssetUrl(v.targets_url||v.targets_file))}" target="_blank">open ↗</a><br>`:''}Tiles are loaded from the inventory's XYZ pointer only while enabled. A missing tile is surfaced as an error, never silently treated as unmapped ground.</div>`);
   const img=dInner.querySelector('.qlegend'); if(img) img.onerror=()=>{ img.style.display='none'; if(img.nextElementSibling) img.nextElementSibling.style.display='block'; };
 }
 function quadRenderInventory(){
   const body=$('quadInventoryBody');
   if (!QUAD){ body.innerHTML=QSTATE.status==='loading'?'<p>Loading quad inventory…</p>':'<div class="callout">Quad inventory could not be loaded. No target, candidate, gap, watch, or rescan records are being inferred.</div>'; return; }
-  const targetRows=quadArr(QUAD.targets).map((t,ti)=>{
+  const targets=quadArr(QUAD.targets);
+  const targetSwitchRows=targets.map((t,ti)=>quadTargetOverlayRowHtml(t,ti,false)).join('');
+  const targetSwitchCount=targets.filter(t=>{
+    const pick=quadTargetLayerSelection(t), r=pick.layer&&pick.layer.raster||{};
+    return !!(pick.layer&&r.status==='ready'&&r.tile_url_template);
+  }).length;
+  const targetRows=targets.map((t,ti)=>{
     const q=t.quads&&t.quads.containing, adj=t.quads&&quadArr(t.quads.adjacent);
     const candidates=quadArr(t.candidates);
     const gap=quadGapHtml(t.gap,true);
@@ -1133,12 +1236,15 @@ function quadRenderInventory(){
     ].filter(Boolean).join(' · ')||r.status||'—';
     return `<tr><td>${esc(r.id)}</td><td>${esc(t?t.name:r.target_id)}</td><td>${esc(r.source_layer_id||'—')}</td><td>${esc(quadList(r.scale||r.resolution)||'—')}</td><td>${esc(stats)}</td><td>${gu?`<a href="${esc(quadAssetUrl(gu))}" target="_blank">geology ↗</a> `:''}${tu?`<a href="${esc(quadAssetUrl(tu))}" target="_blank">targets ↗</a>`:''}<br>${esc(r.method||'')}${r.note?'<br>'+esc(r.note):''}</td></tr>`;
   }).join('');
-  body.innerHTML=`<p><b style="color:var(--ink)">${quadArr(QUAD.targets).length} targets</b>${QUAD.generated?' · generated '+esc(QUAD.generated):''}.</p>${quadMethodHtml(QUAD.methodology)}
+  body.innerHTML=`<h3>TARGET OVERLAY SWITCHER · ${targets.length}</h3><p>Check a ready target to show its selected map; the inventory closes and the map pans to that overlay automatically. Reopen this inventory to hide it or choose another. Targets that share one map stay synchronized. <b style="color:var(--ink)">${targetSwitchCount} ready now.</b> Rows without a ready tiled map remain explicit statuses and do not get a nonworking checkbox.</p>
+    <div class="qtargetswitch">${targetSwitchRows||'<div class="qtargetrow">No targets are listed.</div>'}</div>
+    <p><b style="color:var(--ink)">${targets.length} target inventory entries</b>${QUAD.generated?' · generated '+esc(QUAD.generated):''}.</p>${quadMethodHtml(QUAD.methodology)}
     ${QUAD.stats?`<p style="font:10.5px var(--mono)">${esc(quadList(QUAD.stats))}</p>`:''}
     <h3>TARGETS · CANDIDATES · EXPLICIT GAPS</h3><div class="qtablewrap"><table><tr><th>Target</th><th>Containing + adjacent quads</th><th>Candidate map inventory</th><th>Gap</th></tr>${targetRows||'<tr><td colspan="4">No targets are listed.</td></tr>'}</table></div>
     <h3>DELIVERED / PROCESSING LAYERS</h3><div class="qtablewrap"><table><tr><th>Layer</th><th>Raster status</th><th>Vector status / rescan</th><th>Formats</th><th>Citation</th></tr>${layerRows||'<tr><td colspan="5">No layers are listed.</td></tr>'}</table></div>
     <h3>WATCH LIST</h3><div class="qtablewrap"><table><tr><th>Title</th><th>Status</th><th>Last checked</th><th>Note</th></tr>${watchRows||'<tr><td colspan="4">No watch entries are listed.</td></tr>'}</table></div>
     <h3>VECTOR / 24K RESCAN SUMMARY</h3><div class="qtablewrap"><table><tr><th>Rescan</th><th>Target</th><th>Source layer</th><th>Scale</th><th>Stats</th><th>Method / outputs</th></tr>${rescanRows||'<tr><td colspan="6">No vector rescans are listed.</td></tr>'}</table></div>`;
+  quadSyncTargetControls();
 }
 function quadShowInventory(){ quadRenderInventory(); toggleModal('quadInventoryModal',1); }
 let quadDraftSeq=0;

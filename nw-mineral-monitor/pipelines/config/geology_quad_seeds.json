@@ -117,8 +117,8 @@
       "coordinates": [-120.783, 38.365],
       "grade_match": {"dep": "10028230"},
       "selected_layer_ids": ["jackson-pgm-2019"],
-      "gap": "Acquisition gap: CGS delivers the PDF by email and supplies the native GIS database on request. The request is drafted but intentionally unsent; no raster is published without the file and its reuse terms.",
-      "notes": "Mandatory seed. Inventory also follows Ione, Irish Hill, Valley Springs, Wallace, San Andreas and other flanking preliminary maps.",
+      "gap": null,
+      "notes": "Mandatory seed. The official public NGMDB preview KMZ supplies the georeferenced raster; native attributed GIS remains unavailable publicly. Inventory also follows Ione, Irish Hill, Valley Springs, Wallace, San Andreas and other flanking preliminary maps.",
       "priority_candidates": [
         {
           "catalog_id": 108920,
@@ -129,10 +129,10 @@
           "scale_denominator": 24000,
           "series": "California Geological Survey PGM-19-01",
           "publisher": "California Geological Survey",
-          "formats": ["PDF by email", "GIS database on request"],
-          "status": "email-gated",
+          "formats": ["NGMDB georeferenced KMZ raster", "NGMDB Zoomify sheet preview", "PDF by email", "native GIS unavailable publicly"],
+          "status": "acquired from public NGMDB preview holding",
           "catalog_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_108920.htm",
-          "source_url": "https://filerequest.conservation.ca.gov/?q=Jackson_24k_v1.0.pdf"
+          "source_url": "https://ngmdb.usgs.gov/ngm-bin/pdp/download.pl?q=62208_108920_99"
         },
         {
           "catalog_id": "USGS-PP-827",
@@ -307,22 +307,22 @@
       "scale": "1:24,000",
       "series": "CGS PGM-19-01",
       "retrieved": "2026-08-11",
-      "source_url": "https://filerequest.conservation.ca.gov/?q=Jackson_24k_v1.0.pdf",
+      "source_url": "https://ngmdb.usgs.gov/ngm-bin/pdp/download.pl?q=62208_108920_99",
       "product_url": "https://www.conservation.ca.gov/cgs/maps-data/rgm/preliminary/",
-      "formats": ["PDF by email", "GIS database on request"],
-      "rights": "Pending product-specific collar terms and written public web-tile permission from CGS.",
+      "formats": ["NGMDB georeferenced KMZ raster", "NGMDB Zoomify sheet preview", "PDF by email", "native GIS unavailable publicly"],
+      "rights": "Academic-use deployment per project-owner direction; preserve the CGS and NGMDB citations. No open-content license is asserted.",
       "raster": {
-        "status": "blocked",
-        "block_reason": "email-gated source and reuse permission pending",
-        "tile_url_template": null,
-        "bounds": [-120.875013, 38.2500051, -120.750013, 38.3750051],
+        "status": "processing",
+        "block_reason": null,
+        "tile_url_template": "/ws10-assets/tiles/jackson-pgm-2019/{z}/{x}/{y}.webp",
+        "bounds": [-120.8760494424, 38.2499171342, -120.7510453186, 38.3749126292],
         "minzoom": 10,
         "maxzoom": 16,
         "default_opacity": 0.72,
-        "legend_url": null,
-        "cog_url": null
+        "legend_url": "/ws10-assets/legends/jackson-pgm-2019.webp",
+        "cog_url": "/ws10-assets/cogs/jackson-pgm-2019.tif"
       },
-      "georef": {"crs": null, "gcp_count": 0, "rmse": null, "confidence": "blocked", "status": "source not acquired; request drafted, not sent"}
+      "georef": {"crs": "EPSG:4326", "gcp_count": 4, "rmse": null, "confidence": "high", "status": "Official NGMDB KMZ GroundOverlay LatLonBox, no rotation; reviewed against the printed Jackson quadrangle neatline."}
     },
     {
       "id": "anderson-1931-plate-xviii",

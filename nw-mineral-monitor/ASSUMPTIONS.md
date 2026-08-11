@@ -24,9 +24,11 @@
     tie-break. The De Lamar, Jackson, Black Pine, and Grass Valley seed areas
     are then added as `forced_seed` inventory records when they are not in
     that cohort; they do not displace a ranked target or acquire a fake
-    rank. Containing plus edge/corner-adjacent USGS 7.5-minute quads define
-    catalog-search coverage, not a claim that every returned map contains
-    target-scale evidence.
+    rank. The result is 19 target rows but 18 unique selected rasters: four
+    seed overlays plus 14 ranked-map selections, because Idaho Bonanza and
+    Atlanta share the Hailey regional map. Containing plus
+    edge/corner-adjacent USGS 7.5-minute quads define catalog-search coverage,
+    not a claim that every returned map contains target-scale evidence.
 
 39. **A map-catalog gap is data, not an omitted row or a geologic
     conclusion.** The inventory records `gap` when the searched NGMDB/state
@@ -35,7 +37,13 @@
     separately. “Gap” means no qualifying catalog result was found on the
     retrieval date. It does not mean the area is unmapped in every archive,
     geologically uninteresting, or safe to infer at coarse scale. Grass
-    Valley's missing modern CGS quad is intentionally visible this way.
+    Valley's missing modern CGS quad is intentionally visible this way even
+    though Johnston PP 194 supplies a historical substitute. Conversely, a
+    selectable regional fallback is not allowed to erase a scale limitation:
+    Willow Creek/Pearl (1:125,000), Azurite and New Trail (1:100,000), and
+    Excelsior, Mc Grath, Idaho Bonanza/Atlanta, and Mammoth (1:250,000) retain
+    explicit notes. Their finer non-georeferenced scans/GIS holdings remain
+    upgrade candidates instead of being forced into unreviewed warps.
 
 40. **Georeference confidence and remote verification control publication.**
     A standard 7.5-minute collar may use official quad corners after
@@ -45,26 +53,44 @@
     `--mark-ready` only after its S3/CloudFront objects and alignment are
     verified. A low-confidence or unreviewed fit remains non-toggleable even
     if a tile pyramid can technically be made. The system prefers an honest
-    blank over a persuasive bad warp.
+    blank over a persuasive bad warp. Every selected NGMDB KMZ is additionally
+    pinned to its exact KML/raster members and GroundOverlay bounds, requires
+    zero rotation, and has its associated target coordinate checked inside
+    the image footprint; the shared Hailey raster contains both targets.
 
 41. **Raster and vector geology have different evidentiary jobs.** Scanned
     sheets are visual overlays. Only a real GIS database normalized with
     source id, attributed unit description, citation, and map scale feeds WS6
-    lexicon scoring. DWM-193 therefore drives a native 1:24,000 rescan while
-    the Jackson database remains “unpublished/on request.” Jackson's PDF is
-    email-gated, the CGS request is unsent, and product-specific web-tile and
-    database reuse rights are still pending. Raster pixels are never
-    vectorized or scored as if they were attributed polygons.
+    lexicon scoring. DWM-193 therefore drives the sole native 1:24,000 rescan.
+    Jackson's seed overlay instead uses the official public NGMDB
+    4096×4096 georeferenced KMZ, with a legend cropped from the NGMDB sheet
+    preview. Its original CGS PDF remains email-delivered through the
+    California ADA workflow, and native attributed GIS is unavailable
+    publicly; Jackson therefore has no vector rescan. The project owner
+    waived a separate reuse review for this academic deployment, with
+    CGS/NGMDB attribution preserved and no open-content license asserted.
+    The unsent outbox draft is superseded for raster acquisition and remains
+    only a possible native-GIS request. Raster pixels are never vectorized or
+    scored as if they were attributed polygons.
 
-42. **S3 is the raster system of record; git contains pointers and
-    provenance only.** Source scans, extracted plates, COGs, legends, and
-    XYZ tiles live in ignored `pipelines/cache/ws10/` staging and the fixed
-    S3 `ws10-assets/` prefix. Site deploys exclude that prefix from every
-    `sync --delete`; the explicit asset upload is add/update only. Inventory,
+42. **S3 is the published-raster system of record; git contains pointers and
+    provenance only.** Source scans and extracted plates use ignored
+    `pipelines/cache/ws10/` staging while a layer is built; their official
+    URLs and pinned checksums remain in git so the cache is reproducible and
+    may be evicted. Published COGs, legends/previews, and XYZ tiles live in
+    the fixed S3 `ws10-assets/` prefix. Site deploys exclude that prefix from
+    every `sync --delete`; the explicit asset upload is add/update only. Inventory,
     normalized vector JSON, and the CGS request draft are reviewable git
     artifacts. The request's `sendable: false` state is intentional: a
     drafted recipient/body is not authorization for this app or its
-    operators to send email automatically.
+    operators to send email automatically. Limited local disk is handled one
+    layer at a time: build, upload, verify remotely, mark ready while local
+    checksums can still be revalidated, then evict only that layer's exact
+    COG/XYZ/legend-or-preview outputs. Eviction is refused until remote
+    verification is recorded. The guarded asset-eviction command retains
+    cached official sources by default; on this space-constrained workstation
+    those exact source caches may then be removed separately because their
+    official URLs, hashes, byte counts, and all published pointers remain.
 
 43. **The implemented raster path is a documented Python equivalent, not a
     GDAL-CLI workflow.** Pillow + NumPy produce image/tile arrays, tifffile
@@ -76,3 +102,17 @@
     explicitly labeled 1.5× resample that adds no source information. This
     preserves both the requested output convention and the honest native
     resolution.
+
+44. **A target checkbox represents a real selected raster, not a catalog
+    row.** MAP INVENTORY shows 19 target controls; the sidebar shows the 18
+    unique underlying layers. Enabling either control closes the inventory
+    when applicable and pans/fits to the selected footprint so a distant
+    overlay is visible. Shared target controls stay synchronized. A target
+    whose selected asset is not ready displays its status and receives no
+    no-op checkbox.
+
+45. **A map preview is not a legend.** The four seed overlays have reviewed
+    crops of actual collar/unit keys and may expose `legend_url`. The 14
+    ranked NGMDB selections expose a reduced whole-sheet `preview_url` for
+    orientation. Preview and legend metadata are mutually exclusive, and UI
+    copy must not invite users to decode map colors from a generic preview.

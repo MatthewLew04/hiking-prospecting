@@ -59,21 +59,23 @@ That's it. Later:
 
 ## WS10 quad rasters — separate, protected upload
 
-Quad source scans, COGs, legends, and XYZ tiles do not live in `site/` or in
-git. The build stages publishable objects under
+Quad source scans, COGs, legends/previews, and XYZ tiles do not live in
+`site/` or in git. The build stages publishable objects under
 `pipelines/cache/ws10/assets/`; the deploy script copies that tree to the
 fixed bucket prefix `ws10-assets/`:
 
 ```bash
-cd nw-mineral-monitor/infra
+# Build one layer at a time from nw-mineral-monitor/.
+python3 pipelines/prepare_quad_geology.py --download --skip-vector --only mayflower-mbmg-ofr-505
+cd infra
 WS10_UPLOAD_DRY_RUN=1 bash deploy.sh upload-ws10-assets
 bash deploy.sh upload-ws10-assets
 cd ..
-# After verifying remote COG/legend/tile objects and alignment:
-python3 pipelines/prepare_quad_geology.py --mark-ready dwm-193 anderson-1931-plate-xviii johnston-pp194-plate-1
+# After verifying this layer's remote COG/tile/legend-or-preview objects and alignment:
+python3 pipelines/prepare_quad_geology.py --mark-ready mayflower-mbmg-ofr-505
 python3 pipelines/geology_quads.py
-/Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py
-bash infra/deploy.sh update-site
+python3 pipelines/prepare_quad_geology.py --evict-ready-local mayflower-mbmg-ofr-505
+# Repeat build → upload → verify → mark-ready → evict for each layer.
 ```
 
 This order matters. A local build deliberately emits `processing` /
@@ -82,12 +84,34 @@ their pointers. The asset command refuses a missing or empty staging
 directory and any symlink, follows no symlinks, never uses `--delete`, applies
 a one-day cache header to binary map products and a 15-minute header to
 JSON/GeoJSON, then invalidates `/ws10-assets/*` in CloudFront. It cannot prune
-older remote versions. `--mark-ready` validates the local build again and
-records `uploaded-and-verified`; `geology_quads.py` merges that state into the
-inventory that `update-site` publishes. The final validator checks inventory
-rank/quad/gap invariants, three ready layers plus blocked Jackson, local asset
-hashes/counts/GeoTIFF tags, remote-verification stamps, the native-vector
-rescan, guarded outbox, UI syntax, and the no-raster-in-git rule. Replace the
+older remote versions. `--mark-ready` validates the still-local build again
+and records `uploaded-and-verified`; `geology_quads.py` merges that state into
+the inventory. `--evict-ready-local` then removes only that remotely verified
+layer's exact local COG, XYZ, and legend-or-preview files, retaining its
+source cache, checksums, provenance, and S3 copy. This sequential cycle keeps
+disk use bounded while building the 18 unique rasters. If the workstation is
+still space-constrained, the exact ignored source/work cache may be removed
+separately after remote verification; the committed official URL, SHA-256,
+byte count, extraction contract, and published pointers preserve a
+reproducible path without implying that source KMZ/PDF files were uploaded.
+
+The deployed inventory has 19 target checkboxes backed by 18 unique layers:
+four seed overlays plus 14 ranked-map selections, with Hailey shared by Idaho
+Bonanza and Atlanta. Once all 18 have completed the cycle, publish the final
+pointer/UI bundle:
+
+```bash
+python3 pipelines/geology_quads.py
+/Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py --skip-assets
+bash infra/deploy.sh update-site
+```
+
+`--skip-assets` is valid here only because every evicted layer passed local
+build/mark-ready checks and remote COG/tile/legend-or-preview verification
+before eviction. The final validator still checks rank/quad/gap and
+target-mapping invariants, 18 ready and zero blocked layers, remote stamps,
+the DWM-193 native-vector rescan, Jackson's raster-only provenance, guarded
+outbox, target-switcher/UI syntax, and the no-raster-in-git rule. Replace the
 shown Miniconda path with another dependency-capable Python when necessary;
 do not publish after a validator failure.
 
@@ -97,22 +121,39 @@ deploy cannot erase it even though no matching local files exist. `teardown`
 is the exception: after its typed confirmation it intentionally empties the
 whole bucket, including WS10 assets.
 
-For a console-only deployment, upload the *contents* of
-`pipelines/cache/ws10/assets/` into a bucket folder named exactly
-`ws10-assets/` before uploading the current `site/data/geology-quads/`
-inventory. Preserve the directory/key layout: XYZ URLs depend on
+For a console-only deployment, repeat the same one-layer cycle: upload the
+current *contents* of `pipelines/cache/ws10/assets/` into a bucket folder
+named exactly `ws10-assets/`, verify and mark that layer ready, then evict it
+locally. Upload the final `site/data/geology-quads/` inventory only after all
+18 cycles. Preserve the directory/key layout: XYZ URLs depend on
 `{z}/{x}/{y}` matching those keys.
 
 Rasters never belong in `site/`, even temporarily. Doing so bloats git and
-also turns the root site sync into an accidental lifecycle manager. Full
-acquisition, Python/Poppler prerequisites, alignment review, and verification
-steps are in `RUNBOOK.md`. The current builder uses Pillow, NumPy, tifffile,
-Fiona, pyproj, and Shapely; it requires no GDAL command-line tools.
+also turns the root site sync into an accidental lifecycle manager. The 14
+ranked selections publish a reduced whole-sheet **map preview** under
+`ws10-assets/previews/`; that is orientation context, not a geologic-unit
+legend. A **legend** URL is used only for a reviewed crop of an actual unit
+key, as on the four seed overlays. Full acquisition, Python/Poppler
+prerequisites, alignment review, and verification steps are in `RUNBOOK.md`.
+The current builder uses Pillow, NumPy, tifffile, Fiona, pyproj, and Shapely;
+it requires no GDAL command-line tools.
 
-Jackson PGM-19-01 is not part of the promotion command. It remains blocked
-because the source is email-gated and CGS publication/database reuse rights
-are pending. Its CGS request is an unsent draft, not permission to acquire,
-publish, or mark the layer ready.
+Each ranked source is an official NGMDB KMZ. Its configured KML
+GroundOverlay bounds, zero rotation, raster member, and target containment
+were reviewed before selection; Hailey was checked against both target
+coordinates. Regional fallbacks remain explicitly labeled for Willow
+Creek/Pearl, Azurite, New Trail, Excelsior, Mc Grath, Idaho Bonanza/Atlanta,
+and Mammoth. Finer non-georeferenced scans or GIS products remain cataloged
+upgrade candidates and are not silently substituted with unreviewed warps.
+
+Jackson PGM-19-01 follows the same per-layer promotion cycle. Its source is
+the official public NGMDB 4096×4096 georeferenced KMZ, and its legend comes
+from the NGMDB sheet preview. The project owner waived a separate reuse review for
+this academic deployment; preserve CGS/NGMDB attribution and do not claim an
+open-content license. The original CGS PDF remains email-delivered through
+the California ADA workflow, native attributed GIS is not publicly
+available, and no Jackson vector rescan is published. The CGS GIS-request
+draft remains unsent and is superseded for raster acquisition.
 
 ---
 

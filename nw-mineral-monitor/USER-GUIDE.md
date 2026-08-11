@@ -38,19 +38,25 @@ freshness).
 
 ## 2 · What changed in the latest releases
 
-**WS10 — quad-scale geology (2026-08-11).** The top 15 rich-open grade
-targets now have a per-target map inventory based on their containing and
-adjacent USGS 7.5-minute quads. The four required detailed-map seeds (De
-Lamar–Swisher Mountain, Jackson, Black Pine, and Grass Valley) stay in the
-inventory even when they fall outside that score cutoff. Ready maps appear
-under **GEOLOGY (QUAD)** with an opacity control, collar legend, full
-provenance, and a direct source link. Missing modern mapping is displayed as
-a gap; catalog and low-confidence records are not quietly passed off as live
-overlays. See §7d.
+**WS10 — quad-scale geology (2026-08-11).** **MAP INVENTORY** now gives all
+19 targets a checkbox: the top 15 rich-open rows plus the four required seed
+areas (De Lamar–Swisher Mountain, Jackson, Black Pine, and Grass Valley).
+Those controls select 18 real underlying rasters — four seed overlays and 14
+ranked-map selections — because Idaho Bonanza and Atlanta share the Hailey
+regional map. Enabling a map closes the inventory and automatically pans/fits
+to its footprint, so an overlay in another state no longer appears to do
+nothing. See §7d.
 
-The live WS10 raster set is DWM-193, Anderson Plate XVIII, and Johnston PP
-194 Plate 1. Jackson PGM-19-01 remains visible but blocked pending the unsent
-CGS source/database request and written reuse rights.
+Every ranked selection is an official NGMDB georeferenced KMZ whose KML
+bounds and target containment were reviewed. Some are explicitly labeled
+regional fallbacks where a finer target map is available only as a
+non-georeferenced scan; those finer products remain upgrade candidates. The
+four seed maps provide reviewed legend crops. Ranked selections provide a
+reduced map preview, which is not presented as a geologic-unit legend.
+Jackson uses the official public NGMDB 4096×4096 georeferenced KMZ and a true
+legend crop from its NGMDB sheet preview. It is published under the project
+owner's academic-use direction with CGS/NGMDB attribution; no open-content
+license is claimed.
 
 **WS5 — county-direct claim extraction (2026-08-06).** Claims become public record at the
 county recorder weeks-to-months before they appear in BLM's MLRS (state
@@ -238,17 +244,27 @@ config/county_portals.json. Full CA campaign status: PATCH-PLAN.md.
 
 ## 7d · GEOLOGY (QUAD) — WS10
 
-Open **GEOLOGY (QUAD)** in the sidebar. Each map marked ready has its own
-toggle; the opacity slider lets structure, workings, grades, and live claims
-remain visible beneath the scanned sheet. Open a map's provenance card for
-its full citation, year, scale, retrieval date, source/product link, and
-cropped collar legend. The associated cited-grade target is shown with the
-layer, so a regional sheet is not mistaken for evidence tied to every mine
-inside its bounds.
+Open **GEOLOGY (QUAD)** in the sidebar and click **MAP INVENTORY**. At the top
+of the modal, **TARGET OVERLAY SWITCHER** has one row for each of the 19
+targets. Check a row to enable its selected map: the modal closes and the map
+automatically pans/fits to that raster's bounds. Reopen **MAP INVENTORY** to
+turn it off or switch targets. Idaho Bonanza and Atlanta intentionally point
+to the same Hailey raster, so those two checkboxes and the underlying layer
+state stay synchronized. The sidebar lists the 18 unique maps rather than
+duplicating Hailey; enabling one there also pans to it.
 
-The **MAP INVENTORY** is useful even before a raster is ready. For each of
-the top 15 rich-open grade targets it lists the containing and adjacent
-7.5-minute quads, catalog candidates, format (GIS / GeoTIFF / scan /
+Use the shared opacity slider to keep structures, workings, grades, and live
+claims visible beneath a scan. Open a map's provenance card for its full
+citation, year, scale, retrieval date, source/product link, selection note,
+and georeference method. A **legend** is a reviewed crop of the map's actual
+unit key. A **map preview** is a reduced view of the whole source sheet used
+for orientation; it is not a legend and should not be used to decode colors
+or symbols. The four seed overlays have legend crops; the 14 ranked-map
+selections use map previews.
+
+The inventory remains a research record as well as a switcher. For each of
+the top 15 ranked targets and four forced seeds it lists the containing and
+adjacent 7.5-minute quads, catalog candidates, format (GIS / GeoTIFF / scan /
 unpublished), selection status, and notes. Its status words are deliberate:
 
 - **ready** — georeferenced asset is published and can be toggled;
@@ -257,26 +273,56 @@ unpublished), selection status, and notes. Its status words are deliberate:
 - **cataloged** — a source is known, but no reviewed live warp is promised;
 - **review** — an irregular plate or weak fit needs manual control-point
   review and is withheld from the trusted live set;
-- **blocked** — acquisition or publication cannot proceed yet (Jackson is
-  email-gated and still needs CGS source delivery plus reuse permission);
+- **blocked** — acquisition or publication cannot proceed yet; the deployed
+  18-layer set has no blocked layer;
 - **gap** — no qualifying geologic map at 1:62,500 or larger was found in
   the searched catalogs; this means “not found,” not “no useful geology.”
 
-Standard 7.5-minute sheets snap to official quad corners. Pocket plates are
-extracted at their native resolution. Anderson Plate XVIII and Johnston PP
-194 Plate 1 embed native 400-ppi images; provenance retains that value, and
-the generated 600-ppi output is explicitly labeled as a resample that adds no
-source detail. Irregular plates use reviewed control metadata and stop before
-`ready` when confidence is insufficient. DWM-193's real GIS database also
-feeds the WS6 unit schema and a 24k-resolution rescan instead of using raster
-pixels as the analytical layer.
+All NGMDB selections use the exact bounds in their KML GroundOverlay. The
+pipeline verifies the raster member, checks rotation, and requires every
+associated target coordinate to fall inside the image footprint before the
+layer can be selected. Standard 7.5-minute sheets otherwise snap to official
+quad corners. Pocket plates are extracted at their native resolution.
+Anderson Plate XVIII and Johnston PP 194 Plate 1 embed native 400-ppi images;
+provenance retains that value, and the generated 600-ppi output is explicitly
+labeled as a resample that adds no source detail. Irregular plates use
+reviewed control metadata and stop before `ready` when confidence is
+insufficient. DWM-193's real GIS database also feeds the WS6 unit schema and
+a 24k-resolution rescan instead of using raster pixels as the analytical
+layer.
+
+Seven ranked target selections carry an explicit scale/fallback warning:
+
+- Willow Creek/Pearl uses the 1:125,000 Boise folio while IGS P-41 at
+  1:48,768 awaits a reviewed georeference;
+- Azurite uses the target-containing 1:100,000 Robinson Mountain map;
+- New Trail uses a 1:100,000 Ivanpah surficial map rather than implying
+  detailed bedrock coverage;
+- Excelsior uses 1:250,000 Dillon while the 1:31,680 Bannack–Grayling I-433
+  scan remains the detailed upgrade candidate;
+- Mc Grath uses 1:250,000 Medford while DOGAMI GMS-38 at 1:24,000 awaits
+  manual control points;
+- Idaho Bonanza and Atlanta share 1:250,000 Hailey while target-specific
+  OFR 2004-1205 Plate 1 at 1:24,000 awaits a reviewed georeference; and
+- Mammoth uses 1:250,000 Challis while IGS GM-45 at 1:100,000 remains the
+  finer PDF/GIS upgrade candidate without a public georeferenced raster.
+
+The inventory also retains finer/newer non-georeferenced candidates for
+other targets, including Warner and Niagara. A selectable regional fallback
+means “verified image footprint and honest scale,” not “best possible map is
+already finished.”
 
 The inventory includes a watch-list link for areas such as Grass Valley,
-where the modern CGS quad is an explicit gap. The CGS Jackson database email
-shown in the outbox is a **draft only**: the app cannot send it, and nobody
-should send it without the operator's review and approval. Until CGS supplies
-the email-gated source and written web-tile/database reuse rights are reviewed,
-Jackson stays blocked and non-toggleable.
+where the modern CGS quad is an explicit gap. Jackson is different: its live
+raster comes from the official public NGMDB 4096×4096 georeferenced KMZ, and
+its legend is cropped from the NGMDB sheet preview. The original CGS PDF still
+uses California's email-delivery/ADA workflow, and native attributed GIS is
+not publicly available. The project owner waived a separate reuse review for
+this academic deployment; CGS/NGMDB attribution is retained, but no open
+license is claimed. Jackson therefore has no vector rescan. The CGS Jackson
+GIS email shown in the outbox remains **draft only**, unsent, and superseded
+for raster acquisition; it would request native GIS rather than the already
+available raster.
 
 ## 8 · WATCH, ASK, dossiers, INTEL
 
@@ -327,9 +373,10 @@ tools. AOI pipelines remain config-driven by `pipelines/config/aoi.json`
 | Geology + targets refresh (WS6) | `python3 pipelines/fetch_geology.py && python3 pipelines/geology_targets.py` |
 | County gold ranking | `python3 pipelines/county_gold.py` |
 | WS10 map inventory | `python3 pipelines/geology_quads.py` |
-| WS10 acquire/georeference/build | `python3 pipelines/prepare_quad_geology.py --download` (first run; outputs `processing` / `built-awaiting-upload`) |
-| Upload WS10 rasters/tiles | `cd infra && WS10_UPLOAD_DRY_RUN=1 bash deploy.sh upload-ws10-assets`, then rerun without the dry-run variable and verify remote objects |
-| Promote + validate verified WS10 layers | `python3 pipelines/prepare_quad_geology.py --mark-ready dwm-193 anderson-1931-plate-xviii johnston-pp194-plate-1 && python3 pipelines/geology_quads.py && /Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py && bash infra/deploy.sh update-site` |
+| WS10 build one raster | `python3 pipelines/prepare_quad_geology.py --download --skip-vector --only <layer-id>` (outputs `processing` / `built-awaiting-upload`) |
+| Upload + promote one WS10 raster | `cd infra && WS10_UPLOAD_DRY_RUN=1 bash deploy.sh upload-ws10-assets && bash deploy.sh upload-ws10-assets`; verify its remote COG/tiles/legend-or-preview, then `cd .. && python3 pipelines/prepare_quad_geology.py --mark-ready <layer-id>` |
+| Reclaim local disk after promotion | `python3 pipelines/prepare_quad_geology.py --evict-ready-local <layer-id>`; only remotely verified ready assets can be evicted, and the S3 copy plus checksums remain authoritative |
+| Final WS10 metadata/UI validation + deploy | `python3 pipelines/geology_quads.py && /Users/matthewlew/miniconda3/bin/python pipelines/validate_quad_geology.py --skip-assets && bash infra/deploy.sh update-site` after all 18 layers passed their pre-eviction checks |
 | Claims / PLSS / land status / open ground | `fetch_claims_aoi.py` → `fetch_plss.py` → `fetch_landstatus.py` → `open_ground.py` |
 | Dossiers + history sweep | `webscrub.py` → `dossier.py` |
 | Permanent layer from a file | drop in `data-inbox/` → `inbox_ingest.py` |

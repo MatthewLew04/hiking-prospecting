@@ -20,7 +20,7 @@ Interactive map of mines, mining claims, and mineral sources across **Washington
 | `site/data/geology-quads/inventory.json` | WS10 top-grade-target map inventory, quad/candidate metadata, overlay pointers, provenance, georeference confidence, gaps, and 24k rescan references |
 | `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
-| `pipelines/cache/ws10/assets/` | Gitignored staging for quad scans, COGs, legends, and XYZ tiles; upload explicitly to S3 `ws10-assets/` — rasters never enter git |
+| `pipelines/cache/ws10/assets/` | Gitignored staging for published COGs, legends/previews, and XYZ tiles; upload explicitly to S3 `ws10-assets/` — rasters never enter git |
 | `data-inbox/` | Drop files here + run `pipelines/inbox_ingest.py` → permanent map layers |
 | `demo/` | `messy_cassia.csv` acceptance-test file (see DEMO.md) |
 | `infra/` | CloudFormation template, Lambdas (claims updater, AI relay, **expiration watch**), deploy script |
@@ -68,33 +68,62 @@ Judgment calls: `ASSUMPTIONS.md`. Operations: `RUNBOOK.md`. Walkthrough: `DEMO.m
 
 ## WS10 — quad-scale geology (2026-08-11)
 
-**Geology (quad)** brings the best available detailed mapping to the targets
-that rise to the top of the rich-open grade score. The committed inventory
-covers the top 15 grade targets plus the four required seed areas, records
-their containing and adjacent USGS 7.5-minute quads, ranks catalog results,
-and shows a gap explicitly when no qualifying map is available. Ready maps
-render as independently toggleable XYZ overlays with opacity, legend, full
-citation, retrieval date, and source link. Cataloged, processing, and
-low-confidence/manual-review records remain visible in the inventory without
-being presented as trustworthy live warps.
+**Geology (quad)** brings the best available target-covering mapping to the
+top of the rich-open grade score. The deployed inventory has 19 target rows:
+the top 15 ranked targets plus the four required seed areas. Its 19
+checkboxes point to 18 real underlying rasters — four seed overlays and 14
+ranked-map selections — because Idaho Bonanza and Atlanta intentionally share
+the target-covering Hailey sheet. Checking a row closes the inventory and
+automatically pans/fits the map to the selected overlay; the two rows that
+share Hailey stay synchronized. There are no placeholder checkboxes that
+render an empty layer.
 
-The implemented overlays are IGS DWM-193 at De Lamar–Swisher Mountain,
-Anderson's 1931 Plate XVIII at Black Pine, and Johnston PP 194 Plate 1 at
-Grass Valley. DWM-193's native GIS is normalized into the WS6 unit schema and
-feeds a 1:24,000 rescan. Jackson PGM-19-01 remains explicitly blocked: the
-source is email-gated, its CGS request has not been sent, and web-tile/database
-reuse rights are pending. Source PDFs, working rasters, COGs, and tiles stay
-under the ignored `pipelines/cache/` tree and in S3 only.
+The four seed overlays are IGS DWM-193 at De Lamar–Swisher Mountain, Jackson
+PGM-19-01, Anderson's 1931 Plate XVIII at Black Pine, and Johnston PP 194
+Plate 1 at Grass Valley. The 14 ranked selections come from official NGMDB
+georeferenced KMZ holdings. Their KML GroundOverlay bounds were inspected,
+rotation was checked, and every associated target coordinate — both targets
+for Hailey — was verified inside its image footprint. A reduced whole-sheet
+**map preview** accompanies these ranked selections; it is context, not a
+geologic-unit legend. The four seed products instead expose reviewed collar
+legend crops. Citation, scale, retrieval date, source link, selection note,
+and georeference provenance remain available for every layer.
+
+Some immediately usable selections are intentionally regional scale
+exceptions: Willow Creek/Pearl uses 1:125,000, Azurite and New Trail use
+1:100,000, and Excelsior, Mc Grath, Idaho Bonanza/Atlanta, and Mammoth use
+1:250,000. The inventory labels those limitations and retains the finer but
+non-georeferenced P-41, Bannack–Grayling I-433, DOGAMI GMS-38, OFR 2004-1205,
+and IGS GM-45 products as upgrade candidates rather than shipping an
+unreviewed warp. Catalog candidates and the Grass Valley modern-map gap stay
+visible; a fallback is not described as quad-scale evidence merely because
+it can be toggled.
+
+Jackson uses the official public NGMDB 4096×4096 georeferenced KMZ raster and
+a true legend crop made from the NGMDB sheet preview. The project owner
+directed academic-use deployment without a separate reuse review; the
+inventory preserves CGS/NGMDB attribution and does not claim an open-content
+license. The original CGS PDF remains available only through its
+email-delivery/ADA workflow, and native attributed GIS is not publicly
+available. Consequently Jackson is a visual overlay, not a vector source,
+and has no WS6 rescan. The unsent CGS outbox draft is retained only as a
+superseded request for native GIS. DWM-193's native GIS is normalized into
+the WS6 unit schema and feeds the sole 1:24,000 rescan. Downloaded source
+PDFs/KMZs and working rasters use the ignored `pipelines/cache/` tree only
+while staged and may be evicted after their official URL and checksum are
+recorded. Published COGs, previews, legends, and tiles live in S3; raster
+artifacts never enter git.
 
 The current builder uses Pillow, NumPy, tifffile, Fiona, pyproj, Shapely, and
 Poppler; it does not require GDAL command-line tools. Anderson and Johnston
 pocket plates retain native 400-ppi provenance, while their 600-ppi web/COG
 output is explicitly recorded as a resample that adds no source detail.
-Build, QA, two-phase upload/readiness order, and the draft-only CGS database
-request are documented in `RUNBOOK.md`. Final prepublish QA runs
-`pipelines/validate_quad_geology.py` with the dependency-capable Python; it
-checks inventory, assets, native-vector rescan, outbox/UI guardrails, and the
-no-raster-in-git policy before site deployment.
+Build, QA, disk-safe sequential upload/readiness/eviction order, and the
+unsent, superseded CGS GIS-request draft are documented in `RUNBOOK.md`.
+Final prepublish QA combines each layer's local checksum/tile validation and
+remote-object verification before eviction with a metadata/UI validation of
+the final 18-ready/zero-blocked set, the DWM-193 native-vector rescan,
+outbox guardrails, and the no-raster-in-git policy.
 
 ## Auto-updating
 

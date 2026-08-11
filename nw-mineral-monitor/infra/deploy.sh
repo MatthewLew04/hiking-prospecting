@@ -138,10 +138,18 @@ case "${1:-deploy}" in
     printf '{"region":"%s","clientId":"%s","askUrl":"%s"}' "$REGION" "$CLIENT" "$ASKURL" > /tmp/auth.json
     aws s3 cp /tmp/auth.json "s3://$BUCKET/auth.json" --region "$REGION" \
       --cache-control "public, max-age=300" --content-type "application/json"
-    aws cognito-idp admin-set-user-password --region "$REGION" \
-      --user-pool-id "$POOL" --username "${COGNITO_USER:-codyClinger}" \
-      --password "${COGNITO_PASS:-testing123}" --permanent
-    echo "    login enabled: user '${COGNITO_USER:-codyClinger}' (pool $POOL)"
+    # one entry per login — users are created by template.yaml (UserPoolUser
+    # resources); this sets/refreshes their permanent passwords idempotently.
+    for cred in \
+        "${COGNITO_USER:-codyClinger}:${COGNITO_PASS:-testing123}" \
+        "sean:${COGNITO_PASS_SEAN:-drift-lode69}" \
+        "rachel:${COGNITO_PASS_RACHEL:-placer-vein22}"; do
+      u="${cred%%:*}"; p="${cred#*:}"
+      aws cognito-idp admin-set-user-password --region "$REGION" \
+        --user-pool-id "$POOL" --username "$u" --password "$p" --permanent \
+        && echo "    login enabled: user '$u' (pool $POOL)" \
+        || echo "    WARNING: could not set password for '$u' (user missing? run the stack update first)"
+    done
 
     echo "==> [4/5] Running first claims refresh (2-4 min)…"
     aws lambda invoke --function-name "$FN" --region "$REGION" \

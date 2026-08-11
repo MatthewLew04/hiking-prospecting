@@ -574,6 +574,20 @@ Resources:
       Username: codyClinger
       MessageAction: SUPPRESS   # no invite email; deploy.sh sets the permanent password
 
+  MapUserSean:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      UserPoolId: !Ref UserPool
+      Username: sean
+      MessageAction: SUPPRESS
+
+  MapUserRachel:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      UserPoolId: !Ref UserPool
+      Username: rachel
+      MessageAction: SUPPRESS
+
 Outputs:
   SiteURL:
     Description: Your map's URL

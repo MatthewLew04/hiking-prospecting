@@ -419,7 +419,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-11a';
+const BUILD = '2026-08-11b';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['WA','OR','ID','MT','WY','NV','UT','CA'];
 const GROUPS = [
@@ -890,6 +890,8 @@ function quadRenderNote(){
   if (QSTATE.status==='loading'){ n.textContent='loading quad inventory…'; return; }
   if (!QUAD){ n.textContent='Quad inventory unavailable — no raster overlay was loaded. Inventory links cannot be assumed.'; return; }
   const layers=quadArr(QUAD.layers);
+  const targets=quadArr(QUAD.targets);
+  const candidates=targets.reduce((sum,t)=>sum+quadArr(t&&t.candidates).length,0);
   const usable=layers.filter(l=>l.raster&&l.raster.status==='ready'&&l.raster.tile_url_template);
   const processing=layers.filter(l=>l.raster&&l.raster.status==='processing');
   const blocked=layers.filter(l=>l.raster&&l.raster.status==='blocked');
@@ -897,9 +899,11 @@ function quadRenderNote(){
   const misconfigured=layers.filter(l=>l.raster&&l.raster.status==='ready'&&!l.raster.tile_url_template);
   const active=[...QSTATE.enabled].length;
   const errs=[...QSTATE.enabled].filter(id=>QSTATE.errors[id]).length;
-  let s = usable.length
-    ? `${usable.length} ready · ${processing.length} processing · ${blocked.length} blocked${unavailable.length?' · '+unavailable.length+' other unavailable':''}${active?' · '+active+' active':''}.`
-    : `No ready quad raster overlays · ${processing.length} processing · ${blocked.length} blocked${unavailable.length?' · '+unavailable.length+' other unavailable':''}.`;
+  let s = `${usable.length} live/toggleable tiled overlay${usable.length===1?'':'s'}${usable.length?' (checkboxes auto-zoom when enabled)':''}`
+    + ` · ${targets.length} target inventor${targets.length===1?'y':'ies'}`
+    + ` · ${candidates} catalog candidate record${candidates===1?'':'s'} (inventory only, not tiled overlays)`
+    + ` · ${processing.length} processing · ${blocked.length} blocked`
+    + `${unavailable.length?' · '+unavailable.length+' other unavailable':''}${active?' · '+active+' active':''}.`;
   if (misconfigured.length) s += ` ${misconfigured.length} ready record${misconfigured.length===1?'':'s'} lack${misconfigured.length===1?'s':''} a tile URL.`;
   s += errs
     ? ` ⚠ ${errs} active layer${errs===1?' has':'s have'} tile errors; blank tiles are not evidence of absent geology. Open ⓘ for the recorded error.`
@@ -914,7 +918,7 @@ function quadRenderSidebar(){
   ready.forEach(l=>{
     const i=quadLayerIndex(l.id), key=String(l.id), on=QSTATE.enabled.has(key);
     const row=document.createElement('div'); row.className='lrow';
-    row.innerHTML=`<input type="checkbox" ${on?'checked':''}><span style="flex:1">${esc(l.label||l.id)}</span><span class="ct" style="font:9px var(--mono);color:${QSTATE.errors[key]?'#e07373':'var(--mut)'}">${QSTATE.errors[key]?'TILE ERROR':on?'ON':'READY'}</span><button class="qinfo" title="provenance, georeference and legend">ⓘ</button>`;
+    row.innerHTML=`<input type="checkbox" ${on?'checked':''} title="${on?'disable overlay':'enable overlay and zoom to its map footprint'}"><span style="flex:1">${esc(l.label||l.id)}</span><span class="ct" style="font:9px var(--mono);color:${QSTATE.errors[key]?'#e07373':'var(--mut)'}">${QSTATE.errors[key]?'TILE ERROR':on?'ON':'READY'}</span><button class="qinfo" title="details, legend and zoom to map">ⓘ</button>`;
     const box=row.querySelector('input');
     box.onchange=()=>{ quadSetLayer(key,box.checked); };
     row.addEventListener('click',e=>{ if(e.target!==box&&!e.target.closest('button')) box.click(); });
@@ -983,7 +987,12 @@ function quadSetLayer(id,on){
     if (map.getSource(sid)) map.removeSource(sid);
     delete QSOURCE[sid]; QSTATE.enabled.delete(id); delete QSTATE.loaded[id];
   }
-  quadRenderSidebar(); return true;
+  quadRenderSidebar();
+  // The inventory spans multiple states; without focusing the newly enabled
+  // footprint a valid layer can be thousands of kilometres off-screen. Defer
+  // one frame so detail/drawer layout changes settle before fitting the map.
+  if (on) quadZoomLayer(i,true);
+  return true;
 }
 function quadToggleFromGrade(li,gi){
   const l=QUAD&&QUAD.layers[li]; if(!l)return;
@@ -997,9 +1006,30 @@ function quadToggleFromLayer(li){
   const l=QUAD&&QUAD.layers[li]; if(!l)return;
   quadSetLayer(l.id,!QSTATE.enabled.has(String(l.id))); quadShowLayer(li);
 }
-function quadZoomLayer(li){
+function quadZoomLayer(li,defer){
   const l=QUAD&&QUAD.layers[li], b=l&&l.raster&&quadBounds(l.raster.bounds);
-  if (b) map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:45,duration:900});
+  if (!b) return false;
+  const west=Math.min(b[0],b[2]), east=Math.max(b[0],b[2]);
+  const south=Math.min(b[1],b[3]), north=Math.max(b[1],b[3]);
+  if (west < -180 || east > 180 || south < -90 || north > 90 || west===east || south===north) return false;
+  const focus=()=>{
+    if (!map) return;
+    const mobile=window.innerWidth<=900, container=map.getContainer();
+    if (mobile){
+      const drawer=document.querySelector('aside');
+      if (drawer) drawer.classList.remove('open');
+    }
+    map.resize();
+    const rect=container.getBoundingClientRect();
+    const covered=mobile&&detail.classList.contains('open') ? detail.getBoundingClientRect().height : 0;
+    const bottom=covered ? Math.min(covered+24,Math.max(32,rect.height-96)) : 45;
+    const opts={padding:{top:45,right:45,bottom,left:45},duration:900};
+    const max=quadNumber(l.raster&&l.raster.maxzoom);
+    if (max!=null) opts.maxZoom=max;
+    map.fitBounds([[west,south],[east,north]],opts);
+  };
+  if (defer && typeof requestAnimationFrame==='function') requestAnimationFrame(focus); else focus();
+  return true;
 }
 function quadGradeBlock(i){
   if (QSTATE.status==='loading') return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">GEOLOGY (QUAD)</h3><div class="desc">Quad map inventory is loading…</div>`;

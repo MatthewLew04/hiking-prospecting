@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "state": "NE",
+  "name": "Nebraska",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-104.055, 39.999, -95.307, 43.001], "crs": "EPSG:4326", "note": "Clip source results to Nebraska's authoritative boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "University of Nebraska-Lincoln Conservation and Survey Division (Nebraska Geological Survey)",
+    "catalog_url": "https://snr.unl.edu/data/",
+    "gis_endpoints": [
+      {"id": "ne_geology_gis", "kind": "gis_download", "url": "https://snr.unl.edu/data/geographygis/geology.aspx"},
+      {"id": "ne_statemap", "kind": "map_and_gis_catalog", "url": "https://snr.unl.edu/data/geologysoils/statemap/index.aspx"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "unl_csd_bedrock_geology",
+    "title": "Digitized Bedrock Geology of Nebraska",
+    "authority": "University of Nebraska-Lincoln Conservation and Survey Division",
+    "source_url": "https://snr.unl.edu/data/geographygis/geology.aspx",
+    "source_scale": "primary sources 1:250,000 in eastern and southern Nebraska; remainder 1:1,000,000; selected STATEMAP products are larger scale",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "The official page warns that much early-1970s mapping is superseded but unpublished. Preserve regional source and scale and overlay published STATEMAP products only."
+  },
+  "faults": {
+    "source_id": "qfaults_ne_plus_csd_bedrock_structure",
+    "title": "USGS Quaternary Faults baseline with CSD bedrock structural data",
+    "authority": "U.S. Geological Survey and University of Nebraska-Lincoln Conservation and Survey Division",
+    "source_url": "https://snr.unl.edu/data/geographygis/geology.aspx",
+    "source_scale": "Qfaults source-dependent; bedrock compilation 1:250,000 to 1:1,000,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "No separate current statewide CSD active-fault vector was verified; do not treat sparse Qfault coverage as proof of absence."
+  },
+  "aeromag": {
+    "state_survey_index_url": "https://snr.unl.edu/data/geographygis/geology.aspx",
+    "state_survey_note": "CSD publishes a digitized 1985 generalized aeromagnetic map; use it only as a state supplement and retain national airborne/Earth MRI survey provenance."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "ne_csd_publications", "title": "Nebraska Geological Survey and Conservation and Survey Division publications", "role": "state_geologist_bulletins_and_resource_reports", "primary": true, "url": "https://snr.unl.edu/data/", "status": "registered_not_extracted"},
+    {"source_id": "ne_active_mineral_operations", "title": "CSD active mineral operations database", "role": "mine_inventory_and_production_index", "primary": true, "url": "https://snr.unl.edu/data/geographygis/geology.aspx", "status": "registered_not_ingested"}
+  ],
+  "aml": {
+    "source_id": "eamlis_ne",
+    "state_inventory_url": null,
+    "status": "national_coal_baseline_only_no_statewide_state_inventory_verified",
+    "evidence": "No Nebraska state AML inventory portal or downloadable statewide mine-hazard dataset was verified; use e-AMLIS for legacy coal and document this state-source finding explicitly."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://belf.nebraska.gov/oil_gas_leasing.html",
+    "evidence_url": "https://nebraskalegislature.gov/laws/laws-index/chap72-full.html",
+    "evidence": "Nebraska BELF states that it leases rare minerals, sand, and gravel in addition to oil and gas; state law opens qualifying school/public lands to mineral prospecting and development under a lease."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://nebraskacounties.org/about_naco/affiliates/clerks-register-of-deeds-election-commissioners.html",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_register_deeds_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Nebraska's public-domain claims are thin; accepted active/closed claim PMTiles and open-ground output are absent."},
+    "geology_faults": {"finding": "Official mixed-scale bedrock GIS is registered; state-fault gap, tiling, and per-polygon source-scale audit remain pending."},
+    "aeromag": {"finding": "A legacy state aeromagnetic layer is known, but no accepted COG with survey-index provenance exists."},
+    "grades": {"finding": "The active-operations database and Elk Creek literature are leads, but 25 graded mines or an explicit audited low-endowment finding is pending."},
+    "recorders": {"finding": "Current live-claim counties have not been joined to a complete register-of-deeds vendor matrix."},
+    "quad_maps": {"finding": "No accepted top-five Nebraska target quadrangle inventory exists."},
+    "ci_scale": {"finding": "Nebraska has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 registry captures Nebraska's mixed-scale geology and AML source gap; state remains disabled."}
+}

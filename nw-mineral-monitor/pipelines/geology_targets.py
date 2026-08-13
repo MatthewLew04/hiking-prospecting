@@ -32,9 +32,13 @@ Only attributed vector unit polygons are scored. Georeferenced scans, COGs,
 and XYZ raster overlays are display context and are explicitly excluded.
 """
 import json, math, os, re, sys
+
+from state_registry import load_state
 from collections import defaultdict
 
-from common import load_aoi, SITE, TODAY, write_json, point_in_poly, update_manifest
+from common import (load_aoi, SITE, TODAY, write_json, point_in_poly,
+                    update_manifest, load_build_input)
+from land_context import normalize_land_context
 
 # ---------------------------------------------------------------- tiers
 T1_RX = re.compile(r'sinter|opalin|opalized|opalite|opal\b|chalcedon|'
@@ -71,6 +75,28 @@ PATHFINDER = {'HG': 2.0, 'MERCURY': 2.0, 'CINNABAR': 2.0,
 BASE = {1: 100, 2: 60, 3: 30, 9: 15}            # 9 = travertine label
 TIER_NAME = {1: 'TIER 1 — HOT-SPRING SINTER', 2: 'TIER 2 — HYDROTHERMAL ALTERATION',
              3: 'TIER 3 — EPITHERMAL HOST', 9: 'TRAVERTINE (CALCAREOUS)'}
+
+
+def target_sort_key(target):
+    """Rank open-ground evidence without coercing legal N/A to numeric zero.
+
+    Positive measured evidence has already raised ``score``. On otherwise
+    equal geology/grade scores, legally not-applicable is neutral and sorts
+    ahead of a measured zero; unknown evidence sorts last. This keeps a
+    non-claim target from being silently treated as proven zero open ground.
+    """
+    open_term = ((target.get('boosts') or {}).get('open') or {})
+    status = open_term.get('status')
+    component = open_term.get('score')
+    if status == 'measured' and isinstance(component, (int, float)) and component > 0:
+        evidence_rank = 0
+    elif status == 'not_applicable':
+        evidence_rank = 1
+    elif status == 'measured':
+        evidence_rank = 2
+    else:
+        evidence_rank = 3
+    return (-target['score'], evidence_rank, -target['area_km2'], str(target.get('id') or ''))
 
 
 def source_record(geo, source_id):
@@ -264,6 +290,7 @@ class Grid:
 
 def run(aoi_key=None):
     aoi = load_aoi(aoi_key)
+    state_cfg = load_state(aoi['state'])
     k = aoi['key']
     st = aoi['state'].lower()
     geo = json.load(open(os.path.join(SITE, f'data/geology/{k}.json')))
@@ -273,9 +300,15 @@ def run(aoi_key=None):
     degraded = []
     try:
         og = json.load(open(os.path.join(SITE, f'data/openground/{k}.json')))
+        open_status = 'measured'
     except FileNotFoundError:
         og = {'sections': []}
-        degraded.append('open-ground grid absent — land-status boost + money flag disabled')
+        open_status = ('not_applicable' if state_cfg['regime'] == 'non_claim'
+                       else 'unknown')
+        degraded.append('open-ground grid absent — ' +
+                        ('not applicable in this legal regime'
+                         if open_status == 'not_applicable' else
+                         'claim-state land-status boost + money flag disabled'))
     try:
         plss = json.load(open(os.path.join(SITE, f'data/plss/{k}.json')))
     except FileNotFoundError:
@@ -317,8 +350,8 @@ def run(aoi_key=None):
     paths = []
     for kind in ('mrds', 'stategeo'):
         try:
-            d = json.load(open(os.path.join(SITE, f'data/sites/{kind}_{st}.json')))
-        except FileNotFoundError:
+            d = load_build_input('sites', f'{kind}_{st}')
+        except (FileNotFoundError, ValueError):
             continue
         for i in range(d['n']):
             if d['x'][i] is None:
@@ -350,6 +383,7 @@ def run(aoi_key=None):
         rings = f['geometry']['coordinates']
         xs = [p[0] for p in rings[0]]; ys = [p[1] for p in rings[0]]
         secs.append({'id': sid, 'lab': s['lab'], 'st': s['st'], 'nA': s['nA'], 'nC': s['nC'],
+                     'ag': s.get('ag'),
                      'cx': sum(xs) / len(xs), 'cy': sum(ys) / len(ys),
                      'bb': (min(xs), min(ys), max(xs), max(ys)), 'rings': rings})
     sgrid = Grid(3.0)
@@ -442,6 +476,7 @@ def run(aoi_key=None):
 
         # open-ground overlap
         over = {}
+        over_ag = {}
         open_secs = []
         r_km = max(2.0, math.sqrt(area_km2) if area_km2 < 900 else 30.0)
         cand, cseen = [], set()
@@ -455,6 +490,8 @@ def run(aoi_key=None):
                 hit = point_in_poly(cx, cy, s['rings'])
             if hit:
                 over[s['st']] = over.get(s['st'], 0) + 1
+                agency = s.get('ag') or 'UNKNOWN'
+                over_ag[agency] = over_ag.get(agency, 0) + 1
                 if s['st'] in ('OPEN', 'CLOSED_ONLY', 'QUIET'):
                     open_secs.append(s['lab'] + (f" ({s['nC']} closed case{'s' if s['nC'] != 1 else ''})"
                                                  if s['st'] == 'CLOSED_ONLY' else ''))
@@ -510,13 +547,16 @@ def run(aoi_key=None):
             score += b
             why.append(f'{len(near_wells)} IDWR geothermal well'
                        f'{"s" if len(near_wells) > 1 else ""} ≤4 km (+{b:.0f})')
-        if n_over:
+        open_component = None
+        if open_status == 'measured' and n_over:
             b = 15 * open_frac
             score += b
+            open_component = round(b, 1)
             why.append(f'land under it: {open_n}/{n_over} overlapped sections locatable & '
                        f'unclaimed (+{b:.0f}) — '
                        + ', '.join(f'{v} {kk}' for kk, v in sorted(over.items(), key=lambda t: -t[1])))
-        money = tier in (1, 2) and open_frac >= 0.4 and open_n >= 1
+        money = (open_status == 'measured' and tier in (1, 2)
+                 and open_frac >= 0.4 and open_n >= 1)
         if money:
             why.append('★ MONEY LAYER: tier ≤2 chemistry over open ground — the WS6 combination')
 
@@ -524,6 +564,44 @@ def run(aoi_key=None):
         if tier == 3 and score < 42:
             dropped += 1
             continue
+        surface_class = 'unknown'
+        if open_status == 'measured' and over_ag:
+            agencies = set(over_ag) - {'UNKNOWN'}
+            if agencies and agencies <= {'BLM', 'USFS'}:
+                surface_class = 'federal'
+            elif agencies == {'PVT'}:
+                surface_class = 'private'
+            elif agencies == {'STATE'}:
+                surface_class = 'state'
+            elif agencies:
+                surface_class = 'mixed'
+        all_locatable = (open_status == 'measured' and n_over > 0 and
+                         set(over) <= {'OPEN', 'CLOSED_ONLY', 'QUIET'})
+        mineral = ({'class': 'federal_locatable', 'confidence': 'screening',
+                    'source': 'WS2 PLSS/SMA/withdrawal and MLRS screen',
+                    'note': ('Every sampled section is federal-locatable in the WS2 '
+                             'screen; verify mineral title, withdrawals, and claims.')}
+                   if all_locatable else
+                   {'class': 'unknown', 'confidence': 'unknown',
+                    'source': ('WS2 PLSS/SMA/withdrawal and MLRS screen'
+                               if open_status == 'measured' else None),
+                    'note': ('Mixed, missing, or non-federal section evidence does not '
+                             'establish mineral ownership.')})
+        land_context = normalize_land_context(
+            {'class': surface_class,
+             'manager': (', '.join(f'{agency} ({count})' for agency, count
+                                    in sorted(over_ag.items())) or None),
+             'source': ('BLM Surface Management Agency generalized polygons sampled '
+                        'at PLSS section centroids' if open_status == 'measured' else None),
+             'scale': 'generalized section-centroid screen',
+             'as_of': og.get('generated')},
+            state_cfg, mineral)
+        land_context['claim_screen'] = {
+            'status': open_status,
+            'sections': n_over if open_status == 'measured' else None,
+            'by_status': over if open_status == 'measured' else None,
+            'by_surface_agency': over_ag if open_status == 'measured' else None,
+        }
         targets.append({
             'id': u['id'], 'tier': tier, 'tierName': TIER_NAME[tier], 'money': money,
             'score': round(score, 1), 'nm': u.get('nm'), 'sn': u.get('sn'),
@@ -540,13 +618,19 @@ def run(aoi_key=None):
             'boosts': {'fault_km': round(fault_km, 2) if fault_km < 90 else None,
                        'fx': fx_n, 'paths': near_paths[:6], 'springs': near_spr[:4],
                        'wells': len(near_wells),
-                       'open': {'n': n_over, 'open_n': open_n,
-                                'frac': round(open_frac, 2), 'by_status': over}},
+                       'open': {'status': open_status,
+                                'score': open_component,
+                                'n': n_over if open_status == 'measured' else None,
+                                'open_n': open_n if open_status == 'measured' else None,
+                                'frac': (round(open_frac, 2)
+                                         if open_status == 'measured' else None),
+                                'by_status': over if open_status == 'measured' else None}},
             'secs_open': open_secs[:10],
+            'land_context': land_context,
             'g': u['g'],
         })
 
-    targets.sort(key=lambda t: (-t['score'], -t['area_km2']))
+    targets.sort(key=target_sort_key)
     for i, t in enumerate(targets):
         t['rank'] = i + 1
     stats = {'input_units': len(geo['units']),

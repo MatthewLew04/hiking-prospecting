@@ -14,13 +14,15 @@ Dossier = {title, facts: [{k,v,src,ret}], links: [{label,url,note}],
            history: [hit...], addresses_note}
 """
 import json, os, re, sys, urllib.parse
-from common import load_aoi, SITE, TODAY, write_json, trs_label
+from common import load_aoi, load_state, SITE, TODAY, write_json, trs_label
 
 MLRS_EP = 'https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer'
 
 
 def links_for(name, serial, aoi):
     q = urllib.parse.quote((name or '').strip())
+    state_name = load_state(aoi['state'])['name']
+    state = urllib.parse.quote(state_name)
     ser = urllib.parse.quote((serial or '').strip())
     L = []
     if serial:
@@ -38,15 +40,21 @@ def links_for(name, serial, aoi):
                   'url': f'https://www.mindat.org/search.php?search={q}',
                   'note': 'Mineralogy + locality write-ups (bot-walled; open in browser).'})
         L.append({'label': f'Chronicling America — "{name}"',
-                  'url': f'https://www.loc.gov/collections/chronicling-america/?q={q}+idaho',
+                  'url': f'https://www.loc.gov/collections/chronicling-america/?q={q}+{state}',
                   'note': 'Full-text newspapers 1770–1963.'})
         L.append({'label': f'Internet Archive full-text — "{name}"',
                   'url': f'https://archive.org/search?query=%22{q}%22&sin=TXT',
                   'note': 'Search INSIDE 150 Mining & Scientific Press volumes, 3,800+ '
                           'E&MJ issues, and thousands of mining reports (open, no wall).'})
         L.append({'label': f'HathiTrust full-text — "{name}"',
-                  'url': f'https://babel.hathitrust.org/cgi/ls?q1={q}%20idaho;a=srchls;anyall1=all',
+                  'url': f'https://babel.hathitrust.org/cgi/ls?q1={q}%20{state};a=srchls;anyall1=all',
                   'note': 'Second full-text corpus for MSP/E&MJ (bot-walled; open in browser).'})
+        L.append({'label': 'SEC EDGAR company filings',
+                  'url': f'https://www.sec.gov/edgar/search/#/q={q}',
+                  'note': f'National company and full-text filing search prefilled with {name}.'})
+        L.append({'label': 'SEDAR+ company filings',
+                  'url': 'https://www.sedarplus.ca/',
+                  'note': f'Canadian issuer and technical-report search; search {name}.'})
         L.append({'label': 'USGS NGMDB / MapView',
                   'url': f'https://ngmdb.usgs.gov/mapview/?q={q}',
                   'note': 'Geologic maps + bulletin citations for the district.'})
@@ -57,9 +65,10 @@ def links_for(name, serial, aoi):
                   'note': (rec.get('note') or '') + ' Location notices, assessment-work '
                           'affidavits, quitclaims — names people and shows work actually done. '
                           f'{rec.get("phone", "")} · {rec.get("address", "")}'})
-    L.append({'label': 'Idaho SoS business search (for company claimants)',
-              'url': aoi.get('sos_business_search'),
-              'note': 'Registered agent + officers for LLC/corp claimants. Interactive app.'})
+    if aoi.get('sos_business_search'):
+        L.append({'label': f'{state_name} business-entity search (company claimants)',
+                  'url': aoi['sos_business_search'],
+                  'note': 'Registered agent + officers for LLC/corp claimants. Interactive app.'})
     return L
 
 
@@ -68,8 +77,9 @@ def run(aoi_key=None):
     k = aoi['key']
     st = aoi['state']
     x0, y0, x1, y1 = aoi['bbox']
-    g = json.load(open(os.path.join(SITE, 'data/grades/grades.json')))
-    claims = json.load(open(os.path.join(SITE, f'data/openground/{k}_claims.json')))
+    with open(os.path.join(SITE, 'data/grades/grades.json'),
+              encoding='utf-8') as source:
+        g = json.load(source)
     try:
         hist = json.load(open(os.path.join(SITE, f'data/history/{k}.json')))
     except FileNotFoundError:

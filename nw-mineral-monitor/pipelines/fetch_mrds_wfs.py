@@ -2,15 +2,15 @@
 """Fetch USGS MRDS points for an AOI bbox via mrdata WFS → columnar site file.
 
 Bridges the gap for states with no MRDS snapshot yet (CA first): writes the
-same columnar shape the map + target engine already read
-(data/sites/mrds_{st}.json). For statewide rollout use the bulk MRDS dump
+same columnar shape the offline target engine reads from the private
+``build-inputs`` inventory. For statewide rollout use the bulk MRDS dump
 instead — this is the AOI-sized tool (WFS caps responses; we page by bbox).
 
 Usage: python3 fetch_mrds_wfs.py <aoi_key>
 """
 import json, re, sys
 
-from common import load_aoi, cached_get, write_json, TODAY
+from common import load_aoi, cached_get, write_build_input, TODAY
 
 WFS = 'https://mrdata.usgs.gov/services/mrds'
 PAGE = 3000
@@ -64,7 +64,7 @@ def run(aoi_key):
     cols['n'] = len(cols['id'])
     cols['note'] = (f'AOI-bbox extract via mrdata WFS ({aoi["name"]}) — NOT statewide. '
                     f'Commodity group g defaults to other/unknown pending the full snapshot.')
-    write_json(f'data/sites/mrds_{st.lower()}.json', cols)
+    write_build_input('sites', f'mrds_{st.lower()}', cols)
     print(f'{st}: {cols["n"]} MRDS sites in bbox (raw members {n_raw})')
     if cols['n'] >= PAGE:
         print('WARNING: hit WFS page cap — bbox needs tiling for full coverage')

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "NH",
+  "name": "New Hampshire",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-72.557247, 42.69699, -70.610621, 45.305476],
+      "crs": "EPSG:4326",
+      "note": "State land envelope; clip service layers to the authoritative state boundary before PMTiles generation."
+    }
+  ],
+  "geological_survey": {
+    "name": "New Hampshire Geological Survey",
+    "catalog_url": "https://www.des.nh.gov/land/geology",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_mapserver",
+        "url": "https://gis.des.nh.gov/server/rest/services/Projects_NHGS/NH_NHGS_Geology/MapServer"
+      },
+      {
+        "type": "survey_program",
+        "url": "https://www.des.nh.gov/about/boards-and-committees/new-hampshire-geological-survey"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "nh_nhgs_geology_250k",
+    "title": "Bedrock Geologic Map of New Hampshire statewide lithology and age layers",
+    "authority": "New Hampshire Geological Survey",
+    "url": "https://gis.des.nh.gov/server/rest/services/Projects_NHGS/NH_NHGS_Geology/MapServer",
+    "native_scale": "1:250,000 statewide; partial 1:24,000 detailed mapping",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "complete_250k_base_with_partial_24k_gap_fill",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Use complete Lyons and others (1997) 1:250,000 layers 6-7 as the base and partial 1:24,000 layers 2-3 only where mapped; preserve scale and source publication per polygon."
+  },
+  "faults": {
+    "source_id": "nh_nhgs_faults",
+    "title": "New Hampshire Geological Survey faults at 1:250,000 and partial 1:24,000 scale",
+    "authority": "New Hampshire Geological Survey",
+    "url": "https://gis.des.nh.gov/server/rest/services/Projects_NHGS/NH_NHGS_Geology/MapServer",
+    "native_scale": "1:250,000 statewide layer 4; partial 1:24,000 layer 1",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Ingest the two fault layers with separate scale provenance and reconcile overlaps with Qfaults; partial 1:24,000 coverage cannot imply statewide absence."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "nh_nhgs_serials",
+      "title": "New Hampshire Geological Survey geology publications and maps",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Geologic Maps", "Open-File Reports", "Economic-geology and mineral-resource reports"],
+      "url": "https://www.des.nh.gov/land/geology",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "eamlis_nh_national_baseline",
+    "state_inventory_url": null,
+    "status": "no_comprehensive_official_state_inventory_identified",
+    "scope": "No statewide NHGS or NHDES abandoned-mine inventory was identified; occurrence maps and mineral-locality publications are not AML remediation inventories.",
+    "gap": "Seek a written NHGS/NHDES finding or a hazard-site export; keep e-AMLIS, USMIN, and MRDS as separately labeled national sources in the interim."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_mineral_leasing_portal_identified",
+    "portal_url": "https://www.dncr.nh.gov/forests-lands/state-owned-reservations",
+    "authority_url": "https://www.des.nh.gov/land/geology",
+    "evidence": "Official state-land and geological-survey pages expose land management and geologic information, but no general state hard-rock mineral leasing or staking program was identified.",
+    "approach_route": "State parcel: verify surface and mineral title with DNCR and the custodial agency before seeking case-specific authority; private parcel: negotiate with the mineral-estate owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.dncr.nh.gov/forests-lands/state-owned-reservations",
+    "approach_route": "State-owned reservation: custodial-agency/DNCR title and permission review; private land: owner/mineral-owner agreement. There is no implied open ground."
+  },
+  "release": {
+    "note": "P3 literature-tier registry only; mixed-scale NHGS ingestion, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending."
+  }
+}

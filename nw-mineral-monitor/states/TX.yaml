@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "state": "TX",
+  "name": "Texas",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-106.646, 25.837, -93.508, 36.501],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip to the official Texas boundary and preserve coastal/submerged-land distinctions before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Bureau of Economic Geology, The University of Texas at Austin",
+    "catalog_url": "https://store.beg.utexas.edu/publications",
+    "gis_endpoints": [
+      {
+        "type": "geologic_maps_catalog",
+        "url": "https://store.beg.utexas.edu/publications/geo-maps"
+      },
+      {
+        "type": "geologic_atlas_catalog",
+        "url": "https://store.beg.utexas.edu/publications/geologic-atlas-of-texas"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "tx_beg_geologic_atlas",
+    "title": "Geologic Atlas of Texas",
+    "authority": "Bureau of Economic Geology",
+    "url": "https://store.beg.utexas.edu/publications/geologic-atlas-of-texas",
+    "native_scale": "1:250,000 across 38 atlas sheets",
+    "statewide": true,
+    "vector": "authoritative_state_vector_acquisition_pending",
+    "registry_choice": "best complete state-survey map series; SGMC remains the vector baseline until an authoritative stitched vector package is verified",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "source_registered_vector_rights_and_package_pending",
+    "gap": "The BEG catalog verifies complete 1:250,000 coverage but does not by itself establish a current public authoritative statewide vector download. Do not vectorize rendered sheets silently or ship them as browser GeoJSON."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_tx_atlas_review",
+    "title": "USGS Quaternary Faults baseline with BEG atlas structural-line review",
+    "authority": "U.S. Geological Survey and Bureau of Economic Geology",
+    "url": "https://store.beg.utexas.edu/publications/geo-maps",
+    "native_scale": "national baseline; state sources are regional and sheet based",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "No single authoritative statewide BEG surface-fault vector was identified. Regional research fault datasets must retain coverage and fault-class caveats rather than masquerade as statewide coverage."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "tx_beg_publications",
+      "title": "Bureau of Economic Geology publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Mineral Resource Circulars", "Reports of Investigations", "Geologic Atlas of Texas"],
+      "url": "https://store.beg.utexas.edu/publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "tx_rrc_aml",
+    "state_inventory_url": "https://www.rrc.texas.gov/surface-mining/programs/abandoned-mine-land-program/",
+    "map_url": "https://www.rrc.texas.gov/resource-center/data-visualization/mining-exploration-data-visualization/abandoned-mine-land/",
+    "status": "state_program_and_viewer_registered_not_ingested",
+    "scope": "Railroad Commission of Texas abandoned-mine-land program and public AML visualization.",
+    "gap": "Acquire documented spatial records and reconcile projects/sites with e-AMLIS; do not infer AML status from other mining permits."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "oil, gas, and other mineral leasing and permits on qualifying state mineral interests administered by the Texas General Land Office",
+    "portal_url": "https://www.glo.texas.gov/energy/mineral-leasing-overview",
+    "leasing_url": "https://www.glo.texas.gov/energy/mineral-leasing/leasing",
+    "evidence": "The Texas General Land Office publishes mineral leasing programs and land/lease information for state mineral interests; availability and instrument type are parcel- and commodity-specific.",
+    "approach_route": "Verify GLO mineral ownership and applicable leasing or permit instrument; otherwise identify and negotiate with the private or other public mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://www.glo.texas.gov/energy/mineral-leasing-overview",
+    "approach_route": "GLO mineral estate: state lease/permit route; other public estate: custodial-authority review; private/severed estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; BEG vector acquisition and every artifact-backed DONE item remain pending."
+  }
+}

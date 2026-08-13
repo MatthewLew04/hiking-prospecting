@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "KY",
+  "name": "Kentucky",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-89.571509, 36.497129, -81.964971, 39.147458],
+      "crs": "EPSG:4326",
+      "note": "State envelope; use the official boundary to clip the stitched 707-quadrangle geology before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Kentucky Geological Survey",
+    "catalog_url": "https://kgs.uky.edu/kgsweb/findpubsmain.asp",
+    "gis_endpoints": [
+      {
+        "type": "interactive_map_service",
+        "url": "https://kygs.uky.edu/maps/"
+      },
+      {
+        "type": "gis_download_catalog",
+        "url": "https://www.uky.edu/KGS/gis/geology.htm"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ky_kgs_dvgq",
+    "title": "Kentucky 1:24,000 digital geologic quadrangle compilation",
+    "authority": "Kentucky Geological Survey",
+    "url": "https://kygs.uky.edu/maps/",
+    "native_scale": "1:24,000 (707 quadrangles; statewide compilation also published at 1:350,000)",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_statewide_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Acquire the authoritative statewide export, preserve quadrangle/source identifiers, and run seam/topology QA before the 1:24,000 compilation can pass."
+  },
+  "faults": {
+    "source_id": "ky_kgs_faults_24k",
+    "title": "Geologic Faults in Kentucky",
+    "authority": "Kentucky Geological Survey",
+    "url": "https://www.uky.edu/KGS/gis/kyfaults24k.htm",
+    "native_scale": "1:24,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The 2004 statewide compilation must be compared with later quadrangle revisions and Qfaults before deduplicated tile publication."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ky_kgs_serials",
+      "title": "Kentucky Geological Survey publications and maps catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Reports of Investigations", "Special Publications", "Digital Vector Geologic Quadrangles"],
+      "url": "https://kgs.uky.edu/kgsweb/findpubsmain.asp",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ky_daml",
+    "state_inventory_url": "https://eec.ky.gov/Natural-Resources/Mining/Abandoned-Mine-Lands/Pages/About_AML.aspx",
+    "status": "state_program_registered_not_ingested",
+    "scope": "SMCRA coal AML program; mine-map and permitted-boundary systems provide related but legally distinct records.",
+    "related_map_url": "https://minemaps.ky.gov/",
+    "gap": "Obtain the state AML spatial inventory or reconcile e-AMLIS with DAML project records; do not substitute active/inactive permit polygons for AML."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_portal_identified",
+    "portal_url": "https://transparency.ky.gov/search/Pages/property_search.aspx",
+    "evidence": "The Finance Cabinet publishes the Commonwealth-owned property inventory, but registry review found no general state trust-land mineral-leasing portal; mineral estates are separately assessed property interests in Kentucky.",
+    "approach_route": "For Commonwealth property contact the custodial agency and Division of Real Properties for parcel-specific authority; otherwise identify and negotiate with the private mineral-estate owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://transparency.ky.gov/search/Pages/property_search.aspx",
+    "approach_route": "Commonwealth parcel: agency/real-property review; private parcel: separate surface and mineral title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; 24K seam QA, AML integration, target land context, grade evidence, quads, and scale CI remain pending."
+  }
+}

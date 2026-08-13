@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-utah-reviewed-grade-extraction",
+  "state": "UT",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 source-page review",
+  "review_method": "Each mine identity, quotation, native measurement, printed page, and PDF page was checked in the checksum-pinned official USGS scan. A deterministic SHA-256 of the 300-dpi page render is the review boundary; OCR is only a diagnostic cross-check. Numeric ranges retain the stated lower endpoint, and historic dollar-per-ton values are not converted or emitted as grades.",
+  "mines": [
+    {
+      "mine_id": "ut-old-jordan-mine",
+      "name": "Old Jordan mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-old-jordan-lions-den-assay",
+        "source_id": "pp38",
+        "pdf_page": 271,
+        "page_cite": "p. 239",
+        "page_image_sha256": "ced77e4b2bc344497667cdec51e0adf7c09e149e35168915ef82eb2769a602f4",
+        "verbatim_quote": "Assays of samples from the Lion's Den ore body showed 65 per cent lead, 25 ounces silver, $2.20 gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 25, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 65, "unit": "percent"}
+        ],
+        "basis": "samples from the Lion's Den ore body; historic gold value intentionally not converted",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-neptune-mine",
+      "name": "Neptune mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-neptune-two-year-shipments",
+        "source_id": "pp38",
+        "pdf_page": 275,
+        "page_cite": "p. 243",
+        "page_image_sha256": "5fa2275fb0885cc812fb92c386dd4d1e53a6a133ce94cd7541ee6c0ea606bcb6",
+        "verbatim_quote": "The average values of the shipments of the past two years are reported to have been 45 per cent lead, 16 ounces silver, and 80 cents in gold; zinc averages 25 to 35 per cent, and in one instance ran up to 40 per cent.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 16, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 45, "unit": "percent"},
+          {"commodity": "Zn", "value": 25, "unit": "percent"}
+        ],
+        "basis": "reported two-year shipment averages; zinc uses the stated lower endpoint",
+        "years": "two years preceding the 1905 report"
+      }]
+    },
+    {
+      "mine_id": "ut-old-telegraph-mine",
+      "name": "Old Telegraph mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-old-telegraph-lead-carbonate-ore",
+        "source_id": "pp38",
+        "pdf_page": 284,
+        "page_cite": "p. 252",
+        "page_image_sha256": "185962765c59079c80faab9655e7144fea178fc1233816c3d79402922ecf2447",
+        "verbatim_quote": "The lead-carbonate ore, it is stated, carried, besides the lead, 10 to 20 ounces silver and about $1 in gold.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported lead-carbonate ore range, lower endpoint; historic gold value intentionally not converted",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-columbia-mine",
+      "name": "Columbia mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-columbia-main-vein-assays",
+        "source_id": "pp38",
+        "pdf_page": 293,
+        "page_cite": "p. 261",
+        "page_image_sha256": "584c2866f5faffd2c221a40f2dafb775061c83806004b7a8295ced0c1b05d026",
+        "verbatim_quote": "The country rock overlying this main vein for 63 feet is reported to have yielded assays averaging 4 per cent copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 4, "unit": "percent"}],
+        "basis": "reported assays over 63 feet above the main vein",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-highland-boy-mine",
+      "name": "Highland Boy mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-highland-boy-development-shipments",
+        "source_id": "pp38",
+        "pdf_page": 298,
+        "page_cite": "p. 265",
+        "page_image_sha256": "02f795795c8eaff7220a97ef0c33d3d2771c9dc49cf1ae5edc34e2db11a791c3",
+        "verbatim_quote": "The expense of exploration was covered by shipments, which included 2,000 tons of lead ore from No. 4 fault, with 5,000 tons of copper ore, reported to carry 12 per cent copper, $4 gold, and 3 per cent silver.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 12, "unit": "percent"}],
+        "basis": "reported grade of 5,000 tons of shipped copper ore; historic dollar values intentionally not converted",
+        "years": "1896-1900 development period"
+      }]
+    },
+    {
+      "mine_id": "ut-phoenix-mine",
+      "name": "Phoenix mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-phoenix-1900-marketed-ore",
+        "source_id": "pp38",
+        "pdf_page": 308,
+        "page_cite": "p. 274",
+        "page_image_sha256": "8fdf0b612e0d77c3eec9320870adace02818bda66b974720c20654c92ab7ffe6",
+        "verbatim_quote": "Ore marketed in 1900 is reported to have carried on an average 41 per cent of lead, 6.33 ounces silver, and $1 in gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 6.33, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 41, "unit": "percent"}
+        ],
+        "basis": "reported average of marketed ore; historic gold value intentionally not converted",
+        "years": "1900"
+      }]
+    },
+    {
+      "mine_id": "ut-montezuma-mine",
+      "name": "Montezuma mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-montezuma-reported-average",
+        "source_id": "pp38",
+        "pdf_page": 325,
+        "page_cite": "p. 291",
+        "page_image_sha256": "3392e3c40c1c1df6d05ac109d75c02822d42c09c5d987392ac0050ee64d2d022",
+        "verbatim_quote": "Its value is reported to average as follows: Lead, 30 to 50 per cent; silver, 32 to 50 ounces; gold, $3 to $4.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 32, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 30, "unit": "percent"}
+        ],
+        "basis": "reported ore-value ranges, lower endpoints; historic gold value intentionally not converted",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-hoogley-mine",
+      "name": "Hoogley mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-hoogley-number-two-level",
+        "source_id": "pp38",
+        "pdf_page": 326,
+        "page_cite": "p. 292",
+        "page_image_sha256": "2bb8763d5e968333ba18c60182a9e5659f667824eb0e022aeef19f04a3e282f0",
+        "verbatim_quote": "Assays showed striking variations in values in different portions of the workings; thus, the widest portions of the vein on No. 2 level northwest are reported to have carried 625 ounces silver, and, similarly, the same level southeast to have afforded the highest gold values.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 625, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported widest portions of the No. 2 level northwest vein",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-vespasian-mine",
+      "name": "Vespasian mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-vespasian-zinc-rich-ore",
+        "source_id": "pp38",
+        "pdf_page": 327,
+        "page_cite": "p. 293",
+        "page_image_sha256": "14c4277a2eb282f8191f0ff756d9c6bddd3d9d271afd8a88ba364aa87b0a2645",
+        "verbatim_quote": "The values in lead and silver are so low and the percentage of zinc so high—often 32 per cent,—that exploitation of the ore for lead and silver is not at present practicable.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Zn", "value": 32, "unit": "percent"}],
+        "basis": "reported zinc content of the mineralized bed",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-navajo-tunnels",
+      "name": "Navajo tunnels",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-navajo-small-lens",
+        "source_id": "pp38",
+        "pdf_page": 329,
+        "page_cite": "p. 295",
+        "page_image_sha256": "eb5c66542c255df75ced7b90f9713e107842990506aa1d7a41c7fb926f04db5b",
+        "verbatim_quote": "The main ore found was a small lens lying in the fissure, which is said to have yielded 20 per cent lead and $3 to $4 in gold.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Pb", "value": 20, "unit": "percent"}],
+        "basis": "reported grade of the principal ore lens; historic gold value intentionally not converted",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-julia-dean-mine",
+      "name": "Julia Dean mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-julia-dean-main-tunnel-streak",
+        "source_id": "pp38",
+        "pdf_page": 330,
+        "page_cite": "p. 296",
+        "page_image_sha256": "689086ae2dc9e000514840bab9d7451ed19623d56c9b1f2404e247cbf1ae6b22",
+        "verbatim_quote": "The present strong streak at the face of main tunnel is said to average 50 to 52 per cent lead, 100 ounces silver, $3 in gold, and a trace of copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 100, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 50, "unit": "percent"}
+        ],
+        "basis": "reported main-tunnel streak; lead uses the stated lower endpoint",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-red-wing-extension-mine",
+      "name": "Red Wing Extension mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-red-wing-extension-upper-tunnel",
+        "source_id": "pp38",
+        "pdf_page": 333,
+        "page_cite": "p. 299",
+        "page_image_sha256": "5c22b48b84d176dc35d988a2eda999755e916565ad0c0d41f03b425d37ffbad3",
+        "verbatim_quote": "It was reported to assay 45 per cent lead, 15 ounces silver, and a trace of copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 45, "unit": "percent"}
+        ],
+        "basis": "reported assay of newly discovered upper-tunnel ore",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-winamuck-mine",
+      "name": "Winamuck mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-winamuck-1872-smelted-ore",
+        "source_id": "pp38",
+        "pdf_page": 337,
+        "page_cite": "p. 303",
+        "page_image_sha256": "8d0693e49b032b35bd41bdaf9985ea7c1faeba82c386b4d03b6818a694bbd166",
+        "verbatim_quote": "Raymond after Daggett states that 1,300 tons ran abut 38 per cent lead and 56 ounces silver, and that 3,954 tons of dry ore smelted during the year 1872 averaged 34.98 per cent lead and 51.46 ounces silver.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 51.46, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 34.98, "unit": "percent"}
+        ],
+        "basis": "reported average of 3,954 tons of smelted dry ore",
+        "years": "1872"
+      }]
+    },
+    {
+      "mine_id": "ut-tiewaukee-mine",
+      "name": "Tiewaukee mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-tiewaukee-1880-extraction",
+        "source_id": "pp38",
+        "pdf_page": 340,
+        "page_cite": "p. 306",
+        "page_image_sha256": "55adbd47760e8d20dc98e362f035397fdc40e30b594fb9b3f4531e1575232347",
+        "verbatim_quote": "In 1880 it was reported that 360 tons were extracted, which assayed about 95 ounces silver, 40 per cent lead, and $12 gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 95, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 40, "unit": "percent"}
+        ],
+        "basis": "reported assay of 360 tons extracted; historic gold value intentionally not converted",
+        "years": "1880"
+      }]
+    },
+    {
+      "mine_id": "ut-midland-mine",
+      "name": "Midland mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-midland-northern-shoot",
+        "source_id": "pp38",
+        "pdf_page": 343,
+        "page_cite": "p. 309",
+        "page_image_sha256": "04cbb323d84f121b59fcfdf7e45d39813a15ef3268e9fff11a230612c4633502",
+        "verbatim_quote": "Ore from the northern shoot is said to have assayed 38 per cent lead, 8 to 10 ounces silver, $3 gold, and some copper, and the southern, or lead shoot, is said to have run 50 per cent lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 8, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 38, "unit": "percent"}
+        ],
+        "basis": "reported northern-shoot assay; silver uses the stated lower endpoint",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-silver-bell-mine",
+      "name": "Silver Bell mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-silver-bell-overlying-quartzite-ore",
+        "source_id": "pp38",
+        "pdf_page": 343,
+        "page_cite": "p. 309",
+        "page_image_sha256": "04cbb323d84f121b59fcfdf7e45d39813a15ef3268e9fff11a230612c4633502",
+        "verbatim_quote": "Ore is said to have been taken from the quartzite overlying the gouge and is reported to have assayed 65 ounces silver, 6 per cent lead, and $3 gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 65, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 6, "unit": "percent"}
+        ],
+        "basis": "reported assay of ore above the gouge; historic gold value intentionally not converted",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-congor-mine",
+      "name": "Congor mine",
+      "district": "Bingham",
+      "county": "Salt Lake",
+      "evidence": [{
+        "evidence_id": "ut-congor-northeast-fissure",
+        "source_id": "pp38",
+        "pdf_page": 348,
+        "page_cite": "p. 314",
+        "page_image_sha256": "c6cd380cec8b2ba15385e6a111a9a9a646dd0b94134a10b2be180a6d1c936c2f",
+        "verbatim_quote": "It is reported that the copper-iron ore in the northeast fissure carried 15 per cent copper and that some of that at the porphyry contact carried 40 to 50 per cent copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 15, "unit": "percent"}],
+        "basis": "reported northeast-fissure ore; the separate contact range is not combined",
+        "years": "reported in 1905"
+      }]
+    },
+    {
+      "mine_id": "ut-gemini-mine",
+      "name": "Gemini mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-gemini-enargite-specimen",
+        "source_id": "pp107",
+        "pdf_page": 181,
+        "page_cite": "p. 160",
+        "page_image_sha256": "168b2e53a1252002446fb9772fd2fa4a9feaf8702dc118cfed1ed667d1b471df",
+        "verbatim_quote": "A specimen of pure enargite from the Gemini mine was found to contain $1.65 in gold and 45.5 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 45.5, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "assay of a pure enargite specimen; historic gold value intentionally not converted",
+        "years": "reported in 1919"
+      }]
+    },
+    {
+      "mine_id": "ut-victoria-mine",
+      "name": "Victoria mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-victoria-1050-level-rich-ore",
+        "source_id": "pp107",
+        "pdf_page": 203,
+        "page_cite": "p. 174",
+        "page_image_sha256": "a25be12cbe58784dc17d8429efe67dcc1cd5eda912d5456a5789f453e6595d41",
+        "verbatim_quote": "An assay of the heaviest part yielded 0.77 ounce of gold and 6,980 ounces of silver to the ton, or about 22 per cent.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.77, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 6980, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "assay of the heaviest part of a rich-ore specimen from the 1,050-foot level",
+        "years": "reported in 1919"
+      }]
+    },
+    {
+      "mine_id": "ut-colorado-mine",
+      "name": "Colorado mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-colorado-ore-average",
+        "source_id": "pp107",
+        "pdf_page": 203,
+        "page_cite": "p. 174",
+        "page_image_sha256": "a25be12cbe58784dc17d8429efe67dcc1cd5eda912d5456a5789f453e6595d41",
+        "verbatim_quote": "The ores of the Colorado mine consisted largely of heavy carbonate with some residual galena, and their average silver content was about 45 ounces to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 45, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported average silver content of the mine's ores",
+        "years": "reported in 1919"
+      }]
+    },
+    {
+      "mine_id": "ut-eureka-hill-mine",
+      "name": "Eureka Hill mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-eureka-hill-oxidized-copper-shipment",
+        "source_id": "pp107",
+        "pdf_page": 203,
+        "page_cite": "p. 174",
+        "page_image_sha256": "a25be12cbe58784dc17d8429efe67dcc1cd5eda912d5456a5789f453e6595d41",
+        "verbatim_quote": "According to Mr. G. W. Riter, it contained 27.16 per cent of copper, 0.012 ounce of gold, and only 1.67 ounces of silver.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.012, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 1.67, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 27.16, "unit": "percent"}
+        ],
+        "basis": "reported assay of an oxidized copper-ore shipment",
+        "years": "reported in 1919"
+      }]
+    },
+    {
+      "mine_id": "ut-centennial-eureka-mine",
+      "name": "Centennial Eureka mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-centennial-eureka-gem-channel",
+        "source_id": "pp107",
+        "pdf_page": 235,
+        "page_cite": "p. 201",
+        "page_image_sha256": "9e2cb80b0b1a19a25c70874d4c9a1a6a53124fa38b9bc2c0b44181e3307eaf4b",
+        "verbatim_quote": "The ore was only partly oxidized but contained in places 100 ounces of silver and 1 ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 100, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "reported local grade of partly oxidized Gem-channel ore",
+        "years": "reported in 1919"
+      }]
+    },
+    {
+      "mine_id": "ut-mammoth-mine",
+      "name": "Mammoth mine",
+      "district": "Tintic",
+      "county": "Juab",
+      "evidence": [{
+        "evidence_id": "ut-mammoth-production-average",
+        "source_id": "pp107",
+        "pdf_page": 248,
+        "page_cite": "p. 214",
+        "page_image_sha256": "67d49814b920b121d58780945266bef079ed5a4a3cdd02c3a84b73392c9814db",
+        "verbatim_quote": "Some of the ores were rich in gold, and the production probably averages not less than $15 in gold and 15 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported probable production average; historic gold value intentionally not converted",
+        "years": "production through 1916"
+      }]
+    },
+    {
+      "mine_id": "ut-rube-mine",
+      "name": "Rube mine",
+      "district": "Gold Hill (Clifton)",
+      "county": "Tooele",
+      "evidence": [{
+        "evidence_id": "ut-rube-shipments-1921-1927",
+        "source_id": "pp177",
+        "pdf_page": 152,
+        "page_cite": "p. 136",
+        "page_image_sha256": "e3694c7b9bc931a795e0f327528664bcbb37463d6f32181e9bfd660d71ddf361",
+        "verbatim_quote": "From April 1921 to July 1927, 22 shipments of gold ore that averaged more than 7 ounces of gold to the ton had been made.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 7, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported lower bound of the average for 22 shipments",
+        "years": "April 1921-July 1927"
+      }]
+    },
+    {
+      "mine_id": "ut-new-baltimore-mine",
+      "name": "New Baltimore mine",
+      "district": "Gold Hill (Clifton)",
+      "county": "Tooele",
+      "evidence": [{
+        "evidence_id": "ut-new-baltimore-1923-shipment",
+        "source_id": "pp177",
+        "pdf_page": 166,
+        "page_cite": "p. 149",
+        "page_image_sha256": "0d65e3be670d4398262bda7aeabc64e8016cc6e3ecd51a62f88fe009b39a1f97",
+        "verbatim_quote": "One of 22 tons in that year contained 0.02 ounce of gold and 53 ounces of silver to the ton and 47 percent of lead and is representative of the other shipments.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.02, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 53, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 47, "unit": "percent"}
+        ],
+        "basis": "reported representative 22-ton shipment",
+        "years": "1923"
+      }]
+    },
+    {
+      "mine_id": "ut-monocco-claim",
+      "name": "Monocco claim",
+      "district": "Gold Hill (Clifton)",
+      "county": "Tooele",
+      "evidence": [{
+        "evidence_id": "ut-monocco-1917-1920-shipments",
+        "source_id": "pp177",
+        "pdf_page": 183,
+        "page_cite": "p. 162",
+        "page_image_sha256": "e0e7c05f155101a348e7e4e918064e5417125e9c59eb442619bde906d140298c",
+        "verbatim_quote": "From 1917 to 1920 shipments amounted to 786 tons of copper and lead-silver ore, which had an average content of 0.002 ounce of gold and 3.52 ounces of silver to the ton, 10.17 percent of copper, and 0.88 percent of lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.002, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 3.52, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 10.17, "unit": "percent"},
+          {"commodity": "Pb", "value": 0.88, "unit": "percent"}
+        ],
+        "basis": "reported average content of 786 tons shipped",
+        "years": "1917-1920"
+      }]
+    }
+  ]
+}

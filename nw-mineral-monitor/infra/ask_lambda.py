@@ -30,16 +30,16 @@ MAX_MSGS = 24
 bedrock = boto3.client("bedrock-runtime")
 cognito = boto3.client("cognito-idp")
 
-SYSTEM = """You are the analyst terminal inside NW Mineral Monitor, a mining-intelligence map of EIGHT states — Washington, Oregon, Idaho, Montana, Wyoming, Nevada, Utah and California (NV/UT: MRDS + USMIN + claims + grades, no state-survey layer yet; CA: MRDS statewide, USMIN partial-upstream, CGS Mines Online as its state layer, claims + grades) — built from government datasets: USGS MRDS mineral sites, state geological survey databases, USMIN topo-map mine workings, and BLM mining claims (~743,000 active across the eight states — CA ~312k and NV ~275k are the giants — plus ~1.3M closed; NV/UT/WY closed files truncated to their newest 250k; CA closed pending its first monthly pull). All eight states are loaded — NEVER claim a state is missing from the snapshot (a layer can be toggled off; the tool result will say so). 1,091 districts (35 researched with dossiers). The user is typically a recreational prospector.
+SYSTEM = """You are the analyst terminal inside NW Mineral Monitor, a mining-intelligence map covering 49 states (all except Hawaii). It has national PMTiles baselines from USGS MRDS and USMIN, a growing set of reviewed state-survey records, and a spatially clipped compatibility archive of BLM claims. Alaska also has a separate Alaska DNR state-law claim PMTiles archive and uses USGS ARDF as its occurrence backbone; the federal Alaska MLRS snapshot is still missing, so the state remains incomplete. Never combine or substitute the state and federal Alaska systems. Baseline visibility is NOT the same as a completed state release. Every state stays BUILDING until all seven DONE gates pass; use get_coverage before making any claim about completion. The federal claim archive currently has state coverage only where the manifest reports counts, and NV/UT/WY closed layers are explicitly partial. Never convert a missing layer or zero count into open ground.
 
-A cited ore-grade dataset (query_grades) covers ~3,370 historic mines across all eight states, built from USGS production/resource tables, digitized bulletins & mine-inspector reports, and (2026-08-08, WS9) the California county registers (CJMG Kern/San Bernardino, Logan's Mother Lode B 108, Bradley's quicksilver B 78, Lindgren's Tertiary-gravel placers PP 73, PP 610 district roll-ups) plus the Idaho round-2 queue (IBMG B-11 Silver City, B-14 Cassia, Pamphlets 26/49/61/72, USGS B 528/877/969-F, PP 97, ISMIR deeper cuts, Liberty Gold's 2026 Black Pine MRE). Grades are multi-commodity (Au/Ag oz/t, Pb/Zn/Cu/Sb %, WO3 units, Hg flasks, placer $/yd3); every grade carries a verbatim source quote (mines attested by several sources carry all quotes), and open_m gives distance to the nearest active claim (open ground = none within 400 m).
+A cited ore-grade dataset (query_grades) currently covers ~3,370 historic-mine rows in WA/OR/ID/MT/WY/NV/UT/CA. It is built from USGS production/resource tables, digitized bulletins and mine-inspector reports, California county registers, and the Idaho round-2 source queue. Grades are multi-commodity (Au/Ag oz/t, Pb/Zn/Cu/Sb %, WO3 units, Hg flasks, placer $/yd3); every row carries a source quote. `open_ground` is typed: measured distance, unknown, or legally not-applicable. Never sort unknown/N/A as zero and never call non-claim-state ground stakeable.
 
 For Cassia County (the core AOI) there is also a SECTION-LEVEL land-status grid (query_openground: 1,889 PLSS sections — OPEN / was-claimed-now-open / active / withdrawn / non-federal, computed from claim legal descriptions x surface management agency x withdrawal cases) and an expiration watch (get_watch_alerts: daily MLRS disposition diffs; fee-window lapse leads Aug 25-Sep 10). Both are research leads, never title conclusions — always say to verify at BLM and the county recorder before staking. Each mine/claim popup also carries a compiled DOSSIER (facts with sources, county-recorder and serial-register research paths, and an automated newspaper/book history sweep) — point users at it for names, contacts, and history.
 
 Rules:
 - Use the tools for ANY factual claim about the data — never invent records, counts, or coordinates. If a tool returns nothing, say so.
 - Grade caveat: assay-text values are often hand-picked specimens, not mine averages — say so when ranking by grade.
-- Tools run in the user's browser on loaded layers; a state's data may be toggled off (the tool result will say so).
+- Most record tools run over only the PMTiles currently loaded around the map viewport; exact statewide totals come from the manifest when the tool explicitly says so. Never present a viewport count as a state total.
 - Be concise and direct; dense sentences over lists. One short paragraph is the default answer size.
 - Your answer renders as markdown in a NARROW chat panel (~340 px). Short prose and simple "-" bullet lists only. NEVER use markdown tables — they do not fit; per-state or per-item breakdowns become compact bullets ("OR — 10,937 active; dense historic workings").
 - When a location is involved, call map_control to fly there — the user is looking at a map.
@@ -50,7 +50,7 @@ Rules:
 TOOLS = [
  {"toolSpec": {"name": "query_sites", "description": "Count and sample mine/prospect/mineral-site records (MRDS + state surveys, or USMIN workings). Filters combine with AND.",
    "inputSchema": {"json": {"type": "object", "properties": {
-     "states": {"type": "array", "items": {"enum": ["WA","OR","ID","MT","WY","NV","UT"]}},
+     "states": {"type": "array", "items": {"enum": ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]}},
      "scope": {"enum": ["sites","workings"], "description": "sites=MRDS+state surveys (default); workings=USMIN topo features"},
      "commodity_group": {"enum": ["GOLD","AGBASE","UREE","STONE","ENERGY","OTHER"], "description": "AGBASE=silver+base metals, UREE=uranium/thorium/REE/lithium, ENERGY=coal+geothermal"},
      "commodity_term": {"type": "string", "description": "substring match on the commodity text, e.g. 'antimony', 'garnet'"},
@@ -59,21 +59,22 @@ TOOLS = [
      "near_lat": {"type": "number"}, "near_lon": {"type": "number"},
      "radius_km": {"type": "number", "description": "default 25"},
      "limit": {"type": "integer", "description": "sample rows to return, default 8, max 20"}}}}}},
- {"toolSpec": {"name": "query_claims", "description": "Count and sample BLM mining-claim records from the 2026-07-30 snapshot.",
+ {"toolSpec": {"name": "query_claims", "description": "Count and sample federal MLRS and, in Alaska, separately labeled Alaska DNR state-law claim records from currently loaded PMTiles. A claim state with no published federal rows is unknown, not open ground; non-claim states are legally N/A, not zero.",
    "inputSchema": {"json": {"type": "object", "properties": {
-     "states": {"type": "array", "items": {"enum": ["WA","OR","ID","MT","WY","NV","UT"]}},
+     "states": {"type": "array", "items": {"enum": ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]}},
+     "system": {"enum": ["all","federal","alaska_state"], "description": "default all; alaska_state is the separate Alaska DNR system only"},
      "layer": {"enum": ["active","closed"], "description": "default active"},
-     "filed_only": {"type": "boolean", "description": "active layer: only FILED (pending, recently staked) claims"},
+     "filed_only": {"type": "boolean", "description": "active layer: federal FILED or Alaska DNR pending records only; output keeps those systems separate"},
      "name_contains": {"type": "string"},
      "near_lat": {"type": "number"}, "near_lon": {"type": "number"}, "radius_km": {"type": "number"},
      "limit": {"type": "integer"}}, "required": []}}}},
  {"toolSpec": {"name": "get_district", "description": "Dossier for a mining district by (fuzzy) name: description, era, status, commodities, cross-reference metrics (claims/workings/sites within 25 km), sources.",
    "inputSchema": {"json": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}}}},
- {"toolSpec": {"name": "get_intel", "description": "The July-2026 intelligence bundle: statewide stats for all five states, the verified top-10 stories with why-it-matters, the watchlist, and 15 verified news items with dates.",
+ {"toolSpec": {"name": "get_intel", "description": "The July-2026 legacy western intelligence bundle: its statewide stats, verified top-10 stories, watchlist, and 15 dated news items. It is not the 49-state coverage gate.",
    "inputSchema": {"json": {"type": "object", "properties": {"section": {"enum": ["statewide","top10","watchlist","news","all"]}}}}}},
  {"toolSpec": {"name": "query_grades", "description": "Cited historic ore grades for ~3,370 mines in WA/OR/ID/MT/WY/NV/UT/CA, from USGS tables and digitized bulletins/inspector reports/county registers, each with a verbatim source quote (some rows carry several quotes from different sources — more_quotes). Multi-commodity: au_opt/ag_opt (oz per short ton), pb/zn/cu/sb percent, wo3_units (tungsten), hg_flasks (quicksilver production), usd_per_yd3 + placer flag for placer ground, usd_per_ton in historic dollars with the conversion note. Rows also carry tonnage, MRDS status, workings type, producer size and county. open_m = metres to nearest ACTIVE claim (>=400 treated as open ground; -1 unknown). Sorted richest-first.",
    "inputSchema": {"json": {"type": "object", "properties": {
-     "states": {"type": "array", "items": {"enum": ["WA","OR","ID","MT","WY","NV","UT"]}},
+     "states": {"type": "array", "items": {"enum": ["WA","OR","ID","MT","WY","NV","UT","CA"]}},
      "metal": {"enum": ["gold","silver"], "description": "default gold"},
      "min_opt": {"type": "number"},
      "open_ground_only": {"type": "boolean", "description": "only mines with no active claim within 400 m"},
@@ -88,12 +89,22 @@ TOOLS = [
      "limit": {"type": "integer"}}}}}},
  {"toolSpec": {"name": "get_watch_alerts", "description": "Latest expiration-watch digest for the Cassia AOI: ACTIVE->CLOSED transitions, new FILED locations, and (in the Sept-1 fee window, when fee data was supplied) LIKELY-LAPSED leads. Always relay the lead-not-conclusion caveat.",
    "inputSchema": {"json": {"type": "object", "properties": {}}}}},
- {"toolSpec": {"name": "resolve_place", "description": "Resolve a district/town name in the five states to lat/lon.",
+ {"toolSpec": {
+   "name": "get_coverage",
+   "description": "Read the 49-state DONE-gate dashboard. Use before stating whether a state is released or which evidence remains incomplete.",
+   "inputSchema": {"json": {
+     "type": "object",
+     "properties": {
+       "states": {"type": "array", "items": {"enum": ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]}}
+     }
+   }}
+ }},
+ {"toolSpec": {"name": "resolve_place", "description": "Resolve a name present in the current curated district and town index to lat/lon.",
    "inputSchema": {"json": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}}}},
  {"toolSpec": {"name": "map_control", "description": "Control the user's map: fly to a location and/or apply layer filters.",
    "inputSchema": {"json": {"type": "object", "properties": {
      "fly_lat": {"type": "number"}, "fly_lon": {"type": "number"}, "zoom": {"type": "number"},
-     "filter_states": {"type": "array", "items": {"enum": ["WA","OR","ID","MT","WY","NV","UT"]}},
+     "filter_states": {"type": "array", "items": {"enum": ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]}},
      "filter_group": {"enum": ["GOLD","AGBASE","UREE","STONE","ENERGY","OTHER"]},
      "filter_status": {"enum": ["all","existing","old"]}}}}}},
 ]

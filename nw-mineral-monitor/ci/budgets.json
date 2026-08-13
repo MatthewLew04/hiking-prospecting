@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "basis": "Hotfix 2026-08-08b measured acceptance envelope",
+  "browser": {
+    "heap_mb_max": 211,
+    "bulk_origin_storage_mb_max": 0,
+    "user_layer_idb_mb_max": 150,
+    "user_layer_eviction_target_mb": 105,
+    "geojson_push_features_max_legacy": 200000
+  },
+  "delivery": {
+    "statewide_vector": ["pmtiles"],
+    "statewide_raster": ["cog"],
+    "forbid_statewide_browser_json": true,
+    "immutable_release_prefix": "map-assets/releases/"
+  },
+  "lambda": {
+    "memory_mb": 2048,
+    "timeout_seconds": 900,
+    "checkpoint_reserve_seconds": 150,
+    "chain_max": 40,
+    "page_records": 2000
+  }
+}

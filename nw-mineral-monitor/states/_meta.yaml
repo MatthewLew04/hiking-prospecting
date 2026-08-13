@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "49 states (all U.S. states except Hawaii; District of Columbia excluded)",
+  "claim_states": ["AK", "AZ", "AR", "CA", "CO", "FL", "ID", "LA", "MS", "MT", "NE", "NV", "NM", "ND", "OR", "SD", "UT", "WA", "WY"],
+  "claim_state_authority": {
+    "title": "BLM National Mining Claims geographic data",
+    "url": "https://www.blm.gov/programs/energy-and-minerals/mining-and-minerals/locatable-minerals/mining-claims/locating-a-claim",
+    "verified": "2026-08-13",
+    "note": "Current BLM guidance enumerates the 19 public-domain states in which federal mining claims may be located; the Eastern States page confirms the thin eastern public-domain cases."
+  },
+  "alaska_dual_system": {
+    "federal": "BLM MLRS",
+    "state": "Alaska DNR state mining locations",
+    "occurrence_backbone": "ARDF"
+  }
+}

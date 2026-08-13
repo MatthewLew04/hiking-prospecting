@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "state": "UT",
+  "name": "Utah",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "official_candidate_insufficient",
+      "authority": "U.S. Bureau of Land Management, Utah State Office",
+      "source_url": "https://gis.blm.gov/utarcgis/rest/services/Lands/BLM_UT_Federal_Minerals/FeatureServer/0",
+      "ownership_field": "ALL_MIN",
+      "locatable_values": [],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "The official statewide Federal Minerals Estate polygon layer exposes ALL_MIN plus commodity-specific fields, but its live values do not by themselves establish public-domain origin or current Mining Law location eligibility. It remains an insufficient screening source and cannot create OPEN rows without parcel-level title and withdrawal reconciliation."
+    }
+  },
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-114.054, 36.996, -109.040, 42.003],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip MLRS and state sources to the official Utah boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Utah Geological Survey",
+    "catalog_url": "https://geology.utah.gov/map-pub/",
+    "gis_endpoints": [
+      {
+        "type": "geologic_map_and_gis_catalog",
+        "url": "https://geology.utah.gov/map-pub/maps/geologic-maps/"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://webmaps.geology.utah.gov/arcgis/rest/services/GeolMap/500k_State/MapServer"
+      },
+      {
+        "type": "interactive_multiscale_geologic_map",
+        "url": "https://geomap.geology.utah.gov/index.html?view=scene"
+      }
+    ],
+    "reviewed": "2026-08-13",
+    "baseline_manifest_keys": [
+      "ut_ugs_map179dm_500k",
+      "ut_ugs_ds7_quaternary_faults",
+      "ut_ugs_ofr695_mining_districts",
+      "ut_ugs_ofr757_umos"
+    ],
+    "baseline_artifacts": {
+      "ut_ugs_map179dm_500k": {
+        "baseline_manifest_key": "national_baselines.ut_ugs_map179dm_500k",
+        "baseline_browser_path": "data/tiles/states/ut/ugs-map179dm-500k.pmtiles",
+        "baseline_features": 90206,
+        "baseline_sha256": "5651c2118160db14a902117dd6baaf06ac0c342a4264cc1af35613e8586a029b"
+      },
+      "ut_ugs_ds7_quaternary_faults": {
+        "baseline_manifest_key": "national_baselines.ut_ugs_ds7_quaternary_faults",
+        "baseline_browser_path": "data/tiles/states/ut/ugs-ds7-quaternary-faults.pmtiles",
+        "baseline_features": 19232,
+        "baseline_sha256": "ef10b8946f3b6134867abab068e2a61fb58c83ac1a7762347a77d44cc3c0f4d2"
+      },
+      "ut_ugs_ofr695_mining_districts": {
+        "baseline_manifest_key": "national_baselines.ut_ugs_ofr695_mining_districts",
+        "baseline_browser_path": "data/tiles/states/ut/ugs-ofr695-mining-districts.pmtiles",
+        "baseline_features": 185,
+        "baseline_sha256": "f67f043a89402b51e28a7e2cce54b92ab74fb6f06977726a40be562755836d3a"
+      },
+      "ut_ugs_ofr757_umos": {
+        "baseline_manifest_key": "national_baselines.ut_ugs_ofr757_umos",
+        "baseline_browser_path": "data/tiles/states/ut/ugs-ofr757-umos.pmtiles",
+        "baseline_features": 7787,
+        "baseline_sha256": "f1984b03f975a4e8241b88df9e52133efc7c95a9111797c92a9c0aee06b292e2"
+      }
+    }
+  },
+  "geology": {
+    "source_id": "ut_ugs_map179dm",
+    "title": "Digital Geologic Map of Utah, Map 179DM",
+    "authority": "Utah Geological Survey",
+    "url": "https://geology.utah.gov/map-pub/maps/geologic-maps/",
+    "service_url": "https://webmaps.geology.utah.gov/arcgis/rest/services/GeolMap/500k_State/MapServer",
+    "native_scale": "1:500,000 statewide; 1:24,000 to 1:125,000 maps available as documented refinements",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "verified statewide vector baseline with optional source-tracked finer map refinements",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_keys": ["ut_ugs_map179dm_500k"],
+    "baseline_artifacts": {
+      "ut_ugs_map179dm_500k": {
+        "baseline_manifest_key": "national_baselines.ut_ugs_map179dm_500k",
+        "baseline_browser_path": "data/tiles/states/ut/ugs-map179dm-500k.pmtiles",
+        "baseline_features": 90206,
+        "baseline_sha256": "5651c2118160db14a902117dd6baaf06ac0c342a4264cc1af35613e8586a029b",
+        "geology_features": 22635,
+        "structure_features": 67571
+      }
+    },
+    "provenance_note": "The checksum-pinned Map 179DM PMTiles baseline exposes 22,635 geologic units and 67,571 mapped structures with exact maximum-zoom source-ID inventories and per-feature publication/scale provenance. Two zero-length duplicate-point source lines, 554 fully outside features, and one sub-z12-resolution structure are explicitly inventoried. This 1:500,000 statewide context does not replace the pending deterministic best-scale detailed-map review."
+  },
+  "faults": {
+    "source_id": "ut_ugs_quaternary_faults",
+    "title": "2025 Update to the Utah Quaternary Fault Database, Data Series 7",
+    "authority": "Utah Geological Survey",
+    "url": "https://ugspub.nr.utah.gov/publications/data_series/ds-7/ds-7.zip",
+    "service_url": "https://webmaps.geology.utah.gov/arcgis/rest/services/Hazards/Faults_Quaternary/MapServer",
+    "native_scale": "multi-source state compilation with mapped scale retained per trace",
+    "state_source_verified": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_key": "national_baselines.ut_ugs_ds7_quaternary_faults",
+    "baseline_browser_path": "data/tiles/states/ut/ugs-ds7-quaternary-faults.pmtiles",
+    "baseline_features": 19232,
+    "baseline_sha256": "ef10b8946f3b6134867abab068e2a61fb58c83ac1a7762347a77d44cc3c0f4d2",
+    "note": "The checked DS-7 baseline preserves 19,232 Quaternary fault traces after exact accounting for 502 fully outside records and nine measured micro-segments below z12 encoding resolution; 35 state-edge traces are clipped. Every source Z value, mapped scale, age, constraint, slip sense, and source identity is audited. It is hazard/geologic evidence, not mineral tenure or a Utah DONE release."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ut_ugs_publications",
+      "title": "Utah Geological Survey maps and publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Circulars", "Special Studies", "Open-file Reports"],
+      "url": "https://geology.utah.gov/map-pub/",
+      "status": "registered_not_extracted"
+    },
+    {
+      "source_id": "ut_ugs_mineral_files",
+      "title": "Utah mineral files and historic mineral documents",
+      "role": "primary_mine_district_document_catalog",
+      "primary": true,
+      "url": "https://geology.utah.gov/energy-minerals/metals/mineral-files/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ut_ugs_abandoned_coal_mine_database",
+    "state_inventory_url": "https://geology.utah.gov/apps/abancolemine/xls-database/Readme.pdf",
+    "status": "state_coal_inventory_registered_not_ingested",
+    "scope": "UGS abandoned coal-mine database; retain its coal and documentation scope rather than treating it as a complete all-commodity AML inventory.",
+    "gap": "Reconcile the database with Utah DOGM AML projects, e-AMLIS, USMIN, and MRDS before publishing full AML coverage."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "energy and mineral leasing on qualifying Utah Trust Lands mineral interests",
+    "portal_url": "https://trustlands.utah.gov/work-with-us/energy-minerals/",
+    "map_url": "https://trustlands.utah.gov/tools/maps/",
+    "nomination_url": "https://trustlands.utah.gov/work-with-us/energy-minerals/nomination/",
+    "evidence": "Utah Trust Lands Administration publishes mineral leasing, nomination, auction, and land/lease map routes for trust assets.",
+    "approach_route": "Verify trust mineral ownership and availability, then use the applicable nomination/auction/lease route; federal locatable minerals remain a separate MLRS and federal land-status workflow.",
+    "reviewed": "2026-08-12"
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "matrix": [],
+    "matrix_status": "pending_mlrs_live_claim_county_join_and_vendor_review",
+    "note": "Populate the recorder-vendor matrix only after current live MLRS claims are joined to Utah county boundaries."
+  },
+  "done_gate": {
+    "geology_faults": {
+      "finding": "Checksum-pinned Utah baseline PMTiles are published with exact full-MVT/source-ID validation: 22,635 Map 179DM geologic units, 67,571 Map 179DM structures, 19,232 DS-7 Quaternary fault traces, 185 OFR-695 historic districts, and 7,787 OFR-757 UMOS records. The gate remains failed because Map 179DM is statewide 1:500,000 context rather than a completed best-scale substitution, and accepted release artifacts remain pending."
+    },
+    "grades": {
+      "finding": "Evidence-only research now covers 26 unique graded mines/properties with 26 verbatim quotes/page cites from three independent official USGS primary grade documents and all 13 PP 610 Utah districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes.",
+      "evidence_only_build_sha256": "fc2c52ca755c3cd1a342173e7bbc3071fc2cb9e671061bc977e0191f3056c7ee",
+      "graded_mines": 26,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "official_primary_documents": 3,
+      "pp610_districts": 13
+    }
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://trustlands.utah.gov/work-with-us/energy-minerals/",
+    "approach_route": "Federal locatable-mineral context: MLRS and federal land status; trust mineral estate: Trust Lands lease; private estate: title research and negotiation."
+  },
+  "release": {
+    "note": "The exact Map 179DM/DS-7/OFR-695/OFR-757 state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Utah remains building/disabled until best-scale geology review, accepted claims/open-ground and release artifacts, and every remaining DONE gate pass."
+  }
+}

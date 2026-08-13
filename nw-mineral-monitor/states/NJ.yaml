@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "NJ",
+  "name": "New Jersey",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-75.559614, 38.928519, -73.893979, 41.357423],
+      "crs": "EPSG:4326",
+      "note": "State envelope including barrier islands; authoritative coastline and state boundary control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "New Jersey Geological and Water Survey",
+    "catalog_url": "https://dep.nj.gov/njgws/technical-publications-and-information/reports/",
+    "gis_endpoints": [
+      {
+        "type": "digital_data_catalog",
+        "url": "https://dep.nj.gov/njgws/digital-data/"
+      },
+      {
+        "type": "technical_publications",
+        "url": "https://dep.nj.gov/njgws/technical/"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "nj_njgws_dgs15_1",
+    "title": "Bedrock Geology of New Jersey (DGS15-1)",
+    "authority": "New Jersey Geological and Water Survey",
+    "url": "https://dep.nj.gov/njgws/digital-data/",
+    "native_scale": "1:24,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify the current DGS15-1 download, statewide completeness, license, and polygon publication lineage; retain 1:24,000 scale on every derived polygon before acceptance."
+  },
+  "faults": {
+    "source_id": "nj_njgws_dgs04_6_faults",
+    "title": "Bedrock geology, contacts, and faults of New Jersey (DGS04-6)",
+    "authority": "New Jersey Geological and Water Survey",
+    "url": "https://dep.nj.gov/njgws/digital-data/dgs04-6/",
+    "native_scale": "1:100,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Ingest only fault-class features, preserve DGS04-6 scale, and evaluate whether DGS15-1 supplies more detailed current faults before reconciling with Qfaults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "nj_njgws_serials",
+      "title": "New Jersey Geological and Water Survey technical publications and reports",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Geologic Reports", "Information Circulars", "Open-File Maps", "Mine and mineral-resource reports"],
+      "url": "https://dep.nj.gov/njgws/technical-publications-and-information/reports/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "nj_njgws_mine_hazards",
+    "state_inventory_url": "https://dep.nj.gov/njgws/mine-hazard-and-resources-program/",
+    "status": "state_hardrock_aml_inventory_registered_not_ingested",
+    "scope": "NJGWS reports approximately 600 abandoned hard-rock mines and maintains mine-location and hazard work; the inventory is not equivalent to an all-commodity reclamation status layer.",
+    "gap": "Obtain the current GIS export, normalize mine versus opening versus hazard geometry, and retain survey date and remediation status."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_mineral_leasing_portal_identified",
+    "portal_url": "https://www.nj.gov/treasury/dpmc/",
+    "authority_url": "https://www.nj.gov/treasury/unclaimed-property/treasury/statehouse-commission/",
+    "evidence": "State real-property transactions receive centralized review, including State House Commission review where applicable, but no general hard-rock mineral leasing or staking portal was identified.",
+    "approach_route": "State parcel: verify the mineral estate with the custodial agency, DPMC, and any required State House Commission process; private parcel: negotiate with the mineral-rights owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.nj.gov/treasury/dpmc/",
+    "approach_route": "State parcel: agency/DPMC title and disposition review; private parcel: mineral-owner negotiation. Abandoned-mine presence does not create open ground."
+  },
+  "release": {
+    "note": "P4 registry baseline only; NJGWS vector ingestion, AML normalization, land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

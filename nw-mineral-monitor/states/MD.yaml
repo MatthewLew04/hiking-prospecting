@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "MD",
+  "name": "Maryland",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-79.487651, 37.886605, -75.048939, 39.722934],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Chesapeake Bay and Atlantic islands; authoritative land and submerged-land boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Maryland Geological Survey",
+    "catalog_url": "https://www.mgs.md.gov/publications/reports.html",
+    "gis_endpoints": [
+      {
+        "type": "survey_home",
+        "url": "https://www.mgs.md.gov/"
+      },
+      {
+        "type": "quadrangle_geology_catalog",
+        "url": "https://www.mgs.md.gov/publications/map_pages/quadrangle_geo.html"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "sgmc_md_mgs_lineage",
+    "title": "State Geologic Map Compilation with Maryland Geological Survey source-map lineage",
+    "authority": "U.S. Geological Survey and Maryland Geological Survey",
+    "url": "https://www.mgs.md.gov/esic/geo/index.html",
+    "native_scale": "mixed; statewide 1:250,000 base with newer 1:24,000 quadrangle mapping where available",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The official 1968 1:250,000 map is complete but MGS warns that it is outdated; newer 1:24,000 digital quadrangle coverage is incomplete. Build a source-indexed mosaic and retain scale and publication lineage per polygon."
+  },
+  "faults": {
+    "source_id": "sgmc_md_mgs_structures",
+    "title": "Maryland faults and structural contacts from statewide and quadrangle geologic mapping",
+    "authority": "U.S. Geological Survey and Maryland Geological Survey",
+    "url": "https://www.mgs.md.gov/publications/map_pages/quadrangle_geo.html",
+    "native_scale": "mixed; 1:250,000 statewide base and 1:24,000 mapped quadrangles",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "No single current, complete MGS statewide fault feature service was identified; reconcile SGMC structures with newer MGS quadrangle lines and Qfaults without promoting unmapped areas to fault-free."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "md_mgs_serials",
+      "title": "Maryland Geological Survey reports and mineral-resource publications",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Reports", "Bulletins", "County Reports", "Geologic Quadrangle Maps", "Mineral Resources reports"],
+      "url": "https://www.mgs.md.gov/publications/reports.html",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "md_mde_aml",
+    "state_inventory_url": "https://mde.maryland.gov/programs/land/mining/Pages/AbandonedMineLandsDivision.aspx",
+    "status": "state_coal_aml_program_registered_not_ingested",
+    "scope": "Pre-1977 coal AML hazards concentrated in Allegany and Garrett Counties; the program cites a 1979 inventory of about 9,500 acres at roughly 200 sites.",
+    "gap": "Obtain a current site-level export and keep the western Maryland coal AML program distinct from historic metallic and industrial-mineral occurrences."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_mineral_leasing_portal_identified",
+    "portal_url": "https://dgs.maryland.gov/Pages/RealEstate/index.aspx",
+    "authority_url": "https://mde.maryland.gov/programs/LAND/mining/Pages/index.aspx",
+    "evidence": "Official state real-estate and mining-program pages expose property administration and mine permitting, but no general hard-rock mineral leasing or staking program for state land was identified.",
+    "approach_route": "For state property, verify both surface and mineral title with the custodial agency and Maryland DGS; for private minerals, negotiate with the recorded mineral-estate owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://dgs.maryland.gov/Pages/RealEstate/index.aspx",
+    "approach_route": "State parcel: custodial-agency/DGS title review and case-specific authority; private parcel: mineral-owner negotiation. Federal-style open ground is N/A."
+  },
+  "release": {
+    "note": "P4 registry baseline only; the mixed-scale geology mosaic, AML export, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending."
+  }
+}

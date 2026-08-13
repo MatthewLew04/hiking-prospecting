@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "KS",
+  "name": "Kansas",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-102.052, 36.993, -94.589, 40.003],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip to the official Kansas boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Kansas Geological Survey",
+    "catalog_url": "https://kgs.ku.edu/kgs-publications",
+    "gis_endpoints": [
+      {
+        "type": "state_gis_hub",
+        "url": "https://kgs-gis-data-and-maps-ku.hub.arcgis.com/"
+      },
+      {
+        "type": "maps_and_data_catalog",
+        "url": "https://kgs.ku.edu/data-and-maps"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ks_kgs_m118",
+    "title": "Surficial Geology of Kansas, Map M-118",
+    "authority": "Kansas Geological Survey",
+    "url": "https://www.kgs.ku.edu/General/Geology/state23.html",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": "catalog_acquisition_pending",
+    "registry_choice": "best_current_statewide_map_source; authoritative vector package still requires catalog verification",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "source_registered_vector_package_pending",
+    "fallback_url": "https://www.kgs.ku.edu/Datasale/Maps/index.html",
+    "gap": "Confirm and acquire the authoritative M-118 vector package. Do not silently substitute a rendered map; SGMC remains the tiled national baseline until acceptance."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_ks_map_review",
+    "title": "USGS Quaternary Faults baseline with KGS map-linework review",
+    "authority": "U.S. Geological Survey and Kansas Geological Survey",
+    "url": "https://kgs.ku.edu/data-and-maps",
+    "native_scale": "national baseline; state source selection pending",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "No separate authoritative statewide KGS fault vector was confirmed; review M-118 structural linework and KGS earthquake products before supplementing Qfaults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ks_kgs_publications",
+      "title": "Kansas Geological Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Mineral Resources Series", "Open-file Reports", "Maps"],
+      "url": "https://kgs.ku.edu/kgs-publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ks_kdhe_aml",
+    "state_inventory_url": "https://www.kdhe.ks.gov/550/Abandoned-Mine-Land-Program",
+    "service_url": "https://maps.kdhe.ks.gov/kdhe_doe/rest/services/BER_SECURE/Mining_viewer_KDHEAGOL/MapServer",
+    "status": "state_program_and_map_service_registered_not_ingested",
+    "scope": "Kansas coal AML program and mining viewer.",
+    "gap": "Confirm public layer semantics and reconcile projects/sites with e-AMLIS before publishing the state inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "unknown",
+    "portal_url": "https://admin.ks.gov/offices/facilities-property-management",
+    "evidence": "No central Kansas state trust-land hard-rock mineral-leasing portal was identified in the reviewed official KGS and state property resources.",
+    "approach_route": "For public land identify the owning agency and its parcel-specific authority; otherwise resolve severed mineral title and negotiate with the private mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "Public parcel: owning-agency review; private mineral estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; the authoritative vector choice and all artifact-backed gates remain pending."
+  }
+}

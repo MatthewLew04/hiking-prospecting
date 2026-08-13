@@ -1,0 +1,17 @@
+{
+  "name": "nw-mineral-monitor",
+  "private": true,
+  "version": "11.0.0",
+  "description": "Build and acceptance dependencies for WS11 tiled delivery",
+  "scripts": {
+    "vendor:pmtiles": "cp node_modules/pmtiles/dist/pmtiles.js site/assets/pmtiles.js",
+    "test:python": "python3 -m unittest discover -s tests -v",
+    "test:browser": "node tools/measure.js"
+  },
+  "dependencies": {
+    "pmtiles": "4.5.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

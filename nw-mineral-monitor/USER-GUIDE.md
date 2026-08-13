@@ -1,14 +1,22 @@
 # NW Mineral Monitor — user guide
 
-_Build 2026-08-11 · covers everything through WS10 quad-scale geology._
+_Build 2026-08-13 · WS11 national baseline and visible per-state release gates._
 
-The Monitor is one self-contained map app (`site/index.html`, MapLibre GL) over
-seven states — WA · OR · ID · MT · WY · NV · UT — fusing 346,773 mineral-site
-records, 431,268 active + 1,319,158 closed BLM mining claims, 2,948 cited ore
-grades, 1,091 districts, and a set of Cassia-County deep tools (section-level
-open ground, dossiers, geology targets, county recorder records). Everything
-on screen traces to a source: every card cites where its facts came from and
-when they were retrieved.
+The Monitor is one self-contained map app (`site/index.html`, MapLibre GL) for
+49 states (all except Hawaii). Its immutable national baseline currently
+contains 898,684 MRDS/USMIN/state-survey/Alaska-ARDF features and 458,049 active
+plus 1,262,983 closed tiled federal BLM claim centroids. The national geology
+switches add 559,279 USGS geology polygons and 500,743 fault features, each
+carrying its source map, scale, scale-status finding, citation, and URL.
+Alaska separately has
+39,269 active, 51 pending, and 79,480 closed DNR state-claim polygons; that
+state system does not replace the still-missing federal Alaska MLRS artifact.
+The cited-grade corpus, researched
+districts, and Cassia County deep tools remain richer in the existing western
+footprint while the visible state × gate grid records the national research
+still outstanding. Baseline visibility is not a state release: only the
+coverage dashboard says whether every required state artifact and evidence
+item has passed.
 
 **The one rule:** everything here is a research lead, **not a title search**.
 Patented private land shows no BLM claims and looks "open" in every layer.
@@ -21,7 +29,7 @@ recorder, and on the ground before staking — and never enter adits or shafts.
 
 Local (no login):
 
-    cd nw-mineral-monitor/site && python3 -m http.server 8000
+    cd nw-mineral-monitor && python3 tools/range_server.py 8000
     → http://localhost:8000
 
 Hosted (Cognito login, nightly claim refresh, alert emails): `DEPLOY.md`;
@@ -74,7 +82,7 @@ Cassia AOI (harmonized via Macrostrat: USGS SGMC 1:500k + IGS Twin Falls
 hot/warm springs, and IDWR geothermal wells — scored by a tiered engine into
 **58 ranked exploration targets**, each with a full explanation card. See §5.
 
-**County gold-signal ranking.** Every county in the seven states scored for
+**County gold-signal ranking.** The existing western county research set is scored for
 **stakeable gold** (what you could still act on) and **endowment** (where the
 gold is, staked or not), with an interactive choropleth, itemized score
 cards, and `GOLD-COUNTIES.md`. See §7.
@@ -85,31 +93,47 @@ sweep — folded into the guide below where you'd actually use them.
 
 ---
 
-## 3 · Base layers (whole 7-state region)
+## 3 · National baseline layers (49 states, excluding Hawaii)
 
 **SITE LAYERS**
 - **USGS MRDS mineral sites** — amber. ◯ circle = producer/active in the
   record; ● dot = old mine/prospect/occurrence. Coordinates can be off by
   hundreds of meters; status flags frozen ~2011. Click → record + MRDS link.
-- **State geo-survey databases** — blue (IGS DD-1, WGS DDS-30, DOGAMI
-  MILO-4, MBMG AIM, WSGS). Often better-located than MRDS.
+- **State geo-survey databases** — blue. The current compatibility archive
+  carries six reviewed state inventories; the coverage dashboard shows which
+  additional state adapters and artifacts are still building. These are often
+  better located than legacy MRDS records.
+- **Alaska ARDF occurrences** — purple. The 7,692-record USGS Alaska Resource
+  Data File is the occurrence backbone in Alaska and retains commodity,
+  district, geologic-description, workings, and primary-reference fields.
 - **Topo-map workings (USMIN)** — steel. Shafts, adits, prospect pits
   digitized from 1958–2001 topo sheets — the best "something was actually dug
   here" evidence. Sub-toggle folds in gravel/borrow pits (off by default).
-- **Cited ore grades** — gold dots, brighter/bigger = richer. 2,948 mines
+- **Cited ore grades** — gold dots, brighter/bigger = richer. 3,369 rows
   with quote-backed oz/ton values from USGS bulletins and inspector reports.
-  Click one: the grade, the verbatim quote, the source PDF.
+  Click one: the grade, the verbatim quote, the source PDF. This remains the
+  existing western grade corpus while the per-state 25-mine research gates are
+  visibly incomplete; national occurrence coverage is not a claim of national
+  grade completion.
 - At low zoom the point layers render as density heat; zoom past ~7 for
   individual sites. **COMMODITY FILTER** chips + ALL/EXISTING/OLD radio
   filter every site layer at once.
 
 **CLAIM LAYERS**
-- **Active claims (nightly snapshot)** — teal centroids, all 431k.
+- **Active claims (tiled build snapshot)** — teal centroids, 458,049 in the
+  currently published compatibility archive. Exact state counts and the build
+  date come from the manifest.
 - **Live claim boundaries (BLM)** — at zoom ≥ 10.5, exact current polygons
   straight from BLM for the viewport. Always current; the badge shows count.
-- **Closed claims (historic)** — maroon embers; loads ~65 MB on demand.
-  Once-staked, later-dropped ground — mostly open now (verify). NV/UT/WY
-  files carry the newest 250k each (of up to 1.23M).
+- **Closed claims (historic)** — maroon embers streamed from the same PMTiles
+  archive. Once-staked, later-dropped ground is not automatically open: verify
+  current claims, withdrawals, and ownership. NV/UT/WY are explicitly marked
+  partial because their source snapshots were capped before state clipping.
+- **Alaska state claims** — DNR polygons with separate active+pending and
+  closed toggles. These are state-law claims with their own rent and annual
+  labor clocks. They are labeled separately from federal MLRS everywhere; a
+  DNR layer never fills missing federal coverage, and a closed record alone
+  does not prove present mineral-entry availability.
 
 **CONTEXT / FAMOUS DISTRICTS** — county lines, 28 curated district cards +
 7 Cassia deep-dives + 1,056 auto-derived MRDS district labels.
@@ -117,7 +141,11 @@ sweep — folded into the guide below where you'd actually use them.
 **Search** (header) finds mines, claims by name or serial, districts, and
 places. **+ DATA / MY DATA**: drop CSV, XLSX, GeoJSON, KML/KMZ, GPX, or
 zipped SHP on the map — lat/lon, UTM, and PLSS legals ("T12S R22E Sec 14")
-auto-geocode; layers persist in your browser and can be exported.
+auto-geocode through national BLM CadNSDI; layers persist in your browser and
+can be exported. Include a `state`/`st` column. If the same township/range is
+present under more than one principal meridian in that state, also include a
+`plss_meridian` code such as `08` or `ID08`; the importer reports ambiguity
+instead of silently choosing the first section returned.
 
 ---
 

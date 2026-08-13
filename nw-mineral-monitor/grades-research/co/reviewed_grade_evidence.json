@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-colorado-reviewed-grade-extraction",
+  "state": "CO",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 Colorado source-page review",
+  "review_method": "Each numeric measurement and quotation was checked against the cited official USGS PDF page. PP 359 rows transcribe the average-grade columns of Tables 11 and 13; Bulletin 478 rows transcribe mine-specific prose. All values remain in the native reported units.",
+  "mines": [
+    {
+      "mine_id": "co-chase",
+      "name": "Chase mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-chase-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Chase A 1893-1908 ¹193 8.20 0.29 1.98 28.40 1.90 6.53 (²)",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.98, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 6.53, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1893-1908"
+      }]
+    },
+    {
+      "mine_id": "co-saratoga",
+      "name": "Saratoga mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-saratoga-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Saratoga A 1893-1909 ¹1,019 8.41 0.12 0.90 13.90 1.00 2.32 (²)",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.90, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2.32, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1893-1909"
+      }]
+    },
+    {
+      "mine_id": "co-argo",
+      "name": "Argo mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-argo-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Argo B 1889-1908 ¹30 5.00 0.50 2.39 12.13 2.50 7.31",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 2.39, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 7.31, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1889-1908"
+      }]
+    },
+    {
+      "mine_id": "co-carr",
+      "name": "Carr mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-carr-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Carr B 1893-1910 ¹400 9.06 0.72 2.88 21.20 2.00 7.62",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 2.88, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 7.62, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1893-1910"
+      }]
+    },
+    {
+      "mine_id": "co-ok",
+      "name": "O.K. mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-ok-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "O.K. B 1893-1908 ¹185 4.28 0.30 1.13 10.20 3.40 5.59",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.13, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.59, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1893-1908"
+      }]
+    },
+    {
+      "mine_id": "co-old-town",
+      "name": "Old Town mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-old-town-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Old Town B 1919-35 139 2.85 0.17 1.12 9.35 0.62 2.78",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.12, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2.78, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1919-1935"
+      }]
+    },
+    {
+      "mine_id": "co-perrin",
+      "name": "Perrin mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-perrin-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Perrin B 1929-36 135 3.42 0.33 1.84 15.78 1.30 6.26 12.62 4.16",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.84, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 6.26, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 4.16, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1929-1936"
+      }]
+    },
+    {
+      "mine_id": "co-pewabic",
+      "name": "Pewabic mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-pewabic-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Pewabic B 1919-34 356 2.85 0.15 1.22 10.50 1.00 3.67 16.00 1.71",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.22, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 3.67, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1.71, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1919-1934"
+      }]
+    },
+    {
+      "mine_id": "co-pittsburg",
+      "name": "Pittsburg mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-pittsburg-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Pittsburg B 1910 ¹435 25.35 0.52 5.77 22.65 2.00 8.93 16.30 0.30 6.65",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 5.77, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 8.93, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 6.65, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1910"
+      }]
+    },
+    {
+      "mine_id": "co-corydon",
+      "name": "Corydon mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-corydon-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Corydon C 1892-97 ¹51 2.62 1.08 1.74 15.00 2.00 5.63",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.74, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.63, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1892-1897"
+      }]
+    },
+    {
+      "mine_id": "co-german-quartz-hill",
+      "name": "German mine (Quartz Hill)",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-german-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "German (Quartz Hill) C 1919-24 124 1.60 0.30 0.63 27.66 2.85 7.99 14.00 7.00",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.63, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 7.99, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 7.00, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1919-1924"
+      }]
+    },
+    {
+      "mine_id": "co-gilpin-eureka",
+      "name": "Gilpin-Eureka mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-gilpin-eureka-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Gilpin-Eureka C 1920-35 64 2.09 0.16 0.83 11.22 0.92 5.60",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.83, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.60, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1920-1935"
+      }]
+    },
+    {
+      "mine_id": "co-hubert",
+      "name": "Hubert mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-hubert-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Hubert C 1934-35 13 4.00 0.09 1.55 5.64 0.31 2.76 0.75 0.18",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.55, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2.76, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 0.18, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1934-1935"
+      }]
+    },
+    {
+      "mine_id": "co-kansas",
+      "name": "Kansas lode",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-kansas-pp359-t11",
+        "source_id": "pp359",
+        "pdf_page": 45,
+        "page_image_sha256": "6387984e4a958f9603395a6b23aeaab61caf8ea1e89f97e83b459806705fda4d",
+        "page_cite": "Table 11, p. 35",
+        "verbatim_quote": "Kansas C 1922-23 33 3.24 0.45 1.66 14.45 4.74 12.05 3.29 1.07",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.66, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 12.05, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1.07, "unit": "percent"}
+        ],
+        "basis": "Representative smelting-ore shipments; Table 11 average columns",
+        "years": "1922-1923"
+      }]
+    },
+    {
+      "mine_id": "co-bullion-gulch-eureka",
+      "name": "Bullion mine (Gulch/Eureka)",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-bullion-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Bullion (Gulch) (Eureka) 1926-34 12 0.14 5.76 19.6 7.8",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.14, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.76, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 19.6, "unit": "percent"},
+          {"commodity": "Zn", "value": 7.8, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; Table 13",
+        "years": "1926-1934"
+      }]
+    },
+    {
+      "mine_id": "co-carroll",
+      "name": "Carroll mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-carroll-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Carroll 1954 ²45 0.10 5.28 8.15 12.5",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.10, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.28, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 8.15, "unit": "percent"},
+          {"commodity": "Zn", "value": 12.5, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; company assays in Table 13",
+        "years": "1954"
+      }]
+    },
+    {
+      "mine_id": "co-champion",
+      "name": "Champion mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-champion-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Champion 1918-35 237 0.65 91.75 5.35 1.40",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.65, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 91.75, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 5.35, "unit": "percent"},
+          {"commodity": "Zn", "value": 1.40, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; Table 13",
+        "years": "1918-1935"
+      }]
+    },
+    {
+      "mine_id": "co-cyclops",
+      "name": "Cyclops mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-cyclops-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Cyclops 1923 7 0.15 104.40 14.55 17.00",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.15, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 104.40, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 14.55, "unit": "percent"},
+          {"commodity": "Zn", "value": 17.00, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; Table 13",
+        "years": "1923"
+      }]
+    },
+    {
+      "mine_id": "co-essex",
+      "name": "Essex mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-essex-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Essex 1935 1.5 0.74 7.00 36.80 12.50",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.74, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 7.00, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 36.80, "unit": "percent"},
+          {"commodity": "Zn", "value": 12.50, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; Table 13",
+        "years": "1935"
+      }]
+    },
+    {
+      "mine_id": "co-gold-cup",
+      "name": "Gold Cup mine",
+      "district": "Central City",
+      "county": "Gilpin",
+      "evidence": [{
+        "evidence_id": "co-gold-cup-pp359-t13",
+        "source_id": "pp359",
+        "pdf_page": 47,
+        "page_image_sha256": "6f69cff786dc1c3eee8d39758eee58091900d8ca3f2107d21ed4993283e90a90",
+        "page_cite": "Table 13, p. 37",
+        "verbatim_quote": "Gold Cup 1920-34 42 0.94 17.61 37.84 9.31",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.94, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 17.61, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 37.84, "unit": "percent"},
+          {"commodity": "Zn", "value": 9.31, "unit": "percent"}
+        ],
+        "basis": "Average metal content of crude ore shipped; Table 13",
+        "years": "1920-1934"
+      }]
+    },
+    {
+      "mine_id": "co-monte-queen",
+      "name": "Monte Queen mine",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-monte-queen-b478-p66",
+        "source_id": "b478",
+        "pdf_page": 71,
+        "page_cite": "p. 66 (Monte Queen pay-shoot discussion)",
+        "verbatim_quote": "No. 2 consists chiefly of a peculiar rosin-like dark-brown sphalerite, mixed with fine steel galena; it averages about 75 ounces of silver to the ton and from 1 to 20 per cent bismuth.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 75, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "No. 2 pay shoot",
+        "years": "1911 report"
+      }]
+    },
+    {
+      "mine_id": "co-vermont",
+      "name": "Vermont mine",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-vermont-b478-p67",
+        "source_id": "b478",
+        "pdf_page": 72,
+        "page_cite": "p. 67",
+        "verbatim_quote": "Eighty-five shipments of ore of about 25 tons each from the upper levels of the Vermont mine averaged 84.53 ounces silver and 27.96 per cent lead, or approximately $44.80 silver and $12.06 lead, a total gross value of $52.86 per ton",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 84.53, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 27.96, "unit": "percent"}
+        ],
+        "basis": "Eighty-five upper-level ore shipments of about 25 tons each",
+        "years": "historic shipments reported in 1911"
+      }]
+    },
+    {
+      "mine_id": "co-gallic-vulcan",
+      "name": "Gallic-Vulcan mines",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-gallic-vulcan-b478-p73",
+        "source_id": "b478",
+        "pdf_page": 78,
+        "page_cite": "p. 73",
+        "verbatim_quote": "The total production of the Gallic and Vulcan mines is small. The ore treated has been hand sorted so that no general average of the run-of-mine ore can be obtained. The concentrates produced by a small mill installed on the ground are said to have contained about 0.21 ounce gold, 10 ounces silver, 50 per cent lead, and some zinc and iron.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.21, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 50, "unit": "percent"}
+        ],
+        "basis": "Small-mill concentrates from hand-sorted ore",
+        "years": "1911 report"
+      }]
+    },
+    {
+      "mine_id": "co-golden-fleece",
+      "name": "Golden Fleece mine",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-golden-fleece-b478-p106",
+        "source_id": "b478",
+        "pdf_page": 113,
+        "page_cite": "p. 106",
+        "verbatim_quote": "A few bunches of high-grade ore were found down as far as the main tunnel, where one bunch gave the phenomenal assay of 125 ounces gold and 1,255 ounces of silver.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 125, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 1255, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Exceptional high-grade ore bunch at the main tunnel",
+        "years": "before 1911"
+      }]
+    },
+    {
+      "mine_id": "co-black-crook",
+      "name": "Black Crook mine",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-black-crook-b478-p116",
+        "source_id": "b478",
+        "pdf_page": 125,
+        "page_cite": "p. 116",
+        "verbatim_quote": "Statements of the superintendent put the average yield of this upper ore at 21 ounces silver and 3 ounces gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 3, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 21, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Superintendent-reported average yield of upper ore",
+        "years": "1884-era upper workings"
+      }]
+    },
+    {
+      "mine_id": "co-moro",
+      "name": "Moro mine",
+      "district": "Lake City",
+      "county": "Hinsdale",
+      "evidence": [{
+        "evidence_id": "co-moro-b478-p120",
+        "source_id": "b478",
+        "pdf_page": 129,
+        "page_cite": "p. 120",
+        "verbatim_quote": "The average yield of the lower-grade ore from the upper levels is stated to have been 10 to 17 ounces silver, 10 to 15 per cent lead, 4.4 per cent copper, and 6 to 15 per cent zinc, giving a total average value of $30 a ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 4.4, "unit": "percent"}
+        ],
+        "basis": "Reported average yield of lower-grade upper-level ore; exact single-valued copper term only",
+        "years": "before 1911"
+      }]
+    }
+  ]
+}

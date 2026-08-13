@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "state": "IL",
+  "name": "Illinois",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-91.513, 36.97, -87.495, 42.508],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip authoritative source features to the official Illinois boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Illinois State Geological Survey",
+    "catalog_url": "https://isgs.illinois.edu/resources/publications/",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://data.isgs.illinois.edu/arcgis/rest/services/Geology"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://data.isgs.illinois.edu/arcgis/rest/services/Geology/Bedrock_Geology_500K_2005/MapServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "il_isgs_bedrock_500k_2005",
+    "title": "Bedrock Geology of Illinois",
+    "authority": "Illinois State Geological Survey",
+    "url": "https://data.isgs.illinois.edu/arcgis/rest/services/Geology/Bedrock_Geology_500K_2005/MapServer/0",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Build and checksum the Illinois PMTiles artifact; source registration alone does not pass the geology gate."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_il_state_review",
+    "title": "USGS Quaternary Faults baseline with ISGS structural-line review",
+    "authority": "U.S. Geological Survey and Illinois State Geological Survey",
+    "url": "https://data.isgs.illinois.edu/arcgis/rest/services/Geology/OIINK_FaultAndFoldTraces/MapServer",
+    "native_scale": "regional compilation; not a verified statewide surface-fault substitute",
+    "state_source_verified": false,
+    "ingest_status": "candidate_registered_not_ingested",
+    "gap": "The ISGS OIINK traces are regional. Retain Qfaults as the statewide baseline until authoritative Illinois contact/fault linework is audited for coverage and scale."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "il_isgs_publications",
+      "title": "Illinois State Geological Survey publications catalog",
+      "role": "state_geologist_and_mineral_industry_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Circulars", "Reports of Investigations", "Illinois Mineral Notes"],
+      "url": "https://isgs.illinois.edu/resources/publications/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "il_isgs_ilmines",
+    "state_inventory_url": "https://isgs.illinois.edu/resources/web-applications/",
+    "status": "state_mine_inventory_registered_not_ingested",
+    "scope": "ILMINES provides Illinois coal-mine mapping and mine information; it is supporting evidence and is not represented as a complete statewide non-coal AML inventory.",
+    "gap": "Reconcile ILMINES and state reclamation records with e-AMLIS before publishing an AML coverage claim."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "case-by-case oil and gas leasing of qualifying state-owned land; no general hard-rock trust-land leasing portal identified",
+    "portal_url": "https://ilga.gov/agencies/JCAR/EntirePart?titlepart=06200250",
+    "evidence": "Illinois DNR administrative rules establish a state-owned-land oil and gas leasing procedure. This is not a Mining Law staking system.",
+    "approach_route": "Confirm the mineral estate and custodial agency; pursue the applicable Illinois DNR lease process for eligible state minerals, otherwise negotiate with the private mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State parcel: confirm agency and mineral authority before seeking a lease; private mineral estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; tiled geology/faults, AML reconciliation, target land context, graded-source evidence, quad inventory, and scale CI remain pending."
+  }
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """County gold-signal ranking — which counties hold the most STAKEABLE gold.
 
-Extends the Cassia-first workflow to every county in the seven states using
+Extends the Cassia-first workflow to every county in the eight states using
 data the repo already has. Two scores per county, both fully itemized:
 
   STAKE  (the ranking lens): gold evidence you could still act on —
@@ -28,7 +28,9 @@ Output: site/data/counties_gold.json  +  GOLD-COUNTIES.md (repo root)
 import json, math, os, sys
 from collections import defaultdict
 
-from common import SITE, TODAY, write_json, point_in_poly, update_manifest
+from common import (SITE, TODAY, write_json, point_in_poly, update_manifest,
+                    load_build_input)
+from state_registry import CLAIM_STATES, NON_CLAIM_STATES
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 STATES = ['wa', 'or', 'id', 'mt', 'wy', 'nv', 'ut', 'ca']
@@ -53,6 +55,7 @@ class Counties:
             bb = (min(xs), min(ys), max(xs), max(ys))
             cx = sum(xs) / len(xs); cy = sum(ys) / len(ys)
             self.rows.append({'st': f['properties']['st'], 'name': f['properties']['name'],
+                              'fips': f['properties'].get('fips'),
                               'bb': bb, 'polys': polys, 'cx': cx, 'cy': cy})
             for gx in range(int(bb[0] / 0.2), int(bb[2] / 0.2) + 1):
                 for gy in range(int(bb[1] / 0.2), int(bb[3] / 0.2) + 1):
@@ -84,7 +87,7 @@ class Counties:
 
 
 def run():
-    counties = Counties(load('data/boundaries/counties.json')['features'])
+    counties = Counties(load_build_input('boundaries', 'counties')['features'])
     N = len(counties.rows)
     print(f'counties: {N}')
 
@@ -96,8 +99,8 @@ def run():
         for kind, grid, per in (('active', act_grid, act_by_cty),
                                 ('closed', clo_grid, clo_by_cty)):
             try:
-                d = load(f'data/claims/{st}_{kind}.json')
-            except FileNotFoundError:
+                d = load_build_input('claims', f'{st}_{kind}')
+            except (FileNotFoundError, ValueError):
                 continue
             if kind == 'active':
                 have_active.add(st.upper())
@@ -135,8 +138,8 @@ def run():
     for st in STATES:
         for kind in ('mrds', 'stategeo'):
             try:
-                d = load(f'data/sites/{kind}_{st}.json')
-            except FileNotFoundError:
+                d = load_build_input('sites', f'{kind}_{st}')
+            except (FileNotFoundError, ValueError):
                 continue
             n_au = 0
             for i in range(d['n']):
@@ -191,8 +194,8 @@ def run():
     # ---- usmin workings per county ----
     for st in STATES:
         try:
-            d = load(f'data/sites/usmin_{st}.json')
-        except FileNotFoundError:
+            d = load_build_input('sites', f'usmin_{st}')
+        except (FileNotFoundError, ValueError):
             continue
         for i in range(d['n']):
             x, y = d['x'][i], d['y'][i]
@@ -210,7 +213,8 @@ def run():
     out_rows = []
     for i, r in enumerate(counties.rows):
         m = M[i]
-        pending = r['st'] not in have_active   # no claims snapshot => stakeable unmeasurable
+        claim_applicable = r['st'] in CLAIM_STATES
+        pending = claim_applicable and r['st'] not in have_active
         why_s, why_e = [], []
         def add(lst, pts, txt):
             if pts >= 0.5:
@@ -257,13 +261,22 @@ def run():
                          'staked-then-dropped floored at zero. Cited grades live '
                          '(PP 157/172/194, Bulls 430/540); patented/park ground not yet '
                          'screened out of "open".')
-        out_rows.append({'st': r['st'], 'name': r['name'], 'cx': round(r['cx'], 4),
+        if not claim_applicable:
+            notes.append('OPEN GROUND N/A — this is a non-claim state. Use the land-context '
+                         'route (state mineral lease or private negotiation), not staking.')
+        out_rows.append({'st': r['st'], 'name': r['name'], 'fips': r.get('fips'),
+                         'cx': round(r['cx'], 4),
                          'cy': round(r['cy'], 4),
-                         'stake': None if pending else round(stake, 1),
+                         'stake': None if (pending or not claim_applicable) else round(stake, 1),
+                         'open_ground_status': ('not_applicable' if not claim_applicable else
+                                                'unknown' if pending else 'measured'),
                          'pending': pending or None,
-                         'disp': round(endow * 0.55, 1) if pending else round(stake, 1),
+                         'disp': (round(endow * 0.55, 1)
+                                  if (pending or not claim_applicable) else round(stake, 1)),
                          'endow': round(endow, 1), 'm': m,
-                         'why_stake': (['stakeable unmeasurable — no claims snapshot for '
+                         'why_stake': (['stakeability not applicable — non-claim state; '
+                                        'see land context'] if not claim_applicable else
+                                       ['stakeable unmeasurable — no claims snapshot for '
                                         'this state yet (see note)'] if pending else why_s),
                          'why_endow': why_e,
                          'top': top[i][:8], 'notes': notes})

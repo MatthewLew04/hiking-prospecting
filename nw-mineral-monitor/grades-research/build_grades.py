@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Merge grade records (library agents + MRDS dump), geolocate, aggregate per mine,
 compute distance-to-nearest-active-claim, emit site/data/grades/grades.json."""
-import json, re, math, csv
+import json, re, math, csv, os
 from collections import defaultdict
 csv.field_size_limit(10**9)
 
 G = '/home/claude/nw/grades/'
+ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 raw = (json.load(open(G+'raw_greatbasin_nvut.json')) +
        json.load(open(G+'raw_id_or.json')) +
        json.load(open(G+'raw_mrds.json')))
@@ -91,7 +92,8 @@ print('unique mines:', len(mines))
 # ---- open-ground: nearest active-claim centroid (5-state footprint only) ----
 grid = defaultdict(list)
 import glob
-for f in glob.glob('/home/claude/nw/site/data/claims/*_active.json'):
+for f in glob.glob(os.path.join(ROOT, 'build-inputs', 'data', 'claims',
+                               '*_active.json')):
     d = json.load(open(f))
     for i in range(d['n']):
         x, y = d['x'][i], d['y'][i]
@@ -150,16 +152,17 @@ out['generated'] = '2026-07-30'
 out['note'] = ('best cited grade per mine; open = metres to nearest ACTIVE claim centroid '
                '(5000 = none within ~5 km; -1 = unknown: outside claims footprint or unlocated). '
                'assay-text/bonanza values are hand-picked specimens, not mine averages — read the quote.')
-json.dump(out, open('/home/claude/nw/site/data/grades/grades.json','w'), separators=(',',':'))
-import os; os.makedirs('/home/claude/nw/site/data/grades', exist_ok=True)
-json.dump(out, open('/home/claude/nw/site/data/grades/grades.json','w'), separators=(',',':'))
+grades_path = os.path.join(ROOT, 'site', 'data', 'grades', 'grades.json')
+os.makedirs(os.path.dirname(grades_path), exist_ok=True)
+json.dump(out, open(grades_path,'w'), separators=(',',':'))
 from collections import Counter
 print('mines emitted:', out['n'], '| by state:', Counter(out['st']))
 print('located:', sum(1 for x in out['x'] if x is not None),
       '| open>=400m:', sum(1 for i,o in enumerate(out['open']) if o>=400 and out['au'][i]))
 print('gold mines open>=400m w/ au>=0.3:', sum(1 for i in range(out['n']) if out['open'][i]>=400 and (out['au'][i] or 0)>=0.3))
 # manifest
-man = json.load(open('/home/claude/nw/site/data/manifest.json'))
+manifest_path = os.path.join(ROOT, 'site', 'data', 'manifest.json')
+man = json.load(open(manifest_path))
 man['grades'] = {'file':'data/grades/grades.json','n':out['n'],'retrieved':'2026-07-30'}
-json.dump(man, open('/home/claude/nw/site/data/manifest.json','w'), separators=(',',':'))
+json.dump(man, open(manifest_path,'w'), separators=(',',':'))
 print('manifest updated')

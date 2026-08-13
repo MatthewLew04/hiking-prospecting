@@ -2,7 +2,7 @@
 
 Retrieved: **2026-07-31** (run 14:28–16:48 UTC) from the same BLM MLRS geocoded
 mining-claims service documented in `summary_claims_nw.md`. Outputs:
-`/home/claude/nw/site/data/claims/{nv,ut}_active.json` — columnar JSON,
+`build-inputs/data/claims/{nv,ut}_active.json` — private columnar JSON,
 centroid points only, deduped by `CSE_NR`, **identical schema/key order** to the
 existing WA/OR/ID/MT/WY files (`state, layer, retrieved, n, serial, name, type,
 disp, acres, x, y`).

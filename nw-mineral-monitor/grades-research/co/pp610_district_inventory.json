@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-colorado-pp610-district-inventory",
+  "state": "CO",
+  "source_id": "pp610",
+  "review_scope": "All 44 numbered Colorado districts in USGS Professional Paper 610 Figure 10, printed page 85, plus one reviewed descriptive quotation from the Colorado chapter for every district. Exact OCR/text-layer headings drive deterministic bounding-box extraction for 40 entries; four Figure 10 entries without independently extractable headings use reviewed county-section sentences.",
+  "figure_page_image_sha256": "5359463896b41004e99ae21a350d2987ef3a20a09e5dafe5b133e33703b57fb6",
+  "districts": [
+    {
+      "district_id": "co-adams-clear-creek-placers",
+      "name": "Clear Creek placers (Adams County)",
+      "county": "Adams",
+      "pdf_page": 93,
+      "page_cite": "p. 87",
+      "source_heading": null,
+      "verbatim_quote": "All the gold mined in the county has come from placers along Clear Creek, a tributary of the South Platte River.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-jamestown",
+      "name": "Jamestown",
+      "county": "Boulder",
+      "pdf_page": 95,
+      "page_cite": "p. 89",
+      "source_heading": "JAMESTOWN DISTRICT",
+      "verbatim_quote": "The Jamestown (Central) district is in the Front Range in central Boulder County, about 9 miles northwest of Boulder.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-gold-hill-sugarloaf",
+      "name": "Gold Hill-Sugarloaf",
+      "county": "Boulder",
+      "pdf_page": 94,
+      "page_cite": "p. 88",
+      "source_heading": "GOLD HILL-SUGARLOAF DISTRICT",
+      "verbatim_quote": "The Gold Hill-Sugarloaf district, the largest gold producer in Boulder County, contains several small mining camps within an area of about 12 square miles in the central part of the countiV; 3 to 8 miles northwest of Boulder.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-ward",
+      "name": "Ward",
+      "county": "Boulder",
+      "pdf_page": 96,
+      "page_cite": "p. 90",
+      "source_heading": "WARD DISTRICT",
+      "verbatim_quote": "The Ward district is in western Boulder County, west of the Gold Hill-Sugarloaf district and about 9 to 13 miles northwest of Boulder.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-magnolia",
+      "name": "Magnolia",
+      "county": "Boulder",
+      "pdf_page": 96,
+      "page_cite": "p. 90",
+      "source_heading": "MAGNOLIA DISTRICT",
+      "verbatim_quote": "The Magnolia district, about 4 miles southwest of Boulder along the east side of the Front Range, is small, and most of the productive veins crop out in an area of less than 1 square mile.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-grand-island-caribou",
+      "name": "Grand Island-Caribou",
+      "county": "Boulder",
+      "pdf_page": 95,
+      "page_cite": "p. 89",
+      "source_heading": "GRAND ISLAND-CARIBOU DISTRICT",
+      "verbatim_quote": "The Grand Island-Caribou district is in south- west Boulder County, about 17 miles west of Boulder and 4 miles northwest of Nederland.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-chalk-creek",
+      "name": "Chalk Creek",
+      "county": "Chaffee",
+      "pdf_page": 98,
+      "page_cite": "p. 92",
+      "source_heading": "CHALK CREim DISTRICT",
+      "verbatim_quote": "The Chalk Creek district is in western Chaffee County near the headwaters of Chalk Creek, 16 miles west of Nathrop along the Arkansas River.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-monarch",
+      "name": "Monarch",
+      "county": "Chaffee",
+      "pdf_page": 98,
+      "page_cite": "p. 92",
+      "source_heading": "MONARCH DISTRICT",
+      "verbatim_quote": "The Monarch district is centered around the town of Garfield about 17 miles west of Salida.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-alice",
+      "name": "Alice",
+      "county": "Clear Creek",
+      "pdf_page": 99,
+      "page_cite": "p. 93",
+      "source_heading": null,
+      "verbatim_quote": "The Alice district is about 7 miles west-northwest of Central City in north-central Clear Creek County and extends into southwest Gilpin County.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-empire",
+      "name": "Empire",
+      "county": "Clear Creek",
+      "pdf_page": 100,
+      "page_cite": "p. 94",
+      "source_heading": "EMPIRE DISTRICT",
+      "verbatim_quote": "The Empire district is in north-central Clear Creek County about 9 miles west of Idaho Springs and 4 to 5 miles south-southwest of the Alice dis- trict.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-idaho-springs",
+      "name": "Idaho Springs",
+      "county": "Clear Creek",
+      "pdf_page": 102,
+      "page_cite": "p. 96",
+      "source_heading": "IDAHO SPRINGS DISTRICT",
+      "verbatim_quote": "An unbroken succession of gold deposits extends from Idaho Springs in Clear Creek County to Cen-",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-freeland-lamartine",
+      "name": "Freeland-Lamartine",
+      "county": "Clear Creek",
+      "pdf_page": 101,
+      "page_cite": "p. 95",
+      "source_heading": "FREEJ.AND-J,AMARTINJ<: DISTRICT",
+      "verbatim_quote": "The Freeland-Lamartine (Trail) district includes about 4 square miles of the Colorado mineral belt and is about 3 miles west of Idaho Springs in cen- tral Clear Creek County.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-georgetown-silver-plume",
+      "name": "Georgetown-Silver Plume",
+      "county": "Clear Creek",
+      "pdf_page": 101,
+      "page_cite": "p. 95",
+      "source_heading": "GEORGETOWN-SILVER PLUME DISTRICT",
+      "verbatim_quote": "The Georgetown-Silver Plume (Griffith) district consists of about 25 square miles centered around the towns of Georgetown and Silver Plume, in western Clear Creek County.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-argentine",
+      "name": "Argentine",
+      "county": "Clear Creek",
+      "pdf_page": 100,
+      "page_cite": "p. 94",
+      "source_heading": "ARGENTINE DISTRICT",
+      "verbatim_quote": "The Argentine district, located at the heads of Leavenworth and Stevens Creeks in southwestern Clear Creek County, is 6 to 8 miles southwest of Georgetown and Silver Plume, just east of the Continental Divide.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-rosita-hills",
+      "name": "Rosita Hills",
+      "county": "Custer",
+      "pdf_page": 103,
+      "page_cite": "p. 97",
+      "source_heading": "ROSITA HILLS DISTRICT",
+      "verbatim_quote": "The Rosita Hills district, in the low western foot- hills of the Wet Mountains about 7 miles southeast of Westcliffe, has produced gold, silver, lead, cop- per, and a small amount of zinc.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-rico",
+      "name": "Rico",
+      "county": "Dolores",
+      "pdf_page": 104,
+      "page_cite": "p. 98",
+      "source_heading": "RICO DISTRICT",
+      "verbatim_quote": "The Rico (Pioneer) district lies near the south- west end of the Colorado mineral belt (Fischer and others, 1946) near the headwaters of the Dolores River.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-gilman",
+      "name": "Gilman",
+      "county": "Eagle",
+      "pdf_page": 105,
+      "page_cite": "p. 99",
+      "source_heading": "GILMAN DISTRICT",
+      "verbatim_quote": "The Gilman (Battle Mountain, Red Cliff) district, in southeastern Eagle County on the northeast flank of the Sawatch Range, is between Gilman and Red Cliff, about 20 miles north of Leadville.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-northern-gilpin",
+      "name": "Northern Gilpin",
+      "county": "Gilpin",
+      "pdf_page": 106,
+      "page_cite": "p. 100",
+      "source_heading": "NORTHERN GILPIN DISTRICT",
+      "verbatim_quote": "The Northern Gilpin district lies north of North Clear Creek in the central part of the county and extends north to the Boulder County line.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-central-city",
+      "name": "Central City",
+      "county": "Gilpin",
+      "pdf_page": 106,
+      "page_cite": "p. 100",
+      "source_heading": "CENTRAL CITY DISTRICT",
+      "verbatim_quote": "The Central City district is along the southern border of Gilpin County in the vicinity of the towns",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-gold-brick-quartz-creek",
+      "name": "Gold Brick-Quartz Creek",
+      "county": "Gunnison",
+      "pdf_page": 107,
+      "page_cite": "p. 101",
+      "source_heading": "GOLD BRICK.QUARTZ CREEK DISTRICT",
+      "verbatim_quote": "The Gold Brick-Quartz Greek district, which in- cludes Box Canyon, is in southeast Gunnison",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-tincup",
+      "name": "Tincup",
+      "county": "Gunnison",
+      "pdf_page": 108,
+      "page_cite": "p. 102",
+      "source_heading": "TINCUP DISTRICT",
+      "verbatim_quote": "In the Tincup district in northeastern Gunnison County, about 25 miles northeast of Gunnison, gold has been obtained mainly as a byproduct of silver- lead ores, although a considerable amount has come from placers.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-lake-city",
+      "name": "Lake City",
+      "county": "Hinsdale",
+      "pdf_page": 109,
+      "page_cite": "p. 103",
+      "source_heading": "LAKE CITY DISTRICT",
+      "verbatim_quote": "The Lake City district, which includes Henson Creek, Galena, and Lake Fork, is in northern Hins- dale County along Lake Fork and Henson Creek a few miles west and south of Lake City.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-jefferson-clear-creek-placers",
+      "name": "Clear Creek placers (Jefferson County)",
+      "county": "Jefferson",
+      "pdf_page": 109,
+      "page_cite": "p. 103",
+      "source_heading": null,
+      "verbatim_quote": "Most of the production from Jefferson County has come from the placers along Clear Creek.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-leadville",
+      "name": "Leadville",
+      "county": "Lake",
+      "pdf_page": 110,
+      "page_cite": "p. 104",
+      "source_heading": "LEADVILLE DISTRICT",
+      "verbatim_quote": "The following brief history of the Leadville min- ing district and its production was abstracted from reports by Henderson (1926, p. 40-43, 130-176).",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-arkansas-river-valley-placers",
+      "name": "Arkansas River valley placers",
+      "county": "Lake",
+      "pdf_page": 110,
+      "page_cite": "p. 104",
+      "source_heading": "ARKANSAS RIVER VALLEY PLACERS",
+      "verbatim_quote": "Most of the placer gold production in Lake County has come from California Gulch in the Leadville district, but some has come from many other tributaries of the Arkansas River.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-la-plata",
+      "name": "La Plata",
+      "county": "La Plata",
+      "pdf_page": 111,
+      "page_cite": "p. 105",
+      "source_heading": "LA PLATA DISTRICT",
+      "verbatim_quote": "Spanish explorers who visited the La Plata Moun- tains in the 18th century may have found gold, but mining in the region did not begin until 1873 when placer gold was found along the Animas River near the present site of Durango (Eckel, 1949, p. 51).",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-creede",
+      "name": "Creede",
+      "county": "Mineral",
+      "pdf_page": 112,
+      "page_cite": "p. 106",
+      "source_heading": "CREEDE DISTRICT",
+      "verbatim_quote": "The Creede and the Cripple Creek districts were the last of the famous mining districts in Colorado to be discovered, and the significant discoveries in both districts were made in 1891.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-sneffels-red-mountain",
+      "name": "Sneffels-Red Mountain",
+      "county": "Ouray",
+      "pdf_page": 113,
+      "page_cite": "p. 107",
+      "source_heading": "SNEFFELS-RED MOUNTAIN DISTRICT",
+      "verbatim_quote": "The Sneffels-Red Mountain district is in southern and southwestern Ouray County, 8 to 12 miles from Ouray.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-uncompahgre",
+      "name": "Uncompahgre",
+      "county": "Ouray",
+      "pdf_page": 114,
+      "page_cite": "p. 108",
+      "source_heading": "UNCOMPAHGRE, DISTRICT",
+      "verbatim_quote": "The Uncompahgre district covers about 15 square miles near the town of Ouray, where most of the mine workings are in the canyon walls of the Uncompahgre River.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-alma",
+      "name": "Alma",
+      "county": "Park",
+      "pdf_page": 115,
+      "page_cite": "p. 109",
+      "source_heading": "AL.M:A DISTRICT",
+      "verbatim_quote": "The Alma district lies east of the Leadville dis- trict along the east slope of the Mosquito Range and includes the Mosquito-Buckskin, Montgomery, Horseshoe, and Alma placers.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-fairplay",
+      "name": "Fairplay",
+      "county": "Park",
+      "pdf_page": 116,
+      "page_cite": "p. 110",
+      "source_heading": "FAIRPLAY DISTRICT",
+      "verbatim_quote": "Gold production from the Fairplay (Beaver Creek) district was entirely from placer deposits and included production from the Snowstorm and Fairplay placers along the South Platte River and small placers along Sacramento and Beaver Creeks.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-tarryall",
+      "name": "Tarryall",
+      "county": "Park",
+      "pdf_page": 116,
+      "page_cite": "p. 110",
+      "source_heading": null,
+      "verbatim_quote": "Almost all the gold production from the Tarryall district has come from placer deposits along the upper reaches of Tarryall Creek and its tributaries, northwest of the town of Como.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-independence-pass",
+      "name": "Independence Pass",
+      "county": "Pitkin",
+      "pdf_page": 116,
+      "page_cite": "p. 110",
+      "source_heading": "INDEPENDENCE PASS DISTRICT",
+      "verbatim_quote": "The Independence Pass district is in southeastern Pitkin County, about 20 miles southeast of Aspen.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-summitville",
+      "name": "Summitville",
+      "county": "Rio Grande",
+      "pdf_page": 117,
+      "page_cite": "p. 111",
+      "source_heading": "SUMMITVILLE DISTRICT",
+      "verbatim_quote": "The Summitville district is in the southwest corner of Rio Grande County, high in the San Juan Mountains.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-hahns-peak",
+      "name": "Hahns Peak",
+      "county": "Routt",
+      "pdf_page": 118,
+      "page_cite": "p. 112",
+      "source_heading": "HAHNS PEAK DISTRICT",
+      "verbatim_quote": "Much of the mining history of the Hahns Peak (Columbine) district, near Hahns Peak in north- central Routt County, is obscure.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-bonanza",
+      "name": "Bonanza",
+      "county": "Saguache",
+      "pdf_page": 118,
+      "page_cite": "p. 112",
+      "source_heading": "BONANZA DISTRICT",
+      "verbatim_quote": "The Bonanza (Kerber Creek) district is about 12 miles north of Saguache iri the northeastern part of the county.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-animas",
+      "name": "Animas",
+      "county": "San Juan",
+      "pdf_page": 119,
+      "page_cite": "p. 113",
+      "source_heading": "ANIMAS DISTRICT",
+      "verbatim_quote": "The Animas (Silverton) district is in north- central San Juan County near Silverton.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-eureka",
+      "name": "Eureka",
+      "county": "San Juan",
+      "pdf_page": 120,
+      "page_cite": "p. 114",
+      "source_heading": "EUREKA DISTRICT",
+      "verbatim_quote": "The Eureka district is in northeastern San Juan County, at the head of the Animas River drainage basin, and includes mines in the Animas Forks, Cement Creek, and Mineral Creek areas.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-ophir",
+      "name": "Ophir",
+      "county": "San Miguel",
+      "pdf_page": 121,
+      "page_cite": "p. 115",
+      "source_heading": "OPHIR DISTRICT",
+      "verbatim_quote": "The Ophir district, in eastern San Miguel County, includes the area south of San Miguel River, west of Bridal Veil Creek, and the Ophir Valley on the south.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-telluride",
+      "name": "Telluride",
+      "county": "San Miguel",
+      "pdf_page": 121,
+      "page_cite": "p. 115",
+      "source_heading": "TELLURIDE DISTRICT",
+      "verbatim_quote": "The Telluride (upper San Miguel) district is along the east border of San Miguel County immediately southwest of the Sneffels-Red Mountain district in Ouray County.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-mount-wilson",
+      "name": "Mount Wilson",
+      "county": "San Miguel",
+      "pdf_page": 120,
+      "page_cite": "p. 114",
+      "source_heading": "MOUNT WILSON DISTRICT",
+      "verbatim_quote": "The Mount Wilson district is in southeastern San Miguel County on one of the western spurs of Mount Wilson.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-breckenridge",
+      "name": "Breckenridge",
+      "county": "Summit",
+      "pdf_page": 122,
+      "page_cite": "p. 116",
+      "source_heading": "BRECKENRIDGE DISTRICT",
+      "verbatim_quote": "The Breckenridge (Blue River) district includes the upper valley of the Blue River :which lies be- tween the Front Range on the east and the Tenmile Range on the west.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-tenmile",
+      "name": "Tenmile",
+      "county": "Summit",
+      "pdf_page": 123,
+      "page_cite": "p. 117",
+      "source_heading": "TENMILE DISTRICT",
+      "verbatim_quote": "The Tenmile district includes the mining camps of Kokomo, Robinson, and Frisco, which lie in the Tenmile valley on the west side of the Tenmile Range.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "co-cripple-creek",
+      "name": "Cripple Creek",
+      "county": "Teller",
+      "pdf_page": 123,
+      "page_cite": "p. 117",
+      "source_heading": "CRIPPLE GREEK DISTRICT",
+      "verbatim_quote": "The Cripple Creek district is about 45 miles southwest of Colorado Springs, in the shadow of Pikes Peak.",
+      "quote_verbatim": true
+    }
+  ]
+}

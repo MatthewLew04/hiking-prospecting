@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "IA",
+  "name": "Iowa",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-96.639, 40.375, -90.14, 43.501],
+      "crs": "EPSG:4326",
+      "note": "State envelope; use the official Iowa boundary for final clipping and tile QA."
+    }
+  ],
+  "geological_survey": {
+    "name": "Iowa Geological Survey",
+    "catalog_url": "https://igs.iihr.uiowa.edu/igs/publications/search",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://programs.iowadnr.gov/geospatial/rest/services/Geology"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://programs.iowadnr.gov/geospatial/rest/services/Geology/BedrockGeology/MapServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ia_igs_bedrock_multiscale",
+    "title": "Iowa Bedrock Geology multiscale map service",
+    "authority": "Iowa Geological Survey and Iowa Department of Natural Resources",
+    "url": "https://programs.iowadnr.gov/geospatial/rest/services/Geology/BedrockGeology/MapServer",
+    "native_scale": "1:24,000 and 1:100,000 mapped areas with 1:500,000 statewide fallback",
+    "source_layers": {"faults": 3, "bedrock_24k": 4, "bedrock_100k": 5, "statewide": 6},
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_available_multiscale_state_compilation",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Build a deterministic finest-available mosaic and retain source layer, map identifier, and scale on every polygon before PMTiles publication."
+  },
+  "faults": {
+    "source_id": "ia_igs_bedrock_faults",
+    "title": "Bedrock Faults",
+    "authority": "Iowa Geological Survey and Iowa Department of Natural Resources",
+    "url": "https://programs.iowadnr.gov/geospatial/rest/services/Geology/BedrockGeology/MapServer/3",
+    "native_scale": "mixed source scales tied to the bedrock compilation",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Preserve map-scale/source fields and reconcile with Qfaults before creating the Iowa fault tiles."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ia_igs_publications",
+      "title": "Iowa Geological Survey publications database",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Technical Information Series", "Map Series"],
+      "url": "https://igs.iihr.uiowa.edu/igs/publications/search",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ia_dnr_coal_mines",
+    "state_inventory_url": "https://programs.iowadnr.gov/maps/coalmines/",
+    "service_url": "https://programs.iowadnr.gov/geospatial/rest/services/Geology/CoalMines/MapServer",
+    "status": "historic_coal_mine_inventory_registered_not_ingested",
+    "scope": "Located Iowa coal mines and scanned mine maps; not asserted to be a complete AML hazard or reclamation-project inventory.",
+    "gap": "Reconcile the mine polygons and maps with e-AMLIS and state reclamation records before claiming statewide AML coverage."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "unknown",
+    "portal_url": "https://www.iowadnr.gov/programs-services/realty-land-services",
+    "evidence": "The reviewed Iowa DNR realty catalog provides general state-land transactions but no central public hard-rock mineral-leasing program was identified.",
+    "approach_route": "For state land contact Iowa DNR Realty Services and the custodial agency for parcel-specific authority; otherwise resolve the mineral estate and negotiate privately.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State parcel: parcel-specific agency review; private or severed mineral rights: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; multiscale mosaic QA and every artifact-dependent DONE item remain pending."
+  }
+}

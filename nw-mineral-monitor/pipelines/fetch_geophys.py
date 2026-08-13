@@ -15,11 +15,13 @@ Sources (both mrdata WFS, verified 2026-08-07):
     modern high-res blocks; these are the ones worth chasing as GeoTIFFs
     in WS7b)
 
-Output: site/data/geophys/surveys.json  (AOI-wide, WA OR ID MT WY NV UT CA)
+Output: pipelines/cache/geophys/surveys.json (private regional research cache).
+The browser trust layer is built nationally by build_geophys_pmtiles.py and
+is published only as range-readable PMTiles.
 """
-import json, re, sys, urllib.parse
+import json, os, re, sys, urllib.parse
 
-from common import cached_get, write_json, prov, TODAY, update_manifest
+from common import CACHE, cached_get, prov, TODAY
 
 # full-AOI bbox incl. California
 BBOX = (-125.0, 32.4, -103.9, 49.1)
@@ -116,9 +118,11 @@ def run():
         'n': len(surveys),
         'surveys': surveys,
     }
-    write_json('data/geophys/surveys.json', out)
-    update_manifest('geophys_surveys', {'file': 'data/geophys/surveys.json',
-                                        'n': len(surveys), 'retrieved': TODAY})
+    path = os.path.join(CACHE, 'geophys', 'surveys.json')
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as destination:
+        json.dump(out, destination, separators=(',', ':'), allow_nan=False)
+    print(f'wrote private cache {path} ({os.path.getsize(path):,} bytes)')
     by = {}
     for s in surveys:
         by[s['src']] = by.get(s['src'], 0) + 1

@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "verified": "2026-08-12",
+  "sources": {
+    "federal_mlrs": {
+      "title": "BLM Mineral & Land Records System mining claims",
+      "authority": "U.S. Bureau of Land Management",
+      "url": "https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer",
+      "layers": {"active": 1, "closed": 2},
+      "scope": "claim_states",
+      "browser_delivery": "pmtiles"
+    },
+    "mrds": {
+      "title": "Mineral Resources Data System",
+      "authority": "U.S. Geological Survey",
+      "url": "https://mrdata.usgs.gov/mrds/",
+      "scope": "national",
+      "browser_delivery": "pmtiles"
+    },
+    "usmin": {
+      "title": "Prospect- and Mine-Related Features from U.S. Geological Survey 7.5- and 15-Minute Topographic Quadrangle Maps",
+      "authority": "U.S. Geological Survey",
+      "url": "https://mrdata.usgs.gov/usmin/",
+      "scope": "national",
+      "browser_delivery": "pmtiles"
+    },
+    "qfaults": {
+      "title": "Quaternary Fault and Fold Database",
+      "authority": "U.S. Geological Survey",
+      "url": "https://www.usgs.gov/programs/earthquake-hazards/faults",
+      "doi": "https://doi.org/10.5066/P9BCVRCK",
+      "bulk_url": "https://earthquake.usgs.gov/static/lfs/nshm/qfaults/Qfaults_GIS.zip",
+      "bulk_release": "2020 database; official archive refreshed 2025-09-29",
+      "scope": "national",
+      "browser_delivery": "pmtiles"
+    },
+    "sgmc": {
+      "title": "State Geologic Map Compilation",
+      "authority": "U.S. Geological Survey",
+      "url": "https://www.usgs.gov/data/geologic-map-schema-gems-version-state-geologic-map-compilation-sgmc-geodatabase-conterminous",
+      "source_scales": "approximately 1:50,000 to 1:1,000,000",
+      "version": "2026 GeMS SGMC",
+      "doi": "https://doi.org/10.5066/P1A3DQZK",
+      "baseline_feature_service": "https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/SB_5888bf4fe4b05ccb964bab9d_USGS_SGMC_feature/FeatureServer",
+      "baseline_feature_service_release": "2017 v1.1; retained as the exactly identified national baseline while the separate 2026 GeMS release is the current registered upgrade",
+      "scope": "conterminous_us",
+      "browser_delivery": "pmtiles"
+    },
+    "alaska_statewide_geology": {
+      "title": "Geologic map of Alaska, Scientific Investigations Map 3340",
+      "authority": "U.S. Geological Survey",
+      "url": "https://pubs.usgs.gov/sim/3340/",
+      "doi": "https://doi.org/10.3133/sim3340",
+      "feature_service": "https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Geologic_map_of_Alaska_FeatureLayer/FeatureServer",
+      "source_scales": "1:25,000 to 1:500,000 source maps in a statewide detailed compilation",
+      "scope": "AK",
+      "browser_delivery": "pmtiles"
+    },
+    "macrostrat": {
+      "title": "Macrostrat harmonized geologic map tiles",
+      "authority": "Macrostrat",
+      "url": "https://tiles.macrostrat.org/carto/{z}/{x}/{y}.mvt",
+      "scope": "national",
+      "browser_delivery": "remote_vector_tiles"
+    },
+    "airborne": {
+      "title": "Airborne geophysical survey inventory",
+      "authority": "U.S. Geological Survey",
+      "url": "https://energy.usgs.gov/arcgis/rest/services/Hosted/Airborne_Geophysical_Surveys/FeatureServer/0",
+      "scope": "national",
+      "browser_delivery": "pmtiles"
+    },
+    "earthmri": {
+      "title": "Earth MRI acquisition blocks",
+      "authority": "U.S. Geological Survey",
+      "url": "https://energy.usgs.gov/arcgis/rest/services/MRData/Earth_MRI_Acquisitions/MapServer",
+      "scope": "national",
+      "browser_delivery": "pmtiles"
+    },
+    "plss": {
+      "title": "BLM National PLSS CadNSDI",
+      "authority": "U.S. Bureau of Land Management",
+      "url": "https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer",
+      "scope": "plss_states",
+      "browser_delivery": "remote_arcgis_query",
+      "implementation_note": "The national legal-description geocoder queries CadNSDI live. Published PLSS polygons remain AOI-scoped unless a separate tiled artifact is declared."
+    },
+    "blm_sma": {
+      "title": "BLM Surface Management Agency",
+      "authority": "U.S. Bureau of Land Management",
+      "url": "https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer",
+      "scope": "national",
+      "browser_delivery": "registered_source",
+      "implementation_note": "SMA is used by AOI and private staging producers, but there is no national SMA manifest entry, standalone browser layer, or published PMTiles artifact.",
+      "caveat": "Surface manager is not proof of mineral ownership."
+    },
+    "padus": {
+      "title": "Protected Areas Database of the United States",
+      "authority": "U.S. Geological Survey",
+      "url": "https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-overview",
+      "scope": "national",
+      "browser_delivery": "registered_source",
+      "implementation_note": "PAD-US is registered as candidate land-context provenance; no PAD-US producer, manifest entry, browser layer, or published PMTiles artifact exists."
+    },
+    "eamlis": {
+      "title": "Abandoned Mine Land Inventory System",
+      "authority": "Office of Surface Mining Reclamation and Enforcement",
+      "url": "https://www.osmre.gov/programs/e-amlis",
+      "scope": "national",
+      "browser_delivery": "registered_source",
+      "implementation_note": "e-AMLIS is registered as a national AML reference for state review. The generic non-claim publisher does not fetch it, and no national e-AMLIS manifest entry, browser layer, or published PMTiles artifact exists."
+    },
+    "pp610": {
+      "title": "Principal Gold-Producing Districts of the United States, USGS Professional Paper 610",
+      "authority": "U.S. Geological Survey",
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf",
+      "scope": "national",
+      "use": "district anchor"
+    },
+    "chronicling_america": {
+      "title": "Chronicling America",
+      "authority": "Library of Congress",
+      "url": "https://www.loc.gov/collections/chronicling-america/",
+      "scope": "national",
+      "browser_delivery": "aoi_ingest",
+      "implementation_note": "The source is national, but the current automated corpus is built only for configured AOIs; source registration is not national ingestion coverage."
+    },
+    "edgar": {
+      "title": "EDGAR company filings",
+      "authority": "U.S. Securities and Exchange Commission",
+      "url": "https://www.sec.gov/edgar/search/",
+      "scope": "national",
+      "browser_delivery": "link_only"
+    },
+    "sedar_plus": {
+      "title": "SEDAR+ company filings",
+      "authority": "Canadian Securities Administrators",
+      "url": "https://www.sedarplus.ca/",
+      "scope": "national",
+      "browser_delivery": "link_only"
+    }
+  }
+}

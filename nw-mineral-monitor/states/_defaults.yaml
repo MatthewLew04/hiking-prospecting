@@ -1,0 +1,243 @@
+{
+  "common": {
+    "schema_version": 1,
+    "geology": {
+      "source_id": "sgmc",
+      "gap_fill_source_id": "macrostrat",
+      "best_available_verified": false,
+      "source_scale_recorded_per_polygon": true,
+      "required_properties": ["st", "source_id", "source_scale"],
+      "browser_delivery": "pmtiles",
+      "browser_path": "data/tiles/geology/{state}.pmtiles",
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "faults": {
+      "source_id": "qfaults",
+      "state_source_verified": false,
+      "zero_inventory": null,
+      "required_properties": ["st", "source_id", "source_scale"],
+      "browser_delivery": "pmtiles",
+      "browser_path": "data/tiles/faults/{state}.pmtiles",
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "aeromag": {
+      "raster_source": "national_aeromag",
+      "survey_index_source_ids": ["airborne", "earthmri"],
+      "survey_index_provenance_required": true,
+      "baseline_delivery": "wmts",
+      "baseline_url": "https://mrdata.usgs.gov/mapcache/wmts/1.0.0/WMTSCapabilities.xml",
+      "browser_delivery": "cog",
+      "browser_path": "data/cog/aeromag/{state}.tif",
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "historic_serials": [
+      {
+        "source_id": "pp610",
+        "role": "district_anchor",
+        "primary": true,
+        "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+      }
+    ],
+    "aml": {
+      "source_id": "eamlis",
+      "state_inventory_url": null,
+      "status": "national_baseline_only",
+      "release_inventory_status": "pending_review",
+      "evidence_artifact": null,
+      "evidence_sha256": null,
+      "evidence_bytes": null,
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "trust_land": {
+      "mineral_leasing_offered": "unknown",
+      "portal_url": null,
+      "evidence": "State-specific mineral-leasing authority has not passed registry review.",
+      "offering_class": "unknown",
+      "release_inventory_status": "pending_review",
+      "evidence_artifact": null,
+      "evidence_sha256": null,
+      "evidence_bytes": null,
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "recorder": {
+      "scope": "counties_with_live_claims",
+      "jurisdiction_type": "county",
+      "matrix": [],
+      "matrix_status": "pending_live_claim_county_inventory"
+    },
+    "land_context": {
+      "source_ids": ["blm_sma", "padus"],
+      "mineral_ownership_verified": false,
+      "approach_route_required": true,
+      "source_layers": ["land_context", "target_context"],
+      "required_properties": {
+        "land_context": ["st", "surface_class", "mineral_class", "approach"],
+        "target_context": ["st", "target_id", "target_rank", "score", "surface_class", "mineral_class", "approach"]
+      },
+      "browser_delivery": "pmtiles",
+      "browser_path": "data/tiles/land-context/{state}.pmtiles",
+      "artifact": null,
+      "sha256": null,
+      "bytes": null
+    },
+    "done_gate": {
+      "claims_or_land_context": {
+        "status": "fail",
+        "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+      },
+      "geology_faults": {
+        "status": "fail",
+        "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+      },
+      "aeromag": {
+        "status": "fail",
+        "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+      },
+      "grades": {
+        "status": "fail",
+        "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+      },
+      "recorders": {
+        "status": "fail",
+        "evidence": "County coverage has not been reconciled against counties containing live claims."
+      },
+      "quad_maps": {
+        "status": "fail",
+        "evidence": "Top-five target quad-map inventory has not passed acceptance."
+      },
+      "ci_scale": {
+        "status": "fail",
+        "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+      }
+    },
+    "release": {
+      "status": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "note": "National baseline services may render; state-specific release is gate-blocked.",
+      "acceptance": {
+        "grades": {
+          "evidence_artifact": null,
+          "sha256": null,
+          "bytes": null,
+          "graded_mines": 0,
+          "primary_sources": 0,
+          "verbatim_quotes": 0,
+          "page_cites": 0,
+          "low_endowment_finding": null
+        },
+        "district_anchor": {
+          "source_id": "pp610",
+          "artifact": null,
+          "source_sha256": null,
+          "district_count": 0,
+          "complete": false,
+          "no_district_finding": null
+        },
+        "recorders": {
+          "jurisdiction_type": "county",
+          "inventory_complete": false,
+          "evidence_artifact": null,
+          "evidence_sha256": null,
+          "evidence_bytes": null,
+          "active_claims": null,
+          "live_claim_jurisdiction_ids": [],
+          "covered_jurisdiction_ids": []
+        },
+        "expiration_watch": {
+          "evidence_artifact": null,
+          "evidence_sha256": null,
+          "evidence_bytes": null,
+          "run_id": null,
+          "generated": null,
+          "complete": false,
+          "system_ids": []
+        },
+        "quad_maps": {
+          "ranked_targets_artifact": null,
+          "ranked_targets_sha256": null,
+          "ranked_targets_bytes": null,
+          "targets": []
+        },
+        "ci_scale": {
+          "evidence_artifact": null,
+          "sha256": null,
+          "bytes": null,
+          "run_url": null,
+          "commit": null,
+          "state_toggle_green": false,
+          "statewide_browser_json": null,
+          "heap_mb": null,
+          "bulk_origin_storage_mb": null
+        }
+      }
+    }
+  },
+  "claim": {
+    "open_ground": {
+      "applicable": true,
+      "display_when_missing": "UNKNOWN",
+      "never_infer_from_missing_claims": true,
+      "mineral_estate": {
+        "status": "not_identified",
+        "authority": null,
+        "source_url": null,
+        "ownership_field": null,
+        "locatable_values": [],
+        "surface_management_is_not_title": true,
+        "reviewed": "2026-08-13",
+        "finding": "No reviewed statewide mineral-estate/title source is registered; surface-management polygons alone cannot establish public-domain mineral ownership or OPEN status."
+      }
+    },
+    "claim_systems": [
+      {
+        "id": "federal_mlrs",
+        "authority": "U.S. Bureau of Land Management",
+        "source_id": "federal_mlrs",
+        "layers": {"active": 1, "closed": 2},
+        "browser_delivery": "pmtiles",
+        "browser_path": "data/tiles/claims/{state}.pmtiles",
+        "artifact": null,
+        "sha256": null,
+        "bytes": null,
+        "publication_inventory_artifact": null,
+        "publication_inventory_sha256": null,
+        "publication_inventory_bytes": null,
+        "expiration_watch": true
+      }
+    ],
+    "land_context": {
+      "required_for_target_card": true
+    }
+  },
+  "non_claim": {
+    "open_ground": {
+      "applicable": false,
+      "display_when_missing": "N/A",
+      "never_infer_from_missing_claims": true
+    },
+    "claim_systems": [],
+    "land_context": {
+      "required_for_target_card": true
+    },
+    "recorder": {
+      "matrix_status": "not_applicable_no_live_claims"
+    },
+    "done_gate": {
+      "recorders": {
+        "status": "not_applicable",
+        "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+      }
+    }
+  }
+}

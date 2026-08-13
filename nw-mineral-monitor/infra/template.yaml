@@ -27,7 +27,9 @@ Parameters:
   WatchBbox:
     Type: String
     Default: '-114.2867,41.9882,-113.0,42.6878'
-    Description: AOI bbox (x0,y0,x1,y1) the expiration watch diffs. Default = Cassia County, ID.
+    Description: >-
+      Legacy-only AOI bbox (x0,y0,x1,y1). Scheduled expiration watches use
+      the exact 19 registry claim states and never this compatibility bbox.
 
 Resources:
 
@@ -44,6 +46,8 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
 
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -108,7 +112,15 @@ Resources:
             Effect: Allow
             Principal: { Service: cloudfront.amazonaws.com }
             Action: s3:GetObject
-            Resource: !Sub '${SiteBucket.Arn}/*'
+            # Deliberately omit staging/, watch/, and ckpt/: raw national
+            # snapshots and operational state are not public web assets.
+            Resource:
+              - !Sub '${SiteBucket.Arn}/index.html'
+              - !Sub '${SiteBucket.Arn}/auth.json'
+              - !Sub '${SiteBucket.Arn}/assets/*'
+              - !Sub '${SiteBucket.Arn}/data/*'
+              - !Sub '${SiteBucket.Arn}/ws10-assets/*'
+              - !Sub '${SiteBucket.Arn}/map-assets/*'
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
@@ -131,7 +143,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: [ s3:GetObject, s3:PutObject ]
-                Resource: !Sub '${SiteBucket.Arn}/data/*'
+                Resource:
+                  - !Sub '${SiteBucket.Arn}/data/*'
+                  - !Sub '${SiteBucket.Arn}/staging/claims/*'
               # checkpoint files for the resumable pulls (crash fix 2026-08-06)
               - Effect: Allow
                 Action: [ s3:GetObject, s3:PutObject, s3:DeleteObject ]
@@ -155,6 +169,9 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref SiteBucket
+          # Statewide JSON is never browser-published. Keep the updater's
+          # compatibility escape hatch explicitly empty in production.
+          LEGACY_JSON_STATES: ''
       Code:
         ZipFile: |
           def handler(event, context):
@@ -166,7 +183,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ProjectName}-nightly-active'
-      Description: Refresh active-claim snapshots, NW five states (09:10 UTC)
+      Description: Stage active federal claims for WA, OR, ID, MT, and WY (09:10 UTC)
       ScheduleExpression: cron(10 9 * * ? *)
       State: ENABLED
       Targets:
@@ -177,14 +194,38 @@ Resources:
   NightlyActiveNvUtRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: !Sub '${ProjectName}-nightly-active-nvut'
-      Description: Refresh active-claim snapshots, NV+UT (09:40 UTC — NV is slow, runs alone)
+      Name: !Sub '${ProjectName}-nightly-active-nv'
+      Description: Refresh active-claim snapshot, NV (09:40 UTC — largest claim population, runs alone)
       ScheduleExpression: cron(40 9 * * ? *)
       State: ENABLED
       Targets:
         - Id: updater
           Arn: !GetAtt UpdaterFunction.Arn
-          Input: '{"mode":"active","states":["NV","UT"]}'
+          Input: '{"mode":"active","states":["NV"]}'
+
+  NightlyActiveP1Rule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-nightly-active-p1'
+      Description: Stage P1 federal claims for UT, AZ, CO, NM, AK
+      ScheduleExpression: cron(40 10 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"active","states":["UT","AZ","CO","NM","AK"]}'
+
+  NightlyActiveP2Rule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-nightly-active-p2'
+      Description: Stage thin-population P2 federal claim states
+      ScheduleExpression: cron(10 11 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"active","states":["AR","FL","LA","MS","NE","ND","SD"]}'
 
   MonthlyClosedRule1:
     Type: AWS::Events::Rule
@@ -226,7 +267,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ProjectName}-monthly-closed-4'
-      Description: Refresh closed-claim snapshot for NV (2nd of month — 1.23M cases, newest 250k kept)
+      Description: Refresh complete closed-claim snapshot for NV (2nd of month; resumable paging to exhaustion)
       ScheduleExpression: cron(0 10 2 * ? *)
       State: ENABLED
       Targets:
@@ -250,7 +291,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ProjectName}-monthly-closed-6'
-      Description: Refresh closed-claim snapshot for CA (3rd of month - newest 250k kept)
+      Description: Refresh complete closed-claim snapshot for CA (3rd of month; resumable paging to exhaustion)
       ScheduleExpression: cron(0 10 3 * ? *)
       State: ENABLED
       Targets:
@@ -262,13 +303,37 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ProjectName}-monthly-closed-5'
-      Description: Refresh closed-claim snapshot for UT (2nd of month — 452k cases, newest 250k kept)
+      Description: Refresh complete closed-claim snapshot for UT (2nd of month; resumable paging to exhaustion)
       ScheduleExpression: cron(0 11 2 * ? *)
       State: ENABLED
       Targets:
         - Id: updater
           Arn: !GetAtt UpdaterFunction.Arn
           Input: '{"mode":"closed","states":["UT"]}'
+
+  MonthlyClosedP1Rule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-p1'
+      Description: Stage P1 closed federal claims for AZ, CO, NM, AK
+      ScheduleExpression: cron(0 10 4 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["AZ","CO","NM","AK"]}'
+
+  MonthlyClosedP2Rule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-monthly-closed-p2'
+      Description: Stage closed claims for thin-population P2 states
+      ScheduleExpression: cron(0 10 5 * ? *)
+      State: ENABLED
+      Targets:
+        - Id: updater
+          Arn: !GetAtt UpdaterFunction.Arn
+          Input: '{"mode":"closed","states":["AR","FL","LA","MS","NE","ND","SD"]}'
 
   PermNightly:
     Type: AWS::Lambda::Permission
@@ -284,6 +349,20 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt NightlyActiveNvUtRule.Arn
+  PermNightlyP1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyActiveP1Rule.Arn
+  PermNightlyP2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyActiveP2Rule.Arn
   PermClosed1:
     Type: AWS::Lambda::Permission
     Properties:
@@ -333,6 +412,20 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt MonthlyClosedRule6.Arn
+  PermClosedP1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedP1Rule.Arn
+  PermClosedP2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdaterFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyClosedP2Rule.Arn
 
   # ---------- WS2d expiration watch ----------
   WatchRole:
@@ -357,8 +450,14 @@ Resources:
                   - !Sub '${SiteBucket.Arn}/data/*'
                   - !Sub '${SiteBucket.Arn}/watch/*'
               - Effect: Allow
+                Action: [ s3:DeleteObject ]
+                Resource: !Sub '${SiteBucket.Arn}/watch/*'
+              - Effect: Allow
                 Action: [ ses:SendEmail ]
                 Resource: '*'
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProjectName}-expiration-watch'
 
   WatchFunction:
     Type: AWS::Lambda::Function
@@ -366,13 +465,17 @@ Resources:
       FunctionName: !Sub '${ProjectName}-expiration-watch'
       Runtime: python3.12
       Handler: index.handler
-      MemorySize: 1024
+      # National snapshots include NV's large active population. Memory also
+      # scales Lambda CPU/network and matches the claims-updater hotfix.
+      MemorySize: 2048
       Timeout: 900
       Role: !GetAtt WatchRole.Arn
       Environment:
         Variables:
           BUCKET: !Ref SiteBucket
-          AOI_BBOX: !Ref WatchBbox
+          LEGACY_AOI_BBOX: !Ref WatchBbox
+          WATCH_CHAIN_MAX: '40'
+          WATCH_TIME_RESERVE_MS: '150000'
           SES_FROM: !Ref AlertEmailFrom
           SES_TO: !Ref AlertEmailTo
           WEBHOOK_URL: !Ref AlertWebhookUrl
@@ -386,13 +489,13 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Sub '${ProjectName}-watch-daily'
-      Description: Daily MLRS disposition diff for the AOI (13:10 UTC)
+      Description: Daily complete MLRS disposition diff for all 19 registry claim states
       ScheduleExpression: cron(10 13 * * ? *)
       State: ENABLED
       Targets:
         - Id: watch
           Arn: !GetAtt WatchFunction.Arn
-          Input: '{"mode":"daily"}'
+          Input: '{"mode":"daily","states":["NV","AZ","CO","UT","NM","AK","SD","ND","NE","AR","FL","LA","MS","CA","ID","MT","OR","WA","WY"]}'
 
   # Sept-1 maintenance-fee window: every 6 h from Aug 25 through Sep 10.
   # EventBridge cron can't span a month boundary in one expression — two rules.
@@ -406,7 +509,7 @@ Resources:
       Targets:
         - Id: watch
           Arn: !GetAtt WatchFunction.Arn
-          Input: '{"mode":"seasonal"}'
+          Input: '{"mode":"seasonal","states":["NV","AZ","CO","UT","NM","AK","SD","ND","NE","AR","FL","LA","MS","CA","ID","MT","OR","WA","WY"]}'
 
   WatchSeasonalSepRule:
     Type: AWS::Events::Rule
@@ -418,7 +521,33 @@ Resources:
       Targets:
         - Id: watch
           Arn: !GetAtt WatchFunction.Arn
-          Input: '{"mode":"seasonal"}'
+          Input: '{"mode":"seasonal","states":["NV","AZ","CO","UT","NM","AK","SD","ND","NE","AR","FL","LA","MS","CA","ID","MT","OR","WA","WY"]}'
+
+  AkStateWatchDailyRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-ak-state-watch-daily'
+      Description: Independent AK DNR state-claim snapshot and deadline diff
+      ScheduleExpression: cron(40 13 * * ? *)
+      State: ENABLED
+      Targets:
+        - Id: ak-state-watch
+          Arn: !GetAtt WatchFunction.Arn
+          Input: '{"system":"alaska_state_claims","mode":"daily"}'
+
+  AkStateWatchSeasonalRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-ak-state-watch-seasonal'
+      Description: AK state rent/labor calendar during Aug-Nov deadline season
+      # Leave a full hour after the daily state snapshot so both jobs never
+      # contend for the one owner-safe AK DNR baseline.
+      ScheduleExpression: cron(40 14 * 8-11 ? *)
+      State: ENABLED
+      Targets:
+        - Id: ak-state-watch
+          Arn: !GetAtt WatchFunction.Arn
+          Input: '{"system":"alaska_state_claims","mode":"seasonal"}'
 
   PermWatchDaily:
     Type: AWS::Lambda::Permission
@@ -441,6 +570,20 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt WatchSeasonalSepRule.Arn
+  PermAkStateWatchDaily:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WatchFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt AkStateWatchDailyRule.Arn
+  PermAkStateWatchSeasonal:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WatchFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt AkStateWatchSeasonalRule.Arn
 
   # ---------- AI Q&A (Bedrock relay) ----------
   AskRole:
@@ -539,11 +682,11 @@ Resources:
         CaseSensitive: false
       Policies:
         PasswordPolicy:
-          MinimumLength: 8
-          RequireUppercase: false
-          RequireLowercase: false
-          RequireNumbers: false
-          RequireSymbols: false
+          MinimumLength: 12
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
       AccountRecoverySetting:
         RecoveryMechanisms:
           - Name: admin_only

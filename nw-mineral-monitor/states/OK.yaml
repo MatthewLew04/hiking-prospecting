@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "state": "OK",
+  "name": "Oklahoma",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-103.003, 33.615, -94.431, 37.003],
+      "crs": "EPSG:4326",
+      "note": "State envelope includes the Panhandle; clip to the official Oklahoma boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Oklahoma Geological Survey",
+    "catalog_url": "https://www.ou.edu/ogs/publications",
+    "gis_endpoints": [
+      {
+        "type": "geologic_maps_catalog",
+        "url": "https://www.ou.edu/ogs/maps/geologicmaps"
+      },
+      {
+        "type": "geologic_quadrangle_and_gis_catalog",
+        "url": "https://www.ou.edu/ogs/maps/ogq"
+      },
+      {
+        "type": "mapping_program_status",
+        "url": "https://www.ou.edu/ogs/research/mapping"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ok_ogs_state_geologic_map_1954",
+    "title": "Geologic Map of the State of Oklahoma",
+    "authority": "Oklahoma Geological Survey and U.S. Geological Survey",
+    "url": "https://www.ou.edu/ogs/maps/geologicmaps",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": "authoritative_state_vector_not_confirmed",
+    "registry_choice": "official statewide map source; use SGMC as the national vector baseline pending a verified state package",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "source_registered_vector_package_pending",
+    "gap": "OGS states that regional 1:100,000 mapping and a new 1:500,000 compilation are ongoing. Do not create a false seamless fine-scale state layer; acquire a verified vector or retain SGMC until the new compilation ships."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_ok_map_review",
+    "title": "USGS Quaternary Faults baseline with OGS structural-map review",
+    "authority": "U.S. Geological Survey and Oklahoma Geological Survey",
+    "url": "https://www.ou.edu/ogs/maps/geologicmaps",
+    "native_scale": "national baseline; state line source selection pending",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "No separate authoritative statewide OGS surface-fault vector was confirmed; keep induced-seismicity catalogs and subsurface structures semantically separate from mapped surface faults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ok_ogs_publications",
+      "title": "Oklahoma Geological Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Geology Notes", "Mineral Reports", "Open-file Reports"],
+      "url": "https://www.ou.edu/ogs/publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ok_occ_odm_aml",
+    "state_inventory_url": "https://oklahoma.gov/mines/about/coal-and-coal-combustion.html",
+    "status": "state_program_roles_registered_inventory_not_ingested",
+    "scope": "The official Department of Mines page identifies the Oklahoma Conservation Commission as the pre-1977 coal AML authority; Department of Mines records cover separate active/non-coal regulatory scopes.",
+    "gap": "Register the Conservation Commission site/project inventory and reconcile with e-AMLIS without conflating permitted mines with abandoned sites."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "mineral leasing on lands and mineral interests administered by the Commissioners of the Land Office",
+    "portal_url": "https://oklahoma.gov/top/agency/410.html",
+    "lease_service_url": "https://gis.clo.ok.gov/server/rest/services/Public/OKLeaseData_External/FeatureServer/1",
+    "evidence": "The Commissioners of the Land Office administer state surface and mineral interests and publish lease data; eligibility and current offering status remain parcel-specific.",
+    "approach_route": "Resolve CLO mineral ownership and current lease status, then use the applicable CLO offering/lease process; negotiate with the private mineral owner elsewhere.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://gis.clo.ok.gov/server/rest/services/Public/OKLeaseData_External/FeatureServer/1",
+    "approach_route": "CLO mineral estate: state lease route; other public land: owning-agency review; private/severed estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; the statewide vector decision and all acceptance artifacts remain pending."
+  }
+}

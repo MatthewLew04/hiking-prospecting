@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "state": "AZ",
+  "name": "Arizona",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "not_identified",
+      "authority": null,
+      "source_url": null,
+      "ownership_field": null,
+      "locatable_values": [],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "No reviewed statewide Arizona federal mineral-estate/title layer was identified. The national SMA layer is surface jurisdiction only and cannot support an OPEN classification."
+    }
+  },
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-114.82, 31.33, -109.04, 37.01], "crs": "EPSG:4326", "note": "Clip all source results to the authoritative Arizona boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Arizona Geological Survey",
+    "catalog_url": "https://library.azgs.arizona.edu/",
+    "gis_endpoints": [
+      {"id": "geomapaz", "kind": "interactive_map", "url": "https://geomapaz.azgs.arizona.edu/"},
+      {"id": "azgs_publications", "kind": "catalog", "url": "https://azgs.arizona.edu/pubs"}
+    ],
+    "reviewed": "2026-08-13",
+    "baseline_manifest_keys": ["az_azgs_map35_2025", "az_azgs_mining_districts", "az_azgs_critical_minerals"],
+    "baseline_artifacts": {
+      "az_azgs_map35_2025": {"baseline_manifest_key": "national_baselines.az_azgs_map35_2025", "baseline_browser_path": "data/tiles/states/az/azgs-map35.pmtiles", "baseline_features": 20400, "baseline_sha256": "f274a90887e9bc80e02df09a157590ba7c5b9f66be21bc08bb8bd43cc5f54a36"},
+      "az_azgs_mining_districts": {"baseline_manifest_key": "national_baselines.az_azgs_mining_districts", "baseline_browser_path": "data/tiles/states/az/azgs-mining-districts.pmtiles", "baseline_features": 287, "baseline_sha256": "17fe8297d192ae9179ec9a71e3211619638205fe556692a082d07e39567c7765"},
+      "az_azgs_critical_minerals": {"baseline_manifest_key": "national_baselines.az_azgs_critical_minerals", "baseline_browser_path": "data/tiles/states/az/azgs-critical-minerals.pmtiles", "baseline_features": 24, "baseline_sha256": "b89dccebf5e4ec1f7826f2cb5e9b46e7b18095da093f2f3de96b0c1f3e606a1e"}
+    }
+  },
+  "geology": {
+    "source_id": "azgs_map_35",
+    "title": "Geologic Map of Arizona, Map 35",
+    "authority": "Arizona Geological Survey",
+    "source_url": "https://azgs.arizona.edu/geologic-map-arizona",
+    "gis_url": "https://geomapaz.azgs.arizona.edu/",
+    "source_scale": "1:1,000,000 statewide compilation; retain larger-scale AZGS source maps where GeoMapAZ identifies them",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_keys": ["az_azgs_map35_2025"],
+    "baseline_artifacts": {
+      "az_azgs_map35_2025": {"baseline_manifest_key": "national_baselines.az_azgs_map35_2025", "baseline_browser_path": "data/tiles/states/az/azgs-map35.pmtiles", "baseline_features": 20400, "baseline_sha256": "f274a90887e9bc80e02df09a157590ba7c5b9f66be21bc08bb8bd43cc5f54a36", "source_records": 20404, "encoding_exclusions": 2, "fully_outside_features": 2}
+    },
+    "provenance_note": "The checksum-pinned Map 35 PMTiles baseline exposes 4,841 geology polygons and 15,559 structural lines with per-feature publication and scale provenance. Two out-of-state traces and two sub-2-meter traces below z12 encoding resolution are exact-inventoried rather than silently fabricated. Detailed AZGS mapping may replace this baseline polygon-by-polygon only when source map and native scale are retained."
+  },
+  "faults": {
+    "source_id": "azgs_map_35_faults",
+    "title": "Fault linework from Geologic Map of Arizona",
+    "authority": "Arizona Geological Survey",
+    "source_url": "https://geomapaz.azgs.arizona.edu/",
+    "source_scale": "1:1,000,000 statewide compilation with source-scale overlays",
+    "state_source_verified": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_key": "national_baselines.az_azgs_map35_2025",
+    "baseline_browser_path": "data/tiles/states/az/azgs-map35.pmtiles",
+    "baseline_features": 15559,
+    "baseline_sha256": "f274a90887e9bc80e02df09a157590ba7c5b9f66be21bc08bb8bd43cc5f54a36",
+    "note": "Map 35 structural linework is published as a checked baseline. Use USGS Qfaults for the national Quaternary-fault view; the best-scale GeoMapAZ lineage audit remains pending."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "azgs_mining_districts", "title": "AZGS Mining Districts", "role": "district_index_and_gis", "primary": true, "url": "https://services1.arcgis.com/Ezk9fcjSUkeadg6u/arcgis/rest/services/AZGS_Mining_Districts_WFL1/FeatureServer/1", "status": "state_baseline_pmtiles_published_documents_not_extracted", "baseline_manifest_key": "national_baselines.az_azgs_mining_districts", "baseline_browser_path": "data/tiles/states/az/azgs-mining-districts.pmtiles", "baseline_features": 287, "baseline_sha256": "17fe8297d192ae9179ec9a71e3211619638205fe556692a082d07e39567c7765"},
+    {"source_id": "azgs_mining_files", "title": "Arizona mining and mineral museum mine-file collection", "role": "mine_property_files", "primary": true, "url": "https://mininginfo.azgs.arizona.edu/", "status": "registered_not_extracted"},
+    {"source_id": "azgs_publications", "title": "AZGS Publications", "role": "state_geologist_and_mining_serial_catalog", "primary": true, "url": "https://azgs.arizona.edu/pubs", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "az_asmi",
+    "state_inventory_url": "https://asmi.az.gov/services/abandoned-mines",
+    "status": "program_inventory_registered_not_ingested",
+    "evidence": "The Arizona State Mine Inspector reports more than 10,000 inventoried abandoned-mine features, but no reviewed bulk public feature export has been accepted."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://gisdata.azland.gov/server/rest/services/ASLD/Arizona_State_Trust_Land_Mineral_Parcels/FeatureServer/0",
+    "evidence_url": "https://land.az.gov/applications-permits/minerals",
+    "evidence": "The Arizona State Land Department administers exploration permits and hard-rock mineral leases; its official feature layer distinguishes unleased parcels, exploration permits, and hard-rock leases."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://azsos.gov/services/recording-documents/county-recorders",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_vendor_review",
+    "note": "Do not infer coverage from a statewide directory; spatially join current MLRS claims, then verify each affected county's official index vendor and terms."
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "MLRS is configured nationally, but accepted Arizona active/closed-claim and open-ground PMTiles artifacts are not present."},
+    "geology_faults": {"finding": "Checksum-pinned Arizona Map 35 geology/fault PMTiles are published as a baseline: 4,841 geology polygons and 15,559 structural lines from 20,404 source geometries, with two out-of-state traces and two sub-2-meter z12 encoding exclusions explicitly inventoried. Separate exact AZGS baselines also expose 287 mining districts and 24 critical-mineral occurrences. The gate remains failed because the polygon-by-polygon best-scale GeoMapAZ lineage audit and accepted release artifacts are still pending."},
+    "aeromag": {"finding": "The national aeromagnetic service is configured; Arizona survey-index provenance and a state COG have not passed acceptance."},
+    "grades": {
+      "finding": "Evidence-only research now covers 26 unique graded targets with 26 verbatim quotes/page cites from three independent official primary grade documents and all 42 PP 610 Arizona districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes.",
+      "evidence_only_build_sha256": "91f32708109eb5432f4bd9b775ad3ddbcf575d18ab5e59889c5055e7299ad5cf",
+      "graded_mines": 26,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "official_primary_documents": 3,
+      "pp610_districts": 42
+    },
+    "recorders": {"finding": "The official recorder directory is registered, but live-claim counties and their vendors have not been reconciled."},
+    "quad_maps": {"finding": "No accepted quad-map inventory for Arizona's top five targets exists locally."},
+    "ci_scale": {"finding": "Arizona has not passed a tiled-only storage and heap acceptance run."}
+  },
+  "release": {"note": "The exact AZGS state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Arizona remains building/disabled until the best-scale lineage review, accepted release artifacts, and every remaining DONE gate pass."}
+}

@@ -10,9 +10,12 @@ Design rules (see ASSUMPTIONS.md):
 """
 import json, os, re, time, hashlib, urllib.request, urllib.parse
 
+from state_registry import load_state as load_state_registry
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, 'cache')
 SITE = os.path.normpath(os.path.join(HERE, '..', 'site'))
+BUILD_INPUTS = os.path.normpath(os.path.join(HERE, '..', 'build-inputs'))
 os.makedirs(CACHE, exist_ok=True)
 
 UA = {'User-Agent': 'nw-mineral-monitor/1.0 (research pipeline; contact: repo owner)',
@@ -26,6 +29,19 @@ def load_aoi(key=None):
     k = key or os.environ.get('AOI') or cfg['default']
     a = dict(cfg['aois'][k]); a['key'] = k
     return a
+
+
+def load_state(code):
+    """Load a validated WS11 state adapter from states/<XX>.yaml."""
+    return load_state_registry(code)
+
+
+def state_regime(code):
+    return load_state(code)['regime']
+
+
+def open_ground_applicable(code):
+    return bool(load_state(code)['open_ground']['applicable'])
 
 
 def cached_get(url, ttl_days=7, binary=False, min_interval=0.6, tries=3):
@@ -159,6 +175,21 @@ def write_json(relpath, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     json.dump(obj, open(path, 'w'), separators=(',', ':'))
     print(f'wrote {relpath} ({os.path.getsize(path):,} bytes)')
+
+
+def load_build_input(section, key):
+    """Load one strict, inventory-declared private compatibility snapshot."""
+    from build_inputs import load_artifact
+    return load_artifact(section, key, root=BUILD_INPUTS)
+
+
+def write_build_input(section, key, obj, entry_fields=None):
+    """Atomically write a private compatibility snapshot and inventory it."""
+    from build_inputs import write_artifact
+    path = write_artifact(
+        section, key, obj, entry_fields=entry_fields, root=BUILD_INPUTS)
+    print(f'wrote private {section}.{key} ({os.path.getsize(path):,} bytes)')
+    return path
 
 
 def update_manifest(key, entry):

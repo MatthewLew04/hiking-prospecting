@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-colorado-grade-source-inventory",
+  "sources": [
+    {
+      "source_id": "pp359",
+      "title": "Economic Geology of the Central City District, Gilpin County, Colorado",
+      "authority": "U.S. Geological Survey",
+      "citation": "Sims, P. K., Drake, A. A., Jr., and Tooker, E. W., 1963, USGS Professional Paper 359.",
+      "publication_year": 1963,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp359",
+      "document_url": "https://pubs.usgs.gov/pp/0359/report.pdf",
+      "local_path": "pipelines/cache/co-grade-sources/usgs-pp359.pdf",
+      "bytes": 31742634,
+      "sha256": "24a5a83e069281e5ecffdff575d471d1f58a9d950b404a05464df50ae862ecdb",
+      "pages": 241,
+      "text_mode": "embedded"
+    },
+    {
+      "source_id": "b478",
+      "title": "Geology and Ore Deposits Near Lake City, Colorado",
+      "authority": "U.S. Geological Survey",
+      "citation": "Irving, J. D., and Bancroft, Howland, 1911, USGS Bulletin 478.",
+      "publication_year": 1911,
+      "catalog_url": "https://pubs.usgs.gov/publication/b478",
+      "document_url": "https://pubs.usgs.gov/bul/0478/report.pdf",
+      "local_path": "pipelines/cache/co-grade-sources/usgs-b478.pdf",
+      "bytes": 13669352,
+      "sha256": "9b56597c64580e57cd35a5d293f8fbce55fe598badb45ed19fbcfd8b6fa93997",
+      "pages": 137,
+      "text_mode": "embedded"
+    },
+    {
+      "source_id": "pp610",
+      "title": "Principal Gold-Producing Districts of the United States",
+      "authority": "U.S. Geological Survey",
+      "citation": "Koschmann, A. H., and Bergendahl, M. H., 1968, USGS Professional Paper 610.",
+      "publication_year": 1968,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp610",
+      "document_url": "https://pubs.usgs.gov/pp/0610/report.pdf",
+      "local_path": "pipelines/cache/co-grade-sources/usgs-pp610.pdf",
+      "bytes": 39132819,
+      "sha256": "f4c1f048aaffe1e8d1431983e0a7b3f1bb543fab0f5380cd42e85c0a6a840896",
+      "pages": 290,
+      "text_mode": "embedded"
+    }
+  ]
+}

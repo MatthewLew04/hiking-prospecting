@@ -7,9 +7,11 @@ files. Matching the WY precedent, we keep the most recent 250,000 per state
 total. DESC OBJECTID cursor: where OBJECTID < cursor, orderBy OBJECTID DESC.
 
 Usage: python3 fetch_closed_desc.py NV [cap]
-Emits site/data/claims/{st}_closed.json (columnar, same schema as the rest).
+Emits private ``build-inputs`` claims.{st}_closed (same columnar schema).
 """
 import json, sys, time, urllib.parse, urllib.request
+
+from common import write_build_input
 
 EP = 'https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer'
 BBOX = {
@@ -110,8 +112,12 @@ def run(st, cap=250000):
            'n': n, 'serial': cols['serial'], 'name': cols['name'], 'type': cols['type'],
            'truncated': bool(cnt and n < cnt), 'total_available': cnt,
            'x': cols['x'], 'y': cols['y']}
-    path = f'/home/claude/nw/site/data/claims/{st.lower()}_closed.json'
-    json.dump(out, open(path, 'w'), separators=(',', ':'))
+    path = write_build_input(
+        'claims', f'{st.lower()}_closed', out,
+        entry_fields={
+            'truncated': out['truncated'],
+            'total_available': out['total_available'],
+        })
     import os
     try: os.remove(ckpt)
     except OSError: pass

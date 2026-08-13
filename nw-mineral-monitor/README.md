@@ -1,9 +1,43 @@
 # NW Mineral Monitor
 
-Interactive map of mines, mining claims, and mineral sources across **Washington, Oregon, Idaho, Montana, and Wyoming** — 177,994 sites from 7 government databases, 113,330 active + 819,158 closed BLM mining claims, and 472 mining districts (28 deeply researched, 7 Cassia County deep-dives, 437 auto-derived from MRDS).
+Interactive mineral-research map for **49 states (all except Hawaii)**. The
+shared national baseline is delivered as range-read PMTiles: 265,702 MRDS
+occurrences, 570,484 USMIN map features, 54,806 validated state-survey mine
+records, 7,692 Alaska ARDF occurrences, and 1,721,032 spatially clipped legacy
+federal MLRS claim centroids. A second national PMTiles pair carries 559,279
+USGS geology polygons and 500,743 fault features with source map, URL, scale,
+and scale-status provenance on every encoded feature. The current MRDS and
+USMIN archives additionally reconcile all 265,702 and 570,484 stable source
+IDs, respectively, in exhaustive maximum-zoom scans bound to their exact file
+hashes. The national geology/fault pair now reconciles every one of its
+559,279 and 500,743 source IDs at maximum zoom. The only geometry
+normalization is a checksum-bound 0.002224 m adjustment to one 5.25 mm Qfault
+trace whose distinct vertices otherwise collapse at Web-Mercator's 32-bit
+tile precision. Alaska's separate state-law source now reconciles all 118,800
+DNR claim records (39,269 active, 51 pending, 79,480 closed). Its immutable
+delivery is an exact disjoint union of 118,776 ordinary polygons
+(39,263/51/79,462) and 24 unchanged z19 precision-overflow polygons (6 active,
+18 closed); no source polygon is dropped, widened, or fabricated. This state
+system does not substitute for the still-missing federal Alaska MLRS archive.
+State releases are separate from baseline visibility: the
+public coverage dashboard
+keeps every state marked building until its full DONE gate passes.
+The 1,829-feature USGS airborne/Earth MRI survey-footprint trust layer is also
+PMTiles-only; its current build reconciles all 1,829 official source IDs to
+unique max-zoom feature IDs and forbids density/tile-size dropping.
+Reviewed, reproducible grade packages now exist for the six P1 claim states
+(AK, AZ, CO, NM, NV, and UT) and the P2 Homestake-belt state (SD). Each has 26
+unique graded targets, at least two official primary grade documents,
+verbatim numbered-page citations, reviewed page-image hashes where the source
+is scan-backed, and a complete state PP 610 district anchor. These are
+evidence-only private builds: they clear the numeric/source quota in
+isolation, but no public grade gate—and no state—is DONE until its
+content-addressed release evidence and every other gate item are accepted.
 
-**Run locally:** `cd site && python3 -m http.server 8000` → http://localhost:8000 (no login locally)
-**Host on AWS (with nightly auto-updating claims + Cognito sign-in):** see [`DEPLOY.md`](DEPLOY.md) — ~15 minutes with `infra/deploy.sh`. The hosted site requires a Cognito login (`auth.json` in the bucket turns the gate on; the repo ships without it, so local use stays open).
+**Run locally:** `python3 tools/range_server.py 8000` → http://localhost:8000
+(no login locally). PMTiles requires HTTP byte ranges; plain
+`python3 -m http.server` is not a supported preview server.
+**Host on AWS (with private nightly MLRS staging, live viewport queries, and Cognito sign-in):** see [`DEPLOY.md`](DEPLOY.md) — ~15 minutes with `infra/deploy.sh`. The browser reads immutable PMTiles builds; scheduled raw claim pulls stay in a CloudFront-inaccessible staging prefix until a checked tile build is published. The hosted site requires a Cognito login (`auth.json` in the bucket turns the gate on; the repo ships without it, so local use stays open).
 
 ## Layout
 
@@ -11,19 +45,42 @@ Interactive map of mines, mining claims, and mineral sources across **Washington
 |---|---|
 | `site/index.html` | The whole app (MapLibre GL, vanilla JS) |
 | `site/assets/` | MapLibre GL JS 5.24 (vendored — no CDN dependency) |
-| `site/data/sites/` | Per-state columnar site files: `mrds_*` (USGS MRDS), `usmin_*` (USGS topo-map mine features), `stategeo_*` (IGS DD-1 / WGS DDS-30 / DOGAMI MILO-4 / MBMG AIM / WSGS) |
-| `site/data/claims/` | Per-state claim centroids: `*_active.json` (serial, name, type, disposition, acres) and `*_closed.json` — refreshed by the Lambda when hosted |
-| `site/data/districts/` | `curated.json` (28, cited), `cassia.json` (7 deep-dive), `auto.json` (437 from MRDS tags) |
-| `site/data/manifest.json` | Layer inventory, counts, freshness stamps, live-query spec |
+| `site/data/tiles/national/` · `tiles/claims/` | Browser-facing PMTiles baselines for MRDS, USMIN, ARDF, state-survey records, federal claims, national geology/faults, and Alaska state claims |
+| `build-inputs/` | Strict non-public inventory plus legacy columnar snapshots consumed by offline analysis and PMTiles builders |
+| `states/` | Reviewable 49-state adapter registry: regime, survey/GIS sources, serials, AML, trust land, recorder matrix, and DONE-gate evidence |
+| `site/data/coverage.json` | Generated state × gate-item dashboard; no asserted pass is inferred from source registration |
+| `site/data/districts/` | `curated.json` (28, cited), `cassia.json` (7 deep-dive), `auto.json` (1,056 from MRDS tags) |
+| `site/data/manifest.json` | Public tiled-layer inventory, counts, freshness stamps, and live-query spec; it contains no build-input JSON paths |
 | `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
 | `site/data/geology/` · `targets/` · `county/` | WS5–WS6 bundles: harmonized geologic map + faults + springs (cited per unit), ranked sinter-first targets with scoring rationale, county-recorder instruments + coverage |
 | `site/data/geology-quads/inventory.json` | WS10 top-grade-target map inventory, quad/candidate metadata, overlay pointers, provenance, georeference confidence, gaps, and 24k rescan references |
 | `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
+| `MLRS-PUBLICATION.md` | Operator contract for building immutable 19-state federal active/closed PMTiles from checksum-pinned private staging |
+| `OPEN-GROUND-PUBLICATION.md` | Conservative PLSS-section open-ground derivation and immutable PMTiles publication contract for the exact 19 claim states |
+| `NONCLAIM-EQUIVALENTS-PUBLICATION.md` | Exact 30-state AML/trust-land inventory, evidence, and immutable PMTiles publication contract for the non-claim regime |
+| `LAND-CONTEXT-PUBLICATION.md` | Exact 30-state per-target surface/mineral ownership join and immutable land-context PMTiles publication contract |
+| `GRADE-EVIDENCE-PUBLICATION.md` | Exact 49-state grade, PP 610 district-anchor, quotation/page-cite, and multi-commodity price evidence contract |
+| `ALASKA-GRADE-EVIDENCE.md` · `ARIZONA-GRADE-EVIDENCE.md` · `COLORADO-GRADE-EVIDENCE.md` · `NEVADA-GRADE-EVIDENCE.md` · `NEW-MEXICO-GRADE-EVIDENCE.md` · `UTAH-GRADE-EVIDENCE.md` · `SOUTH-DAKOTA-GRADE-EVIDENCE.md` | Reviewed state grade corpora, page/image hash verification, PP 610 district extraction, and evidence-only build workflows |
+| `RECORDER-EVIDENCE-PUBLICATION.md` | Exact 19-state live-claim jurisdiction join and reviewed recorder-portal coverage evidence contract, including Alaska recording districts |
+| `CI-ACCEPTANCE-EVIDENCE.md` | Content-addressed per-state browser acceptance evidence bound to the candidate manifest, coverage grid, budgets, tiled descriptors, real load/query/request observations, and state off/on lifecycle |
+| `TARGET-SCORING-EVIDENCE.md` | Exact 49-state richOpen/land-context target-score evidence with regime-aware N/A-vs-zero ordering and checksum-bound grade, geology, and land inputs |
+| `ZERO-INVENTORY-EVIDENCE.md` | Content-addressed proof for truthful zero-feature state/layer results, bound to the fully scanned national archive instead of fake sentinel geometry |
+| `NATIONAL-GEOLOGY-FAULT-LOSSLESS.md` | Exact source-OID/row audit and fail-closed z12 `fid` reconciliation contract for the 49-state geology/fault PMTiles pair |
+| `NEVADA-STATE-SURVEY-BASELINES.md` · `ARIZONA-STATE-SURVEY-BASELINES.md` · `COLORADO-STATE-SURVEY-BASELINES.md` · `UTAH-STATE-SURVEY-BASELINES.md` | Lossless official state-survey baseline sources, clipping/repair/exclusion inventories, PMTiles fingerprints, and lazy browser descriptor contracts |
+| `NATIONAL-BASELINE-PUBLICATION.md` | Truth matrix for national feeds: actual tiled artifacts, remote queries/tiles, AOI ingestion, link-only integrations, and lossless MRDS/USMIN/MLRS point publication |
+| `OPEN-GROUND-PUBLICATION.md` | Conservative PLSS-section open-ground contract, including exact MLRS/CadNSDI spatial-join staging and independent four-source mineral-disposition evidence |
 | `pipelines/cache/ws10/assets/` | Gitignored staging for published COGs, legends/previews, and XYZ tiles; upload explicitly to S3 `ws10-assets/` — rasters never enter git |
 | `data-inbox/` | Drop files here + run `pipelines/inbox_ingest.py` → permanent map layers |
 | `demo/` | `messy_cassia.csv` acceptance-test file (see DEMO.md) |
 | `infra/` | CloudFormation template, Lambdas (claims updater, AI relay, **expiration watch**), deploy script |
+
+Browser-facing PMTiles and COG files are configured for Git LFS rather than
+ordinary Git blobs; the WS11 workflow checks them out with LFS before validating
+their bytes, hashes, directories, and tile payloads. The current working tree's
+24 tiled artifacts still need to be staged and committed through LFS before CI
+can pass. A pointer-only checkout is not a release checkout and will fail the
+artifact gate rather than silently ship.
 
 ## The four workstreams (2026-08)
 
@@ -34,13 +91,20 @@ full-attribute popups. **WS2 open ground** — a section-status grid for the
 AOI (default Cassia County): open-with-history / was-claimed-now-open /
 active / withdrawn / non-federal, from claim legal descriptions × SMA ×
 withdrawal-segregation cases; every section popup shows its evidence.
-**WS2d expiration watch** — daily MLRS disposition diff + Aug 25–Sep 10
-6-hourly fee-window scan, SES email + webhook + on-map WATCH panel with
-deep links. **WS3 dossiers** — per-mine/per-claim research files: cited
+**WS2d expiration watch** — registry-driven daily MLRS disposition diffs for
+all 19 claim states + an Aug 25–Sep 10 six-hourly fee-window scan, with private
+state snapshots, state-labelled SES/webhook alerts, and an on-map WATCH panel.
+Alaska's independent DNR state-claim rent/labor watch is merged without mixing
+its identifiers with federal MLRS. **WS3 dossiers** — per-mine/per-claim research files: cited
 facts, MLRS serial-register path, county-recorder & SoS guidance, Mindat /
 Chronicling America / HathiTrust prefilled searches. **WS4 web scrub** —
 automated Chronicling America + Google Books + MSHA sweep, deduped by
-name-variant, rendered as a chronological history in each dossier.
+name-variant, rendered as a chronological history in each dossier. The scrub
+uses the registry's full state name and safe defaults for any AOI; absent
+legacy claim/MRDS inputs are optional instead of forcing an Idaho-only failure.
+National mine and claim cards expose prefilled Chronicling America and EDGAR
+research plus an explicitly link-only SEDAR+ route. Those links are research
+entry points, not locally ingested filing corpora.
 
 ## WS5 + WS6 (2026-08-06)
 
@@ -127,12 +191,40 @@ outbox guardrails, and the no-raster-in-git policy.
 
 ## Auto-updating
 
-Hosted: EventBridge → Lambda re-pulls **active claims nightly** (09:10 UTC) and **closed claims monthly** from BLM MLRS, rewriting `data/claims/*` in S3 (15-min CloudFront TTL). In the browser: at zoom ≥ 10.5 the map queries BLM's GIS directly for the current viewport and draws **live claim polygons** — current even between snapshots. Everything degrades gracefully to the committed snapshot if BLM is down.
+Hosted: EventBridge → Lambda re-pulls federal MLRS **active claims nightly**
+and **closed claims monthly** for all 19 claim states. Raw updater snapshots stay under
+private `staging/claims/` for the PMTiles publication job; statewide JSON is
+never a browser artifact. The expiration watch also pages all 19 active layers
+to completion into private, state-clipped `watch/federal/` snapshots. Only
+alert-sized, state-labelled evidence is public, and interrupted or unavailable
+states render unknown rather than zero. In Alaska, a separate scheduled watcher tracks the
+DNR state-claim rent and labor clocks, and the committed state-claim polygons
+remain explicitly separate from federal MLRS. At zoom ≥10.5 the browser can also query
+BLM GIS for live viewport polygons.
+
+After a complete 19-state run, the watcher also writes immutable, content-hash-
+named `data/evidence/watch/<run-id>/<state>-<sha256>.json` DONE-gate evidence.
+Each row binds `active_now` to the SHA-256 of its private source snapshot; AK
+evidence is withheld until both `federal_mlrs` and `alaska_state_claims` are
+complete. These artifacts support review but do not toggle any state release.
+For registry promotion, copy the reviewed canonical JSON bytes to
+`site/map-assets/releases/**/<sha256>.json` and record that object's exact
+`evidence_artifact`/`evidence_sha256`/`evidence_bytes`; the runtime key is a
+review source, not itself a release path.
 
 BLM server quirks the updater handles (hard-won; don't "simplify" them away): use OBJECTID-cursor pagination (not `resultOffset`); short pages with `exceededTransferLimit=true` are normal — stop only on an empty page; query with bbox envelopes (detailed polygons exhaust the request budget); `GEO_STATE`/`ADMIN_STATE` are mostly NULL — selection must be spatial; send a User-Agent header (default python-urllib gets 403). `CSE_TYPE_NR` decode: 3841xx=lode, 3842xx=placer, 3843xx=tunnel, 3844xx=mill.
 
 ## Known limits
 
-Wyoming closed claims truncated to the most recent 250,000 of 287,066. MRDS is legacy (~2011). USMIN features come from 1958–2001 topo maps. State databases differ in scope (MT = abandoned-mines inventory; OR MILO mixes occurrences and borrow pits; WY is explicitly incomplete). Full caveats in the map's About panel.
+The compatibility claim archive honestly preserves three incomplete capped
+snapshots: NV, UT, and WY need fresh state-clipped closed pulls before release.
+Alaska's DNR base+precision delivery is now losslessly reconciled, but Alaska
+still needs its separate federal MLRS artifact and the other per-state DONE
+evidence; the state system is not accepted as a replacement for federal MLRS.
+MRDS is a legacy occurrence catalogue, and USMIN features are historical map
+symbols rather than field verification. State-survey databases differ in scope.
+Most importantly, national baselines do not make a state DONE: open ground or
+land context, best-scale geology/faults, aeromag provenance, cited grade quotas,
+recorder coverage, quad inventory, and scale acceptance must all pass together.
 
 ⚠ Planning aid only. Never enter adits or shafts. Active claims are private mineral property; verify land status before prospecting.

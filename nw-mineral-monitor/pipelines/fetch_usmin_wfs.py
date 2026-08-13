@@ -9,8 +9,7 @@ Usage: python3 fetch_usmin_wfs.py CA
 """
 import json, re, sys
 
-from common import cached_get, write_json, TODAY, SITE
-import os
+from common import cached_get, write_build_input, TODAY
 
 WFS = 'https://mrdata.usgs.gov/services/usmin'
 PAGE = 5000
@@ -19,16 +18,6 @@ STATE_BBOX = {          # generous; mirrors lambda_updater
     'CA': (32.4, -124.5, 42.1, -114.0),
     'NV': (35.0, -120.1, 42.1, -114.0),
 }
-
-
-def _stamp_sites(key, n):
-    """Site layers live in manifest['sites'] so the map auto-loads them."""
-    p = os.path.join(SITE, 'data', 'manifest.json')
-    man = json.load(open(p))
-    man['sites'][key] = {'n': n, 'file': f'data/sites/{key}.json', 'retrieved': TODAY}
-    man['totals']['sites'] = sum(v['n'] for v in man['sites'].values())
-    json.dump(man, open(p, 'w'), separators=(',', ':'))
-    print(f"manifest sites.{key} = {n}")
 
 
 def run(st):
@@ -104,8 +93,7 @@ def run(st):
             print(f'  {tn} tile {ci + 1}/{len(cells)} (total {len(seen):,})', end='\r')
         print()
     cols['n'] = len(cols['x'])
-    write_json(f'data/sites/usmin_{st.lower()}.json', cols)
-    _stamp_sites(f'usmin_{st.lower()}', cols['n'])
+    write_build_input('sites', f'usmin_{st.lower()}', cols)
     print(f'{st}: {cols["n"]:,} USMIN features, {len(types)} types, scales {scales}')
     return cols
 

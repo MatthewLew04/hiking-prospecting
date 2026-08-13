@@ -13,20 +13,9 @@ consume it unchanged.
 """
 import json
 
-from common import arcgis_query, write_json, TODAY, SITE
-import os
+from common import arcgis_query, write_build_input, TODAY
 
 BASE = 'https://gis.conservation.ca.gov/server/rest/services/MOL/MOLMines/FeatureServer'
-
-
-def _stamp_sites(key, n):
-    """Site layers live in manifest['sites'] so the map auto-loads them."""
-    p = os.path.join(SITE, 'data', 'manifest.json')
-    man = json.load(open(p))
-    man['sites'][key] = {'n': n, 'file': f'data/sites/{key}.json', 'retrieved': TODAY}
-    man['totals']['sites'] = sum(v['n'] for v in man['sites'].values())
-    json.dump(man, open(p, 'w'), separators=(',', ':'))
-    print(f"manifest sites.{key} = {n}")
 
 
 def run():
@@ -57,8 +46,7 @@ def run():
         cols['x'].append(round(lon, 5))
         cols['y'].append(round(lat, 5))
     cols['n'] = len(cols['id'])
-    write_json('data/sites/stategeo_ca.json', cols)
-    _stamp_sites('stategeo_ca', cols['n'])
+    write_build_input('sites', 'stategeo_ca', cols)
     from collections import Counter
     print(f'CA MOL mines: {cols["n"]:,}; status:', dict(Counter(cols['stx']).most_common(6)))
     return cols

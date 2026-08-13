@@ -25,6 +25,8 @@ Page text: pipelines/cache/pagetext/<key>.json.gz  (committed — the durable
 """
 import gzip, json, math, os, re, subprocess, sys, time, urllib.request
 
+from build_inputs import load_artifact as load_build_artifact
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.normpath(os.path.join(HERE, '..', 'site'))
 PDFS = os.path.join(HERE, 'cache', 'pdfs')
@@ -54,6 +56,10 @@ AG_PRICE = {
 AG_SRC = ('USGS Historical Statistics for Mineral and Material Commodities '
           '(DS 140), silver annual averages')
 
+BASE_METAL_PRICE_PATH = os.path.join(HERE, 'config', 'base_metal_prices.json')
+BASE_METAL_SRC = ('USGS Historical Statistics for Mineral and Material '
+                  'Commodities (Data Series 140), annual Cu/Pb/Zn prices')
+
 def ag_price(year):
     """Annual-average Ag price for a year (nearest table year <=2 off)."""
     if year in AG_PRICE:
@@ -67,6 +73,19 @@ def ag_price(year):
 
 def au_price(year):
     return AU_PRE1934 if (year or 1900) < 1934 else AU_1934_71
+
+
+def base_metal_price(metal, year):
+    """Nearest annual Cu/Pb/Zn benchmark in nominal dollars per pound."""
+    with open(BASE_METAL_PRICE_PATH, encoding='utf-8') as source:
+        raw = json.load(source)
+    if raw.get('status') != 'reviewed':
+        raise ValueError('Cu/Pb/Zn price table is not reviewed; dollar conversion refused')
+    table = {int(y): value for y, value in raw['prices_usd_per_lb'][metal.title()].items()}
+    if not table:
+        raise ValueError(f'no reviewed annual {metal} prices are configured')
+    year = year or 1900
+    return table[min(table, key=lambda y: abs(y - year))]
 
 # oz/t sanity ceilings (round-1 conventions)
 CAP_AU_AVG = 50.0       # a stated *average* above this is a unit error: drop
@@ -219,6 +238,8 @@ def normalize_row(r, cap=True):
       au_opt, ag_opt          (already oz/t — no conversion)
       au_gpt                  (g/tonne, modern)  -> au_opt
       usd_per_ton (+era year) -> au_opt when metal=='Au' (default)
+      usd_per_ton (+era year) -> metal_pct for Cu/Pb/Zn when the dollar
+                                 statement is explicitly single-metal
       pb_pct zn_pct cu_pct sb_pct  (percent)
       wo3_units               (1 unit = 20 lb WO3 = 1% per short ton)
       hg_flasks               (production, 76-lb flasks)
@@ -241,6 +262,15 @@ def normalize_row(r, cap=True):
         p = ag_price(year or 1900)
         r['ag_opt'] = round(r['usd_per_ton'] / p, 1)
         conv.append(f"Ag $/ton at ${p:.3f}/oz ({year} avg; {AG_SRC})")
+    metal = str(r.get('metal') or '').title()
+    pct_field = {'Cu': 'cu_pct', 'Pb': 'pb_pct', 'Zn': 'zn_pct'}.get(metal)
+    if r.get('usd_per_ton') is not None and pct_field \
+            and r.get(pct_field) is None:
+        p = base_metal_price(metal, year)
+        # one short ton at one weight percent contains 20 lb of metal
+        r[pct_field] = round(r['usd_per_ton'] / (20 * p), 3)
+        conv.append(f"{metal} $/ton at ${p:.4f}/lb ({year} nearest annual avg; "
+                    f"{BASE_METAL_SRC})")
     # sanity / bonanza ceilings (round-0/2 convention; round-1 CA bonanza
     # rows are grandfathered with cap=False — ASSUMPTIONS #36)
     au = r.get('au_opt')
@@ -323,7 +353,7 @@ def canon(s):
     return re.sub(r'\s+', ' ', s).strip()
 
 def mrds_index(state):
-    m = json.load(open(os.path.join(SITE, f'data/sites/mrds_{state.lower()}.json')))
+    m = load_build_artifact('sites', f'mrds_{state.lower()}')
     return [(canon(m['nm'][i]), m['x'][i], m['y'][i]) for i in range(m['n'])
             if m['x'][i] is not None and m['nm'][i]]
 
@@ -486,13 +516,34 @@ def locate(rows, anchors, state, radius_km=20):
 
 # ----------------------------------------------------------- open ground ---
 def open_metres(rows, state):
-    path = os.path.join(SITE, f'data/claims/{state.lower()}_active.json')
+    """Attach typed open-ground state plus the legacy numeric distance.
+
+    `status` is the authoritative discriminator. `distance_m=0` is a real
+    measured zero and therefore sorts differently from `not_applicable` and
+    `unknown`, both of which carry null distance and score components.
+    """
     try:
-        c = json.load(open(path))
-    except FileNotFoundError:
+        from state_registry import load_state
+        reg = load_state(state)
+    except (FileNotFoundError, ValueError):
+        reg = None
+    if reg and reg['regime'] == 'non_claim':
         for r in rows:
-            r['open'] = -1
-        print(f'  no active-claims file for {state}: open=-1')
+            r['open_ground'] = {'status': 'not_applicable', 'distance_m': None,
+                                'score': None,
+                                'reason': 'No federal or state staking system applies.'}
+            r['open'] = None
+        print(f'  {state}: open ground not applicable (non-claim regime)')
+        return rows
+    try:
+        c = load_build_artifact('claims', f'{state.lower()}_active')
+    except (FileNotFoundError, ValueError):
+        for r in rows:
+            r['open_ground'] = {'status': 'unknown', 'distance_m': None,
+                                'score': None,
+                                'reason': 'Active-claim artifact is missing for a claim state.'}
+            r['open'] = None
+        print(f'  no active-claims file for {state}: open ground unknown')
         return rows
     grid = {}
     for x, y in zip(c['x'], c['y']):
@@ -501,7 +552,10 @@ def open_metres(rows, state):
         grid.setdefault((int(x / 0.02), int(y / 0.02)), []).append((x, y))
     for r in rows:
         if r.get('x') is None:
-            r['open'] = -1
+            r['open_ground'] = {'status': 'unknown', 'distance_m': None,
+                                'score': None,
+                                'reason': 'Mine location is unresolved.'}
+            r['open'] = None
             continue
         x, y = r['x'], r['y']
         coslat = math.cos(math.radians(y))
@@ -513,12 +567,16 @@ def open_metres(rows, state):
                     d = math.hypot((cx - x) * 111320 * coslat,
                                    (cy - y) * 111320)
                     best = min(best, d)
-        r['open'] = 5000 if best > 5000 else int(round(best))
+        distance = 5000 if best > 5000 else int(round(best))
+        r['open'] = distance
+        r['open_ground'] = {'status': 'measured', 'distance_m': distance,
+                            'score': None,
+                            'source': f'private build input claims.{state.lower()}_active'}
     return rows
 
 # ------------------------------------------------- grades.json splice/merge --
 NEWCOLS = ('pb', 'zn', 'cu', 'sb', 'wo3', 'hgf', 'yd3', 'plc',
-           'nat', 'conv', 'own', 'xq')
+           'nat', 'conv', 'own', 'xq', 'open_ground')
 
 def load_grades():
     p = os.path.join(SITE, 'data/grades/grades.json')
@@ -685,7 +743,10 @@ def append_row(g, r, st, own):
     g['au'].append(r.get('au_opt')); g['ag'].append(r.get('ag_opt'))
     g['usd'].append(r.get('usd_per_ton'))
     g['basis'].append(r.get('basis')); g['yrs'].append(r.get('years'))
-    g['open'].append(r.get('open', -1)); g['nrec'].append(1)
+    g['open'].append(r.get('open')); g['open_ground'].append(
+        r.get('open_ground') or {'status': 'unknown', 'distance_m': None,
+                                 'score': None, 'reason': 'Legacy row; not evaluated'})
+    g['nrec'].append(1)
     g['dep'].append(r.get('dep'))
     g['quote'].append(r['quote'])
     g['src'].append(r['src_cite']); g['url'].append(r['src_url'])

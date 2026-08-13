@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "state": "WA",
+  "name": "Washington",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-124.850, 45.542, -116.915, 49.004],
+      "crs": "EPSG:4326",
+      "note": "State envelope includes marine jurisdiction; clip MLRS and state sources to authoritative land and state boundaries before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Washington Geological Survey",
+    "catalog_url": "https://publicationcatalog.dnr.wa.gov/",
+    "gis_endpoints": [
+      {
+        "type": "gis_download_catalog",
+        "url": "https://dnr.wa.gov/washington-geological-survey/publications-and-data/geology-gis-data-and-databases"
+      },
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://gis.dnr.wa.gov/site1/rest/services/Public_Geology"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://gis.dnr.wa.gov/site1/rest/services/Public_Geology/100k_Surface_Geology/MapServer",
+        "access_note": "The production REST service currently requires a token; use the public geodatabase download for acquisition."
+      },
+      {
+        "type": "public_file_geodatabase_download",
+        "url": "https://fortress.wa.gov/dnr/geologydata/publications/data_download/ger_portal_surface_geology_100k.zip"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "wa_wgs_ds18_100k",
+    "title": "Surface geology, 1:100,000 scale, Digital Data Series DS-18",
+    "authority": "Washington Geological Survey",
+    "url": "https://dnr.wa.gov/washington-geological-survey/publications-and-data/geology-gis-data-and-databases",
+    "download_url": "https://fortress.wa.gov/dnr/geologydata/publications/data_download/ger_portal_surface_geology_100k.zip",
+    "native_scale": "1:100,000 gapless statewide compilation; partial finer-scale datasets are cataloged separately",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_gapless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Ingest the official geodatabase/service, preserve the DS-18 data-source table and map-unit lineage, and build accepted PMTiles; finer partial datasets require explicit precedence and scale fields."
+  },
+  "faults": {
+    "source_id": "wa_wgs_ds18_faults",
+    "title": "Washington 1:100,000 surface-geology faults with Earthquakes and Faults supplement",
+    "authority": "Washington Geological Survey",
+    "url": "https://fortress.wa.gov/dnr/geologydata/publications/data_download/ger_portal_earthquakes_faults.zip",
+    "geology_linework_download_url": "https://fortress.wa.gov/dnr/geologydata/publications/data_download/ger_portal_surface_geology_100k.zip",
+    "catalog_url": "https://dnr.wa.gov/washington-geological-survey/publications-and-data/geology-gis-data-and-databases",
+    "native_scale": "1:100,000 statewide geology linework plus separately cataloged hazard faults",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Preserve fault type and source-map identifiers and reconcile the geology and hazard datasets with Qfaults rather than flattening them into duplicates."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "wa_wgs_publications",
+      "title": "Washington Geological Survey Publications Catalog",
+      "role": "state_geologist_mine_inspector_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Information Circulars", "Reports of Investigations", "Digital Data Series"],
+      "url": "https://publicationcatalog.dnr.wa.gov/",
+      "status": "registered_not_extracted"
+    },
+    {
+      "source_id": "wa_wgs_coal_mine_maps",
+      "title": "Washington State Coal Mine Map Collection",
+      "role": "primary_historic_mine_map_catalog",
+      "primary": true,
+      "url": "https://publicationcatalog.dnr.wa.gov/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "wa_wgs_iaml",
+    "state_inventory_url": "https://gis.dnr.wa.gov/site1/rest/services/Public_Geology/Mines_and_Minerals/MapServer",
+    "program_url": "https://dnr.wa.gov/washington-geological-survey/energy-mining-and-minerals/coal-metallic-and-mineral-resources",
+    "status": "state_iaml_layers_registered_not_ingested",
+    "scope": "Washington DNR inactive and abandoned mine-land sites/features plus mines, mineral occurrences, and historic districts; keep each layer's semantics distinct.",
+    "gap": "Audit IAML completeness and reconcile state features with e-AMLIS, USMIN, and MRDS before claiming full AML coverage."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "mineral prospecting leases and mining contracts on qualifying Washington state-owned lands and mineral interests",
+    "portal_url": "https://dnr.wa.gov/product-sales-and-leasing/mining-and-mineral-leases",
+    "evidence": "Washington DNR publishes mineral prospecting lease and mining-contract procedures for eligible state lands; these instruments are distinct from federal claim staking.",
+    "approach_route": "Verify DNR mineral ownership and eligibility, then use the state prospecting lease/mining contract route; use MLRS only for qualifying federal locatable-mineral lands.",
+    "reviewed": "2026-08-12"
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "matrix": [],
+    "matrix_status": "pending_mlrs_live_claim_county_join_and_vendor_review",
+    "note": "Populate recorder vendors and portal evidence only for counties returned by the current live-claim join."
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://dnr.wa.gov/product-sales-and-leasing/mining-and-mineral-leases",
+    "approach_route": "Federal locatable-mineral context: MLRS and federal land status; state mineral estate: DNR lease/contract; private estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; claim/open-ground artifacts, recorder coverage, and every other acceptance gate remain pending."
+  }
+}

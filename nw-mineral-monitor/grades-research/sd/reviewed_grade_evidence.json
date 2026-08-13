@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-south-dakota-reviewed-grade-evidence",
+  "state": "SD",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 evidence review",
+  "review_method": "Human transcription from checksum-pinned federal reports. Every grade row is bound to a deterministic 300-dpi page-image SHA-256. Dollar-per-ton rows are converted only when the same quotation states the gold price; the arithmetic and both operands are retained. USGS parts-per-million table rows use the exact identity 1 ppm = 1 gram per metric tonne for Au and Ag.",
+  "mines": [
+    {
+      "mine_id": "sd-clover-leaf",
+      "name": "Clover Leaf mine",
+      "district": "Deadwood-Two Bit",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-clover-leaf-b427-p17",
+        "source_id": "usbm-b427",
+        "pdf_page": 23,
+        "page_image_sha256": "ce6bcda53956b103c4b5d8ec13a133530bfc44a9b75b6fe532c6e9950c8eb837",
+        "page_cite": "p. 17",
+        "verbatim_quote": "The recovered value of the ore milled from 1901 to 1904 ranged from $3.60 to $5.70 per ton (gold at $20.67 an ounce); the average was $4.10 per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.198355104, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 4.10, "usd_per_troy_ounce": 20.67},
+        "basis": "Recovered-value average; $4.10 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "1901-1904"
+      }]
+    },
+    {
+      "mine_id": "sd-deadbroke",
+      "name": "Deadbroke group",
+      "district": "Lead",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-deadbroke-b427-p23",
+        "source_id": "usbm-b427",
+        "pdf_page": 29,
+        "page_image_sha256": "637abf35fcc4db9e3b5a7f10553efebffedf1b82543757d90c98ab7ac2422a0d",
+        "page_cite": "p. 23",
+        "verbatim_quote": "During the development of the mine 613 samples were taken that were said to average $5.97 in gold per ton (gold at $20.67 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2888243832, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 5.97, "usd_per_troy_ounce": 20.67},
+        "basis": "Average of 613 development samples; $5.97 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "1905 engineering examination"
+      }]
+    },
+    {
+      "mine_id": "sd-mascot",
+      "name": "Mascot mine",
+      "district": "Deadwood-Two Bit",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-mascot-b427-p50",
+        "source_id": "usbm-b427",
+        "pdf_page": 56,
+        "page_image_sha256": "d1b5f46ea6c7ff14c5233791b02572a2685cadef502607464af9c147a2113c7f",
+        "page_cite": "p. 50",
+        "verbatim_quote": "According to an engineer's report, made by F. C. Lincoln in 1936, the mine produced 143½ tons of ore with an average content of 0.965 ounce of gold per ton in 1914.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.965, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "native_source_measurement"},
+        "basis": "Reported average content of 143.5 tons produced",
+        "years": "1914"
+      }]
+    },
+    {
+      "mine_id": "sd-black-diamond-gold-mountain",
+      "name": "Black Diamond-Gold Mountain group",
+      "district": "Deadwood-Two Bit",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-black-diamond-gold-mountain-b427-p50",
+        "source_id": "usbm-b427",
+        "pdf_page": 56,
+        "page_image_sha256": "d1b5f46ea6c7ff14c5233791b02572a2685cadef502607464af9c147a2113c7f",
+        "page_cite": "p. 50",
+        "verbatim_quote": "According to Lincoln's report, 75 tons of ore averaging 1.25 to 3.83 ounces of gold per ton is said to have been shipped from this property from 1892 to 1894.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 1.25, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "native_source_measurement"},
+        "basis": "Lower endpoint of the reported shipment-average range for 75 tons",
+        "years": "1892-1894"
+      }]
+    },
+    {
+      "mine_id": "sd-ragged-top-mines",
+      "name": "Ragged Top Mines",
+      "district": "Squaw Creek",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-ragged-top-mines-b427-p52",
+        "source_id": "usbm-b427",
+        "pdf_page": 58,
+        "page_image_sha256": "22d49fa91f838d3f3b823b7eadf4851d7346704566af337e5ef834b37553ef56",
+        "page_cite": "p. 52",
+        "verbatim_quote": "The Ragged Top Mines has sampled numerous dumps left from trenching and from sinking several shallow shafts along veins. The ore is said to average about $7 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 7, "usd_per_troy_ounce": 35},
+        "basis": "Reported dump/shaft sample average; $7 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "reported in 1938"
+      }]
+    },
+    {
+      "mine_id": "sd-cutting",
+      "name": "Cutting mine",
+      "district": "Deadwood-Two Bit",
+      "county": "Lawrence",
+      "evidence": [{
+        "evidence_id": "sd-cutting-b427-p66",
+        "source_id": "usbm-b427",
+        "pdf_page": 72,
+        "page_image_sha256": "c68f9728f07258aa7b798f7f2a21f30a1b4a61abdf1ea929f90375c512e72ccb",
+        "page_cite": "p. 66",
+        "verbatim_quote": "According to an engineer's report by C. R. Wilfley in 1928 the average grade of ore milled during the last 3 months of operation in 1925 was 0.426 ounce of gold and 4.63 ounces of silver per ton, or about $11.50 a ton at metal prices current in 1925.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.426, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 4.63, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "derivation": {"method": "native_source_measurement"},
+        "basis": "Average mill-feed grade for the last three months of operation",
+        "years": "1925"
+      }]
+    },
+    {
+      "mine_id": "sd-golden-summit",
+      "name": "Golden Summit mine",
+      "district": "Hill City",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-golden-summit-b427-p72",
+        "source_id": "usbm-b427",
+        "pdf_page": 78,
+        "page_image_sha256": "6d06e0241d1b407afea7714aac98851de6bafde0cfe2427a69e49a21509c73fc",
+        "page_cite": "p. 72",
+        "verbatim_quote": "The ore is said to have averaged about $8 in gold per ton (gold at $20.67 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.3870343493, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 8, "usd_per_troy_ounce": 20.67},
+        "basis": "Reported ore average; $8 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "historic operations through 1913; assay year not stated"
+      }]
+    },
+    {
+      "mine_id": "sd-keystone",
+      "name": "Keystone mine",
+      "district": "Keystone",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-keystone-b427-p95",
+        "source_id": "usbm-b427",
+        "pdf_page": 101,
+        "page_image_sha256": "4c2b24507412389c64da8083b8ae2aa4cf73f09f1604647f2b9df6063a250801",
+        "page_cite": "p. 95",
+        "verbatim_quote": "From old records of production, mill tests, and sampling by early operators, one engineer has estimated that about 980,000 tons of ore is available with a grade of $10.20 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2914285714, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 10.20, "usd_per_troy_ounce": 35},
+        "basis": "Engineer-estimated available-ore grade; $10.20 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "estimate reported by 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-lucky-boy",
+      "name": "Lucky Boy mine",
+      "district": "Keystone",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-lucky-boy-b427-p102",
+        "source_id": "usbm-b427",
+        "pdf_page": 108,
+        "page_image_sha256": "673e9b856034e2c0e1d81d07f0695bede94c79c5d08007d36061eba3d8c2d0f6",
+        "page_cite": "p. 102",
+        "verbatim_quote": "A carload of ore taken from the first and second levels was shipped to Denver for testing. The ore assayed $4.80 in gold per ton (gold at $20.67 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2322206096, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 4.80, "usd_per_troy_ounce": 20.67},
+        "basis": "Carload test assay; $4.80 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "before patent in 1932"
+      }]
+    },
+    {
+      "mine_id": "sd-big-hit",
+      "name": "Big Hit group",
+      "district": "Keystone",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-big-hit-b427-p102",
+        "source_id": "usbm-b427",
+        "pdf_page": 108,
+        "page_image_sha256": "673e9b856034e2c0e1d81d07f0695bede94c79c5d08007d36061eba3d8c2d0f6",
+        "page_cite": "p. 102",
+        "verbatim_quote": "A 300-foot drift on the 200-foot level has disclosed a sulfide ore body said to run $7 to $10 a ton in gold (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 7, "usd_per_troy_ounce": 35},
+        "basis": "Lower endpoint of the reported sulfide-body range; $7 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "reported by 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-inca",
+      "name": "Inca group",
+      "district": "Keystone",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-inca-b427-p111",
+        "source_id": "usbm-b427",
+        "pdf_page": 117,
+        "page_image_sha256": "3635d925bc3233b8f376ca84f9e04beaf34e819cc3fd4e86424341a6c9ba929b",
+        "page_cite": "p. 111",
+        "verbatim_quote": "Recent sampling is said to have shown the ore to range from $3.50 to $7 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.1, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 3.50, "usd_per_troy_ounce": 35},
+        "basis": "Lower endpoint of the recent-sample range; $3.50 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "recent sampling reported in 1938"
+      }]
+    },
+    {
+      "mine_id": "sd-old-bill",
+      "name": "Old Bill (El Dorado) mine",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-old-bill-b427-p127",
+        "source_id": "usbm-b427",
+        "pdf_page": 133,
+        "page_image_sha256": "6405bad59b9e0a24d3cccdb2ceb2b912b6031cb45a3bc853c5db6028b5e5c418",
+        "page_cite": "p. 127",
+        "verbatim_quote": "Assays of samples taken along the outcrop north of the shaft are said to average $10.15 in gold per ton (gold at $35 an ounce); south of the shaft the outcrop is barren.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.29, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 10.15, "usd_per_troy_ounce": 35},
+        "basis": "Reported outcrop-sample average; $10.15 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "1937-1938 exploration"
+      }]
+    },
+    {
+      "mine_id": "sd-rough-rider",
+      "name": "Rough Rider group",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-rough-rider-b427-p129",
+        "source_id": "usbm-b427",
+        "pdf_page": 135,
+        "page_image_sha256": "7e02a818f10229d8f1a4b3434fe35f02910f3caa669c4b0577d171538d30cae6",
+        "page_cite": "p. 129",
+        "verbatim_quote": "According to an early publication, 177 assays made during 1902 and early in 1903 averaged $83.03 in gold per ton (gold at $20.67 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 4.0169327528, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 83.03, "usd_per_troy_ounce": 20.67},
+        "basis": "Average of 177 assays; $83.03 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "1902-1903"
+      }]
+    },
+    {
+      "mine_id": "sd-saginaw",
+      "name": "Saginaw (Gold Reserve) property",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-saginaw-b427-p130",
+        "source_id": "usbm-b427",
+        "pdf_page": 136,
+        "page_image_sha256": "8686498e8df51958a642d6195cf3f98828ce8d72ae31e816a2de2e86a0556db1",
+        "page_cite": "p. 130",
+        "verbatim_quote": "Samples from the 70-foot prospect shaft, near the top where the vein was 9 inches wide, assayed $11 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.3142857143, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 11, "usd_per_troy_ounce": 35},
+        "basis": "Prospect-shaft sample; $11 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "sample reported by present owner before 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-echo",
+      "name": "Echo lode",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-echo-b427-p131",
+        "source_id": "usbm-b427",
+        "pdf_page": 137,
+        "page_image_sha256": "a66e84ba57d4dd8eb8ddd17be30abb955ed006ce82ad1e7f1e6eb7226bdd5a77",
+        "page_cite": "p. 131",
+        "verbatim_quote": "A sample taken from a small quantity of ore left in the bin assayed $3.50 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.1, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 3.50, "usd_per_troy_ounce": 35},
+        "basis": "Ore-bin sample; $3.50 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "1937-1938"
+      }]
+    },
+    {
+      "mine_id": "sd-newark",
+      "name": "Newark mine",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-newark-b427-p132",
+        "source_id": "usbm-b427",
+        "pdf_page": 138,
+        "page_image_sha256": "ad87c9e5eaa903ce041e09ae1ee8cf18e7102d9d76eb05d51b906544a759fe8d",
+        "page_cite": "p. 132",
+        "verbatim_quote": "Two metallurgical tests were run on samples of the ore at the South Dakota School of Mines. The head assay for the first lot was said to be $10.40 in gold per ton and a second lot containing 150 pounds ran $14 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2971428571, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 10.40, "usd_per_troy_ounce": 35},
+        "basis": "First South Dakota School of Mines head assay; $10.40 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "test date not stated; reported by 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-gold-fish",
+      "name": "Gold Fish group",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-gold-fish-b427-p133",
+        "source_id": "usbm-b427",
+        "pdf_page": 139,
+        "page_image_sha256": "c7b2a606209d9b4a69e4ad91a90aceb035272f70deb2ace59eed2241a214e0ef",
+        "page_cite": "p. 133",
+        "verbatim_quote": "A grab sample taken from about 3 tons of quartz on the dump assayed $1.05 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.03, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 1.05, "usd_per_troy_ounce": 35},
+        "basis": "Grab sample from approximately 3 tons of dump quartz; $1.05 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "1938 field examination"
+      }]
+    },
+    {
+      "mine_id": "sd-hard-scrabble",
+      "name": "Hard Scrabble group",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-hard-scrabble-b427-p133",
+        "source_id": "usbm-b427",
+        "pdf_page": 139,
+        "page_image_sha256": "c7b2a606209d9b4a69e4ad91a90aceb035272f70deb2ace59eed2241a214e0ef",
+        "page_cite": "p. 133",
+        "verbatim_quote": "A considerable tonnage of quartz averaging $8.50 in gold per ton (gold at $20.67 an ounce) is said to have been developed.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.4112239961, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 8.50, "usd_per_troy_ounce": 20.67},
+        "basis": "Reported developed-quartz average; $8.50 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "historic development before 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-oneonta",
+      "name": "Oneonta lode",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-oneonta-b427-p135",
+        "source_id": "usbm-b427",
+        "pdf_page": 141,
+        "page_image_sha256": "4d73ee249644baf6b1a33c1155821ad8d692b888b82b41a4f348e55d893310d5",
+        "page_cite": "p. 135",
+        "verbatim_quote": "A second sample from a pile of quartz, apparently representing the last ore that was mined from the 65-foot shaft, assayed $7.00 in gold per ton (gold at $35 an ounce).",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.2, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 7, "usd_per_troy_ounce": 35},
+        "basis": "Quartz-pile sample representing last shaft ore; $7 per short ton divided by the quotation's $35 per troy ounce",
+        "years": "1938 field examination"
+      }]
+    },
+    {
+      "mine_id": "sd-minnie-may",
+      "name": "Minnie May group",
+      "district": "Custer area",
+      "county": "Custer",
+      "evidence": [{
+        "evidence_id": "sd-minnie-may-b427-p137",
+        "source_id": "usbm-b427",
+        "pdf_page": 143,
+        "page_image_sha256": "d0252ee210cb7faaeb661f05d5c9689894660ea12f52020db5f68e6143eb4588",
+        "page_cite": "p. 137",
+        "verbatim_quote": "According to an unsigned report 176 samples were cut from various exposures on the vein. Average assays of various groups of samples ranged from $2.70 to $3.90 in gold per ton, supposedly based upon gold at $20.67 an ounce.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.1306240929, "unit": "troy_ounces_per_short_ton"}],
+        "derivation": {"method": "usd_per_short_ton_div_quoted_usd_per_troy_ounce", "usd_per_short_ton": 2.70, "usd_per_troy_ounce": 20.67},
+        "basis": "Lower endpoint of group averages from 176 samples; $2.70 per short ton divided by the quotation's $20.67 per troy ounce",
+        "years": "historic sampling before 1940"
+      }]
+    },
+    {
+      "mine_id": "sd-standby",
+      "name": "Standby mine",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-standby-b1332a-table1",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 19,
+        "page_image_sha256": "3946e75265a883193264d1ba85f40018c926715d0a40ea7d5434c75f5e24c8df",
+        "page_cite": "Table 1, p. A13",
+        "verbatim_quote": "301 38.00 18 300",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 38, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 18, "unit": "parts_per_million"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 38, "Cu": 18}},
+        "basis": "USGS Table 1 sample 301; table header states all chemical analyses are parts per million",
+        "years": "USGS Rochford field sampling; exact sample year not stated in Table 1"
+      }]
+    },
+    {
+      "mine_id": "sd-cochrane",
+      "name": "Cochrane mine",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-cochrane-b1332a-table2",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 19,
+        "page_image_sha256": "3946e75265a883193264d1ba85f40018c926715d0a40ea7d5434c75f5e24c8df",
+        "page_cite": "Table 2, p. A13",
+        "verbatim_quote": "654 16.00 2.6 98",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 16, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 2.6, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 98, "unit": "parts_per_million"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 16, "Ag": 2.6, "Cu": 98}},
+        "basis": "USGS Table 2 sample RB-654-68; table header states all chemical analyses are parts per million",
+        "years": "October 1968"
+      }]
+    },
+    {
+      "mine_id": "sd-golden-west",
+      "name": "Golden West mine",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-golden-west-b1332a-table5",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 22,
+        "page_image_sha256": "11cf386053345bf98d0b274766181412d202248a70c64a48272aa6f6362f25ce",
+        "page_cite": "Table 5, p. A16",
+        "verbatim_quote": "158 11.00 2.5 200",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 11, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 2.5, "unit": "grams_per_metric_tonne"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 11, "Ag": 2.5}},
+        "basis": "USGS Table 5 sample 158; table header states all chemical analyses are parts per million",
+        "years": "1971 sampling"
+      }]
+    },
+    {
+      "mine_id": "sd-king-of-the-west",
+      "name": "King of the West mine",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-king-of-the-west-b1332a-table6",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 25,
+        "page_image_sha256": "538afdb782409e6136478f3f47c7fc7b499bab4efaa1539a216ef0205c2d050d",
+        "page_cite": "Table 6, p. A19",
+        "verbatim_quote": "199 13.00 .5 300",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 13, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 0.5, "unit": "grams_per_metric_tonne"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 13, "Ag": 0.5}},
+        "basis": "USGS Table 6 sample 199; table header states all chemical analyses are parts per million",
+        "years": "USGS field sampling; exact sample year not stated in Table 6"
+      }]
+    },
+    {
+      "mine_id": "sd-montana",
+      "name": "Montana mine",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-montana-b1332a-table7",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 28,
+        "page_image_sha256": "30a16100864a75f86440118b649820066c3e36124a0f18ae1affe66b466d9356",
+        "page_cite": "Table 7, p. A22",
+        "verbatim_quote": "221 8.00 .60 160 800",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 8, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 0.6, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 160, "unit": "parts_per_million"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 8, "Ag": 0.6, "Cu": 160}},
+        "basis": "USGS Table 7 sample RB-221-69; table header states all chemical analyses are parts per million",
+        "years": "1969"
+      }]
+    },
+    {
+      "mine_id": "sd-sec12-quartz-vein",
+      "name": "Sec. 12 arsenopyrite-quartz test-pit prospect",
+      "district": "Hill City (Rochford area)",
+      "county": "Pennington",
+      "evidence": [{
+        "evidence_id": "sd-sec12-quartz-vein-b1332a-pa24",
+        "source_id": "usgs-b1332a",
+        "pdf_page": 30,
+        "page_image_sha256": "bfa0945f5142627d37b04902691065107aebe178024286e8f7adfcb929839694",
+        "page_cite": "Other Prospects of Interest table, p. A24",
+        "verbatim_quote": "240 12.00 .20 22 25,000",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 12, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 0.2, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 22, "unit": "parts_per_million"}
+        ],
+        "derivation": {"method": "parts_per_million_as_native_units", "parts_per_million": {"Au": 12, "Ag": 0.2, "Cu": 22}},
+        "basis": "USGS dump sample RB-240-69 from the 12-foot-wide quartz-vein test pit; table states values are parts per million",
+        "years": "1969"
+      }]
+    }
+  ]
+}

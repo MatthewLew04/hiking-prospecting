@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "state": "CO",
+  "name": "Colorado",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "official_candidate_unavailable",
+      "authority": "U.S. Bureau of Land Management, Colorado State Office",
+      "source_url": "https://gis.blm.gov/coarcgis/rest/services/minerals/BLM_CO_Federal_Mineral_Estate_Solid_Colors/FeatureServer/1",
+      "ownership_field": null,
+      "locatable_values": [],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "The official catalog lists a statewide Federal Mineral Estate service, but its ArcGIS service currently returns service-not-started and its live schema/domain cannot be reviewed; it cannot support an OPEN classification."
+    }
+  },
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-109.062, 36.991, -102.041, 41.005], "crs": "EPSG:4326", "note": "Rectangular state envelope; clip service results to the authoritative state boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Colorado Geological Survey",
+    "catalog_url": "https://coloradogeologicalsurvey.org/publications/",
+    "gis_endpoints": [
+      {"id": "cgs_gis_data_map_portal", "kind": "gis_portal", "url": "https://coloradogeologicalsurvey.org/geology/gis-data-map-portal/"},
+      {"id": "cgs_historic_mining_districts", "kind": "gis_dataset", "url": "https://coloradogeologicalsurvey.org/minerals/historic-mining-districts/"}
+    ],
+    "reviewed": "2026-08-13",
+    "baseline_manifest_keys": ["co_usgs_cngm_tweto_500k", "co_cgs_on006_faults", "co_cgs_on007_districts"],
+    "baseline_artifacts": {
+      "co_usgs_cngm_tweto_500k": {"baseline_manifest_key": "national_baselines.co_usgs_cngm_tweto_500k", "baseline_browser_path": "data/tiles/states/co/usgs-cngm-tweto-500k.pmtiles", "baseline_features": 19738, "baseline_sha256": "219538d916e59d09d6cbf6393939f5bdbc4d2b74d7ae61c7c8e85d77f5d6db0b"},
+      "co_cgs_on006_faults": {"baseline_manifest_key": "national_baselines.co_cgs_on006_faults", "baseline_browser_path": "data/tiles/states/co/cgs-on006-faults.pmtiles", "baseline_features": 3562, "baseline_sha256": "b18612dcb1ce79b1bdc35d5bc7e48ba44e9ab3f14a859a4db0c27c5f85c14a1d"},
+      "co_cgs_on007_districts": {"baseline_manifest_key": "national_baselines.co_cgs_on007_districts", "baseline_browser_path": "data/tiles/states/co/cgs-on007-districts.pmtiles", "baseline_features": 383, "baseline_sha256": "5b5ad631bb936baf76faa74067ec03a2460941b3d75e3d1d66181e1b8d18a98e"}
+    }
+  },
+  "geology": {
+    "source_id": "cgs_mi16_sgmc_vector",
+    "title": "Geologic Map of Colorado (Tweto, 1979), Map Series MI-16, SGMC vector conversion",
+    "authority": "Colorado Geological Survey and U.S. Geological Survey",
+    "source_url": "https://coloradogeologicalsurvey.org/publications/tweto-geologic-map-colorado-1979/",
+    "source_scale": "1:500,000",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_keys": ["co_usgs_cngm_tweto_500k"],
+    "baseline_artifacts": {
+      "co_usgs_cngm_tweto_500k": {"baseline_manifest_key": "national_baselines.co_usgs_cngm_tweto_500k", "baseline_browser_path": "data/tiles/states/co/usgs-cngm-tweto-500k.pmtiles", "baseline_features": 19738, "baseline_sha256": "219538d916e59d09d6cbf6393939f5bdbc4d2b74d7ae61c7c8e85d77f5d6db0b", "geology_features": 9500, "fault_features": 10238}
+    },
+    "provenance_note": "The checksum-pinned Tweto/CNGM PMTiles baseline exposes 9,500 geologic units and 10,238 mapped structures with exact maximum-zoom source-ID inventories. It retains MI-16/Tweto map and data-source lineage; later CGS detailed maps may replace it only with native scale provenance."
+  },
+  "faults": {
+    "source_id": "cgs_on006_qfaults",
+    "title": "Colorado Quaternary Fault and Fold Database and Map",
+    "authority": "Colorado Geological Survey",
+    "source_url": "https://coloradogeologicalsurvey.org/publications/quaternary-fault-fold-database-map-colorado/",
+    "source_scale": "statewide compilation with regional source mapping commonly 1:250,000; legacy OF-98-08 overview 1:500,000",
+    "state_source_verified": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_key": "national_baselines.co_cgs_on006_faults",
+    "baseline_browser_path": "data/tiles/states/co/cgs-on006-faults.pmtiles",
+    "baseline_features": 3562,
+    "baseline_sha256": "b18612dcb1ce79b1bdc35d5bc7e48ba44e9ab3f14a859a4db0c27c5f85c14a1d",
+    "note": "The checked ON-006 baseline keeps 864 Quaternary and 2,698 Cenozoic traces semantically separate. Neither layer is promoted to a current-activity claim; detailed source-scale review remains pending."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "co_bureau_mines_annual_1896_1965", "title": "Colorado Bureau of Mines annual reports, 1896-1965", "role": "state_mine_inspector_and_mineral_industry_serial", "primary": true, "url": "https://coloradogeologicalsurvey.org/publications/colorado-bureau-mines-annual-1896-1965/", "status": "registered_not_extracted"},
+    {"source_id": "co_historic_mining_districts", "title": "Historic Mining Districts of Colorado, ON-007-08D", "role": "district_history_and_gis", "primary": true, "url": "https://coloradogeologicalsurvey.org/minerals/historic-mining-districts/", "status": "state_baseline_pmtiles_published_documents_not_extracted", "baseline_manifest_key": "national_baselines.co_cgs_on007_districts", "baseline_browser_path": "data/tiles/states/co/cgs-on007-districts.pmtiles", "baseline_features": 383, "baseline_sha256": "5b5ad631bb936baf76faa74067ec03a2460941b3d75e3d1d66181e1b8d18a98e"},
+    {"source_id": "co_mineral_resources", "title": "Mineral Resources of Colorado", "role": "state_mineral_resource_monograph", "primary": true, "url": "https://coloradogeologicalsurvey.org/publications/mineral-resources-colorado/", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "co_drms_inactive_mine_reclamation",
+    "state_inventory_url": "https://drms.colorado.gov/programs/inactive-mine-reclamation-program",
+    "status": "state_program_registered_export_not_verified",
+    "evidence": "Colorado DRMS operates the Inactive Mine Reclamation Program, but a reviewed public statewide feature export has not been accepted."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://slb.colorado.gov/public-requests",
+    "evidence_url": "https://slb.colorado.gov/stewardship/stipulations",
+    "evidence": "The Colorado State Land Board accepts mineral extraction lease requests and publishes solid-mineral stipulations; a lease is not equivalent to federal open ground."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.coloradosos.gov/pubs/elections/Resources/CountyElectionOffices.html",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_clerk_recorder_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "National MLRS endpoints are configured; Colorado active/closed claim and open-ground PMTiles have not passed acceptance."},
+    "geology_faults": {"finding": "Checksum-pinned Colorado baseline PMTiles are published with exact full-MVT/source-ID validation: 9,500 Tweto geologic units, 10,238 Tweto structures, 864 ON-006 Quaternary faults, 2,698 separately labeled Cenozoic faults, and 383 ON-007 historic districts. The gate remains failed because detailed-map source-scale substitution/review and accepted release artifacts are still pending."},
+    "aeromag": {"finding": "No accepted Colorado COG with survey-index provenance exists locally."},
+    "grades": {
+      "finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from two independent official USGS primary grade documents and all 44 PP 610 Colorado districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes.",
+      "evidence_only_build_sha256": "3015258f19efbfea44a52ef24b27b20ed018b8c3edf7b7057f612fd3c1df674a",
+      "graded_mines": 26,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "official_primary_documents": 2,
+      "pp610_districts": 44
+    },
+    "recorders": {"finding": "Live-claim counties have not been joined to a verified clerk/recorder vendor matrix."},
+    "quad_maps": {"finding": "No accepted quadrangle inventory for Colorado's top five targets exists."},
+    "ci_scale": {"finding": "Colorado has not passed national tiled-delivery storage and heap budgets."}
+  },
+  "release": {"note": "The exact Tweto/ON-006/ON-007 state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Colorado remains building/disabled until detailed-scale review, accepted release artifacts, and every remaining DONE gate pass."}
+}

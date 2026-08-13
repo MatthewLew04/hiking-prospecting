@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "state": "OH",
+  "name": "Ohio",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-84.82, 38.403, -80.519, 42.323],
+      "crs": "EPSG:4326",
+      "note": "State envelope includes Lake Erie jurisdiction; clip source features to the official Ohio boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Ohio Department of Natural Resources, Division of Geological Survey",
+    "catalog_url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide",
+    "gis_endpoints": [
+      {
+        "type": "geologic_information_and_mapping_system",
+        "url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "oh_odnr_bedrock_24k",
+    "title": "Bedrock Geology of Ohio - 1:24,000 Scale",
+    "authority": "Ohio Department of Natural Resources, Division of Geological Survey",
+    "url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide",
+    "catalog_record": "GIMS statewide product listed as Bedrock Geology of Ohio - 1:24,000 Scale",
+    "native_scale": "1:24,000",
+    "fallback_scale": "1:500,000 statewide generalized product",
+    "statewide": true,
+    "vector": "catalog_acquisition_pending",
+    "registry_choice": "best_cataloged_statewide_vector_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "source_registered_download_and_schema_audit_pending",
+    "gap": "Resolve the authoritative downloadable vector package and verify statewide/seam coverage before replacing the national tiled baseline."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_oh_deep_structure_candidate",
+    "title": "USGS Quaternary Faults baseline with Ohio Precambrian structural-trend candidate",
+    "authority": "U.S. Geological Survey and Ohio Department of Natural Resources",
+    "url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide",
+    "native_scale": "national surface-fault baseline; Ohio candidate maps subsurface Precambrian structure",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "GIMS lists faults and structural trends mapped on the Precambrian unconformity; keep that distinct from surface/Quaternary faults and do not use it as a silent statewide substitute."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "oh_odnr_geologic_publications",
+      "title": "Ohio Geological Survey publications and GIMS catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Reports of Investigations", "Information Circulars"],
+      "url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "oh_odnr_gims_aml",
+    "state_inventory_url": "https://apps.ohiodnr.gov/gims/response.asp?category=Select&county=Statewide",
+    "status": "state_aml_layers_registered_not_ingested",
+    "scope": "GIMS catalogs abandoned-mine and mine-feature layers, including point and polygon products; layer semantics must be retained.",
+    "gap": "Acquire the authoritative AML layers and reconcile them with Division of Mineral Resources Management projects and e-AMLIS."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "oil and gas leasing of eligible state lands through Ohio's statutory nomination and commission process",
+    "portal_url": "https://codes.ohio.gov/ohio-revised-code/section-155.33",
+    "evidence": "Ohio Revised Code section 155.33 establishes a process for nominations and leases of oil and gas resources on qualifying state lands; this is not hard-rock staking.",
+    "approach_route": "For qualifying state oil and gas rights use the statutory commission/agency process; for other mineral estates identify the owner and negotiate privately or through the custodial agency.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State parcel: confirm custodial agency and statutory mineral authority; private/severed estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; the 24K package, AML layers, land cards, grades, quads, and scale CI are unaccepted."
+  }
+}

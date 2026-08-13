@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "NC",
+  "name": "North Carolina",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-84.321869, 33.752878, -75.400119, 36.588117],
+      "crs": "EPSG:4326",
+      "note": "State envelope including barrier islands; authoritative coastline and state boundary control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "North Carolina Geological Survey",
+    "catalog_url": "https://www.deq.nc.gov/about/divisions/energy-mineral-and-land-resources/nc-geological-survey/ncgs-publications",
+    "gis_endpoints": [
+      {
+        "type": "statewide_geologic_maps_catalog",
+        "url": "https://www.deq.nc.gov/about/divisions/energy-mineral-and-land-resources/nc-geological-survey/ncgs-publications/statewide-geologic-maps-north-carolina"
+      },
+      {
+        "type": "state_map_geodatabase_download",
+        "url": "https://www.deq.nc.gov/energy-mineral-and-land-resources/geological-survey/assorted-maps/1985-state-geologic-map-zip-file"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "nc_ncgs_state_geologic_map_1985",
+    "title": "1985 Geologic Map of North Carolina ESRI geodatabase",
+    "authority": "North Carolina Geological Survey",
+    "url": "https://www.deq.nc.gov/energy-mineral-and-land-resources/geological-survey/assorted-maps/1985-state-geologic-map-zip-file",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify the refreshed geodatabase schema and topology, preserve 1:500,000 scale, and index newer 1:24,000 NCGS quadrangle mapping as distinct higher-resolution replacements rather than dissolving provenance."
+  },
+  "faults": {
+    "source_id": "nc_ncgs_state_map_structures",
+    "title": "Faults and structural features from the 1985 Geologic Map of North Carolina geodatabase",
+    "authority": "North Carolina Geological Survey",
+    "url": "https://www.deq.nc.gov/about/divisions/energy-mineral-and-land-resources/nc-geological-survey/ncgs-publications/statewide-geologic-maps-north-carolina",
+    "native_scale": "1:500,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify the structure feature classes in the current geodatabase and reconcile them with newer quadrangle mapping and Qfaults; generalized statewide absence cannot be interpreted as fault-free."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "nc_ncgs_serials",
+      "title": "North Carolina Geological Survey publications catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Economic Papers", "Information Circulars", "Open-File Reports", "Geologic Maps", "Mineral-resource reports"],
+      "url": "https://www.deq.nc.gov/about/divisions/energy-mineral-and-land-resources/nc-geological-survey/ncgs-publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "nc_deq_mining_program",
+    "state_inventory_url": "https://www.deq.nc.gov/about/divisions/energy-mineral-and-land-resources/mining-program",
+    "status": "state_permit_inventory_registered_not_aml_complete",
+    "scope": "The Mining Program tracks pending, active, inactive, released, and revoked permits; it is a regulatory inventory, not a comprehensive inventory of pre-law historic or abandoned metallic mines.",
+    "gap": "Obtain the current permit GIS export and keep permit/reclamation status separate from historic mine occurrences; no comprehensive official statewide hard-rock AML inventory was identified."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "case_by_case_state_mineral_disposition",
+    "portal_url": "https://www.doa.nc.gov/divisions/state-property",
+    "authority_url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/ByChapter/Chapter_146.html",
+    "evidence": "North Carolina General Statutes chapter 146, including sections 146-8 and 146-9, provides for case-specific disposition or lease of state mineral interests through state approval; it is not an open staking system.",
+    "approach_route": "State parcel: confirm the mineral estate with the State Property Office and custodial agency, then follow chapter 146 approvals; private parcel: negotiate with the mineral-rights owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.doa.nc.gov/divisions/state-property",
+    "approach_route": "State parcel: State Property Office/custodial-agency title and chapter 146 review; private parcel: mineral-owner negotiation. Historic mining does not establish open ground."
+  },
+  "release": {
+    "note": "P3 southern-Appalachian registry only; detailed-map gap fill, AML finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

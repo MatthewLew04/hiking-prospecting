@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-new-mexico-pp610-district-inventory",
+  "state": "NM",
+  "source_id": "pp610",
+  "review_scope": "Complete transcription of all 17 numbered New Mexico districts in PP 610 Figure 19 on printed page 203, with one chapter-heading locator per district.",
+  "figure_page_image_sha256": "fc9646c4ab5e7faeb06a9accf2dd0fac101c28a7b64f80ccfee93c04b9d5cb02",
+  "districts": [
+    {
+      "district_id": "nm-tijeras-canyon",
+      "name": "Tijeras Canyon",
+      "county": "Bernalillo",
+      "pdf_page": 208,
+      "source_heading": "TIJE.RAS CANYON DISTRICT"
+    },
+    {
+      "district_id": "nm-mogollon",
+      "name": "Mogollon",
+      "county": "Catron",
+      "pdf_page": 208,
+      "source_heading": "MOGOLLON DISTRICT"
+    },
+    {
+      "district_id": "nm-elizabethtown-baldy",
+      "name": "Elizabethtown-Baldy",
+      "county": "Colfax",
+      "pdf_page": 210,
+      "source_heading": "ELIZABETHTOWN -BALDY DISTRICT"
+    },
+    {
+      "district_id": "nm-organ",
+      "name": "Organ",
+      "county": "Dona Ana",
+      "pdf_page": 210,
+      "source_heading": "ORGAN DISTRICT"
+    },
+    {
+      "district_id": "nm-central",
+      "name": "Central",
+      "county": "Grant",
+      "pdf_page": 211,
+      "source_heading": "CENTRAL DISTRICT"
+    },
+    {
+      "district_id": "nm-pinos-altos",
+      "name": "Pinos Altos",
+      "county": "Grant",
+      "pdf_page": 212,
+      "source_heading": "PINOS ALTOS DISTRICT"
+    },
+    {
+      "district_id": "nm-steeple-rock",
+      "name": "Steeple Rock",
+      "county": "Grant",
+      "pdf_page": 212,
+      "source_heading": "STEEPLE ROCK DISTRICT"
+    },
+    {
+      "district_id": "nm-lordsburg",
+      "name": "Lordsburg",
+      "county": "Hidalgo",
+      "pdf_page": 213,
+      "source_heading": "LORDSBURG DISTRICT"
+    },
+    {
+      "district_id": "nm-white-oaks",
+      "name": "White Oaks",
+      "county": "Lincoln",
+      "pdf_page": 214,
+      "source_heading": "WHITE OAKS DISTRICT"
+    },
+    {
+      "district_id": "nm-nogal",
+      "name": "Nogal",
+      "county": "Lincoln",
+      "pdf_page": 213,
+      "source_heading": "NOGAL DISTRICT"
+    },
+    {
+      "district_id": "nm-jarilla",
+      "name": "Jarilla",
+      "county": "Otero",
+      "pdf_page": 214,
+      "source_heading": "JARILLA DISTRICT"
+    },
+    {
+      "district_id": "nm-cochiti",
+      "name": "Cochiti",
+      "county": "Sandoval",
+      "pdf_page": 214,
+      "source_heading": "COCHITI DISTRICT"
+    },
+    {
+      "district_id": "nm-willow-creek",
+      "name": "Willow Creek",
+      "county": "San Miguel",
+      "pdf_page": 215,
+      "source_heading": "WILLOW CREEK DISTRICT"
+    },
+    {
+      "district_id": "nm-old-placer",
+      "name": "Old Placer",
+      "county": "Santa Fe",
+      "pdf_page": 216,
+      "source_heading": "OLD PLACER DISTRICT"
+    },
+    {
+      "district_id": "nm-new-placer",
+      "name": "New Placer",
+      "county": "Santa Fe",
+      "pdf_page": 215,
+      "source_heading": "NEW PLACER DISTRICT"
+    },
+    {
+      "district_id": "nm-hillsboro",
+      "name": "Hillsboro",
+      "county": "Sierra",
+      "pdf_page": 216,
+      "source_heading": "HILLSBORO DISTRICT"
+    },
+    {
+      "district_id": "nm-rosedale",
+      "name": "Rosedale",
+      "county": "Socorro",
+      "pdf_page": 217,
+      "source_heading": "ROSEDALE DISTRICT"
+    }
+  ]
+}

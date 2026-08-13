@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "AL",
+  "name": "Alabama",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-88.473227, 30.144425, -84.888246, 35.008028],
+      "crs": "EPSG:4326",
+      "note": "State land envelope; clip every national and state source to the authoritative boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Geological Survey of Alabama",
+    "catalog_url": "https://gsa.state.al.us/Scripts/OGB/pubs/publications.html",
+    "gis_endpoints": [
+      {
+        "type": "program_catalog",
+        "url": "https://gsa.state.al.us/Scripts/GSAOGB/main/main.html"
+      },
+      {
+        "type": "arcgis_rest",
+        "url": "https://map.gsa.state.al.us/arcgis/rest/services"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "al_gsa_sm220a",
+    "title": "Geologic Map of Alabama, digital version 1.0 (Special Map 220A)",
+    "authority": "Geological Survey of Alabama",
+    "url": "https://gsa.state.al.us/Scripts/GSAOGB/gsa/geologic/algeology.html",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_statewide_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Special Map 220A is the statewide digital candidate; compare it with the 2026 SGMC coverage and preserve its 1:250,000 source scale on every emitted polygon before acceptance."
+  },
+  "faults": {
+    "source_id": "al_gsa_sm220a_structures",
+    "title": "Faults and structural contacts from Special Map 220A",
+    "authority": "Geological Survey of Alabama",
+    "url": "https://gsa.state.al.us/Scripts/GSAOGB/gsa/geologic/algeology.html",
+    "native_scale": "1:250,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The statewide structure layer and its reuse terms still require direct dataset-level verification; Qfaults remains only the national baseline."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "al_gsa_serials",
+      "title": "Geological Survey of Alabama publication catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Biennial Reports", "Bulletins", "Circulars", "Monographs", "Reports of Progress"],
+      "url": "https://gsa.state.al.us/Scripts/OGB/pubs/publications.html",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "al_adow_aml",
+    "state_inventory_url": "https://adol.alabama.gov/divisions/inspections/abandoned-mine-land-reclamation/",
+    "status": "state_program_registered_not_ingested",
+    "scope": "Pre-1977 coal AML hazards; the underground mine-map repository is access-controlled and is not a complete non-coal inventory.",
+    "gap": "Reconcile the state program inventory with e-AMLIS and obtain a public export or document the repository access limitation."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_state_lands_and_state_waters",
+    "portal_url": "https://lands.dcnr.alabama.gov/",
+    "authority_url": "https://www.gsa.state.al.us/ogb/gisdata",
+    "evidence": "Alabama DCNR exposes a state-land lease system, and the Oil and Gas Board publishes state-water lease blocks; neither is a general hard-rock staking system.",
+    "approach_route": "Confirm mineral title with the custodial agency and DCNR; use the Oil and Gas Board for regulated oil, gas, and state-water lease-block activity, otherwise negotiate with the private mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://lands.dcnr.alabama.gov/",
+    "approach_route": "State-owned parcel: contact the custodial agency/DCNR; private parcel: identify the mineral-estate owner and negotiate. No federal-style open ground is implied."
+  },
+  "release": {
+    "note": "Registry sources are researched; state-specific ingestion, target land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

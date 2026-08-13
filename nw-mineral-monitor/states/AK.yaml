@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "state": "AK",
+  "name": "Alaska",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "official_candidate_insufficient",
+      "authority": "U.S. Bureau of Land Management, Alaska State Office",
+      "source_url": "https://gis.blm.gov/akarcgis/rest/services/Land_Management/BLM_AK_Unencumbered_BLM_Lands/FeatureServer/0",
+      "ownership_field": null,
+      "locatable_values": [],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "The official Unencumbered BLM Lands layer is a useful Alaska screening candidate, but it does not by itself resolve public-domain mineral title, ANCSA conveyances, state ownership, or federal mineral-entry withdrawals; it cannot support an OPEN classification."
+    }
+  },
+  "query_envelopes": [
+    {
+      "id": "alaska_western_hemisphere",
+      "bbox": [-180.0, 50.0, -129.0, 72.0],
+      "crs": "EPSG:4326",
+      "note": "Dateline-safe envelope for mainland Alaska and Aleutians west of 180 degrees."
+    },
+    {
+      "id": "alaska_eastern_hemisphere",
+      "bbox": [172.0, 50.0, 180.0, 55.0],
+      "crs": "EPSG:4326",
+      "note": "Dateline-safe envelope for western Aleutians represented with positive longitude."
+    }
+  ],
+  "geological_survey": {
+    "name": "Alaska Division of Geological & Geophysical Surveys",
+    "catalog_url": "https://dggs.alaska.gov/pubs/",
+    "gis_endpoints": [
+      {
+        "id": "usgs_sim3340_geology",
+        "kind": "arcgis_feature_service",
+        "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Geologic_map_of_Alaska_FeatureLayer/FeatureServer",
+        "layers": {"geologic_units": 6, "contacts_and_faults": 5}
+      },
+      {
+        "id": "dggs_geophysical_surveys",
+        "kind": "arcgis_feature_service",
+        "url": "https://geoportal.dggs.dnr.alaska.gov/arcgis/rest/services/geophysics/Geophysical_Surveys/FeatureServer"
+      },
+      {
+        "id": "dggs_geophysics_grids",
+        "kind": "arcgis_image_service",
+        "url": "https://geoportal.dggs.dnr.alaska.gov/arcgis/rest/services/geophysics/geophysics_grids/ImageServer"
+      }
+    ]
+  },
+  "geology": {
+    "source_id": "usgs_sim3340_alaska",
+    "title": "Geologic map of Alaska, USGS SIM 3340",
+    "authority": "U.S. Geological Survey",
+    "source_url": "https://dggs.alaska.gov/pubs/id/29564",
+    "gis_url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Geologic_map_of_Alaska_FeatureLayer/FeatureServer/6",
+    "source_scale": "1:1,584,000 nominal compilation; source mapping ranges chiefly from 1:250,000 with limited 1:63,360 to 1:500,000 inputs",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "provenance_note": "Retain SIM 3340 source-map relationships and original-scale metadata per polygon; DGGS says only partial medium- and large-scale digital coverage exists statewide.",
+    "browser_delivery": "pmtiles",
+    "browser_path": "data/tiles/geology/ak.pmtiles"
+  },
+  "faults": {
+    "source_id": "ak_dggs_qff_dds3",
+    "title": "Alaska Quaternary Faults and Folds, Digital Data Series 3",
+    "authority": "Alaska Division of Geological & Geophysical Surveys",
+    "source_url": "https://dggs.alaska.gov/pubs/id/24956",
+    "source_scale": "approximately 1:250,000 positional accuracy; overview map 1:3,700,000",
+    "state_source_verified": true,
+    "browser_delivery": "pmtiles",
+    "browser_path": "data/tiles/faults/ak.pmtiles"
+  },
+  "aeromag": {
+    "raster_source": "national_aeromag",
+    "survey_index_source_ids": ["airborne", "earthmri", "ak_dggs_geophysical_surveys"],
+    "state_survey_index_url": "https://geoportal.dggs.dnr.alaska.gov/arcgis/rest/services/geophysics/Geophysical_Surveys/FeatureServer",
+    "state_grid_service_url": "https://geoportal.dggs.dnr.alaska.gov/arcgis/rest/services/geophysics/geophysics_grids/ImageServer",
+    "survey_index_provenance_required": true,
+    "baseline_delivery": "wmts",
+    "baseline_url": "https://mrdata.usgs.gov/mapcache/wmts/1.0.0/WMTSCapabilities.xml",
+    "browser_delivery": "cog",
+    "browser_path": "data/cog/aeromag/ak.tif"
+  },
+  "occurrence_backbone": {
+    "source_id": "ardf",
+    "title": "Alaska Resource Data File (ARDF), version 2.1",
+    "authority": "U.S. Geological Survey",
+    "url": "https://doi.org/10.5066/P96MMRFD",
+    "feature_service_url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/ARDF_features/FeatureServer/0",
+    "role": "primary_occurrence_backbone",
+    "mrds_role": "secondary_gap_fill",
+    "caveat": "ARDF describes mines, prospects, and occurrences and is explicitly not a mining-claims database."
+    ,"baseline_manifest_key": "national_baselines.ardf"
+    ,"baseline_browser_path": "data/tiles/national/ardf.pmtiles"
+    ,"baseline_features": 7692
+    ,"baseline_sha256": "2e576908351dcd344b6503e84d578dd20b6cf92fb00e9ed32a123f022bcb159a"
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf",
+      "evidence_only_status": "complete_private_not_release_accepted",
+      "evidence_only_district_count": 43,
+      "evidence_only_build_sha256": "6877f8dfc43e953aa9e2692e5b622ee05dd631acad312f25eed6a3928563606a"
+    },
+    {
+      "source_id": "ak_dggs_mineral_industry",
+      "title": "Alaska mineral industry report series",
+      "role": "state_mineral_industry_serial",
+      "primary": true,
+      "url": "https://dggs.alaska.gov/pubs/minerals"
+    },
+    {
+      "source_id": "ak_dggs_annual_reports",
+      "title": "Alaska DGGS annual reports",
+      "role": "state_geologist_annual_reports",
+      "primary": true,
+      "url": "https://dggs.alaska.gov/pubs/series/dggs/annual-report"
+    },
+    {
+      "source_id": "ardf_quadrangle_reports",
+      "title": "Alaska Resource Data File quadrangle reports",
+      "role": "mine_and_occurrence_descriptions",
+      "primary": true,
+      "url": "https://www.usgs.gov/centers/alaska-science-center/science/alaska-resource-data-file"
+    }
+  ],
+  "aml": {
+    "source_id": "ak_dnr_aml",
+    "state_inventory_url": "https://dnr.alaska.gov/mlw/mining/aml/",
+    "status": "state_program_inventory_incomplete",
+    "evidence": "Alaska DNR operates the AML program for historic mines of any type, but its official page states that the non-coal inventory remains incomplete on state, private, and Native lands."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://mapper.dnr.alaska.gov/",
+    "evidence_url": "https://dnr.alaska.gov/mlw/mining/",
+    "evidence": "Alaska DNR administers state mining claims, leasehold locations, upland mining leases, and offshore mineral leases; Alaska Mapper is the land-status research portal."
+  },
+  "recorder": {
+    "scope": "recording_districts_with_live_claims",
+    "jurisdiction_type": "recording_district",
+    "directory_url": "https://dnr.alaska.gov/ssd/recoff/distlist",
+    "district_boundary_url": "https://arcgis.dnr.alaska.gov/arcgis/rest/services/OpenData/Administrative_RecordingDistricts/MapServer/0",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_recording_district_spatial_join",
+    "note": "Alaska must be reconciled to DNR's 34 recording districts rather than borough/county boundaries."
+  },
+  "claim_systems": [
+    {
+      "id": "federal_mlrs",
+      "authority": "U.S. Bureau of Land Management",
+      "source_id": "federal_mlrs",
+      "source_url": "https://gis.blm.gov/nlsdb/rest/services/Mining_Claims/MiningClaims/MapServer",
+      "layers": {"active": 1, "closed": 2},
+      "browser_delivery": "pmtiles",
+      "browser_path": "data/tiles/claims/ak-federal.pmtiles",
+      "expiration_watch": true
+    },
+    {
+      "id": "alaska_state_claims",
+      "authority": "Alaska Department of Natural Resources, Division of Mining, Land and Water",
+      "source_id": "ak_dnr_state_mining_claims",
+      "feature_service_url": "https://arcgis.dnr.alaska.gov/arcgis/rest/services/OpenData/NaturalResource_StateMiningClaim/FeatureServer",
+      "map_service_url": "https://arcgis.dnr.alaska.gov/arcgis/rest/services/OpenData/NaturalResource_StateMiningClaim/MapServer",
+      "layers": {"active": 0, "pending": 1, "closed": 2},
+      "browser_delivery": "pmtiles",
+      "browser_path": "data/tiles/claims/ak-state.pmtiles",
+      "baseline_manifest_key": "national_baselines.alaska_state_claims",
+      "baseline_browser_path": "data/tiles/claims/ak-state.pmtiles",
+      "baseline_features": 118800,
+      "baseline_sha256": "7614d92b12a34cabe9bfd9db838b2f68d28a86e95791cc91db443e32d4a35854",
+      "expiration_watch": true,
+      "deadline_policy": {
+        "effective_dated": true,
+        "verified": "2026-08-12",
+        "mining_year_boundary": "September 1 at noon Alaska time",
+        "rent": {
+          "initial_due": "within 45 days after posting, or within 90 days after state conveyance when applicable",
+          "subsequent_due": "September 1",
+          "payment_window_ends": "90 days after September 1 (ordinarily November 30)",
+          "unpaid_location_abandons": "December 1",
+          "amount_schedule": "resolve from the current DNR effective-dated schedule; do not hard-code rates",
+          "source_url": "https://dnr.alaska.gov/mlw/cdn/pdf/factsheets/annual-rent.pdf"
+        },
+        "labor": {
+          "work_or_cash_in_lieu_due": "September 1",
+          "statement_recording_due": "within 90 days after September 1 (ordinarily November 30)",
+          "source_url": "https://dnr.alaska.gov/mlw/cdn/pdf/factsheets/annual-labor.pdf"
+        },
+        "legal_source_url": "https://dnr.alaska.gov/mlw/mining/pdf/Mining_Statute_and_Regulation_Book.pdf",
+        "warning": "Computed dates are alerting leads only; verify current law, DNR land records, payment receipt, and the applicable recording district."
+      }
+    }
+  ],
+  "done_gate": {
+    "claims_or_land_context": {
+      "finding": "The 2026-08-13 Alaska DNR source snapshot is losslessly reconciled as an exact disjoint union: base delivery contains 39,263 active, 51 pending, and 79,462 closed polygons, while the z19 precision-overflow delivery contains 6 active and 18 closed unchanged source polygons, totaling 39,269 active, 51 pending, and 79,480 closed records (118,800); both the zero-area feature and ring counts are zero. ARDF is exact at 7,692 occurrences. Alaska still lacks its separate federal MLRS artifact and the remaining claim/open-ground/watch acceptance, so this gate remains failed."
+    },
+    "geology_faults": {
+      "finding": "SIM 3340 and DGGS QFF are verified source datasets; the tiled artifacts and per-polygon source-scale audit are pending."
+    },
+    "aeromag": {
+      "finding": "National and DGGS survey-index services are registered; no accepted Alaska COG or survey-provenance artifact exists locally."
+    },
+    "grades": {
+      "finding": "Evidence-only private build 6877f8dfc43e953aa9e2692e5b622ee05dd631acad312f25eed6a3928563606a now covers 26 unique graded Alaska targets with 26 verbatim quotes and 26 numbered page cites from two independent official primary grade documents; all 24 distinct cited grade pages are bound to reviewed 300-dpi render hashes. It includes the complete 43-district PP 610 Alaska Figure 5 anchor and an ARDF crosswalk with 23 linked targets, 21 unique official records, and three explicit unmatched findings. This private package is not an accepted public release evidence artifact, so the grades gate remains failed and release artifact fields remain null.",
+      "evidence_only_build_sha256": "6877f8dfc43e953aa9e2692e5b622ee05dd631acad312f25eed6a3928563606a",
+      "graded_mines": 26,
+      "primary_sources": 2,
+      "official_primary_documents": 2,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "grade_page_images_review_bound": 24,
+      "pp610_districts": 43,
+      "ardf_targets_linked": 23,
+      "ardf_unique_records": 21,
+      "ardf_explicit_unmatched_findings": 3
+    },
+    "recorders": {
+      "finding": "DNR's 34-district directory and boundary service are registered; live claims have not been spatially reconciled to a complete district portal matrix."
+    },
+    "quad_maps": {
+      "finding": "No accepted top-five Alaska target quadrangle inventory exists locally."
+    },
+    "ci_scale": {
+      "finding": "The lossless DNR+ARDF shared-baseline browser acceptance is green at 89.1 MB heap and 0 MB origin storage, including manifest-driven z8 base and z19 precision source lifecycles, queries, search, and teardown. It is not the required complete Alaska federal+state dual-claim, COG, and content-addressed per-state acceptance run, so this gate remains failed."
+    }
+  },
+  "release": {
+    "status": "building",
+    "enabled": false,
+    "baseline_visible": true,
+    "note": "ARDF and the lossless base+precision Alaska DNR state-claim baselines are visible and validated. Alaska remains BUILDING because federal Alaska MLRS and the other per-state DONE evidence/artifacts are incomplete.",
+    "acceptance": {
+      "recorders": {
+        "jurisdiction_type": "recording_district"
+      }
+    }
+  }
+}

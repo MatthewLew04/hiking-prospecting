@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "state": "MA",
+  "name": "Massachusetts",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-73.508142, 41.237964, -69.928393, 42.886589],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Cape Cod and offshore islands; authoritative coastline and state-waters boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Massachusetts Geological Survey",
+    "catalog_url": "https://www.umass.edu/geological-survey/resource-library",
+    "gis_endpoints": [
+      {
+        "type": "state_geologic_map_catalog",
+        "url": "https://www.umass.edu/geological-survey/ma-geology"
+      },
+      {
+        "type": "massgis_data_catalog",
+        "url": "https://www.mass.gov/info-details/massgis-data-layers"
+      },
+      {
+        "type": "massgis_bedrock_dataset",
+        "url": "https://www.mass.gov/info-details/massgis-data-bedrock-lithology"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ma_massgis_bedrock_lithology",
+    "title": "MassGIS Bedrock Lithology derived from the Bedrock Geologic Map of Massachusetts",
+    "authority": "MassGIS and Massachusetts Geological Survey",
+    "url": "https://www.mass.gov/info-details/massgis-data-bedrock-lithology",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify the current MassGIS feature schema and lineage to Zen and others (1983), then retain 1:250,000 provenance while using detailed 1:24,000 surficial mapping only as a distinct gap-fill product."
+  },
+  "faults": {
+    "source_id": "ma_mgs_state_map_structures",
+    "title": "Faults from the Bedrock Geologic Map of Massachusetts",
+    "authority": "Massachusetts Geological Survey and U.S. Geological Survey",
+    "url": "https://www.umass.edu/geological-survey/ma-geology",
+    "native_scale": "1:250,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify and ingest the line-feature component of the statewide map or its SGMC representation; reconcile it with Qfaults and do not infer absence where source mapping is generalized."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ma_mgs_serials",
+      "title": "Massachusetts Geological Survey publications",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Open-File Reports", "Geologic Maps", "Mineral-resource and mining reports"],
+      "url": "https://www.umass.edu/geological-survey/resource-library",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "eamlis_ma_national_baseline",
+    "state_inventory_url": null,
+    "status": "no_comprehensive_official_state_inventory_identified",
+    "scope": "No official statewide abandoned-mine inventory was identified in the MGS or MassGIS catalogs; land-use or active-mine layers must not be relabeled as AML.",
+    "gap": "Document a formal MGS finding or locate a state-maintained hazard inventory; until then use e-AMLIS, USMIN, and MRDS as separately labeled national baselines."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_coastal_waters_only",
+    "portal_url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleII/Chapter21/Section54",
+    "authority_url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleII/Chapter21/Section54",
+    "evidence": "Massachusetts General Laws chapter 21, section 54 authorizes licenses for mineral exploration and leases for extraction in coastal waters; no general upland state mineral-leasing portal was identified.",
+    "approach_route": "Coastal-water target: seek case-specific state authorization under section 54; other state parcel: verify title and authority with the custodial agency; private minerals: negotiate with the mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.mass.gov/info-details/commonwealth-report-on-real-property",
+    "approach_route": "Coastal waters: statutory license/lease review; upland state parcel: custodial-agency title review; private parcel: mineral-owner negotiation. Open-ground score is N/A."
+  },
+  "release": {
+    "note": "P3 literature-tier registry only; statewide vector/structure verification, explicit AML finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "state": "CA",
+  "name": "California",
+  "regime": "claim",
+  "phase": 1,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-124.49, 32.50, -114.13, 42.01], "crs": "EPSG:4326", "note": "Clip offshore/generalized service geometry to the authoritative California land boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "California Geological Survey",
+    "catalog_url": "https://www.conservation.ca.gov/cgs/publications/",
+    "gis_endpoints": [
+      {"id": "cgs_maps", "kind": "gis_portal", "url": "https://maps.conservation.ca.gov/cgs/"},
+      {"id": "cgs_fault_activity", "kind": "arcgis_map_service", "url": "https://gis.conservation.ca.gov/server/rest/services/CGS/FaultActivityMapCA/MapServer"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "cgs_gdm2",
+    "title": "Geologic Map of California, Geologic Data Map No. 2",
+    "authority": "California Geological Survey",
+    "source_url": "https://www.conservation.ca.gov/cgs/publications/maps-data/rgm",
+    "metadata_url": "https://www.conservation.ca.gov/cgs/Pages/Publications/statewide_references.aspx",
+    "source_scale": "1:750,000 statewide vector baseline; detailed regional and quadrangle mapping ranges from 1:250,000 to 1:24,000",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "GDM2 provides statewide completeness. Replace polygons with official Regional Geologic Map and quadrangle data only with original source identifier and scale."
+  },
+  "faults": {
+    "source_id": "cgs_fault_activity_map",
+    "title": "Fault Activity Map of California",
+    "authority": "California Geological Survey",
+    "source_url": "https://gis.conservation.ca.gov/server/rest/services/CGS/FaultActivityMapCA/MapServer",
+    "layers": {"regional_quaternary_faults": 17, "local_quaternary_faults": 21},
+    "source_scale": "GDM6 overview 1:750,000; underlying trace sources approximately 1:12,000 to 1:250,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested"
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "ca_state_mineralogist_reports", "title": "Annual Reports of the State Mineralogist", "role": "state_mineralogist_annual_reports", "primary": true, "url": "https://www.conservation.ca.gov/cgs/about/state-geologists", "status": "registered_not_extracted"},
+    {"source_id": "ca_geology_archive", "title": "California Geology magazine archive", "role": "state_geology_serial", "primary": true, "url": "https://www.conservation.ca.gov/cgs/publications/cg-magazine", "status": "registered_not_extracted"},
+    {"source_id": "ca_mining_scientific_press", "title": "Mining and Scientific Press index", "role": "historic_mining_serial_index", "primary": true, "url": "https://www.conservation.ca.gov/cgs/library/mining-and-scientific-press", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "ca_toms_usmin",
+    "state_inventory_url": "https://www.conservation.ca.gov/dmr/abandoned_mine_lands/toms",
+    "status": "legacy_inventory_registered_use_usmin_current",
+    "evidence": "CGS identifies the legacy Topographically Occurring Mine Symbols inventory and directs users to USMIN for the maintained national mine-feature data; neither substitutes for a verified hazard-status layer."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_state_school_lands",
+    "portal_url": "https://www.slc.ca.gov/leases-permits/mineral-extraction/",
+    "evidence_url": "https://www.slc.ca.gov/leases-permits/mineral-extraction/",
+    "evidence": "The California State Lands Commission administers hard-mineral extraction leases on state lands; new hard-mineral leases on the seabed are prohibited and each target requires parcel-specific mineral-title review."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.cdph.ca.gov/Programs/CHSI/Pages/County-Registrars-and-Recorders.aspx",
+    "matrix": [],
+    "matrix_status": "partial_seed_exists_outside_registry_pending_live_claim_reconciliation",
+    "note": "Napa, Yolo, and Lake have preliminary entries in the existing county-portal configuration; none establishes complete coverage for all California counties with live claims."
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "A legacy active-claims file exists, but accepted active plus closed claim PMTiles and open-ground output do not."},
+    "geology_faults": {"finding": "Official statewide geology and fault services are registered; tiled artifacts and polygon-scale provenance have not passed acceptance."},
+    "aeromag": {"finding": "National aeromag is configured, but the California survey-index provenance artifact and COG are pending."},
+    "grades": {"finding": "Legacy grade rows exist, but the statewide 25-mine/two-primary-source verbatim quote and page-cite acceptance audit is pending."},
+    "recorders": {"finding": "Three preliminary recorder leads are insufficient; every county containing a current live claim still needs a verified vendor/access row."},
+    "quad_maps": {"finding": "No accepted top-five California target quadrangle inventory exists."},
+    "ci_scale": {"finding": "Existing browser JSON is legacy evidence, not acceptable statewide delivery; California has not passed PMTiles/COG CI."}
+  },
+  "release": {"note": "California remains disabled until its legacy browser JSON is replaced by accepted tiled artifacts and every gate passes."}
+}

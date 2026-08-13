@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "state": "VA",
+  "name": "Virginia",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-83.675395, 36.540759, -75.24176, 39.466012],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Chesapeake Bay and Atlantic islands; authoritative land and submerged-land boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Virginia Department of Energy, Geology and Mineral Resources Program",
+    "catalog_url": "https://www.energy.virginia.gov/geology/Collections.shtml",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://www.energy.virginia.gov/gis/rest/services/DGMR"
+      },
+      {
+        "type": "state_geologic_map_feature_service",
+        "url": "https://www.energy.virginia.gov/gis/rest/services/DGMR/Virginia_State_Geologic_Map2021_BETA/FeatureServer"
+      },
+      {
+        "type": "publication_index_map_service",
+        "url": "https://www.energy.virginia.gov/gis/rest/services/DGMR/DGMR_Publication_Index/MapServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "va_dgmr_state_geologic_map_2021_beta",
+    "title": "Virginia State Geologic Map 2021 BETA",
+    "authority": "Virginia Department of Energy, Geology and Mineral Resources Program",
+    "url": "https://www.energy.virginia.gov/gis/rest/services/DGMR/Virginia_State_Geologic_Map2021_BETA/FeatureServer",
+    "native_scale": "nominal 1:250,000; source edits from maps at 1:24,000 to 1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_current_statewide_vector_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The official service is explicitly BETA. Ingest polygon layers 0 and 2 only after resolving overlays, retain nominal and source-map scale metadata, and do not promote the dataset to accepted until Virginia Energy documents release status."
+  },
+  "faults": {
+    "source_id": "va_dgmr_state_geologic_map_2021_beta_lines",
+    "title": "Contacts and Faults 2021 BETA",
+    "authority": "Virginia Department of Energy, Geology and Mineral Resources Program",
+    "url": "https://www.energy.virginia.gov/gis/rest/services/DGMR/Virginia_State_Geologic_Map2021_BETA/FeatureServer/1",
+    "native_scale": "nominal 1:250,000; compiled from sources at 1:24,000 to 1:250,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Filter contact versus fault classes, preserve source/confidence fields and BETA status, and reconcile with Qfaults without erasing the mixed-scale lineage."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "va_dgmr_serials",
+      "title": "Virginia Geology and Mineral Resources publications and collections catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Mineral Resources Reports", "Virginia Minerals", "Open-File Reports", "Publication Series", "Annual reports"],
+      "url": "https://www.energy.virginia.gov/geology/Collections.shtml",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "va_energy_mineral_and_coal_aml",
+    "state_inventory_url": "https://www.energy.virginia.gov/geology/Collections.shtml",
+    "noncoal_program_url": "https://energy.virginia.gov/mineral-mining/AMML.shtml",
+    "coal_gis_url": "https://energy.virginia.gov/gis/rest/services/AML/AML/MapServer",
+    "status": "state_noncoal_and_coal_inventories_registered_not_ingested",
+    "scope": "Virginia Energy catalogs about 3,300 abandoned mineral mined lands and separately maintains an evolving coal AML inventory and reclamation program; these systems have different eligibility, feature, and status semantics.",
+    "gap": "Ingest non-coal and coal AML as distinct source layers, retain inventory limitations and remediation status, and reconcile rather than collapse them into e-AMLIS."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "case_by_case_competitive_state_mineral_leases",
+    "portal_url": "https://law.lis.virginia.gov/vacode/title2.2/chapter11/section2.2-1157/",
+    "authority_url": "https://law.lis.virginia.gov/vacode/title2.2/chapter11/section2.2-1157/",
+    "evidence": "Code of Virginia section 2.2-1157 requires a state mineral management plan, local public hearing, competitive bid or proposal, agency recommendations, and a Governor public-interest determination for mineral exploration, leasing, or extraction on state-owned uplands.",
+    "approach_route": "State upland: apply through the custodial agency under the mineral management plan with DGS, Virginia Energy, public-hearing, competitive, and Governor approvals; submerged land: Virginia Marine Resources Commission; private minerals: owner negotiation.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://dgs.virginia.gov/division-of-real-estate-and-facilities-management/virginia-owned-real-estate/inventory-of-state-owned-real-estate",
+    "approach_route": "State upland: section 2.2-1157 competitive process; submerged land: VMRC; private parcel: mineral-owner negotiation. No federal-style open ground exists."
+  },
+  "release": {
+    "note": "P3 southern-Appalachian registry only; BETA geology acceptance, separate AML ingestion, ownership cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

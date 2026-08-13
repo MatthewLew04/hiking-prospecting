@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "state": "ND",
+  "name": "North Dakota",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-104.05, 45.93, -96.55, 49.01], "crs": "EPSG:4326", "note": "Clip source results to North Dakota's authoritative boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "North Dakota Geological Survey",
+    "catalog_url": "https://www.dmr.nd.gov/dmr/ndgs/publications",
+    "gis_endpoints": [
+      {"id": "ndgs_maps", "kind": "viewer_and_gis_download", "url": "https://www.dmr.nd.gov/dmr/ndgs/maps"},
+      {"id": "nd_gis_hub", "kind": "state_gis_portal", "url": "https://www.gis.nd.gov/"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ndgs_mm25_vector",
+    "title": "Statewide Bedrock Geology digitized from NDGS Miscellaneous Map 25",
+    "authority": "North Dakota Geological Survey",
+    "source_url": "https://www.dmr.nd.gov/dmr/ndgs/maps",
+    "catalog_url": "https://www.dmr.nd.gov/ndgs/Publication_List/miscellm.asp",
+    "source_scale": "1:670,000 statewide bedrock map; detailed published mapping is available at 1:100,000 and 1:24,000 for selected areas",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "NDGS describes the statewide viewer layer as digitized from MM-25; preserve control-density caveats beneath thick glacial cover and use detailed mapping only with source attribution."
+  },
+  "faults": {
+    "source_id": "qfaults_nd_with_documented_state_gap",
+    "title": "USGS Quaternary Faults baseline",
+    "authority": "U.S. Geological Survey",
+    "source_url": "https://www.dmr.nd.gov/dmr/ndgs/earthquakes",
+    "source_scale": "Qfaults source-dependent",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "NDGS states that faults are less well documented and many basement structures are buried/speculative; no separate statewide state-survey fault vector was verified."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "ndgs_publications", "title": "North Dakota Geological Survey publication catalog", "role": "state_geologist_maps_reports_and_mineral_serials", "primary": true, "url": "https://www.dmr.nd.gov/dmr/ndgs/publications", "status": "registered_not_extracted"},
+    {"source_id": "ndgs_bulletins", "title": "NDGS Bulletin series", "role": "county_geology_and_mineral_resource_reports", "primary": true, "url": "https://www.dmr.nd.gov/dmr/ndgs/bulletins", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "nd_psc_aml",
+    "state_inventory_url": "https://www.psc.nd.gov/jurisdictions/abandoned-mine-lands",
+    "status": "state_coal_inventory_and_map_registered_not_ingested",
+    "evidence": "The North Dakota PSC maintains an AML inventory and publishes a site-location map for abandoned surface and underground coal mines; the mapped export has not passed local acceptance."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.land.nd.gov/minerals-management",
+    "records_url": "https://lms.land.nd.gov/",
+    "evidence": "North Dakota Trust Lands administers oil, gas, coal, other minerals, and aggregate prospecting/leasing across nearly 2.6 million mineral acres; the land portal exposes state tracts and leases."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.ndrin.com/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_ndrin_coverage_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "North Dakota's MLRS claim population is thin; accepted active/closed claim PMTiles and open-ground output do not exist."},
+    "geology_faults": {"finding": "MM-25 statewide bedrock GIS is registered; the documented state-fault gap, tiling, and provenance audit remain pending."},
+    "aeromag": {"finding": "No accepted North Dakota aeromag COG with survey-index provenance exists."},
+    "grades": {"finding": "NDGS coal/uranium/mineral reports are primary sources, but 25 graded mines or an explicit audited low-endowment finding is pending."},
+    "recorders": {"finding": "Current live-claim counties have not been reconciled to verified NDRIN/recorder access rows."},
+    "quad_maps": {"finding": "No accepted North Dakota top-five target quadrangle inventory exists."},
+    "ci_scale": {"finding": "North Dakota has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 registry includes explicit bedrock-control and buried-fault caveats; state remains gate-blocked."}
+}

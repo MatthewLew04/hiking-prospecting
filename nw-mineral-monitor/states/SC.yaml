@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "state": "SC",
+  "name": "South Carolina",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-83.353955, 32.0346, -78.541087, 35.21554],
+      "crs": "EPSG:4326",
+      "note": "State envelope including barrier islands; authoritative coastline and state boundary control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "South Carolina Geological Survey",
+    "catalog_url": "https://www.dnr.sc.gov/geology/publications.html",
+    "gis_endpoints": [
+      {
+        "type": "digital_data_catalog",
+        "url": "https://www.dnr.sc.gov/geology/digital-data.html"
+      },
+      {
+        "type": "publication_map",
+        "url": "https://www.dnr.sc.gov/geology/publications-map.html"
+      },
+      {
+        "type": "state_geology_metadata",
+        "url": "https://www.dnr.sc.gov/GIS/metadata/ggms_poly.htm"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "sc_scgs_ggms1",
+    "title": "Generalized Geologic Map of South Carolina (GGMS-1) polygon data",
+    "authority": "South Carolina Geological Survey",
+    "url": "https://www.dnr.sc.gov/GIS/metadata/ggms_poly.htm",
+    "native_scale": "1:1,000,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_complete_state_vector_with_detailed_gap_fill_required",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "GGMS-1 is the complete official vector but is highly generalized. Preserve its 1:1,000,000 scale, then index SCGS 1:24,000 quadrangle mapping and SGMC as explicitly sourced higher-resolution replacements where available."
+  },
+  "faults": {
+    "source_id": "sc_scgs_ggms4",
+    "title": "Structural Features of South Carolina (GGMS-4)",
+    "authority": "South Carolina Geological Survey",
+    "url": "https://www.dnr.sc.gov/geology/pdfs/Publications/GGMS/GGMS4.pdf",
+    "native_scale": "1:500,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify a reusable vector line layer from the SCGS clearinghouse, preserve mapped versus geophysically inferred structure classes, and reconcile with detailed quadrangles and Qfaults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "sc_scgs_serials",
+      "title": "South Carolina Geological Survey publications catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Circulars", "General Geologic Map Series", "Mineral Resources Series", "Open-File Reports", "Geologic Quadrangle Maps"],
+      "url": "https://www.dnr.sc.gov/geology/publications.html",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "sc_des_mining_reclamation",
+    "state_inventory_url": "https://des.sc.gov/programs/bureau-land-waste-management/mining-and-reclamation",
+    "status": "state_regulatory_inventory_not_aml_complete",
+    "scope": "The South Carolina mining and reclamation program covers regulated operations and reclamation; no comprehensive official statewide historic hard-rock AML inventory was identified.",
+    "gap": "Obtain a current permit/reclamation export and keep it distinct from historic mine occurrences; seek a formal SCGS/DES finding or separate abandoned-site inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_case_by_case_statutory_leases",
+    "portal_url": "https://www.scstatehouse.gov/code/t10c009.php",
+    "authority_url": "https://www.scstatehouse.gov/code/t10c009.php",
+    "evidence": "South Carolina Code title 10, chapter 9 authorizes specified public entities to execute leases for oil, gas, and certain other mineral interests on covered public lands and waters, with agency approvals and competitive administration. This is not a general staking portal.",
+    "approach_route": "Covered public parcel: confirm the current administering agency, mineral title, statutory eligibility, and bid process; other state parcel: custodial-agency review; private minerals: owner negotiation.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.admin.sc.gov/services/real-estate",
+    "approach_route": "Statutorily covered public parcel: agency lease/bid review; other state parcel: custodial-agency title review; private parcel: mineral-owner negotiation. No open ground is implied."
+  },
+  "release": {
+    "note": "P3 southern-Appalachian registry only; detailed geology gap fill, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending."
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "state": "MO",
+  "name": "Missouri",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-95.774, 35.996, -89.099, 40.614],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip to the official Missouri boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Missouri Geological Survey",
+    "catalog_url": "https://dnr.mo.gov/land-geology/maps-data-research/geologic",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://gis.dnr.mo.gov/server/rest/services/geology"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://gis.dnr.mo.gov/server/rest/services/geology/bedrock_all/MapServer"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://gis.dnr.mo.gov/server/rest/services/geology/structural_features/MapServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "mo_mgs_bedrock_all",
+    "title": "Missouri bedrock geology multiscale compilation",
+    "authority": "Missouri Geological Survey",
+    "url": "https://gis.dnr.mo.gov/server/rest/services/geology/bedrock_all/MapServer",
+    "native_scale": "1:24,000 and 1:100,000 where mapped, with 1:500,000 statewide coverage",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_available_multiscale_state_compilation",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Create a deterministic finest-available mosaic, retaining scale and source-map ID per polygon, before publishing Missouri PMTiles."
+  },
+  "faults": {
+    "source_id": "mo_mgs_structural_features",
+    "title": "Missouri structural features",
+    "authority": "Missouri Geological Survey",
+    "url": "https://gis.dnr.mo.gov/server/rest/services/geology/structural_features/MapServer",
+    "native_scale": "mixed state compilation scales",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Audit feature type, source scale, and statewide completeness, then reconcile with Qfaults before tiled publication."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "mo_mgs_publications",
+      "title": "Missouri Geological Survey geologic maps, data, and publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Biennial Reports", "Bulletins", "Reports of Investigations", "Information Circulars"],
+      "url": "https://dnr.mo.gov/land-geology/maps-data-research/geologic",
+      "status": "registered_not_extracted"
+    },
+    {
+      "source_id": "mo_mine_map_repository",
+      "title": "Missouri Mine Map Repository",
+      "role": "primary_historic_mine_map_catalog",
+      "primary": true,
+      "url": "https://dnr.mo.gov/land-geology/maps-data-research/mine-map-repository",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "mo_dnr_abandoned_mines",
+    "state_inventory_url": "https://dnr.mo.gov/land-geology/hazards/abandoned-mine-lands",
+    "service_url": "https://gis.dnr.mo.gov/server/rest/services/geology/abandoned_mines/MapServer",
+    "status": "state_program_and_map_service_registered_not_ingested",
+    "scope": "Missouri DNR abandoned-mine-land program and geologic abandoned-mine service.",
+    "gap": "Audit layer scope and reconcile state sites, repository maps, and e-AMLIS before asserting complete coverage."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "unknown",
+    "portal_url": "https://dnr.mo.gov/land-geology",
+    "evidence": "No centralized Missouri trust-land hard-rock mineral-leasing portal was identified in the reviewed official DNR catalog.",
+    "approach_route": "Identify the public landholding agency and its mineral authority parcel by parcel; where minerals are private, perform title research and negotiate with the mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "Public parcel: owning-agency mineral review; private/severed mineral estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; multiscale geology and every artifact-backed gate remain pending."
+  }
+}

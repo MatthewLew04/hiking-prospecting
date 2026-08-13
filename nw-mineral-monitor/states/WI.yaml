@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "state": "WI",
+  "name": "Wisconsin",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-92.889, 42.491, -86.249, 47.309],
+      "crs": "EPSG:4326",
+      "note": "State envelope includes Wisconsin-administered Great Lakes islands; clip to the official boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Wisconsin Geological and Natural History Survey",
+    "catalog_url": "https://wgnhs.wisc.edu/catalog/",
+    "gis_endpoints": [
+      {
+        "type": "statewide_bedrock_catalog_record",
+        "url": "https://wgnhs.wisc.edu/catalog/publication/000390"
+      },
+      {
+        "type": "statewide_bedrock_gis_resource",
+        "url": "https://wgnhs.wisc.edu/catalog/publication/000390/resource/m078di"
+      },
+      {
+        "type": "statewide_publications_filter",
+        "url": "https://wgnhs.wisc.edu/catalog/publication?resx_geographic_area=Statewide"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "wi_wgnhs_bedrock_multiscale",
+    "title": "Wisconsin bedrock geology statewide and regional GIS sources",
+    "authority": "Wisconsin Geological and Natural History Survey",
+    "url": "https://wgnhs.wisc.edu/catalog/publication/000390/resource/m078di",
+    "native_scale": "1:250,000 regional bedrock sheets where available, with 1:1,000,000 M078-DI seamless statewide fallback",
+    "component_sources": [
+      {
+        "id": "wi_wgnhs_m078_di",
+        "scale": "1:1,000,000",
+        "coverage": "statewide",
+        "format": "ESRI coverage E00",
+        "url": "https://wgnhs.wisc.edu/catalog/publication/000390/resource/m078di"
+      },
+      {
+        "id": "wi_wgnhs_regional_bedrock_sheets",
+        "scale": "1:250,000",
+        "coverage": "regional sheet series; seamless coverage audit pending",
+        "format": "mixed legacy and GeMS GIS resources",
+        "url": "https://wgnhs.wisc.edu/catalog/series/map?resx_geographic_area=Statewide"
+      }
+    ],
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "multiscale bedrock mosaic candidate with verified statewide fallback",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_sheet_coverage_and_schema_audit_pending",
+    "gap": "Audit the six regional sheets for complete, nonoverlapping GIS coverage and deterministic precedence; until then M078-DI or SGMC is the honest statewide vector fallback."
+  },
+  "faults": {
+    "source_id": "wi_wgnhs_bedrock_fault_linework_candidate",
+    "title": "WGNHS bedrock-map fault linework with USGS Qfaults baseline",
+    "authority": "Wisconsin Geological and Natural History Survey and U.S. Geological Survey",
+    "url": "https://wgnhs.wisc.edu/catalog/series/map?resx_geographic_area=Statewide",
+    "native_scale": "1:250,000 regional sources and 1:1,000,000 statewide fallback",
+    "state_source_verified": false,
+    "ingest_status": "candidate_registered_not_ingested",
+    "gap": "Extract only documented faults from the regional GeMS/legacy maps, preserve source scale, and reconcile overlaps with Qfaults before publication."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "wi_wgnhs_publications",
+      "title": "Wisconsin Geological and Natural History Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Information Circulars", "Miscellaneous Papers", "Maps"],
+      "url": "https://wgnhs.wisc.edu/catalog/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "wi_dnr_mining_projects",
+    "state_inventory_url": "https://dnr.wisconsin.gov/topic/Mines/Projects.html",
+    "status": "state_project_catalog_registered_not_ingested",
+    "scope": "Wisconsin DNR mine-project information is supporting state evidence, not a verified comprehensive statewide AML inventory.",
+    "gap": "Use USMIN/MRDS and e-AMLIS as baselines and reconcile documented closed/legacy state projects without converting permitted-project status into AML status."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "unknown",
+    "portal_url": "https://dnr.wisconsin.gov/topic/fl/RealEstate/conveyed",
+    "evidence": "The reviewed Wisconsin DNR resources provide general real-estate and land-right transaction routes, but no central public hard-rock state trust-mineral leasing portal was identified.",
+    "approach_route": "For state property seek parcel-specific DNR/agency real-estate and mineral authority; otherwise resolve the severed mineral estate and negotiate with its owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State parcel: parcel-specific agency review; private/severed mineral estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; the multiscale bedrock mosaic and all artifact-backed gates remain unaccepted."
+  }
+}

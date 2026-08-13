@@ -5,7 +5,7 @@ Inputs (all produced by sibling fetchers + existing site data):
   site/data/plss/{aoi}.json              — section polygons
   site/data/openground/{aoi}_claims.json — active+closed cases w/ CSE_META sections
   pipelines/cache/landstatus_{aoi}.json  — SMA, withdrawals, segregations, WSA
-  site/data/sites/{mrds,usmin,stategeo}_{st}.json — historic features (points)
+  build-inputs/data/sites/{mrds,usmin,stategeo}_{st}.json — historic points
 
 Section status ladder (first match wins):
   ACTIVE      — ≥1 active claim case touches the section (by legal description)
@@ -25,7 +25,8 @@ Every section carries the evidence counts so the popup can show its work.
 """
 import json, os, sys, time
 from collections import defaultdict
-from common import load_aoi, SITE, HERE, point_in_poly, write_json, TODAY
+from common import (load_aoi, SITE, HERE, point_in_poly, write_json, TODAY,
+                    load_build_input)
 
 LOCATABLE = {'BLM', 'USFS'}          # surface agencies open to location (generally)
 NEVER = {'NPS', 'FWS', 'DOD', 'USBR', 'BIA'}   # not open to location
@@ -59,8 +60,8 @@ def run(aoi_key=None):
     feats = []
     for kind in ('mrds', 'usmin', 'stategeo'):
         try:
-            d = load(f'data/sites/{kind}_{st}.json')
-        except FileNotFoundError:
+            d = load_build_input('sites', f'{kind}_{st}')
+        except (FileNotFoundError, ValueError):
             continue
         xs, ys = d['x'], d['y']
         names = d.get('nm') if isinstance(d.get('nm'), list) else None

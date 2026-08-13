@@ -1,0 +1,15 @@
+# The clean-checkout suite exercises Shapely-gated geometry regressions.  Keep
+# NumPy below 2 because the reviewed Shapely 2.0.3 wheel targets the NumPy 1.x
+# ABI. Fiona's transform API is also used by the Arizona state-boundary
+# regression. pyproj remains a source-build dependency: CI validates the
+# resulting PMTiles and never opens the private projected source GIS here.
+Fiona==1.9.5
+numpy==1.26.4
+Shapely==2.0.3
+attrs==26.1.0
+certifi==2026.7.22
+click==8.4.2
+click-plugins==1.1.1.2
+cligj==0.7.2
+setuptools==84.0.0
+six==1.17.0

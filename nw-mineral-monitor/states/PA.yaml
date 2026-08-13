@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "PA",
+  "name": "Pennsylvania",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-80.519891, 39.7198, -74.689516, 42.26986],
+      "crs": "EPSG:4326",
+      "note": "State land envelope; authoritative state and Lake Erie boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Pennsylvania Geological Survey, Bureau of Geological Survey",
+    "catalog_url": "https://www.pa.gov/agencies/dcnr/conservation/geology/publications-and-data",
+    "gis_endpoints": [
+      {
+        "type": "statewide_geology_download_catalog",
+        "url": "https://www.pa.gov/agencies/dcnr/conservation/geology/geology-of-pa"
+      },
+      {
+        "type": "pageode_data_explorer",
+        "url": "https://gis.dcnr.pa.gov/pageode/"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "pa_pags_bedrock_250k",
+    "title": "Bedrock Geology of Pennsylvania statewide GIS datasets",
+    "authority": "Pennsylvania Geological Survey",
+    "url": "https://www.pa.gov/agencies/dcnr/conservation/geology/geology-of-pa",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The official units, contacts, dikes, and faults were compiled with minor revisions from the 1980 state map; verify the current ZIP and preserve its 1:250,000 lineage while indexing newer quadrangle maps separately."
+  },
+  "faults": {
+    "source_id": "pa_pags_faults_250k",
+    "title": "Bedrock Geology of Pennsylvania statewide faults",
+    "authority": "Pennsylvania Geological Survey",
+    "url": "https://www.pa.gov/agencies/dcnr/conservation/geology/publications-and-data",
+    "native_scale": "1:250,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Ingest the official fault shapefile with source scale, then reconcile detailed mapping and Qfaults without erasing mapping vintage or confidence."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "pa_pags_serials",
+      "title": "Pennsylvania Geological Survey publications and data catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Mineral Resource Reports", "Information Circulars", "Open-File Reports", "Pennsylvania Geology"],
+      "url": "https://www.pa.gov/agencies/dcnr/conservation/geology/publications-and-data",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "pa_dep_aml_inventory",
+    "state_inventory_url": "https://www.pa.gov/agencies/dep/programs-and-services/mining/abandoned-mine-reclamation/aml-program-information/history-of-pas-aml-inventory",
+    "gis_url": "https://gis.dep.pa.gov/emappa/",
+    "status": "state_coal_aml_inventory_registered_not_ingested",
+    "scope": "Pennsylvania DEP maintains its own AML Inventory, distinct from federal e-AMLIS, and exposes site, point, and polygon data through eMapPA/PASDA; it is not complete coverage of underground mines or post-1982 permitted closures.",
+    "gap": "Download the current statewide layers, retain priority and reclamation status, and preserve the official inventory's explicit coverage exclusions."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "state_oil_gas_mineral_nomination_and_agency_programs",
+    "portal_url": "https://www.pa.gov/agencies/dgs/programs-and-services/real-estate",
+    "authority_url": "https://www.pa.gov/agencies/dgs/programs-and-services/real-estate",
+    "evidence": "The Indigenous Mineral Resources Development Act authorizes DGS to lease oil, gas, and mineral rights under covered Commonwealth and PASSHE property through a nomination process; DCNR, PGC, and PFBC lands use separate authority. Nomination does not guarantee a lease.",
+    "approach_route": "Covered Commonwealth parcel: submit a DGS OGM nomination; DCNR, PGC, or PFBC parcel: use that agency's separate mineral process; private mineral estate: negotiate with its owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.pa.gov/agencies/dgs/programs-and-services/real-estate",
+    "approach_route": "Covered state parcel: DGS nomination; DCNR/PGC/PFBC parcel: agency-specific route; private parcel: mineral-owner negotiation. AML or mine presence does not create open ground."
+  },
+  "release": {
+    "note": "P4 registry baseline only; geology tiling, AML extraction, ownership cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

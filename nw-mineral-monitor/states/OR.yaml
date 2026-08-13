@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "state": "OR",
+  "name": "Oregon",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-124.705, 41.991, -116.462, 46.301], "crs": "EPSG:4326", "note": "Clip Pacific/offshore service features to Oregon's authoritative land boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Oregon Department of Geology and Mineral Industries",
+    "catalog_url": "https://www.oregon.gov/dogami/pubs/pages/index.aspx",
+    "gis_endpoints": [
+      {"id": "dogami_gis", "kind": "gis_portal", "url": "https://www.oregon.gov/dogami/gis/Pages/index.aspx"},
+      {"id": "dogami_ogdc", "kind": "arcgis_map_service", "url": "https://gis.dogami.oregon.gov/arcgis/rest/services/Public/OGDC/MapServer"},
+      {"id": "dogami_milo", "kind": "gis_download_and_web_service", "url": "https://www.oregon.gov/dogami/milo/Pages/index.aspx"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "dogami_ogdc8",
+    "title": "Oregon Geologic Data Compilation, release 8",
+    "authority": "Oregon Department of Geology and Mineral Industries",
+    "source_url": "https://www.oregon.gov/dogami/pubs/Pages/dds/p-OGDC-8.aspx",
+    "gis_url": "https://gis.dogami.oregon.gov/arcgis/rest/services/Public/OGDC/MapServer",
+    "source_scale": "multiscale statewide compilation; native scale retained through DataSourcePolys and DataSources",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "OGDC-8 supersedes earlier releases and is intentionally multiscale. Join MapUnitPolys to DataSourcePolys/DataSources so emitted polygons carry the original map and scale."
+  },
+  "faults": {
+    "source_id": "dogami_ogdc8_faults_plus_qfaults",
+    "title": "OGDC-8 faults with USGS-DOGAMI Quaternary Fault and Fold activity attributes",
+    "authority": "Oregon Department of Geology and Mineral Industries and U.S. Geological Survey",
+    "source_url": "https://gis.dogami.oregon.gov/arcgis/rest/services/Public/OGDC/MapServer/1",
+    "activity_source_url": "https://www.oregon.gov/dogami/hazvu/pages/hazards-assets.aspx",
+    "source_scale": "OGDC multiscale source linework; Quaternary activity compilation source-dependent",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "note": "Keep all OGDC structural faults separate from the narrower active/Quaternary classification."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "or_mineral_resources_serial", "title": "The Mineral Resources of Oregon, 1914-1923", "role": "state_mining_and_district_serial", "primary": true, "url": "https://www.oregon.gov/dogami/pubs/pages/p-bomg.aspx", "status": "registered_not_extracted"},
+    {"source_id": "or_state_geologist_biennial", "title": "DOGAMI biennial reports of the State Geologist", "role": "state_geologist_reports", "primary": true, "url": "https://www.oregon.gov/dogami/pubs/pages/index.aspx", "status": "registered_not_extracted"},
+    {"source_id": "dogami_historic_mining", "title": "Oregon Historical Mining Information and MILO-4", "role": "mine_files_assays_maps_and_occurrences", "primary": true, "url": "https://www.oregon.gov/dogami/milo/Pages/index.aspx", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "dogami_milo4",
+    "state_inventory_url": "https://www.oregon.gov/dogami/milo/Pages/index.aspx",
+    "status": "historic_mine_inventory_registered_not_hazard_complete",
+    "evidence": "MILO-4 is the state geospatial inventory of occurrences, prospects, and mines and includes historical records; it must not be presented as a complete inspected AML hazard inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.oregon.gov/dsl/lands/Pages/authorizations.aspx",
+    "ownership_url": "https://www.oregon.gov/dsl/lands/pages/state-lands.aspx",
+    "evidence": "Oregon DSL states that most state-owned lands and mineral rights under its jurisdiction are available for mineral exploration and mining through prospecting permits and mining lease applications."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://oregoncounties.org/counties/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_clerk_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Legacy Oregon claim files exist, but active/closed claim PMTiles and current open-ground output have not passed acceptance."},
+    "geology_faults": {"finding": "OGDC-8 provides exceptional statewide geology and faults; PMTiles and the DataSourcePolys scale-lineage audit are pending."},
+    "aeromag": {"finding": "No accepted Oregon COG plus aeromagnetic survey-index provenance artifact exists."},
+    "grades": {"finding": "Legacy grades and rich DOGAMI serials exist, but the statewide two-primary-source quote/page acceptance record is pending."},
+    "recorders": {"finding": "Counties containing current live claims have not been reconciled to verified recorder portals and vendors."},
+    "quad_maps": {"finding": "No accepted quad-map inventory for Oregon's top five targets exists."},
+    "ci_scale": {"finding": "Oregon has not passed a PMTiles/COG-only national storage and heap run."}
+  },
+  "release": {"note": "P2 registry populated; OGDC and MILO source quality does not substitute for accepted local tiled artifacts."}
+}

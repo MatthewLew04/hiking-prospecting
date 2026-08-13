@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "IN",
+  "name": "Indiana",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-88.098, 37.771, -84.784, 41.761],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip source features to the official Indiana boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Indiana Geological and Water Survey",
+    "catalog_url": "https://store.igws.indiana.edu/",
+    "gis_endpoints": [
+      {
+        "type": "state_gis_portal_item",
+        "url": "https://gisdata.in.gov/portal/home/item.html?id=6361d48ea6474579be22ce8371f49798"
+      },
+      {
+        "type": "arcgis_feature_service",
+        "url": "https://portal.igs.indiana.edu/arcgis/rest/services/Bedrock_Geology/FeatureServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "in_igws_bedrock_mm48",
+    "title": "BEDROCK_GEOL_MM48_IN: Bedrock Geology of Indiana",
+    "authority": "Indiana Geological and Water Survey",
+    "url": "https://gisdata.in.gov/portal/home/item.html?id=6361d48ea6474579be22ce8371f49798",
+    "service_url": "https://portal.igs.indiana.edu/arcgis/rest/services/Bedrock_Geology/FeatureServer",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Acquire from the authoritative portal, preserve the Gray-Ault-Keller source metadata, and build the accepted PMTiles artifact."
+  },
+  "faults": {
+    "source_id": "national_qfaults",
+    "title": "USGS Quaternary Faults baseline",
+    "authority": "U.S. Geological Survey",
+    "url": "https://www.usgs.gov/programs/earthquake-hazards/faults",
+    "native_scale": "national compilation",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "No suitable authoritative statewide Indiana fault vector was identified in the reviewed IGWS/state catalog; audit bedrock structural linework before adding a state supplement."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "in_igws_publications",
+      "title": "Indiana Geological and Water Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Reports of Progress", "Occasional Papers"],
+      "url": "https://store.igws.indiana.edu/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "in_dnr_aml",
+    "state_inventory_url": "https://www.in.gov/dnr/reclamation/abandoned-mines/about-abandoned-mine-land-program/",
+    "status": "state_program_registered_not_ingested",
+    "scope": "Indiana DNR Division of Reclamation coal AML program.",
+    "gap": "Obtain or reconcile the project/site inventory with e-AMLIS; the program overview is not itself a publishable statewide spatial inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "oil and gas leasing of eligible state-owned lands",
+    "portal_url": "https://www.in.gov/dnr/oil-and-gas/oil-and-gas-leasing-of-state-owned-lands/",
+    "evidence": "Indiana DNR publishes a state-owned-land oil and gas leasing process; no general hard-rock trust-land lease or staking system was identified.",
+    "approach_route": "For eligible state oil and gas rights contact the DNR Division of Oil and Gas; for other minerals resolve title and negotiate with the mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State mineral estate: agency-specific lease review; private or severed mineral estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; all artifact-backed state gates remain fail-closed."
+  }
+}

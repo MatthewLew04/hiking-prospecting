@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "ME",
+  "name": "Maine",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-71.084337, 42.977764, -66.884764, 47.459686],
+      "crs": "EPSG:4326",
+      "note": "State envelope including coastal islands; authoritative land and submerged-land boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Maine Geological Survey",
+    "catalog_url": "https://www1.maine.gov/dacf/mgs/pubs/publications_search.shtml",
+    "gis_endpoints": [
+      {
+        "type": "digital_data_catalog",
+        "url": "https://www.maine.gov/dacf/mgs/pubs/"
+      },
+      {
+        "type": "arcgis_rest_folder",
+        "url": "https://gis.maine.gov/mapservices/rest/services/mgs"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "me_mgs_bedrock_100k",
+    "title": "Digital Data for Bedrock Geology, 1:100,000",
+    "authority": "Maine Geological Survey",
+    "url": "https://www.maine.gov/dacf/mgs/pubs/digital/bed100.htm",
+    "native_scale": "1:100,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_statewide_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Confirm statewide coverage and polygon-level source-map lineage, then gap-fill with 1:24,000 mapping without erasing native-scale provenance."
+  },
+  "faults": {
+    "source_id": "me_mgs_bedrock_100k_line_features",
+    "title": "Bedrock Geology 100K line features",
+    "authority": "Maine Geological Survey",
+    "url": "https://www.maine.gov/dacf/mgs/pubs/digital/bed100.htm",
+    "native_scale": "1:100,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Filter fault-class line features from other contacts/lineaments and reconcile with the MGS postglacial-fault program and Qfaults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "me_mgs_serials",
+      "title": "Maine Geological Survey maps, publications, and Bibliography of Maine Geology",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Open-File Maps", "Geologic Maps", "Mineral Resources and Mining reports"],
+      "url": "https://www1.maine.gov/dacf/mgs/pubs/publications_search.shtml",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "me_mgs_historic_mining_claims",
+    "state_inventory_url": "https://www.maine.gov/dacf/mgs/explore/mining/claims.htm",
+    "status": "state_historic_mining_inventory_registered_not_ingested",
+    "scope": "Historic and active state-land exploration-claim records; Maine DEP separately publishes licensed extraction sites, neither source is a comprehensive AML remediation inventory.",
+    "related_permit_url": "https://www.maine.gov/dep/land/mining/index.html",
+    "gap": "Keep historic claims, licensed operations, contaminated/abandoned sites, and MRDS occurrences as separate statuses; no complete state AML inventory was identified."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_state_land_exploration_claim_and_lease",
+    "portal_url": "https://www.maine.gov/dacf/mgs/explore/mining/claims.htm",
+    "authority_url": "https://legislature.maine.gov/statutes/12/title12sec549-B.html",
+    "evidence": "Maine law provides exploration permits, state-land exploration claims, and mining leases on eligible state-owned land, while prohibiting mining on enumerated protected lands. This is not federal Mining Law staking.",
+    "approach_route": "For eligible state land apply through MGS and the custodial agency under Title 12; for private land obtain permission and negotiate with the mineral-rights owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.maine.gov/dacf/mgs/explore/mining/claims.htm",
+    "approach_route": "Eligible state parcel: MGS exploration-permit/claim/lease route; protected state land: unavailable; private parcel: owner agreement. Open-ground remains N/A."
+  },
+  "release": {
+    "note": "Literature-tier registry only; state-land claim semantics must remain separate from federal claims, and every ingestion/grade/quad/CI gate is pending."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-south-dakota-pp610-district-inventory",
+  "state": "SD",
+  "source_id": "pp610",
+  "review_scope": "Complete transcription of all seven numbered South Dakota districts in PP 610 Figure 23, with one verbatim chapter locator sentence for every district.",
+  "figure_pdf_page": 239,
+  "figure_page_image_sha256": "3e86b782d004dd14166d649b7197e76bb7a14e864ddfbbf5359a6de526b3d52c",
+  "districts": [
+    {
+      "district_id": "sd-deadwood-two-bit",
+      "name": "Deadwood-Two Bit",
+      "county": "Lawrence",
+      "pdf_page": 241,
+      "page_cite": "p. 235",
+      "source_heading": "DEADWOOD-TWO BIT DISTRICT",
+      "verbatim_quote": "The Deadwood-Two Bit district is near the town of Deadwood in east-central Lawrence County.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-lead",
+      "name": "Lead",
+      "county": "Lawrence",
+      "pdf_page": 243,
+      "page_cite": "p. 237",
+      "source_heading": "LEAD DISTRICT",
+      "verbatim_quote": "The Lead district, which includes Yellow Creek, is in central Lawrence County in the central part of the mineralized area of the Black Hills.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-garden",
+      "name": "Garden",
+      "county": "Lawrence",
+      "pdf_page": 242,
+      "page_cite": "p. 236",
+      "source_heading": "GARDEN DISTRICT",
+      "verbatim_quote": "The Garden (Maitland) district is 1 to 3 miles northwest of Lead, in Blacktail and Sheeptail Gulches and False Bottom Creek.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-bald-mountain",
+      "name": "Bald Mountain",
+      "county": "Lawrence",
+      "pdf_page": 241,
+      "page_cite": "p. 235",
+      "source_heading": "BALD MOUNTAIN DISTRICT",
+      "verbatim_quote": "Claims were located in the Portland area in 1877, but early mining was handicapped by the highly refractory nature of the ore.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-squaw-creek",
+      "name": "Squaw Creek",
+      "county": "Lawrence",
+      "pdf_page": 244,
+      "page_cite": "p. 238",
+      "source_heading": "SQUAW CREEK DISTRICT",
+      "verbatim_quote": "The Squaw Creek district, which includes the Ragged Top, Elk Mountain, and Carbonate areas, is in western Lawrence County west of the Bald Mountain and Garden districts.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-hill-city",
+      "name": "Hill City",
+      "county": "Pennington",
+      "pdf_page": 245,
+      "page_cite": "p. 239",
+      "source_heading": "HILL CITY DISTRICT",
+      "verbatim_quote": "The Hill City district is an area of widely scattered gold deposits in western Pennington County in the vicinity of Hill City, near the headwaters of Spring Creek and around Rochford to the northwest of Hill City.",
+      "quote_verbatim": true
+    },
+    {
+      "district_id": "sd-keystone",
+      "name": "Keystone",
+      "county": "Pennington",
+      "pdf_page": 245,
+      "page_cite": "p. 239",
+      "source_heading": "KEYSTONE DISTRICT",
+      "verbatim_quote": "The Keystone district is on the northeast side of the Harney Peak batholith near the eastern margin of the core of Precambrian rocks of the Black Hills.",
+      "quote_verbatim": true
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "state": "VT",
+  "name": "Vermont",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-73.438, 42.727, -71.465, 45.017],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip authoritative features to the official Vermont boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Vermont Geological Survey",
+    "catalog_url": "https://dec.vermont.gov/sites/dec/files/geo/documents/pubcat2020.pdf",
+    "gis_endpoints": [
+      {
+        "type": "vermont_open_gis_map_service",
+        "url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_VTIMV/VTIMV_GEOLOGIC_WM_v1/MapServer"
+      },
+      {
+        "type": "vermont_anr_map_service",
+        "url": "https://anrmaps.vermont.gov/arcgis/rest/services/map_services/MAP_ANR_ANRATLASGEOLOGY_WM_NOCACHE/MapServer"
+      },
+      {
+        "type": "joint_usgs_state_publication",
+        "url": "https://pubs.usgs.gov/sim/3184/"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "vt_usgs_vgs_sim3184",
+    "title": "Bedrock Geologic Map of Vermont, SIM 3184",
+    "authority": "U.S. Geological Survey and Vermont Geological Survey",
+    "url": "https://pubs.usgs.gov/sim/3184/",
+    "native_scale": "1:100,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Acquire the publication GIS package, retain source and structural metadata, and build the accepted Vermont PMTiles artifact."
+  },
+  "faults": {
+    "source_id": "vt_usgs_vgs_sim3184_structures",
+    "title": "SIM 3184 contacts, faults, and structural features",
+    "authority": "U.S. Geological Survey and Vermont Geological Survey",
+    "url": "https://pubs.usgs.gov/sim/3184/",
+    "native_scale": "1:100,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Filter fault versus contact/other structural semantics and reconcile Quaternary traces with Qfaults before tiling."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "vt_vgs_publications",
+      "title": "Vermont Geological Survey publication catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Reports of the State Geologist", "Bulletins", "Open-file Reports", "Special Bulletins"],
+      "url": "https://dec.vermont.gov/sites/dec/files/geo/documents/pubcat2020.pdf",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "vt_vcgi_historic_mines",
+    "state_inventory_url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/VCGI_VTIMV/VTIMV_GEOLOGIC_WM_v1/MapServer",
+    "related_metadata_url": "https://maps.vcgi.vermont.gov/gisdata/metadata/GeologicOther_MRDSVT.htm",
+    "status": "historic_mine_occurrence_layer_registered_not_ingested",
+    "scope": "State map services and the Vermont MRDS derivative provide historic mine/occurrence context, not a verified comprehensive formal AML program inventory.",
+    "gap": "Retain occurrence-versus-hazard semantics and supplement with agency remediation records; document a low-endowment finding if the 25-mine grade gate cannot be met."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "limited, case-by-case leases for mine, quarry, or resource sites on qualifying state forest and park lands",
+    "portal_url": "https://legislature.vermont.gov/statutes/fullchapter/10/083",
+    "evidence_url": "https://fpr.vermont.gov/sites/fpr/files/State_Lands_Administration/Leases_Licenses_and_Permits/Library/UsesofStateLandsPolicy11.14.2008.pdf",
+    "evidence": "Vermont law authorizes the Commissioner to lease qualifying mine, quarry, and resource sites; it is discretionary and not a general staking portal.",
+    "approach_route": "For state land seek parcel-specific authority from Forests, Parks and Recreation/ANR; otherwise resolve mineral title and negotiate with the owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State forest/park parcel: discretionary agency lease review; private/severed estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; historic-mine data is not labeled as a complete AML layer and all DONE gates remain blocked."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "state": "MT",
+  "name": "Montana",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-116.051, 44.356, -104.038, 49.002], "crs": "EPSG:4326", "note": "Clip national and state sources to Montana's authoritative boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Montana Bureau of Mines and Geology",
+    "catalog_url": "https://www.mbmg.mtech.edu/mbmgcat/",
+    "gis_endpoints": [
+      {"id": "mbmg_dm1", "kind": "gis_download_and_interactive_map", "url": "https://www.mbmg.mtech.edu/mbmgcat/public/ListCitation.asp?pub_id=32819"},
+      {"id": "mbmg_publication_catalog", "kind": "catalog", "url": "https://www.mbmg.mtech.edu/mbmgcat/"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "mbmg_dm1_2025",
+    "title": "Interactive Geologic Map of Montana, Digital Map 1",
+    "authority": "Montana Bureau of Mines and Geology",
+    "source_url": "https://www.mbmg.mtech.edu/mbmgcat/public/ListCitation.asp?pub_id=32819",
+    "doi": "https://doi.org/10.59691/TQRS9419",
+    "source_scale": "1:500,000 statewide continuously updated GIS compilation",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Pin the downloaded DM1 version/date and preserve contributing-source references; MBMG also publishes larger-scale maps for targeted overlays."
+  },
+  "faults": {
+    "source_id": "qfaults_mt_plus_mbmg_sp114",
+    "title": "USGS Quaternary Faults baseline with MBMG SP 114 western Montana map",
+    "authority": "U.S. Geological Survey and Montana Bureau of Mines and Geology",
+    "source_url": "https://www.mbmg.mtech.edu/mbmgcat/public/ListCitation.asp?pub_id=11704",
+    "source_scale": "SP 114 1:750,000 and limited to western Montana; Qfaults supplies statewide activity coverage",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "note": "SP 114 is a verified state source but is not statewide; do not present its absence in eastern Montana as no fault."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "mbmg_catalog_mining", "title": "MBMG publication catalog: mines and mineral resources", "role": "state_geologist_serial_catalog", "primary": true, "url": "https://www.mbmg.mtech.edu/mbmgcat/", "status": "registered_not_extracted"},
+    {"source_id": "mbmg_historic_districts_466", "title": "Historical Mining Districts of Montana, 1860-1972, MBMG 466", "role": "historic_district_gis_and_index", "primary": true, "url": "https://www.mbmg.mtech.edu/mbmgcat/public/BrowseCatalog.asp?SortBy=series&SortOrder=2&series_type=MBMG", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "mt_deq_aml",
+    "state_inventory_url": "https://www.deq.mt.gov/cleanupandrec/Programs/aml",
+    "status": "state_inventory_and_map_registered_not_ingested",
+    "evidence": "Montana DEQ publishes an AML web map and downloadable packages for abandoned-mine areas, problems, hard-rock districts, and narratives; the export has not yet passed local acceptance."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://trustlandscatalog.dnrc.mt.gov/",
+    "records_url": "https://trustlandscatalog.dnrc.mt.gov/",
+    "evidence": "Montana DNRC manages metalliferous, nonmetalliferous, coal, and other mineral agreements on trust lands; the official catalog exposes ownership and current/historic mineral lease records."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://mtcounties.org/counties/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_clerk_recorder_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Legacy Montana active/closed files exist, but accepted claims PMTiles and open-ground results are pending."},
+    "geology_faults": {"finding": "DM1 and SP 114/Qfaults are registered; tiled artifacts, version pinning, and scale provenance are pending."},
+    "aeromag": {"finding": "No accepted Montana COG and survey-index provenance artifact exists locally."},
+    "grades": {"finding": "Legacy grade rows exist, but a statewide 25-mine, two-primary-source quote/page audit has not been accepted."},
+    "recorders": {"finding": "Current live-claim counties have not been joined to verified recorder portal vendors."},
+    "quad_maps": {"finding": "No accepted Montana top-five target quad-map inventory exists."},
+    "ci_scale": {"finding": "Montana has not passed the tiled-only national storage and heap acceptance run."}
+  },
+  "release": {"note": "P2 sources are registered; existing legacy artifacts do not bypass the per-state DONE contract."}
+}

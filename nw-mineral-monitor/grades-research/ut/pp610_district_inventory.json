@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-utah-pp610-district-inventory",
+  "state": "UT",
+  "source_id": "pp610",
+  "review_scope": "Complete numbered legend of Figure 25, Gold-mining districts of Utah, on printed page 241 (PDF page 247). The 13 numbered entries are the PP 610 Utah anchor; no unnumbered modern district is added.",
+  "figure_page_image_sha256": "4872182f35a98df033ebd31c70a26e25a14c4a672f8b5059751500fb433dceb6",
+  "districts": [
+    {"district_id": "ut-san-francisco", "name": "San Francisco", "county": "Beaver", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "1, San Francisco.", "quote_verbatim": true},
+    {"district_id": "ut-stateline", "name": "Stateline", "county": "Iron", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "2, Stateline.", "quote_verbatim": true},
+    {"district_id": "ut-tintic", "name": "Tintic", "county": "Juab", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "3, Tintic.", "quote_verbatim": true},
+    {"district_id": "ut-gold-mountain", "name": "Gold Mountain", "county": "Piute", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "4, Gold Mountain;", "quote_verbatim": true},
+    {"district_id": "ut-mount-baldy", "name": "Mount Baldy", "county": "Piute", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "5, Mount Baldy.", "quote_verbatim": true},
+    {"district_id": "ut-cottonwood", "name": "Cottonwood", "county": "Salt Lake", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "6, Cottonwood;", "quote_verbatim": true},
+    {"district_id": "ut-bingham", "name": "Bingham", "county": "Salt Lake", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "7, Bingham.", "quote_verbatim": true},
+    {"district_id": "ut-park-city", "name": "Park City", "county": "Summit and Wasatch", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "8, Park City.", "quote_verbatim": true},
+    {"district_id": "ut-camp-floyd", "name": "Camp Floyd", "county": "Tooele", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "9, Camp Floyd;", "quote_verbatim": true},
+    {"district_id": "ut-ophir-rush-valley", "name": "Ophir-Rush Valley", "county": "Tooele", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "10, Ophir-Rush Valley;", "quote_verbatim": true},
+    {"district_id": "ut-clifton", "name": "Clifton", "county": "Tooele", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "11, Clifton;", "quote_verbatim": true},
+    {"district_id": "ut-willow-springs", "name": "Willow Springs", "county": "Tooele", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "12, Willow Springs.", "quote_verbatim": true},
+    {"district_id": "ut-american-fork", "name": "American Fork", "county": "Utah", "pdf_page": 247, "page_cite": "Figure 25, p. 241", "verbatim_quote": "13, American Fork.", "quote_verbatim": true}
+  ]
+}

@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-alaska-reviewed-grade-extraction",
+  "state": "AK",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 source-page review",
+  "review_method": "Human transcription from checksum-pinned official report pages. Every quotation is bound to a deterministic 300-dpi rendered-page SHA-256; embedded OCR is diagnostic only. Table rows preserve their source columns, ranges are not averaged, qualified values retain the stated bound, and unsupported nickel and platinum-group measurements remain in quotations but are not emitted as national-schema grades.",
+  "mines": [
+    {
+      "mine_id": "ak-blackjack-prospect",
+      "name": "Blackjack prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-blackjack-ofr50-p61",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 61,
+        "page_image_sha256": "583dcee90121a8445b15f0c853d9048eca514e7391115090d0c6a9c6af83f0b3",
+        "page_cite": "p. 61",
+        "verbatim_quote": "The FA/AA results indicate that sample 3321 had 0.45 pct zinc while sample 3322 had 15.1 g/mt (0.44 oz/st) silver and 0.28 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 15.1, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 0.28, "unit": "percent"},
+          {"commodity": "Zn", "value": 0.45, "unit": "percent"}
+        ],
+        "basis": "FA/AA results for samples 3321 and 3322; values retain their stated sample identities",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-brown-bear-prospect",
+      "name": "Brown Bear prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-brown-bear-ofr50-p64",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 64,
+        "page_image_sha256": "163836d1929470b0f4e12a007d87632ed945e662ff4708318a5a6916e78359e3",
+        "page_cite": "p. 64",
+        "verbatim_quote": "The FA/AA results indicate that sample 3383 contained 1.71 g/mt (0.05 oz/st) silver.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 1.71, "unit": "grams_per_metric_tonne"}],
+        "basis": "FA/AA result for representative-chip sample 3383",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-cedar-bay-ridge-occurrence",
+      "name": "Cedar Bay Ridge occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-cedar-bay-ridge-ofr50-p66",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 66,
+        "page_image_sha256": "8ee5fe9510a01d6fc9a0872a827463bb5daafba981fd3184a898f053902cab43",
+        "page_cite": "p. 66",
+        "verbatim_quote": "The FA/AA results indicate that sample 3370 had 27 g/mt (0.8 oz/st) silver and 5.41 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 27, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 5.41, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for representative-chip sample 3370",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-columbia-red-metals-prospect",
+      "name": "Columbia Red Metals prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-columbia-red-metals-ofr50-p68",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 68,
+        "page_image_sha256": "3c76bb08d541306437837da00fb2bee8bbb178dde0246702a390a55a6928bcbc",
+        "page_cite": "p. 68",
+        "verbatim_quote": "The FA/AA results indicate that sample 3324 had 209 g/mt (6.09 oz/st) silver and sample 3325 had 211 g/mt (6.16 oz/st) silver. Sample 3327 had 163 g/mt (4.76 oz/st) silver and 3.94 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 163, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 3.94, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for continuous-chip sample 3327; the other sample values remain in the complete quotation",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-dado-no-1-prospect",
+      "name": "Dado No. 1 prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-dado-no-1-ofr50-p72",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 72,
+        "page_image_sha256": "79342dce77afd62ff1b2ef82a368e61e38fbc972c8101ab9967ec084ae589e03",
+        "page_cite": "p. 72",
+        "verbatim_quote": "The FA/AA results indicate that sample 3404 contained 176 g/mt (5.15 oz/st) silver and 7.02 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 176, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 7.02, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for select sample 3404 from the report's separately mapped East Vein",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-finski-bay-prospect",
+      "name": "Finski Bay prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-finski-bay-ofr50-p75",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 75,
+        "page_image_sha256": "03f5b3586efc4b5c80ffdccdad3b203a14771aa96584813aefce2af3bd5712d6",
+        "page_cite": "Table A-6, p. 75",
+        "verbatim_quote": "3364 Representative chip 1.0 244 49 427",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 1.0, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 244, "unit": "parts_per_million"},
+          {"commodity": "Pb", "value": 49, "unit": "parts_per_million"},
+          {"commodity": "Zn", "value": 427, "unit": "parts_per_million"}
+        ],
+        "basis": "Table A-6 row for representative-chip sample 3364; columns are silver ppm, copper ppm, lead ppm, and zinc ppm",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-four-in-one-prospect",
+      "name": "Four-In-One prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-four-in-one-ofr50-p78",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 78,
+        "page_image_sha256": "9db437316b15ba616800dc06adbaabdfbe5eacac4968cdfbd1f8274863cf97a6",
+        "page_cite": "p. 78",
+        "verbatim_quote": "The FA/AA results indicate that sample 3357 contained 68.2 g/mt (1.99 oz/st) silver and 3.67 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 68.2, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 3.67, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for select sample 3357 from the Red Vein",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-glendenning-prospect",
+      "name": "Glendenning prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-glendenning-ofr50-p82",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 82,
+        "page_image_sha256": "48b618ca3ff35aed60d3eef4ced9987d0f75adba37ccf09163c732c2c1817e24",
+        "page_cite": "p. 82",
+        "verbatim_quote": "The FA/AA results indicate that sample 3374 contained 2.06 g/mt (0.06 oz/st) silver.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 2.06, "unit": "grams_per_metric_tonne"}],
+        "basis": "FA/AA result for spaced-chip sample 3374",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-globe-prospect",
+      "name": "Globe prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-globe-ofr50-p85",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 85,
+        "page_image_sha256": "9559ba56c67d964475a59d198bb5fbb9606d84f866e7bee6fa2f6fb7ff3652f2",
+        "page_cite": "p. 85",
+        "verbatim_quote": "The FA/AA results indicate that sample 3349 contained 9.60 g/mt (0.28 oz/st) silver and 4.64 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 9.6, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 4.64, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for continuous-chip sample 3349",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-idle-claim-prospect",
+      "name": "Idle Claim prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-idle-claim-ofr50-p88",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 88,
+        "page_image_sha256": "b109427f137e29fee13c4087db51cbeb42da4c3ab84530b3f32e5a233e967ddf",
+        "page_cite": "p. 88",
+        "verbatim_quote": "The FA/AA results indicate that sample 3360 contained 1,194 g/mt (34.82 oz/st) silver, 0.54 pct copper, and 1.05 pct lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 1194, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 0.54, "unit": "percent"},
+          {"commodity": "Pb", "value": 1.05, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for representative-chip sample 3360",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-long-bay-no-1-occurrence",
+      "name": "Long Bay No. 1 occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-long-bay-no-1-ofr50-p96",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 96,
+        "page_image_sha256": "2400aaefdc3d3b79e03d99cd7a74546bd24789e271fd5227b8b1a93ad8e24aaa",
+        "page_cite": "p. 96",
+        "verbatim_quote": "The FA/AA results indicate that sample 3339 contained 49.0 g/mt (1.43 oz/st) silver, 0.05 pct copper, 2.55 pct lead, and 0.85 pct zinc.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 49, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 0.05, "unit": "percent"},
+          {"commodity": "Pb", "value": 2.55, "unit": "percent"},
+          {"commodity": "Zn", "value": 0.85, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for continuous-chip sample 3339",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-miners-river-discovery-prospect",
+      "name": "Miners River Discovery prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-miners-river-discovery-ofr50-p98",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 98,
+        "page_image_sha256": "a6b7edcae2d75d9ee46c37dd2e93a2fe8c8ff1226dd99637b85691054c3097cd",
+        "page_cite": "Table A-14, p. 98",
+        "verbatim_quote": "3334 Placer 0.08 2.1 0.5 0.010 0.010",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 2.1, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Ag", "value": 0.5, "unit": "grams_per_metric_tonne"}
+        ],
+        "basis": "Table A-14 row for 0.08-cubic-metre placer sample 3334; emitted columns are gold ppm and silver ppm, which equal grams per metric tonne",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-miners-river-nickel-prospect",
+      "name": "Miners River Nickel prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-miners-river-nickel-ofr50-p100",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 100,
+        "page_image_sha256": "e74aac3a43d18aaca689d7e1bc7c1e298433b48fad02b12d5c17ab41f2b10e40",
+        "page_cite": "p. 100",
+        "verbatim_quote": "The FA/AA results indicate that sample 3375 contained 1.37 g/mt (0.04 oz/st) silver and 0.21 pct copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 1.37, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 0.21, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for grab sample 3375; nickel remains outside the national commodity schema",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-miners-river-no-1-occurrence",
+      "name": "Miners River No. 1 occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-miners-river-no-1-ofr50-p103",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 103,
+        "page_image_sha256": "742d53b5579bb0b04fdec1010191278178a13450a78bab578b34224153ba0e31",
+        "page_cite": "p. 103",
+        "verbatim_quote": "The FA/AA results indicate that sample 3423 had 2.74 g/mt (0.08 oz/st) silver, 0.41 pct lead, and 0.7 pct zinc.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 2.74, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Pb", "value": 0.41, "unit": "percent"},
+          {"commodity": "Zn", "value": 0.7, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for select sample 3423",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-miners-river-no-2-occurrence",
+      "name": "Miners River No. 2 occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-miners-river-no-2-ofr50-p107",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 107,
+        "page_image_sha256": "1f0e433344a34f2e51904f4a54db94763a322cc810ec466ad9035540e927ed1b",
+        "page_cite": "p. 107",
+        "verbatim_quote": "The FA/AA results indicate that sample 3410 had 0.54 pct copper, sample 3415 had 13.22 pct zinc, and sample 3418 had 103 g/mt (3.01 oz/st) silver and 10.6 pct lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 103, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 0.54, "unit": "percent"},
+          {"commodity": "Pb", "value": 10.6, "unit": "percent"},
+          {"commodity": "Zn", "value": 13.22, "unit": "percent"}
+        ],
+        "basis": "FA/AA results retain separate sample identities 3410, 3415, and 3418; no cross-sample average is implied",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-saddle-occurrence",
+      "name": "Saddle occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-saddle-ofr50-p118",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 118,
+        "page_image_sha256": "b4acd026ea4716ee17c72b2ede26c5e543fbaa1ebc7d23765ef6d772d2db575a",
+        "page_cite": "p. 118",
+        "verbatim_quote": "The FA/AA results indicate that sample 3427 contained 141 g/mt (4.12 oz/st) silver and 6.38 pct lead. Sample 3429 contained 3.44 pct zinc.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 141, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Pb", "value": 6.38, "unit": "percent"},
+          {"commodity": "Zn", "value": 3.44, "unit": "percent"}
+        ],
+        "basis": "FA/AA results retain separate sample identities 3427 and 3429",
+        "years": "1992 Bureau discovery and sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-slipper-point-occurrence",
+      "name": "Slipper Point occurrence",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-slipper-point-ofr50-p121",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 121,
+        "page_image_sha256": "77b942ec06ecadc19015818a000dddfca53f4f6d50528b531d0571a94fad37c1",
+        "page_cite": "p. 121",
+        "verbatim_quote": "The FA/AA results indicate that sample 3390 contained 54 g/mt (1.6 oz/st) silver, 4.18 pct copper, and 0.49 pct zinc.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 54, "unit": "grams_per_metric_tonne"},
+          {"commodity": "Cu", "value": 4.18, "unit": "percent"},
+          {"commodity": "Zn", "value": 0.49, "unit": "percent"}
+        ],
+        "basis": "FA/AA result for select sample 3390",
+        "years": "1992 Bureau discovery and sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-wells-bay-prospect",
+      "name": "Wells Bay prospect",
+      "district": "Prince William Sound",
+      "county": "Chugach Census Area",
+      "evidence": [{
+        "evidence_id": "ak-wells-bay-ofr50-p128",
+        "source_id": "usbm-ofr50-94",
+        "pdf_page": 128,
+        "page_image_sha256": "7b1942bac57131e694eb9eec169151bf11e96b5b3396de4eab2c2d5b8a5e4e98",
+        "page_cite": "Table A-26, p. 128",
+        "verbatim_quote": "3458 Grab <0.5 280 18 496",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 280, "unit": "parts_per_million"},
+          {"commodity": "Pb", "value": 18, "unit": "parts_per_million"},
+          {"commodity": "Zn", "value": 496, "unit": "parts_per_million"}
+        ],
+        "basis": "Table A-26 row for grab sample 3458; columns are silver ppm, copper ppm, lead ppm, and zinc ppm; the below-detection silver result is omitted",
+        "years": "1992 Bureau sampling"
+      }]
+    },
+    {
+      "mine_id": "ak-salt-chuck-mine",
+      "name": "Salt Chuck (Goodro) mine",
+      "district": "Ketchikan",
+      "county": "Prince of Wales-Hyder Census Area",
+      "evidence": [{
+        "evidence_id": "ak-salt-chuck-mr191-pdf49",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 49,
+        "page_image_sha256": "c9bba6a217d4b931a970fbdb75dda2b4a37e9c37c4129534318f72c0958fabf8",
+        "page_cite": "Copper occurrences section p. 3 (PDF p. 49)",
+        "verbatim_quote": "Average ore analyses by Campbell, as shown by Mertie,² from the Goodro or Salt Chuck mine glory hole deposit, averages 1.427 percent copper, .063 oz. of gold, .217 oz. of silver and .253 oz. of platinum and palladium per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.063, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 0.217, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1.427, "unit": "percent"}
+        ],
+        "basis": "Average glory-hole ore analysis; platinum and palladium remain outside the national commodity schema",
+        "years": "historic mine analysis reported in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-copper-center-prospect",
+      "name": "Copper Center prospect",
+      "district": "Ketchikan",
+      "county": "Prince of Wales-Hyder Census Area",
+      "evidence": [{
+        "evidence_id": "ak-copper-center-mr191-pdf54",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 54,
+        "page_image_sha256": "3f72870d5ba5b75732c3e9fd82ad2ce0b61fdf3f3afab0faf9ef1d422c51cd61",
+        "page_cite": "Copper occurrences section p. 8 (PDF p. 54)",
+        "verbatim_quote": "Sample 426 was taken 4 feet down in the shaft across 18 inches of nearly massive chalcopyrite and pyrite. This gave returns of 0.24 oz. gold and 0.30 oz. silver per ton, and 11.87 percent copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.24, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 0.3, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 11.87, "unit": "percent"}
+        ],
+        "basis": "Territorial Department of Mines sample 426 across 18 inches",
+        "years": "field sample reported in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-shepard-mine",
+      "name": "Shepard mine",
+      "district": "Ketchikan",
+      "county": "Prince of Wales-Hyder Census Area",
+      "evidence": [{
+        "evidence_id": "ak-shepard-mr191-pdf54",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 54,
+        "page_image_sha256": "3f72870d5ba5b75732c3e9fd82ad2ce0b61fdf3f3afab0faf9ef1d422c51cd61",
+        "page_cite": "Copper occurrences section p. 8 (PDF p. 54)",
+        "verbatim_quote": "Sample 429 was taken across 24 inches of this garnet band in the face of the drift, and returns of 0.06 oz. gold, 0.60 oz. silver per ton, and 4.6 percent copper were received.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.06, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 0.6, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 4.6, "unit": "percent"}
+        ],
+        "basis": "Territorial Department of Mines sample 429 across 24 inches",
+        "years": "1938 field report reproduced in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-rich-hill-mine",
+      "name": "Rich Hill copper mine",
+      "district": "Ketchikan",
+      "county": "Prince of Wales-Hyder Census Area",
+      "evidence": [{
+        "evidence_id": "ak-rich-hill-mr191-pdf55",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 55,
+        "page_image_sha256": "77052d92c1af43886ccf1a32cad67346604ad541937fb88116f550ddc4aabbe3",
+        "page_cite": "Copper occurrences section p. 9 (PDF p. 55)",
+        "verbatim_quote": "50 tons of ore, which averages better than 10 percent copper, still remains at the cabin site on the beach below the workings.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 10, "unit": "percent"}],
+        "basis": "Reported beach stockpile; the stated lower bound is retained without averaging",
+        "years": "historic stockpile reported in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-bohemia-basin",
+      "name": "Bohemia Basin deposits",
+      "district": "Chichagof",
+      "county": "Hoonah-Angoon Census Area",
+      "evidence": [{
+        "evidence_id": "ak-bohemia-basin-mr191-pdf91",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 91,
+        "page_image_sha256": "da6a62c8c48d1e338a53785364382486e6afd8a914d852ca601bc48b30fdeff8",
+        "page_cite": "Nickel section p. 2 (PDF p. 91)",
+        "verbatim_quote": "According to Reed and Dorr¹ eight sulphide-bearing bodies have been prospected with an estimated tonnage of 6,000,000 tons containing 0.35 percent nickel and 0.27 percent copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 0.27, "unit": "percent"}],
+        "basis": "Estimated sulphide-bearing material; nickel remains outside the national commodity schema",
+        "years": "Bureau work summarized in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-fleming-island-deposit",
+      "name": "Fleming Island deposit",
+      "district": "Chichagof",
+      "county": "Hoonah-Angoon Census Area",
+      "evidence": [{
+        "evidence_id": "ak-fleming-island-mr191-pdf92",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 92,
+        "page_image_sha256": "222d763421ce5ef7ebd9a2a4baf4d6db85d830de1b0a9bbf9b305f34b5be570e",
+        "page_cite": "Nickel section p. 3 (PDF p. 92)",
+        "verbatim_quote": "The Fleming Island deposit, according to Pecora,¹ contains a possible tonnage of more than 10,000 tons of ore that possibly has a content of 2 percent nickel and 1 percent copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 1, "unit": "percent"}],
+        "basis": "Possible ore content; nickel remains outside the national commodity schema",
+        "years": "historic estimate summarized in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-snipe-bay-deposit",
+      "name": "Snipe Bay deposit",
+      "district": "Chichagof",
+      "county": "Sitka City and Borough",
+      "evidence": [{
+        "evidence_id": "ak-snipe-bay-mr191-pdf93",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 93,
+        "page_image_sha256": "5a9815bc3db91be60237e73db62d641ec065c8270d3f583c3ac646b269feab84",
+        "page_cite": "Nickel section p. 4 (PDF p. 93)",
+        "verbatim_quote": "Estimates by Reed and Gates indicate a reserve of 430,000 tons of low-grade nickel-copper bearing material with a probable content of 0.3 percent each of nickel and copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 0.3, "unit": "percent"}],
+        "basis": "Probable copper content in estimated material; nickel remains outside the national commodity schema",
+        "years": "historic estimate summarized in 1943"
+      }]
+    },
+    {
+      "mine_id": "ak-mertie-lode",
+      "name": "Mertie Lode",
+      "district": "Admiralty",
+      "county": "Hoonah-Angoon Census Area",
+      "evidence": [{
+        "evidence_id": "ak-mertie-lode-mr191-pdf93",
+        "source_id": "atdm-mr191-5",
+        "pdf_page": 93,
+        "page_image_sha256": "5a9815bc3db91be60237e73db62d641ec065c8270d3f583c3ac646b269feab84",
+        "page_cite": "Nickel section p. 4 (PDF p. 93)",
+        "verbatim_quote": "Reed³ indicates an approximate reserve of 560,000 tons of material which has an average content of 0.34 percent nickel and 0.35 percent copper.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Cu", "value": 0.35, "unit": "percent"}],
+        "basis": "Average copper content in approximate reserve; nickel remains outside the national commodity schema",
+        "years": "historic estimate summarized in 1943"
+      }]
+    }
+  ]
+}

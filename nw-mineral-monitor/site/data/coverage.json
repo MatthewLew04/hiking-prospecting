@@ -1,0 +1,2096 @@
+{
+  "schema_version": 1,
+  "scope": "49 states; Hawaii excluded",
+  "gate_keys": [
+    "claims_or_land_context",
+    "geology_faults",
+    "aeromag",
+    "grades",
+    "recorders",
+    "quad_maps",
+    "ci_scale"
+  ],
+  "summary": {
+    "states": 49,
+    "claim_states": 19,
+    "non_claim_states": 30,
+    "released": 0,
+    "gate_complete": 0
+  },
+  "states": [
+    {
+      "state": "AK",
+      "name": "Alaska",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "The 2026-08-13 Alaska DNR source snapshot is losslessly reconciled as an exact disjoint union: base delivery contains 39,263 active, 51 pending, and 79,462 closed polygons, while the z19 precision-overflow delivery contains 6 active and 18 closed unchanged source polygons, totaling 39,269 active, 51 pending, and 79,480 closed records (118,800); both the zero-area feature and ring counts are zero. ARDF is exact at 7,692 occurrences. Alaska still lacks its separate federal MLRS artifact and the remaining claim/open-ground/watch acceptance, so this gate remains failed."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "SIM 3340 and DGGS QFF are verified source datasets; the tiled artifacts and per-polygon source-scale audit are pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "National and DGGS survey-index services are registered; no accepted Alaska COG or survey-provenance artifact exists locally."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only private build 6877f8dfc43e953aa9e2692e5b622ee05dd631acad312f25eed6a3928563606a now covers 26 unique graded Alaska targets with 26 verbatim quotes and 26 numbered page cites from two independent official primary grade documents; all 24 distinct cited grade pages are bound to reviewed 300-dpi render hashes. It includes the complete 43-district PP 610 Alaska Figure 5 anchor and an ARDF crosswalk with 23 linked targets, 21 unique official records, and three explicit unmatched findings. This private package is not an accepted public release evidence artifact, so the grades gate remains failed and release artifact fields remain null."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "DNR's 34-district directory and boundary service are registered; live claims have not been spatially reconciled to a complete district portal matrix."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Alaska target quadrangle inventory exists locally."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "The lossless DNR+ARDF shared-baseline browser acceptance is green at 89.1 MB heap and 0 MB origin storage, including manifest-driven z8 base and z19 precision source lifecycles, queries, search, and teardown. It is not the required complete Alaska federal+state dual-claim, COG, and content-addressed per-state acceptance run, so this gate remains failed."
+        }
+      }
+    },
+    {
+      "state": "AL",
+      "name": "Alabama",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "AR",
+      "name": "Arkansas",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Arkansas is a thin MLRS claim state; no accepted active/closed claim PMTiles and open-ground artifact exists."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "The state vector and official geoscientific service are identified; tiling and per-polygon scale provenance are pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Arkansas aeromag COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Manganese, novaculite, bauxite, and other primary state reports are available, but the 25-mine threshold or explicit audited low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Current live-claim counties have not been reconciled to circuit-clerk recording portals and vendors."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted quadrangle inventory for Arkansas's top five targets exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Arkansas has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "AZ",
+      "name": "Arizona",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "MLRS is configured nationally, but accepted Arizona active/closed-claim and open-ground PMTiles artifacts are not present."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Checksum-pinned Arizona Map 35 geology/fault PMTiles are published as a baseline: 4,841 geology polygons and 15,559 structural lines from 20,404 source geometries, with two out-of-state traces and two sub-2-meter z12 encoding exclusions explicitly inventoried. Separate exact AZGS baselines also expose 287 mining districts and 24 critical-mineral occurrences. The gate remains failed because the polygon-by-polygon best-scale GeoMapAZ lineage audit and accepted release artifacts are still pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "The national aeromagnetic service is configured; Arizona survey-index provenance and a state COG have not passed acceptance."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only research now covers 26 unique graded targets with 26 verbatim quotes/page cites from three independent official primary grade documents and all 42 PP 610 Arizona districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "The official recorder directory is registered, but live-claim counties and their vendors have not been reconciled."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted quad-map inventory for Arizona's top five targets exists locally."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Arizona has not passed a tiled-only storage and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "CA",
+      "name": "California",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "A legacy active-claims file exists, but accepted active plus closed claim PMTiles and open-ground output do not."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Official statewide geology and fault services are registered; tiled artifacts and polygon-scale provenance have not passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "National aeromag is configured, but the California survey-index provenance artifact and COG are pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Legacy grade rows exist, but the statewide 25-mine/two-primary-source verbatim quote and page-cite acceptance audit is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Three preliminary recorder leads are insufficient; every county containing a current live claim still needs a verified vendor/access row."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five California target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Existing browser JSON is legacy evidence, not acceptable statewide delivery; California has not passed PMTiles/COG CI."
+        }
+      }
+    },
+    {
+      "state": "CO",
+      "name": "Colorado",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "National MLRS endpoints are configured; Colorado active/closed claim and open-ground PMTiles have not passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Checksum-pinned Colorado baseline PMTiles are published with exact full-MVT/source-ID validation: 9,500 Tweto geologic units, 10,238 Tweto structures, 864 ON-006 Quaternary faults, 2,698 separately labeled Cenozoic faults, and 383 ON-007 historic districts. The gate remains failed because detailed-map source-scale substitution/review and accepted release artifacts are still pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Colorado COG with survey-index provenance exists locally."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from two independent official USGS primary grade documents and all 44 PP 610 Colorado districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Live-claim counties have not been joined to a verified clerk/recorder vendor matrix."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted quadrangle inventory for Colorado's top five targets exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Colorado has not passed national tiled-delivery storage and heap budgets."
+        }
+      }
+    },
+    {
+      "state": "CT",
+      "name": "Connecticut",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "DE",
+      "name": "Delaware",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "FL",
+      "name": "Florida",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Florida has a thin public-domain claim population; no accepted active/closed claim PMTiles or open-ground output exists."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "MS146 and detailed partial STATEMAP coverage are registered; state fault gap, tiling, and scale lineage remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Florida aeromag COG and survey-index provenance artifact exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "FGS phosphate and heavy-mineral sources are registered, but 25 graded mines or an explicit audited endowment finding has not been accepted."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "The live-claim county set and clerk portal vendor matrix are not yet reconciled."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Florida target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Florida has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "GA",
+      "name": "Georgia",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "IA",
+      "name": "Iowa",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "ID",
+      "name": "Idaho",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Legacy Idaho active and closed claim files exist, but accepted PMTiles and regenerated open-ground output do not."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Map 9 is verified and Qfaults configured; PMTiles and the per-polygon source-scale audit remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Idaho aeromagnetic COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Substantial legacy grade and page-text material exists, but the statewide two-primary-source acceptance audit is not recorded as passed."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "A small southeast Idaho seed matrix exists; all counties intersecting current live claims have not been reconciled."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Idaho target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Legacy statewide browser JSON is a regression candidate; Idaho has not passed PMTiles/COG budgets at national scale."
+        }
+      }
+    },
+    {
+      "state": "IL",
+      "name": "Illinois",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "IN",
+      "name": "Indiana",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "KS",
+      "name": "Kansas",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "KY",
+      "name": "Kentucky",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "LA",
+      "name": "Louisiana",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Louisiana's thin MLRS population is configured nationally; accepted active/closed claim PMTiles and open-ground output are absent."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "The official surface-geology service is registered; state-fault coverage, PMTiles, and source-scale audit are pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Louisiana aeromag COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Salt, lignite, and state mineral sources exist, but the 25-mine threshold or explicit audited low-endowment finding remains pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Live claims have not been joined to a complete parish clerk portal/vendor matrix."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Louisiana target quad inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Louisiana has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "MA",
+      "name": "Massachusetts",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "MD",
+      "name": "Maryland",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "ME",
+      "name": "Maine",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "MI",
+      "name": "Michigan",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "MN",
+      "name": "Minnesota",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "MO",
+      "name": "Missouri",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "MS",
+      "name": "Mississippi",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Mississippi is a thin MLRS claim state; no accepted active/closed claim PMTiles and open-ground artifact exists."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "The official map/GIS catalog is registered, but package metadata, statewide fault vector, tiling, and provenance are unresolved."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Mississippi aeromag COG and survey-index provenance artifact exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "County mineral bulletins are primary sources, but 25 graded mines or an explicit audited low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Live-claim counties have not been reconciled to verified chancery-clerk recording vendors."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Mississippi target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Mississippi has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "MT",
+      "name": "Montana",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Legacy Montana active/closed files exist, but accepted claims PMTiles and open-ground results are pending."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "DM1 and SP 114/Qfaults are registered; tiled artifacts, version pinning, and scale provenance are pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Montana COG and survey-index provenance artifact exists locally."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Legacy grade rows exist, but a statewide 25-mine, two-primary-source quote/page audit has not been accepted."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Current live-claim counties have not been joined to verified recorder portal vendors."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted Montana top-five target quad-map inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Montana has not passed the tiled-only national storage and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "NC",
+      "name": "North Carolina",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "ND",
+      "name": "North Dakota",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "North Dakota's MLRS claim population is thin; accepted active/closed claim PMTiles and open-ground output do not exist."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "MM-25 statewide bedrock GIS is registered; the documented state-fault gap, tiling, and provenance audit remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted North Dakota aeromag COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "NDGS coal/uranium/mineral reports are primary sources, but 25 graded mines or an explicit audited low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Current live-claim counties have not been reconciled to verified NDRIN/recorder access rows."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted North Dakota top-five target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "North Dakota has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "NE",
+      "name": "Nebraska",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Nebraska's public-domain claims are thin; accepted active/closed claim PMTiles and open-ground output are absent."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Official mixed-scale bedrock GIS is registered; state-fault gap, tiling, and per-polygon source-scale audit remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "A legacy state aeromagnetic layer is known, but no accepted COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "The active-operations database and Elk Creek literature are leads, but 25 graded mines or an explicit audited low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Current live-claim counties have not been joined to a complete register-of-deeds vendor matrix."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Nebraska target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Nebraska has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "NH",
+      "name": "New Hampshire",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "NJ",
+      "name": "New Jersey",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "NM",
+      "name": "New Mexico",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "MLRS is configured, but no accepted New Mexico active/closed claim PMTiles and open-ground artifact exists."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "OFGM-304 is registered; the state-specific active-fault gap, tile generation, and provenance audit remain open."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "National aeromag is configured, but no accepted New Mexico COG plus survey-index provenance record exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from two independent official USGS primary grade documents and all 17 PP 610 New Mexico districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "The county clerk directory is known, but live-claim counties have not been matched to verified recording vendors."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five target quadrangle inventory exists for New Mexico."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "New Mexico has not passed tiled-delivery storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "NV",
+      "name": "Nevada",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "A tiled compatibility baseline now exposes Nevada active claims and an explicitly partial closed snapshot; a complete release inventory and the separate PLSS open-ground archive are still absent."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Checksum-pinned USGS DS 249 geology/faults and distinct NBMG OneGeology baseline PMTiles are published with per-feature source/scale provenance. DS 249 exposes 93,392 rendered features from 93,407 non-null source records; 15 valid two-vertex fault traces measuring 0.09375\u20131.908042 m in native EPSG:26711 are exact-inventoried as below z12 MVT encoding resolution, with no geometry fabrication. The gate remains failed: Map 167 and the best-scale multiscale NBMG source-lineage audit are still pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Nevada COG tied to a survey-index provenance artifact exists locally."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from 12 official primary grade documents and all 71 PP 610 Nevada districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Only an unverified Elko seed exists; every county with a live claim needs a reviewed vendor and access method."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five Nevada target quad-map inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Nevada's high claim count has not yet passed partitioned PMTiles/COG storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "NY",
+      "name": "New York",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "OH",
+      "name": "Ohio",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "OK",
+      "name": "Oklahoma",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "OR",
+      "name": "Oregon",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "Legacy Oregon claim files exist, but active/closed claim PMTiles and current open-ground output have not passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "OGDC-8 provides exceptional statewide geology and faults; PMTiles and the DataSourcePolys scale-lineage audit are pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted Oregon COG plus aeromagnetic survey-index provenance artifact exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Legacy grades and rich DOGAMI serials exist, but the statewide two-primary-source quote/page acceptance record is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Counties containing current live claims have not been reconciled to verified recorder portals and vendors."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted quad-map inventory for Oregon's top five targets exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "Oregon has not passed a PMTiles/COG-only national storage and heap run."
+        }
+      }
+    },
+    {
+      "state": "PA",
+      "name": "Pennsylvania",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "RI",
+      "name": "Rhode Island",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "SC",
+      "name": "South Carolina",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "SD",
+      "name": "South Dakota",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance.",
+          "finding": "South Dakota's active/closed claims and open-ground PMTiles have not passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "The 250K state series and 24K Black Hills upgrades are registered; tiling, fault review, and scale lineage remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending.",
+          "finding": "No accepted South Dakota aeromag COG with survey-index provenance exists."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only private build c27d781b645fbaddb76694d561d38a8184b8d3d75dc85ec5141800d761114a10 now covers 26 unique graded South Dakota targets with 26 verbatim quotes and 26 numbered page cites from two independent official primary grade documents; all 22 distinct cited grade pages are bound to reviewed 300-dpi render hashes. It includes the complete 7-district PP 610 South Dakota Figure 23 anchor. This private package is not an accepted public release evidence artifact, so the grades gate remains failed and release artifact fields remain null."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims.",
+          "finding": "Counties containing live claims have not been joined to a verified register-of-deeds portal matrix."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance.",
+          "finding": "No accepted top-five South Dakota target quadrangle inventory exists."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run.",
+          "finding": "South Dakota has not passed tiled-only national storage and heap acceptance."
+        }
+      }
+    },
+    {
+      "state": "TN",
+      "name": "Tennessee",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "TX",
+      "name": "Texas",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "UT",
+      "name": "Utah",
+      "phase": 1,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance.",
+          "finding": "Checksum-pinned Utah baseline PMTiles are published with exact full-MVT/source-ID validation: 22,635 Map 179DM geologic units, 67,571 Map 179DM structures, 19,232 DS-7 Quaternary fault traces, 185 OFR-695 historic districts, and 7,787 OFR-757 UMOS records. The gate remains failed because Map 179DM is statewide 1:500,000 context rather than a completed best-scale substitution, and accepted release artifacts remain pending."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending.",
+          "finding": "Evidence-only research now covers 26 unique graded mines/properties with 26 verbatim quotes/page cites from three independent official USGS primary grade documents and all 13 PP 610 Utah districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "VA",
+      "name": "Virginia",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "VT",
+      "name": "Vermont",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "WA",
+      "name": "Washington",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "WI",
+      "name": "Wisconsin",
+      "phase": 3,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "WV",
+      "name": "West Virginia",
+      "phase": 4,
+      "regime": "non_claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "not_applicable",
+          "evidence": "No federal or state staking system applies; county live-claim recorder matrix is not applicable."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    },
+    {
+      "state": "WY",
+      "name": "Wyoming",
+      "phase": 2,
+      "regime": "claim",
+      "release": "building",
+      "enabled": false,
+      "baseline_visible": true,
+      "gate_passed": false,
+      "gates": {
+        "claims_or_land_context": {
+          "status": "fail",
+          "evidence": "Claim-state claims/open-ground/watch, or non-claim target context plus reviewed AML/trust-land equivalents, have not all passed acceptance."
+        },
+        "geology_faults": {
+          "status": "fail",
+          "evidence": "Best-available statewide vector geology and fault sources have not both passed acceptance."
+        },
+        "aeromag": {
+          "status": "fail",
+          "evidence": "National raster is configured; state survey-index provenance acceptance is pending."
+        },
+        "grades": {
+          "status": "fail",
+          "evidence": "The 25-mine/two-primary-source threshold or an explicit low-endowment finding is pending."
+        },
+        "recorders": {
+          "status": "fail",
+          "evidence": "County coverage has not been reconciled against counties containing live claims."
+        },
+        "quad_maps": {
+          "status": "fail",
+          "evidence": "Top-five target quad-map inventory has not passed acceptance."
+        },
+        "ci_scale": {
+          "status": "fail",
+          "evidence": "State has not passed the tiled-delivery, storage, and heap acceptance run."
+        }
+      }
+    }
+  ]
+}

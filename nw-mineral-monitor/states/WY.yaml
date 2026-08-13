@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "state": "WY",
+  "name": "Wyoming",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-111.056, 40.993, -104.051, 45.007],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip MLRS and state sources to the official Wyoming boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Wyoming State Geological Survey",
+    "catalog_url": "https://sales.wsgs.wyo.gov/",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_rest_directory",
+        "url": "https://portal.wsgs.wyo.gov/ags/rest/services"
+      },
+      {
+        "type": "arcgis_map_service",
+        "url": "https://portal.wsgs.wyo.gov/ags/rest/services/IndexMap/GeologicMap500k/MapServer"
+      },
+      {
+        "type": "arcgis_feature_service",
+        "url": "https://portal.wsgs.wyo.gov/ags/rest/services/Hosted/WyomingBedrockGeology500k/FeatureServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "wy_wsgs_geologic_map_500k",
+    "title": "Geologic Map of Wyoming statewide bedrock and surficial geology",
+    "authority": "Wyoming State Geological Survey",
+    "url": "https://portal.wsgs.wyo.gov/ags/rest/services/IndexMap/GeologicMap500k/MapServer/1",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Ingest authoritative WSGS features, retain Love-Christiansen lineage, and build the accepted Wyoming PMTiles artifact."
+  },
+  "faults": {
+    "source_id": "wy_wsgs_faults_500k",
+    "title": "Wyoming bedrock geologic faults",
+    "authority": "Wyoming State Geological Survey",
+    "url": "https://portal.wsgs.wyo.gov/ags/rest/services/Hosted/WyomingBedrockGeology500k/FeatureServer/1",
+    "native_scale": "1:500,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Preserve concealed/normal/thrust fault classifications and reconcile Quaternary faults with Qfaults before tiling."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "wy_wsgs_publications",
+      "title": "Wyoming State Geological Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Reports of Investigations", "Mineral Investigations", "Preliminary Reports"],
+      "url": "https://sales.wsgs.wyo.gov/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "wy_deq_aml",
+    "state_inventory_url": "https://deq.wyoming.gov/land-quality/abandoned-mine-land/",
+    "status": "state_program_registered_not_ingested",
+    "scope": "Wyoming Department of Environmental Quality Abandoned Mine Land program.",
+    "gap": "Acquire documented site/project records and reconcile them with e-AMLIS and historic mine backbones before publishing statewide AML coverage."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "solid-mineral leasing on qualifying state trust mineral interests, including enumerated fuel, industrial, and metallic minerals",
+    "portal_url": "https://lands.wyo.gov/trust-land-management/mineral-leasing/solid-mineral-leases",
+    "evidence": "Wyoming Office of State Lands and Investments publishes solid-mineral lease categories and procedures for state trust assets.",
+    "approach_route": "Verify state mineral ownership and lease availability with OSLI, then follow the applicable lease process; federal open ground remains governed separately through MLRS and land-status review.",
+    "reviewed": "2026-08-12"
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "matrix": [],
+    "matrix_status": "pending_mlrs_live_claim_county_join_and_vendor_review",
+    "note": "Do not infer county coverage from statewide portal availability; populate vendors only after the current live-claim spatial join."
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://lands.wyo.gov/trust-land-management/mineral-leasing/solid-mineral-leases",
+    "approach_route": "Federal locatable-mineral context: MLRS plus federal land status; state mineral estate: OSLI lease; private estate: title research and negotiation."
+  },
+  "release": {
+    "note": "Registry only; MLRS tiles, closed-claim/open-ground math, recorder matrix, and all other artifact-backed gates remain pending."
+  }
+}

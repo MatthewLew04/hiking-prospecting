@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "SD",
+  "name": "South Dakota",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-104.059, 42.478, -96.435, 45.947], "crs": "EPSG:4326", "note": "Clip source results to South Dakota's authoritative boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "South Dakota Geological Survey Program",
+    "catalog_url": "https://www.sdgs.usd.edu/publications/default.aspx",
+    "gis_endpoints": [
+      {"id": "sdgs_250k_geology", "kind": "gis_download_index", "url": "https://www.sdgs.usd.edu/currentprojects/geomap-250k.aspx"},
+      {"id": "sdgs_black_hills_24k", "kind": "gis_download_index", "url": "https://www.sdgs.usd.edu/currentprojects/geomap-24k.aspx"},
+      {"id": "sdgs_interactive_data", "kind": "interactive_map", "url": "https://www.sdgs.usd.edu/"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "sdgs_250k_geologic_quads",
+    "title": "South Dakota 1:250,000-scale geologic quadrangle GIS compilation",
+    "authority": "South Dakota Geological Survey Program",
+    "source_url": "https://www.sdgs.usd.edu/currentprojects/geomap-250k.aspx",
+    "state_map_url": "https://www.sdgs.usd.edu/publications/default.aspx",
+    "source_scale": "1:250,000 regional statewide series; Black Hills detailed coverage includes 1:24,000 mapping",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Mosaic the official 250K GIS quadrangles and use 24K Black Hills maps for top targets only when each emitted polygon retains the source publication."
+  },
+  "faults": {
+    "source_id": "qfaults_sd_plus_sdgs_geologic_lines",
+    "title": "USGS Quaternary Faults baseline with SDGS mapped structural linework",
+    "authority": "U.S. Geological Survey and South Dakota Geological Survey Program",
+    "source_url": "https://www.sdgs.usd.edu/currentprojects/geomap-250k.aspx",
+    "source_scale": "SDGS 1:250,000 statewide series and selected 1:24,000 Black Hills maps; Qfaults source-dependent",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "No separate statewide SDGS active-fault database was verified; retain structural and Quaternary-activity semantics separately."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf",
+      "evidence_only_status": "complete_private_not_release_accepted",
+      "evidence_only_district_count": 7,
+      "evidence_only_build_sha256": "c27d781b645fbaddb76694d561d38a8184b8d3d75dc85ec5141800d761114a10"
+    },
+    {"source_id": "sdgs_mineral_reports", "title": "South Dakota Geological Survey Mineral Reports", "role": "state_mineral_industry_and_production_serial", "primary": true, "url": "https://www.sdgs.usd.edu/publications/default.aspx", "status": "registered_not_extracted"},
+    {"source_id": "sdgs_black_hills_bulletins", "title": "SDGS Black Hills and Homestake-belt bulletins and quadrangle reports", "role": "homestake_belt_primary_literature", "primary": true, "url": "https://www.sdgs.usd.edu/publications/default.aspx", "status": "registered_not_extracted"},
+    {"source_id": "sd_danr_mining_summaries", "title": "South Dakota mining-industry summary reports", "role": "state_mining_regulator_annual_reports", "primary": true, "url": "https://danr.sd.gov/Environment/MineralsMining/default.aspx", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "sd_black_hills_iam_inventory",
+    "state_inventory_url": "https://danr.sd.gov/Environment/MineralsMining/default.aspx",
+    "status": "historic_inventory_documented_no_current_program_or_public_export",
+    "evidence": "South Dakota reports that it has no AML reclamation program; a legislatively required Black Hills inventory identified about 900 inactive/abandoned sites, but no current public feature export was verified."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://sdpubliclands.sd.gov/",
+    "authority_url": "https://sdlegislature.gov/Statutes/5-7",
+    "evidence": "The Office of School and Public Lands leases state mineral, oil, gas, and geothermal interests under SDCL chapter 5-7; availability and terms require confirmation with the office."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://dor.sd.gov/government/register-of-deeds/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_register_deeds_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "South Dakota's active/closed claims and open-ground PMTiles have not passed acceptance."},
+    "geology_faults": {"finding": "The 250K state series and 24K Black Hills upgrades are registered; tiling, fault review, and scale lineage remain pending."},
+    "aeromag": {"finding": "No accepted South Dakota aeromag COG with survey-index provenance exists."},
+    "grades": {
+      "finding": "Evidence-only private build c27d781b645fbaddb76694d561d38a8184b8d3d75dc85ec5141800d761114a10 now covers 26 unique graded South Dakota targets with 26 verbatim quotes and 26 numbered page cites from two independent official primary grade documents; all 22 distinct cited grade pages are bound to reviewed 300-dpi render hashes. It includes the complete 7-district PP 610 South Dakota Figure 23 anchor. This private package is not an accepted public release evidence artifact, so the grades gate remains failed and release artifact fields remain null.",
+      "evidence_only_build_sha256": "c27d781b645fbaddb76694d561d38a8184b8d3d75dc85ec5141800d761114a10",
+      "graded_mines": 26,
+      "primary_sources": 2,
+      "official_primary_documents": 2,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "grade_page_images_review_bound": 22,
+      "pp610_districts": 7,
+      "explicit_quote_price_conversions": 17,
+      "ppm_table_rows": 6
+    },
+    "recorders": {"finding": "Counties containing live claims have not been joined to a verified register-of-deeds portal matrix."},
+    "quad_maps": {"finding": "No accepted top-five South Dakota target quadrangle inventory exists."},
+    "ci_scale": {"finding": "South Dakota has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 registry prioritizes the Homestake belt while documenting the absence of a current state AML program; release remains disabled."}
+}

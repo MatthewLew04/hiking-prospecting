@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "state": "MI",
+  "name": "Michigan",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-90.418, 41.696, -82.413, 48.306],
+      "crs": "EPSG:4326",
+      "note": "State envelope includes both peninsulas and Michigan-administered Great Lakes islands; clip to the official state boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Michigan Geological Survey",
+    "catalog_url": "https://wmich.edu/geologysurvey",
+    "gis_endpoints": [
+      {
+        "type": "arcgis_map_service",
+        "url": "https://www.esrs.wmich.edu/arcgis/rest/services/MichiganGeology/MapServer"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "mi_mgs_geology_map",
+    "title": "Geology Map of Michigan",
+    "authority": "Michigan Geological Survey",
+    "url": "https://www.esrs.wmich.edu/arcgis/rest/services/MichiganGeology/MapServer/20",
+    "native_scale": "1:500,000 compilation for the Northern and Southern Peninsulas, with Lake Superior compilation sources",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Preserve peninsula/lake source-map lineage and layer metadata, then build and audit the Michigan geology PMTiles."
+  },
+  "faults": {
+    "source_id": "national_qfaults_with_mi_geology_review",
+    "title": "USGS Quaternary Faults baseline with Michigan geology-line review",
+    "authority": "U.S. Geological Survey and Michigan Geological Survey",
+    "url": "https://www.esrs.wmich.edu/arcgis/rest/services/MichiganGeology/MapServer",
+    "native_scale": "national baseline; state structural-line source not yet verified",
+    "state_source_verified": false,
+    "ingest_status": "baseline_registered_not_ingested",
+    "gap": "No separate authoritative statewide Michigan surface-fault vector was confirmed in the reviewed service; audit contact/fault linework before adding a state supplement."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "mi_mgs_publications",
+      "title": "Michigan Geological Survey publications and digital-document repository",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Geological Reports", "Publication Series", "Open-file Reports"],
+      "url": "https://wmich.edu/geologysurvey",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "mi_egle_abandoned_mining_wastes",
+    "state_inventory_url": "https://www.michigan.gov/egle/about/organization/remediation-and-redevelopment/abandoned-mining-wastes",
+    "status": "state_program_registered_not_ingested",
+    "scope": "EGLE abandoned-mining-waste work, including legacy Copper Country sites; not asserted to be a complete statewide mine inventory.",
+    "gap": "Combine EGLE project/site records with state underground-mine mapping, USMIN, MRDS, and e-AMLIS while retaining each inventory's scope."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "metallic-mineral leasing of eligible state-owned mineral rights through nomination and DNR review",
+    "portal_url": "https://www.michigan.gov/dnr/managing-resources/minerals/metallic",
+    "evidence": "Michigan DNR publishes a metallic-minerals leasing program for qualifying state-owned mineral rights. A lease conveys exploration/development rights, not automatic operating approval.",
+    "approach_route": "Check DNR mineral ownership and restrictions, then use the DNR nomination/lease process; negotiate privately where the mineral estate is private.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://www.michigan.gov/dnr/managing-resources/minerals/metallic",
+    "approach_route": "State-owned minerals: DNR nomination and lease review; private/severed minerals: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; Michigan remains blocked on tiled artifacts, AML reconciliation, grade evidence, quads, and CI."
+  }
+}

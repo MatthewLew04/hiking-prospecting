@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-arizona-pp610-district-inventory",
+  "state": "AZ",
+  "source_id": "pp610",
+  "review_scope": "The complete Arizona chapter of USGS Professional Paper 610, printed pages 35-53 (PDF pages 41-59). All 42 district entries shown in Figure 7 are included. District names are normalized for public use; source_heading preserves the official PDF text-layer spelling used for deterministic extraction.",
+  "districts": [
+    {"district_id": "az-bisbee", "name": "Bisbee", "county": "Cochise", "pdf_page": 41, "source_heading": "BISBEE DISTRICT"},
+    {"district_id": "az-dos-cabezas", "name": "Dos Cabezas", "county": "Cochise", "pdf_page": 42, "source_heading": "DOS CABE7.AS DISTRICT"},
+    {"district_id": "az-tombstone", "name": "Tombstone", "county": "Cochise", "pdf_page": 42, "source_heading": "TOMBSTONE DISTRICT"},
+    {"district_id": "az-turquoise", "name": "Turquoise", "county": "Cochise", "pdf_page": 43, "source_heading": "TURQUOISE DISTRICT"},
+
+    {"district_id": "az-banner", "name": "Banner", "county": "Gila", "pdf_page": 43, "source_heading": "BANNER DISTRICT"},
+    {"district_id": "az-globe-miami", "name": "Globe-Miami", "county": "Gila", "pdf_page": 44, "source_heading": "GJ,OBE-MIAMI DISTRICT"},
+
+    {"district_id": "az-ash-peak", "name": "Ash Peak", "county": "Greenlee", "pdf_page": 45, "source_heading": "ASH PEAK DISTRICT"},
+    {"district_id": "az-clifton-morenci", "name": "Clifton-Morenci", "county": "Greenlee", "pdf_page": 45, "source_heading": "CLIFTON-MORENCI DISTRICT"},
+
+    {"district_id": "az-cave-creek", "name": "Cave Creek", "county": "Maricopa", "pdf_page": 46, "source_heading": "CAVE CREEK DISTRICT"},
+    {"district_id": "az-vulture", "name": "Vulture", "county": "Maricopa", "pdf_page": 46, "source_heading": "VULTURE DISTRICT"},
+
+    {"district_id": "az-gold-basin", "name": "Gold Basin", "county": "Mohave", "pdf_page": 46, "source_heading": "GOLD BASIN DISTRICT"},
+    {"district_id": "az-san-francisco", "name": "San Francisco", "county": "Mohave", "pdf_page": 46, "source_heading": "SAN FRANCISCO DISTRICT"},
+    {"district_id": "az-wallapai", "name": "Wallapai", "county": "Mohave", "pdf_page": 47, "source_heading": "WALJ,APAI DISTRICT"},
+    {"district_id": "az-weaver-mohave", "name": "Weaver", "county": "Mohave", "pdf_page": 47, "source_heading": "WF.A VER DISTRICT"},
+
+    {"district_id": "az-ajo", "name": "Ajo", "county": "Pima", "pdf_page": 48, "source_heading": "AJO DISTRICT"},
+    {"district_id": "az-greaterville", "name": "Greaterville", "county": "Pima", "pdf_page": 49, "source_heading": "GREATERVILLE DISTRICT"},
+
+    {"district_id": "az-mammoth", "name": "Mammoth", "county": "Pinal", "pdf_page": 49, "source_heading": "1\\:IAMMOTII DISTRICT"},
+    {"district_id": "az-ray", "name": "Ray", "county": "Pinal", "pdf_page": 49, "source_heading": "RAY DISTRICT"},
+    {"district_id": "az-superior", "name": "Superior", "county": "Pinal", "pdf_page": 50, "source_heading": "SUPERIOR DISTRICT"},
+
+    {"district_id": "az-oro-blanco", "name": "Oro Blanco", "county": "Santa Cruz", "pdf_page": 51, "source_heading": "ORO BLANCO DISTRICT"},
+
+    {"district_id": "az-agua-fria", "name": "Agua Fria", "county": "Yavapai", "pdf_page": 52, "source_heading": "AGUA FRIA DISTRICT"},
+    {"district_id": "az-big-bug", "name": "Big Bug", "county": "Yavapai", "pdf_page": 52, "source_heading": "BIG BUG DISTRICT"},
+    {"district_id": "az-black-canyon", "name": "Black Canyon", "county": "Yavapai", "pdf_page": 52, "source_heading": "BJ,ACK CANYON DISTRICT"},
+    {"district_id": "az-black-rock", "name": "Black Rock", "county": "Yavapai", "pdf_page": 53, "source_heading": "BLACK ROCK DISTRICT"},
+    {"district_id": "az-eureka", "name": "Eureka", "county": "Yavapai", "pdf_page": 53, "source_heading": "RUR:F.KA DISTRICT"},
+    {"district_id": "az-hassayampa-groom-creek", "name": "Hassayampa-Groom Creek", "county": "Yavapai", "pdf_page": 54, "source_heading": "HASSAYAMPA-GROOM CREEK DISTRICT"},
+    {"district_id": "az-jerome", "name": "Jerome", "county": "Yavapai", "pdf_page": 54, "source_heading": "JEHOME DISTRICT"},
+    {"district_id": "az-lynx-creek-walker", "name": "Lynx Creek-Walker", "county": "Yavapai", "pdf_page": 55, "source_heading": "LYNX CREEK-WALKER DISTRICT"},
+    {"district_id": "az-martinez", "name": "Martinez", "county": "Yavapai", "pdf_page": 55, "source_heading": "MARTINEZ DISTRICT"},
+    {"district_id": "az-peck", "name": "Peck", "county": "Yavapai", "pdf_page": 55, "source_heading": "PECI{ DISTRICT"},
+    {"district_id": "az-pine-grove-tiger", "name": "Pine Grove-Tiger", "county": "Yavapai", "pdf_page": 56, "source_heading": "PINE GROVE-TIGER DISTRICT"},
+    {"district_id": "az-tiptop", "name": "Tiptop", "county": "Yavapai", "pdf_page": 56, "source_heading": "TIPTOP DISTRICT"},
+    {"district_id": "az-weaver-rich-hill", "name": "Weaver-Rich Hill", "county": "Yavapai", "pdf_page": 56, "source_heading": "WEA VER-RICII HILL DISTRICT"},
+
+    {"district_id": "az-castle-dome", "name": "Castle Dome", "county": "Yuma", "pdf_page": 57, "source_heading": "CASTLE DOME DISTRICT"},
+    {"district_id": "az-cienega", "name": "Cienega", "county": "Yuma", "pdf_page": 57, "source_heading": "CIENEGA DISTRICT"},
+    {"district_id": "az-dome", "name": "Dome", "county": "Yuma", "pdf_page": 58, "source_heading": "DOME DISTRICT"},
+    {"district_id": "az-ellsworth", "name": "Ellsworth", "county": "Yuma", "pdf_page": 58, "source_heading": "ELLSWORTH DISTRICT"},
+    {"district_id": "az-fortuna", "name": "Fortuna", "county": "Yuma", "pdf_page": 58, "source_heading": "FORTUNA DISTRICT"},
+    {"district_id": "az-kofa", "name": "Kofa", "county": "Yuma", "pdf_page": 58, "source_heading": "KOFA DISTRICT"},
+    {"district_id": "az-laguna", "name": "Laguna", "county": "Yuma", "pdf_page": 58, "source_heading": "LAGUNA DISTRICT"},
+    {"district_id": "az-la-paz", "name": "La Paz", "county": "Yuma", "pdf_page": 59, "source_heading": "J,A PAZ DISTRICT"},
+    {"district_id": "az-plomosa", "name": "Plomosa", "county": "Yuma", "pdf_page": 59, "source_heading": "PLOMOSA DISTRIC'I1"}
+  ]
+}

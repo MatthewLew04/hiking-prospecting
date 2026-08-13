@@ -11,7 +11,7 @@ here, not yet built)._
 - **WIRED** `lambda_updater.py` BBOX gains CA; template gains
   `NightlyActiveCaRule` (10:10 UTC, chains as needed) + `MonthlyClosedRule6`
   (3rd of month, newest-250k cap like NV). First run after deploy populates
-  `data/claims/ca_active.json` / `ca_closed.json` and stamps the manifest —
+  private staging snapshots and stamps the checked tile-build inputs —
   the CA state chip (added, build 2026-08-07f) starts showing claims with no
   further work. CA will dominate row counts; the resumable-chain + lock
   machinery (commits 2e9fa2e/c0fa9b4) was built for exactly this.
@@ -20,7 +20,8 @@ here, not yet built)._
   snapshots don't exist yet. Used for the Clear Lake test (1,134 sites,
   414 Hg).
 - **PLANNED** statewide CA campaigns, in order: MRDS/USMIN CA site snapshots
-  (bulk dumps, same columnar files) → CA counties into `boundaries/counties.json`
+  (bulk dumps, same columnar files) → CA counties into the private
+  `build-inputs/data/boundaries/counties.json` compatibility input
   (TIGER 500k) + `county_gold.py` STATES → CA AML inventory (DOC AML, CGS
   MinesOnline) as a stategeo_ca-style layer → open-ground machinery for CA
   AOIs (PLSS via CadNSDI CA meridians; **withdrawals become first-class**:
@@ -128,12 +129,12 @@ clearlake`. History, recorded honestly:
 - **(d) DONE** — radiometric POTASSIUM sibling overlay: mrdata `aerorad`
   WMS `Potassium` layer, same slider. Adularia = K-feldspar; potassic
   alteration lights up in K. U/Th layers exist on the same service if wanted.
-- **(c) DONE** — provenance/trust layer: `fetch_geophys.py` pulls 819
-  airborne-survey footprints (mrdata `airborne` WFS) with year, type
-  (M/R/G/EM), line spacing, altitude + drape code, line-km → hover anywhere
-  to see how much to trust the pixel. Earth MRI `ms:outlines` WFS rejects
-  GetFeature (400) — retried variants; revisit, or pull outlines from the
-  ScienceBase Earth MRI collection index.
+- **(c) DONE** — the public provenance/trust layer is a 1,829-feature national
+  PMTiles archive built from the official USGS airborne survey inventory and
+  Earth MRI acquisition service. It carries year, type, line spacing,
+  altitude/drape metadata, and line-km where published. The retired 819-row
+  regional WFS snapshot is retained only under private build inputs; public
+  national survey JSON is a CI regression.
 - **(b) PLANNED** — high-res Earth MRI grids: per survey block, download
   GeoTIFF from ScienceBase (prefer reduced-to-pole), `gdalwarp` to 3857 →
   `gdal_translate`+`gdaladdo` to COG → `gdal2tiles`/titiler-free static

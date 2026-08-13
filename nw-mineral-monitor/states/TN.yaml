@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "state": "TN",
+  "name": "Tennessee",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-90.310298, 34.982924, -81.6469, 36.678118],
+      "crs": "EPSG:4326",
+      "note": "State land envelope; clip national and state sources to the authoritative boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Tennessee Geological Survey, Division of Mineral and Geologic Resources",
+    "catalog_url": "https://www.tn.gov/content/dam/tn/environment/geology/documents/geology_catalog.pdf",
+    "gis_endpoints": [
+      {
+        "type": "online_publications_catalog",
+        "url": "https://www.tn.gov/environment/program-areas/geology/maps-publications/publications-online.html"
+      },
+      {
+        "type": "division_program",
+        "url": "https://www.tn.gov/environment/mineral-geologic.html"
+      },
+      {
+        "type": "usgs_state_vector_download",
+        "url": "https://pubs.usgs.gov/publication/ofr20051324"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "usgs_ofr2005_1324_tn",
+    "title": "Preliminary integrated geologic map database for Tennessee",
+    "authority": "U.S. Geological Survey, digitized from Tennessee Division of Geology statewide mapping",
+    "url": "https://pubs.usgs.gov/publication/ofr20051324",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify Tennessee extraction and source-map lineage within OFR 2005-1324, retain the 1:250,000 state-map scale, and index newer Tennessee Survey maps as separate higher-resolution replacements."
+  },
+  "faults": {
+    "source_id": "usgs_ofr2005_1324_tn_structures",
+    "title": "Tennessee faults and contacts from the integrated state geologic map database",
+    "authority": "U.S. Geological Survey and Tennessee Geological Survey",
+    "url": "https://pubs.usgs.gov/publication/ofr20051324",
+    "native_scale": "1:250,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Confirm fault/structure feature classes and Tennessee state-map lineage, then reconcile more detailed survey mapping and Qfaults while retaining source and scale."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "tn_tgs_serials",
+      "title": "Tennessee Geological Survey publication catalog and online archive",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Reports of Investigations", "Resources of Tennessee", "Geologic Folios", "Mineral-resource maps", "State Geologist administrative reports"],
+      "url": "https://www.tn.gov/environment/program-areas/geology/maps-publications/publications-online.html",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "tn_tdec_aml",
+    "state_inventory_url": "https://www.tn.gov/environment/mineral-geologic/amlp.html",
+    "status": "state_aml_program_registered_inventory_incomplete",
+    "scope": "Tennessee's AML Program reclaims eligible pre-law and no-obligation sites, but its official page expressly states that no complete or authoritative inventory of pre-law mining impacts exists.",
+    "gap": "Obtain available state records and maps with their accuracy disclaimer, reconcile with e-AMLIS, and never render unmapped areas as absence of mine hazards."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_mineral_leasing_portal_identified",
+    "portal_url": "https://www.tn.gov/generalservices/stream/stream/tennessee-state-owned-land-dashboard---tn-sold-.html",
+    "authority_url": "https://www.tn.gov/generalservices/stream/stream/tennessee-state-owned-land-dashboard---tn-sold-.html",
+    "evidence": "Tennessee exposes a state-owned land dashboard, but no general state hard-rock mineral leasing or staking portal was identified in the official property and mineral-resource programs.",
+    "approach_route": "State parcel: identify the custodial agency and verify mineral title and case-specific legal authority; private mineral estate: negotiate with the recorded owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://www.tn.gov/generalservices/stream/stream/tennessee-state-owned-land-dashboard---tn-sold-.html",
+    "approach_route": "State parcel: TN-SOLD plus custodial-agency mineral-title review; private parcel: mineral-owner negotiation. Historic or AML status does not establish open ground."
+  },
+  "release": {
+    "note": "P4 registry baseline only; state-vector verification, caveated AML ingestion, land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

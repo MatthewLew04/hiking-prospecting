@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "NM",
+  "name": "New Mexico",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "official_candidate_insufficient",
+      "authority": "U.S. Bureau of Land Management, New Mexico State Office",
+      "source_url": "https://gis.blm.gov/nmarcgis/rest/services/Lands/BLM_NM_Lands_Mineral_Estate/FeatureServer/0",
+      "ownership_field": "minown",
+      "locatable_values": ["A"],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "The official statewide Mineral Estate layer identifies code A as all minerals owned by the United States and derives from Master Title Plats, but federal mineral interest alone does not prove public-domain origin or current Mining Law location eligibility. It is therefore insufficient to create OPEN rows even after ingestion without parcel-level title and withdrawal reconciliation."
+    }
+  },
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-109.06, 31.33, -103.00, 37.01], "crs": "EPSG:4326", "note": "Clip every source response to the authoritative New Mexico boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "New Mexico Bureau of Geology and Mineral Resources",
+    "catalog_url": "https://geoinfo.nmt.edu/publications/",
+    "gis_endpoints": [
+      {"id": "nm_geologic_maps", "kind": "map_catalog", "url": "https://geoinfo.nmt.edu/publications/maps/geologic/home.cfml"},
+      {"id": "nm_mines_and_minerals", "kind": "publication_catalog", "url": "https://geoinfo.nmt.edu/publications/minerals/home.cfml"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "nmbgmr_ofgm_304",
+    "title": "Geologic Map of New Mexico, GeMS Level III database, OFGM-304",
+    "authority": "New Mexico Bureau of Geology and Mineral Resources",
+    "source_url": "https://geoinfo.nmt.edu/publications/maps/geologic/ofgm/details.cfml?Volume=304",
+    "state_map_url": "https://geoinfo.nmt.edu/publications/maps/geologic/state/home.cfml",
+    "source_scale": "1:500,000 statewide compilation",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Use the 2022 GeMS Level III GIS release rather than rasterizing the 2003 state map; retain source citations and scale attributes."
+  },
+  "faults": {
+    "source_id": "qfaults_nm_plus_ofgm304",
+    "title": "USGS Quaternary Faults baseline with OFGM-304 structural linework",
+    "authority": "U.S. Geological Survey and New Mexico Bureau of Geology and Mineral Resources",
+    "source_url": "https://geoinfo.nmt.edu/publications/maps/geologic/ofgm/details.cfml?Volume=304",
+    "source_scale": "Qfaults source-dependent; OFGM-304 1:500,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "No distinct current statewide state-survey active-fault vector was verified during registry review; keep Qfaults authoritative for Quaternary activity and label OFGM structure separately."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "nmbgmr_mineral_resources", "title": "NMBGMR mines and mineral-resources publications", "role": "state_mineral_publication_catalog", "primary": true, "url": "https://geoinfo.nmt.edu/publications/minerals/home.cfml", "status": "registered_not_extracted"},
+    {"source_id": "nmbgmr_memoir_50", "title": "Energy and Mineral Resources of New Mexico, Memoir 50", "role": "state_resource_monograph", "primary": true, "url": "https://geoinfo.nmt.edu/publications/monographs/memoirs/50/home.cfm", "status": "registered_not_extracted"},
+    {"source_id": "nmbgmr_open_files", "title": "NMBGMR Open-File Report catalog", "role": "district_and_property_report_catalog", "primary": true, "url": "https://geoinfo.nmt.edu/publications/openfile/home.cfml?From=100&ListBy=Number", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "nm_mmd_aml",
+    "state_inventory_url": "https://www.emnrd.nm.gov/mmd/abandoned-mine-land-program/",
+    "status": "state_program_registered_export_not_verified",
+    "evidence": "New Mexico's AML program estimates more than 15,000 legacy mine features; no accepted public statewide feature export is yet registered."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.nmstatelands.org/divisions/oil-gas-and-minerals/minerals/lease-information-minerals/",
+    "forms_url": "https://www.nmstatelands.org/divisions/oil-gas-and-minerals/minerals-forms/",
+    "evidence": "The New Mexico State Land Office explicitly offers general mining leases for metallic and nonmetallic commodities, including gold, silver, lead, zinc, copper, and rare earth elements."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.sos.nm.gov/about-new-mexico/county-clerks/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_clerk_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "MLRS is configured, but no accepted New Mexico active/closed claim PMTiles and open-ground artifact exists."},
+    "geology_faults": {"finding": "OFGM-304 is registered; the state-specific active-fault gap, tile generation, and provenance audit remain open."},
+    "aeromag": {"finding": "National aeromag is configured, but no accepted New Mexico COG plus survey-index provenance record exists."},
+    "grades": {
+      "finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from two independent official USGS primary grade documents and all 17 PP 610 New Mexico districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes.",
+      "evidence_only_build_sha256": "221f114c29ac9ff0867950cda6c55d0736a1a2bda9fda4856d28e20ed571e302",
+      "graded_mines": 26,
+      "verbatim_quotes": 26,
+      "page_cites": 26,
+      "official_primary_documents": 2,
+      "pp610_districts": 17
+    },
+    "recorders": {"finding": "The county clerk directory is known, but live-claim counties have not been matched to verified recording vendors."},
+    "quad_maps": {"finding": "No accepted top-five target quadrangle inventory exists for New Mexico."},
+    "ci_scale": {"finding": "New Mexico has not passed tiled-delivery storage and heap acceptance."}
+  },
+  "release": {"note": "P1 source registry is populated; state remains disabled pending all acceptance artifacts."}
+}

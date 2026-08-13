@@ -16,3 +16,10 @@ nw-mineral-monitor/pipelines/cache/*
 
 # account-specific auth switch lives only in S3, never in git
 auth.json
+# Local JavaScript dependencies; the pinned browser bundle is vendored separately.
+nw-mineral-monitor/node_modules/
+nw-mineral-monitor/test-results/
+
+# Private statewide builder scratch space; never stage ZIP/SHP/GeoJSONSeq or
+# pending PMTiles intermediates from a production build.
+nw-mineral-monitor/build-inputs/.staging/

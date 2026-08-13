@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-nevada-reviewed-grade-extraction",
+  "state": "NV",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 source-page review",
+  "review_method": "Each quotation and numeric measurement was checked against the cited official PDF page. For image-only NBMG scans the reviewed 300-dpi page-render SHA-256 is mandatory and OCR is used only as a search cross-check.",
+  "mines": [
+    {
+      "mine_id": "nv-grizzly-bear-shaft",
+      "name": "Grizzly Bear shaft",
+      "district": "Goldfield",
+      "county": "Esmeralda",
+      "evidence": [{
+        "evidence_id": "nv-grizzly-bear-1913-15",
+        "source_id": "nbmg-mdf-21600019",
+        "pdf_page": 17,
+        "page_cite": "p. 17",
+        "page_image_sha256": "bebe41e942836d86a71062f691a83ade67efbbbd843daed42918c5a6c94f94e1",
+        "verbatim_quote": "The production of such ore from the Grizzly Bear shaft in 1913-15, inclusive, was 22,408 short dry tons, assaying 1.07 oz. Au., 5.58 oz. Ag. and 4.21% Cu.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.07, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 5.58, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 4.21, "unit": "percent"}
+        ],
+        "basis": "1913-1915 shipped ore",
+        "years": "1913-1915"
+      }]
+    },
+    {
+      "mine_id": "nv-jumbo-extension",
+      "name": "Jumbo Extension",
+      "district": "Goldfield",
+      "county": "Esmeralda",
+      "evidence": [{
+        "evidence_id": "nv-jumbo-extension-1915",
+        "source_id": "nbmg-mdf-21600019",
+        "pdf_page": 18,
+        "page_cite": "p. 18",
+        "page_image_sha256": "c14a28ec60a5863aaf253f7166386b0bd071ee9859b2a5fd58fb45f469780848",
+        "verbatim_quote": "The Jumbo Extension during the year 1915 shipped 22,562 tons, averaging 1.35 oz. Au., 4.41 oz. Ag., and 2.79% Cu.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.35, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 4.41, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 2.79, "unit": "percent"}
+        ],
+        "basis": "1915 shipped ore",
+        "years": "1915"
+      }]
+    },
+    {
+      "mine_id": "nv-florence-west-crosscut",
+      "name": "Florence mine western crosscut branch vein",
+      "district": "Goldfield",
+      "county": "Esmeralda",
+      "evidence": [{
+        "evidence_id": "nv-florence-west-crosscut-samples",
+        "source_id": "nbmg-mdf-21600019",
+        "pdf_page": 24,
+        "page_cite": "p. 24",
+        "page_image_sha256": "658e53200fdee070d7b7550b1d8b70fccff5af267bb36036c20d62102c34875b",
+        "verbatim_quote": "The most important of these veins, as at present developed, may be actually seen departing from the low-grade pyritic mineralization of the Columbia Mountain fault, like a branch from a tree trunk; samples containing five ounces gold can be cut across the branch vein within six feet of the apparently earlier flat-dipping pyritic quartz which carries only five dollars per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 5, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "reported crosscut samples",
+        "years": "1947 report"
+      }]
+    },
+    {
+      "mine_id": "nv-montgomery-shoshone",
+      "name": "Montgomery-Shoshone mine",
+      "district": "Bullfrog",
+      "county": "Nye",
+      "evidence": [{
+        "evidence_id": "nv-montgomery-shoshone-bonanza",
+        "source_id": "usgs-b407",
+        "pdf_page": 103,
+        "page_cite": "p. 91",
+        "verbatim_quote": "Even in the Bonanza ore of the Montgomery-Shoshone mine above the 200-foot level, much of which averaged over 600 ounces of silver to the ton",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 600, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "bonanza ore above the 200-foot level",
+        "years": "1905-1908"
+      }]
+    },
+    {
+      "mine_id": "nv-leopard-mine",
+      "name": "Leopard mine",
+      "district": "Cornucopia",
+      "county": "Elko",
+      "evidence": [{
+        "evidence_id": "nv-leopard-mill-runs",
+        "source_id": "usgs-b408",
+        "pdf_page": 65,
+        "page_cite": "p. 64",
+        "verbatim_quote": "The proportion of the sulphides present is very small; but they must have been rich, for the ore is said to have carried 400 ounces of silver to the ton for mill runs.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 400, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported mill runs",
+        "years": "by 1908"
+      }]
+    },
+    {
+      "mine_id": "nv-lucky-girl-group",
+      "name": "Lucky Girl group",
+      "district": "Edgemont",
+      "county": "Elko",
+      "evidence": [{
+        "evidence_id": "nv-lucky-girl-mill-feed",
+        "source_id": "usgs-b408",
+        "pdf_page": 79,
+        "page_cite": "pp. 75-76",
+        "verbatim_quote": "The total extraction is from 90 to 95 per cent, the ore carrying from $5 to $10 in gold and 1 ounce of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 1, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "mill feed",
+        "years": "1902-1908"
+      }]
+    },
+    {
+      "mine_id": "nv-sweepstakes-claim",
+      "name": "Sweepstakes claim",
+      "district": "Railroad",
+      "county": "Elko",
+      "evidence": [{
+        "evidence_id": "nv-sweepstakes-shipments",
+        "source_id": "usgs-b408",
+        "pdf_page": 99,
+        "page_cite": "p. 95",
+        "verbatim_quote": "Shipments of 210 tons of ore from this claim averaged 70 ounces of silver to the ton, 10.4 per cent of copper, and 2.8 per cent of lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 70, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 10.4, "unit": "percent"},
+          {"commodity": "Pb", "value": 2.8, "unit": "percent"}
+        ],
+        "basis": "210 tons shipped",
+        "years": "by 1908"
+      }]
+    },
+    {
+      "mine_id": "nv-ruby-claim",
+      "name": "Ruby claim",
+      "district": "Safford",
+      "county": "Eureka",
+      "evidence": [{
+        "evidence_id": "nv-ruby-carload",
+        "source_id": "usgs-b408",
+        "pdf_page": 116,
+        "page_cite": "p. 112",
+        "verbatim_quote": "A carload of selected ore, running about 100 ounces of silver to the ton, has been shipped to smelters.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 100, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "selected carload shipped",
+        "years": "by 1908"
+      }]
+    },
+    {
+      "mine_id": "nv-little-gem-mine",
+      "name": "Little Gem mine",
+      "district": "Bullion",
+      "county": "Lander",
+      "evidence": [{
+        "evidence_id": "nv-little-gem-ore-in-sight",
+        "source_id": "usgs-b408",
+        "pdf_page": 121,
+        "page_cite": "p. 117",
+        "verbatim_quote": "The mine is reported to have in sight 7,000 tons of ore, with an average value of $2 in gold and 10 ounces of silver to the ton and 3 per cent of copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 3, "unit": "percent"}
+        ],
+        "basis": "reported ore in sight",
+        "years": "1907-1908"
+      }]
+    },
+    {
+      "mine_id": "nv-mazuma-hills-mine",
+      "name": "Mazuma Hills mine",
+      "district": "Seven Troughs",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-mazuma-hills-lower-level",
+        "source_id": "usgs-b414",
+        "pdf_page": 23,
+        "page_cite": "pp. 22-23",
+        "verbatim_quote": "At one place on the lower level of the Mazuma Hills mine quartz carrying a little chalcopyrite is reported to have yielded on assay 200 ounces of silver and 0.3 ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.3, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 200, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "reported lower-level assay",
+        "years": "1908"
+      }]
+    },
+    {
+      "mine_id": "nv-arizona-mine",
+      "name": "Arizona mine",
+      "district": "Unionville",
+      "county": "Humboldt",
+      "evidence": [{
+        "evidence_id": "nv-arizona-face-samples",
+        "source_id": "usgs-b414",
+        "pdf_page": 41,
+        "page_cite": "p. 47",
+        "verbatim_quote": "According to Mr. Carmichael the average of a large number of samples from all exposed faces of the vein is about 20 ounces of silver and 0.05 ounce of gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.05, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 20, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "average of exposed-face samples",
+        "years": "sampled 1908"
+      }]
+    },
+    {
+      "mine_id": "nv-neversweat-shaft",
+      "name": "Neversweat shaft",
+      "district": "National",
+      "county": "Humboldt",
+      "evidence": [{
+        "evidence_id": "nv-neversweat-specimens",
+        "source_id": "usgs-b601",
+        "pdf_page": 35,
+        "page_cite": "p. 31",
+        "verbatim_quote": "Two specimens of vein quartz from the Neversweat shaft which contained a little pyrite gave on assay, respectively, $0.40 and $1.40 in gold and 21 and 105 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 105, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "higher of two specimen assays",
+        "years": "ca. 1911"
+      }]
+    },
+    {
+      "mine_id": "nv-walker-lease",
+      "name": "Walker lease",
+      "district": "National",
+      "county": "Humboldt",
+      "evidence": [{
+        "evidence_id": "nv-walker-rich-ore",
+        "source_id": "usgs-b601",
+        "pdf_page": 55,
+        "page_cite": "p. 48",
+        "verbatim_quote": "Rich oxidized ore with quartz seams was found on the ground of the Walker lease 100 feet south of the gap. Some of it is reported to have contained 2,500 ounces silver and 3 ounces of gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 3, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2500, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "reported rich oxidized ore",
+        "years": "ca. 1908-1911"
+      }]
+    },
+    {
+      "mine_id": "nv-tonopah-divide-mine",
+      "name": "Tonopah Divide mine",
+      "district": "Divide",
+      "county": "Esmeralda",
+      "evidence": [{
+        "evidence_id": "nv-tonopah-divide-producing-ore",
+        "source_id": "usgs-b715k",
+        "pdf_page": 2,
+        "page_cite": "p. 147",
+        "verbatim_quote": "The chief producing mine is the Tonopah Divide, which yields ore averaging 25 ounces of silver and $2.50 in gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 25, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "producing ore average",
+        "years": "1918-1919"
+      }]
+    },
+    {
+      "mine_id": "nv-starlight-mine",
+      "name": "Starlight mine",
+      "district": "Jarbidge",
+      "county": "Elko",
+      "evidence": [{
+        "evidence_id": "nv-starlight-reported-assay",
+        "source_id": "usgs-b741",
+        "pdf_page": 79,
+        "page_cite": "p. 55",
+        "verbatim_quote": "Some of the ore was reported to assay 34 ounces in silver and to show considerable free gold, and some of it was said to average from $700 to $1,000 to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 34, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported ore assay",
+        "years": "by 1919"
+      }]
+    },
+    {
+      "mine_id": "nv-rochester-silver-corp",
+      "name": "Rochester Silver Corporation mine",
+      "district": "Rochester",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-rochester-silver-corp-1920",
+        "source_id": "usgs-b762",
+        "pdf_page": 73,
+        "page_cite": "p. 60",
+        "verbatim_quote": "In 1920 the Rochester Silver Corporation milled 42,820 tons of ore, from which $595,351 in bullion was obtained. The ore contained 12.63 ounces of silver and 0.139 ounce of gold to the ton, of which 82.1 per cent of the silver and 91.7 per cent of the gold was won.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.139, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 12.63, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "1920 mill feed",
+        "years": "1920"
+      }]
+    },
+    {
+      "mine_id": "nv-big-four-lease",
+      "name": "Big Four lease",
+      "district": "Rochester",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-big-four-1913",
+        "source_id": "usgs-b762",
+        "pdf_page": 73,
+        "page_cite": "p. 60",
+        "verbatim_quote": "During 1913, the first year of large-scale mining, the Big Four lease on the West vein yielded 5,308 tons of ore carrying 60 ounces of silver to the ton",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 60, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "1913 ore yielded",
+        "years": "1913"
+      }]
+    },
+    {
+      "mine_id": "nv-codd-lease",
+      "name": "Codd lease",
+      "district": "Rochester",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-codd-early-production",
+        "source_id": "usgs-b762",
+        "pdf_page": 73,
+        "page_cite": "p. 60",
+        "verbatim_quote": "The Codd lease 9,304 tons of ore carrying 30 ounces to the ton. This high-grade ore was mined above the 300-foot level.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 30, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "early high-grade ore",
+        "years": "1913"
+      }]
+    },
+    {
+      "mine_id": "nv-octopus-mine",
+      "name": "Octopus mine",
+      "district": "Rochester",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-octopus-lessee-shipments",
+        "source_id": "usgs-b762",
+        "pdf_page": 81,
+        "page_cite": "p. 68",
+        "verbatim_quote": "Some of the rich ore shipped in early days by lessees, which averaged 80 ounces of silver to the ton, doubtless contained much of this soft argentite.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 80, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "early lessee shipments",
+        "years": "early operations"
+      }]
+    },
+    {
+      "mine_id": "nv-abe-lincoln-mine",
+      "name": "Abe Lincoln mine",
+      "district": "Rochester",
+      "county": "Pershing",
+      "evidence": [{
+        "evidence_id": "nv-abe-lincoln-sacked-ore",
+        "source_id": "usgs-b762",
+        "pdf_page": 81,
+        "page_cite": "p. 68",
+        "verbatim_quote": "Ore sacked for shipment is said to average 75 ounces of silver and $10 in gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Ag", "value": 75, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "sacked ore for shipment",
+        "years": "by 1919"
+      }]
+    },
+    {
+      "mine_id": "nv-duplex-mine",
+      "name": "Duplex mine",
+      "district": "Searchlight",
+      "county": "Clark",
+      "evidence": [{
+        "evidence_id": "nv-duplex-average-shipment",
+        "source_id": "usgs-b906d",
+        "pdf_page": 50,
+        "page_cite": "p. 171",
+        "verbatim_quote": "Average metal content per shipment: Gold, ounces per ton, 3.97; Silver, ounces per ton, 6.92; Lead, percent, 11.77; Copper, percent, 2.90; Zinc, percent, 1.63.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 3.97, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 6.92, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 2.9, "unit": "percent"},
+          {"commodity": "Pb", "value": 11.77, "unit": "percent"},
+          {"commodity": "Zn", "value": 1.63, "unit": "percent"}
+        ],
+        "basis": "average smelter-return shipment",
+        "years": "1922-1926"
+      }]
+    },
+    {
+      "mine_id": "nv-prince-mine",
+      "name": "Prince mine",
+      "district": "Pioche",
+      "county": "Lincoln",
+      "evidence": [{
+        "evidence_id": "nv-prince-shipped-ore",
+        "source_id": "usgs-pp171",
+        "pdf_page": 8,
+        "page_cite": "p. 4",
+        "verbatim_quote": "About 800,000 tons of ore carrying 2.5 to 3 ounces of silver to the ton, 3 per cent of lead, 35 per cent of iron, and 15 per cent of manganese has been shipped.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 2.5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 3, "unit": "percent"},
+          {"commodity": "Fe", "value": 35, "unit": "percent"}
+        ],
+        "basis": "lower bound of reported silver range in shipped ore; stated Pb and Fe",
+        "years": "through report date"
+      }]
+    },
+    {
+      "mine_id": "nv-combined-metals-mine",
+      "name": "Combined Metals mine",
+      "district": "Pioche",
+      "county": "Lincoln",
+      "evidence": [{
+        "evidence_id": "nv-combined-metals-output",
+        "source_id": "usgs-pp171",
+        "pdf_page": 67,
+        "page_cite": "p. 54",
+        "verbatim_quote": "This ore has been remarkably constant in composition, averaging 14 per cent of zinc, 7 per cent of lead, 7 ounces of silver to the ton, and 0.03 ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.03, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 7, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 7, "unit": "percent"},
+          {"commodity": "Zn", "value": 14, "unit": "percent"}
+        ],
+        "basis": "reported output average",
+        "years": "1924-1926"
+      }]
+    },
+    {
+      "mine_id": "nv-consolidated-eureka",
+      "name": "Consolidated Eureka Mining Company",
+      "district": "Eureka",
+      "county": "Eureka",
+      "evidence": [{
+        "evidence_id": "nv-consolidated-eureka-1954-56",
+        "source_id": "usgs-pp406",
+        "pdf_page": 52,
+        "page_cite": "p. 48",
+        "verbatim_quote": "The ore mined during this period had an average grade per ton of 0.751 ounce of gold, 39.7 ounces of silver, and 28.1 percent lead, with a gross value of $125.04 per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.751, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 39.7, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 28.1, "unit": "percent"}
+        ],
+        "basis": "ore mined average",
+        "years": "1954-1956"
+      }]
+    },
+    {
+      "mine_id": "nv-eureka-corp",
+      "name": "Eureka Corporation, Ltd.",
+      "district": "Eureka",
+      "county": "Eureka",
+      "evidence": [{
+        "evidence_id": "nv-eureka-corp-1957",
+        "source_id": "usgs-pp406",
+        "pdf_page": 52,
+        "page_cite": "p. 48",
+        "verbatim_quote": "The Eureka Corp., Ltd., during the fiscal year ending September 30, 1957, mined more than 25,000 tons of ore that contained 0.48 ounce of gold per ton, 11.7 ounces of silver per ton, and 17.8 percent lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.48, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 11.7, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 17.8, "unit": "percent"}
+        ],
+        "basis": "ore mined",
+        "years": "fiscal year ending 1957-09-30"
+      }]
+    },
+    {
+      "mine_id": "nv-great-bend-surface-dump",
+      "name": "Great Bend mine surface ore dump",
+      "district": "Goldfield",
+      "county": "Esmeralda",
+      "evidence": [{
+        "evidence_id": "nv-great-bend-surface-dump-assay-10a",
+        "source_id": "nbmg-mdf-21600006",
+        "pdf_page": 6,
+        "page_cite": "p. 5, Assay No. 10 A",
+        "page_image_sha256": "3c35dcaaad0c796737b514e767fa9261511c160991fd8fc71832c6db8514bd67",
+        "verbatim_quote": "Average surface of ore dump, being left dump northerly from Incline shaft on Great Bend, D.B. 0.23 oz.Au",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.23, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Assay No. 10 A, average surface of ore dump",
+        "years": "1934 report"
+      }]
+    }
+  ]
+}

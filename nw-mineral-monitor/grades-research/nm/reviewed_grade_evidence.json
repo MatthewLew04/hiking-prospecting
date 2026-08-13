@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-new-mexico-reviewed-grade-extraction",
+  "state": "NM",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 source-page review",
+  "review_method": "Human transcription from checksum-pinned official USGS scan pages; each quotation is bound to the deterministic 300-dpi rendered-page SHA-256, with the embedded OCR text used only as a diagnostic search cross-check. Range measurements retain the full quoted range and select its stated lower endpoint without averaging.",
+  "mines": [
+    {
+      "mine_id": "nm-victor-no-2-claim",
+      "name": "Victor No. 2 claim",
+      "district": "Red River",
+      "county": "Taos",
+      "evidence": [{
+        "evidence_id": "nm-victor-no-2-pp68-p87",
+        "source_id": "pp68",
+        "pdf_page": 91,
+        "page_image_sha256": "62f7234d76a888895bff24a1e88820f02e68725a0371717aaf546b649efa51d1",
+        "page_cite": "p. 87",
+        "verbatim_quote": "On the Victor No. 2 claim, 3 miles down Red River, galena ore has been struck. It is said to run 60 per cent of lead and 1 per cent of copper as chalcopyrite, with 8 ounces of silver to the ton and a trace of gold.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 60, "unit": "percent"},
+          {"commodity": "Cu", "value": 1, "unit": "percent"},
+          {"commodity": "Ag", "value": 8, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported galena-ore grade; unquantified trace gold omitted",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-ivanhoe-grafton",
+      "name": "Ivanhoe mine",
+      "district": "Grafton",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-ivanhoe-grafton-pp68-p264",
+        "source_id": "pp68",
+        "pdf_page": 297,
+        "page_image_sha256": "9f5188ab8b5c064169a55f1f7c69cc1de3be82fbe69e432a213392ffad97d2f2",
+        "page_cite": "p. 264",
+        "verbatim_quote": "A very little ore is being taken out. It is said to assay 40 ounces in silver and $1 in gold to the ton and 1½ to 2 per cent in copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 40, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1.5, "unit": "percent"}
+        ],
+        "basis": "Reported ore assay; copper records the stated lower endpoint, and historical dollar gold is not converted",
+        "years": "1905 field description"
+      }]
+    },
+    {
+      "mine_id": "nm-mahoning-group",
+      "name": "Mahoning group",
+      "district": "Grafton",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-mahoning-pp68-p264",
+        "source_id": "pp68",
+        "pdf_page": 297,
+        "page_image_sha256": "9f5188ab8b5c064169a55f1f7c69cc1de3be82fbe69e432a213392ffad97d2f2",
+        "page_cite": "p. 264",
+        "verbatim_quote": "An average of the dump is reported by the owner, Quinby Vance, to assay 28 ounces of silver and $1.96 in gold to the ton and 2.5 per cent of copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 28, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 2.5, "unit": "percent"}
+        ],
+        "basis": "Reported average dump assay; historical dollar gold is not converted",
+        "years": "1905 field description"
+      }]
+    },
+    {
+      "mine_id": "nm-nana-mine",
+      "name": "Nana mine",
+      "district": "Apache",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-nana-pp68-p265",
+        "source_id": "pp68",
+        "pdf_page": 298,
+        "page_image_sha256": "5141cf3be5a29ad1c41c0df1a10eaa164d36512de697eaff31eb34fdeeb0c123",
+        "page_cite": "p. 265",
+        "verbatim_quote": "Selected dark ore runs 144 ounces in silver and $14 in gold to the ton and 9 per cent in copper, according to the statement of E. James, one of the owners.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 144, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 9, "unit": "percent"}
+        ],
+        "basis": "Owner-reported selected dark ore; historical dollar gold is not converted",
+        "years": "1905 field description"
+      }]
+    },
+    {
+      "mine_id": "nm-new-era-mine",
+      "name": "New Era mine",
+      "district": "Apache",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-new-era-pp68-p266",
+        "source_id": "pp68",
+        "pdf_page": 299,
+        "page_image_sha256": "50ca4a0e49dafb3678a7dc8d73ed8599ac03335317e9f240a51e6b3bd8deb541",
+        "page_cite": "p. 266",
+        "verbatim_quote": "C. T. Brown, who had charge of the mine, states that the sulphide ore gave returns of about 17 per cent of copper and 161 to 256 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 17, "unit": "percent"},
+          {"commodity": "Ag", "value": 161, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported sulphide-ore returns; silver records the stated lower endpoint",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-wicks-mine",
+      "name": "Wicks mine",
+      "district": "Hillsboro",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-wicks-pp68-p276",
+        "source_id": "pp68",
+        "pdf_page": 311,
+        "page_image_sha256": "3257d1e87564d8595722fa4375e1e80cb8c2ee8112605c6e03cfbed701fda327",
+        "page_cite": "p. 276",
+        "verbatim_quote": "Some of the higher-grade shipping ore is stated to contain 12 ounces of silver and 2.75 ounces of gold to the ton, as well as 6 per cent of copper.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 12, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Au", "value": 2.75, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 6, "unit": "percent"}
+        ],
+        "basis": "Stated higher-grade shipping ore",
+        "years": "1909"
+      }]
+    },
+    {
+      "mine_id": "nm-bonanza-hillsboro",
+      "name": "Bonanza mine",
+      "district": "Hillsboro",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-bonanza-pp68-p276",
+        "source_id": "pp68",
+        "pdf_page": 311,
+        "page_image_sha256": "3257d1e87564d8595722fa4375e1e80cb8c2ee8112605c6e03cfbed701fda327",
+        "page_cite": "Smelter-returns table, p. 276",
+        "verbatim_quote": "Average 32.3 8.65 14.0 15.7 47.47 16.83",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 32.3, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Au", "value": 8.65, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 14, "unit": "percent"}
+        ],
+        "basis": "Average row of smelter returns on three rich shipping-ore car lots; columns are silver, gold, copper, iron, insoluble silica, and sulphur",
+        "years": "company records cited in 1905"
+      }]
+    },
+    {
+      "mine_id": "nm-thirty-stope",
+      "name": "Thirty Stope",
+      "district": "Lake Valley",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-thirty-stope-pp68-p279",
+        "source_id": "pp68",
+        "pdf_page": 314,
+        "page_image_sha256": "9a4751a967ebeb49827942b2a52eac2c6d06de3de7ef3604e0f8a50bc9564dca",
+        "page_cite": "p. 279",
+        "verbatim_quote": "An average of the ore from this working for the past few years would be 65 per cent silica, 6 per cent iron, and 12 per cent manganese, with 20 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Fe", "value": 6, "unit": "percent"},
+          {"commodity": "Ag", "value": 20, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Stated multi-year working average",
+        "years": "years preceding 1894 source description"
+      }]
+    },
+    {
+      "mine_id": "nm-emporia-incline",
+      "name": "Emporia Incline",
+      "district": "Lake Valley",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-emporia-incline-pp68-p279",
+        "source_id": "pp68",
+        "pdf_page": 314,
+        "page_image_sha256": "9a4751a967ebeb49827942b2a52eac2c6d06de3de7ef3604e0f8a50bc9564dca",
+        "page_cite": "p. 279",
+        "verbatim_quote": "Its contents in silver vary from 30 to 50 ounces to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 30, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Carload-lot ore; stated lower endpoint retained",
+        "years": "reported 1894"
+      }]
+    },
+    {
+      "mine_id": "nm-bunkhouse-workings",
+      "name": "Bunkhouse workings",
+      "district": "Lake Valley",
+      "county": "Sierra",
+      "evidence": [{
+        "evidence_id": "nm-bunkhouse-pp68-p279",
+        "source_id": "pp68",
+        "pdf_page": 314,
+        "page_image_sha256": "9a4751a967ebeb49827942b2a52eac2c6d06de3de7ef3604e0f8a50bc9564dca",
+        "page_cite": "p. 279",
+        "verbatim_quote": "The ore from the central portion of the body, taken out shortly after its discovery, varied in silver from 200 to 500 ounces per ton and was basic, containing a considerable proportion of cerargyrite.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Ag", "value": 200, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Central ore body shortly after discovery; stated lower endpoint retained",
+        "years": "early Lake Valley operation"
+      }]
+    },
+    {
+      "mine_id": "nm-jessie-chance-ore-body",
+      "name": "Jessie-Chance ore body",
+      "district": "Victorio",
+      "county": "Luna",
+      "evidence": [{
+        "evidence_id": "nm-jessie-chance-pp68-p291",
+        "source_id": "pp68",
+        "pdf_page": 326,
+        "page_image_sha256": "dd496518201b9c13f62e0686ccde72ad6966d61c77f74874ac944aeacc4447aa",
+        "page_cite": "p. 291",
+        "verbatim_quote": "The higher grade ores, with 15 to 22 per cent lead, contain about 15 ounces of silver and $6 in gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 15, "unit": "percent"},
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Higher-grade ore shared by the contiguous Jessie and Chance claims; lead records the stated lower endpoint, and historical dollar gold is not converted",
+        "years": "historic production through 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-cleveland-group",
+      "name": "Cleveland group",
+      "district": "Pinos Altos",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-cleveland-pp68-p301",
+        "source_id": "pp68",
+        "pdf_page": 336,
+        "page_image_sha256": "065425a1ff105701a9a0d12e54936e17be23077c3efbfd32f69cb33e1aba355b",
+        "page_cite": "p. 301",
+        "verbatim_quote": "Most of the ore opened seems to average about as follows: Zinc, 20 per cent; copper, 2.5 to 3 per cent; silver, 5 ounces to the ton; gold, 0.03 ounce to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Zn", "value": 20, "unit": "percent"},
+          {"commodity": "Cu", "value": 2.5, "unit": "percent"},
+          {"commodity": "Ag", "value": 5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Au", "value": 0.03, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Stated average of opened ore; copper records the stated lower endpoint",
+        "years": "1905 field description"
+      }]
+    },
+    {
+      "mine_id": "nm-apache-no-2-mine",
+      "name": "Apache mine",
+      "district": "Apache No. 2",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-apache-no-2-pp68-p344",
+        "source_id": "pp68",
+        "pdf_page": 381,
+        "page_image_sha256": "71ecdbd032cc6690bcad3235ef3773fd72bc3f783e0f464ed342feb94ff34c11",
+        "page_cite": "p. 344",
+        "verbatim_quote": "As shipped the ore contains 3 to 4 per cent of copper and about $1 to $1.50 in gold and 6 ounces in silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 3, "unit": "percent"},
+          {"commodity": "Ag", "value": 6, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Shipped ore; copper records the stated lower endpoint, and historical dollar gold is not converted",
+        "years": "years preceding 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-international-mine",
+      "name": "International mine",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-international-pp68-p347",
+        "source_id": "pp68",
+        "pdf_page": 384,
+        "page_image_sha256": "03f45d68885ddd6e9cd13819dff1602cd2ed4f15eafc94b192846a5aa82ef082",
+        "page_cite": "p. 347",
+        "verbatim_quote": "The ore is in a limonitic quartz gangue; it consists of malachite, azurite, some cerusite, and a few kernels of chalcopyrite and galena, and is said to run 10 per cent of copper and 60 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 10, "unit": "percent"},
+          {"commodity": "Ag", "value": 60, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported ore grade in the International workings",
+        "years": "historic production through 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-eagle-mine-fremont",
+      "name": "Eagle mine",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-eagle-fremont-pp68-p347",
+        "source_id": "pp68",
+        "pdf_page": 384,
+        "page_image_sha256": "03f45d68885ddd6e9cd13819dff1602cd2ed4f15eafc94b192846a5aa82ef082",
+        "page_cite": "p. 347",
+        "verbatim_quote": "About $5,000 has been expended for development and a total of 200 tons of argentiferous galena has been sold that averaged 40 per cent of lead and 20 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 40, "unit": "percent"},
+          {"commodity": "Ag", "value": 20, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Average of 200 sold tons of argentiferous galena",
+        "years": "through 1907"
+      }]
+    },
+    {
+      "mine_id": "nm-daisy-mine-fremont",
+      "name": "Daisy mine",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-daisy-fremont-pp68-p347",
+        "source_id": "pp68",
+        "pdf_page": 384,
+        "page_image_sha256": "03f45d68885ddd6e9cd13819dff1602cd2ed4f15eafc94b192846a5aa82ef082",
+        "page_cite": "p. 347",
+        "verbatim_quote": "The ore is, as far as developed, soft limonite, malachite, tenorite (?), and copper pitch, with a little quartz, chalcopyrite, native bismuth, and possibly some brittle silver that is reported to average, when sorted for shipment, 18 per cent of copper, 18 ounces in silver, and $1 to $5 in gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 18, "unit": "percent"},
+          {"commodity": "Ag", "value": 18, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported sorted shipping ore; historical dollar gold is not converted",
+        "years": "historic production through 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-silver-fox-mine",
+      "name": "Silver Fox mine",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-silver-fox-pp68-p348",
+        "source_id": "pp68",
+        "pdf_page": 385,
+        "page_image_sha256": "ac204a6c1cd4295d4196c6ded7ac7d852b8b6b45aa95b7107bab881de65665e8",
+        "page_cite": "p. 348",
+        "verbatim_quote": "It is reported to have produced some ore in the early days of the camp, and at present there is some galena ore on the dump that is said to average 20 per cent of lead and 15 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 20, "unit": "percent"},
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported galena-ore dump average",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-american-property",
+      "name": "American property",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-american-pp68-p348",
+        "source_id": "pp68",
+        "pdf_page": 385,
+        "page_image_sha256": "ac204a6c1cd4295d4196c6ded7ac7d852b8b6b45aa95b7107bab881de65665e8",
+        "page_cite": "p. 348",
+        "verbatim_quote": "Both are vertical and show a little copper carbonate ore that is reported to run 4 per cent of copper and 10 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 4, "unit": "percent"},
+          {"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported copper-carbonate ore in the American veins",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-barnett-property",
+      "name": "Barnett property",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-barnett-pp68-p348",
+        "source_id": "pp68",
+        "pdf_page": 385,
+        "page_image_sha256": "ac204a6c1cd4295d4196c6ded7ac7d852b8b6b45aa95b7107bab881de65665e8",
+        "page_cite": "p. 348",
+        "verbatim_quote": "The Barnett property, adjoining the Eagle on the east, is developed by a 90-foot shaft on a quartz vein cutting limestone that carries copper carbonates of a reported value of 20 per cent of copper and 15 ounces of silver and one-half ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Cu", "value": 20, "unit": "percent"},
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Au", "value": 0.5, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported copper-carbonate vein grade",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-doyle-property",
+      "name": "Doyle property",
+      "district": "Fremont",
+      "county": "Hidalgo",
+      "evidence": [{
+        "evidence_id": "nm-doyle-pp68-p348",
+        "source_id": "pp68",
+        "pdf_page": 385,
+        "page_image_sha256": "ac204a6c1cd4295d4196c6ded7ac7d852b8b6b45aa95b7107bab881de65665e8",
+        "page_cite": "p. 348",
+        "verbatim_quote": "Two shallow shafts are used for development and there is about 20 tons of sphalerite-galena ore on the dump, said to run 20 per cent of zinc, 10 per cent of lead, and a very small amount of silver.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Zn", "value": 20, "unit": "percent"},
+          {"commodity": "Pb", "value": 10, "unit": "percent"}
+        ],
+        "basis": "Reported sphalerite-galena dump ore; unquantified silver omitted",
+        "years": "reported 1910"
+      }]
+    },
+    {
+      "mine_id": "nm-lucky-bill-mine",
+      "name": "Lucky Bill mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-lucky-bill-b870-p116",
+        "source_id": "b870",
+        "pdf_page": 133,
+        "page_image_sha256": "5db725fdd25135244b2b2a3b457bc6fce16cc7ce2c27e5d897cc033d73fb4573",
+        "page_cite": "p. 116",
+        "verbatim_quote": "A little sorted primary ore shipped from the Lucky Bill mine is said to have contained 23 percent of lead, 20 percent of zinc, 4 percent of copper, and 15 ounces of silver to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 23, "unit": "percent"},
+          {"commodity": "Zn", "value": 20, "unit": "percent"},
+          {"commodity": "Cu", "value": 4, "unit": "percent"},
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Reported sorted primary shipping ore",
+        "years": "reported 1936"
+      }]
+    },
+    {
+      "mine_id": "nm-ground-hog-mine",
+      "name": "Ground Hog mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-ground-hog-b870-p115",
+        "source_id": "b870",
+        "pdf_page": 132,
+        "page_image_sha256": "5fba84559bc96a25746967f2e5a84a3249c975a5a4eb918ba6c49dac52f0b209",
+        "page_cite": "p. 115",
+        "verbatim_quote": "The average grade of ore mined at the Ground Hog mine has been approximately as follows: Zinc, 14.0 percent; lead, 9.5 percent; copper, 5.0 percent; and silver, 10.0 ounces to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Zn", "value": 14, "unit": "percent"},
+          {"commodity": "Pb", "value": 9.5, "unit": "percent"},
+          {"commodity": "Cu", "value": 5, "unit": "percent"},
+          {"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Approximate average grade of mined ore",
+        "years": "mining through 1932"
+      }]
+    },
+    {
+      "mine_id": "nm-three-brothers-mine",
+      "name": "Three Brothers mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-three-brothers-b870-p127",
+        "source_id": "b870",
+        "pdf_page": 145,
+        "page_image_sha256": "75c8e0a4b5418629f1f5026f7fb088a66dc74cb4e732963f8a24d3ba1ab9961a",
+        "page_cite": "p. 127",
+        "verbatim_quote": "The average grade of the sulphide shipments, which doubtless had been hand-sorted, is as follows: Zinc, 24 percent; lead, 13.5 percent; copper, 0.3 percent; gold, 0.02 ounce to the ton; silver, 2.0 ounces to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Zn", "value": 24, "unit": "percent"},
+          {"commodity": "Pb", "value": 13.5, "unit": "percent"},
+          {"commodity": "Cu", "value": 0.3, "unit": "percent"},
+          {"commodity": "Au", "value": 0.02, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Average of hand-sorted sulphide shipments",
+        "years": "shipments through spring 1931"
+      }]
+    },
+    {
+      "mine_id": "nm-owl-mine",
+      "name": "Owl mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-owl-b870-p124",
+        "source_id": "b870",
+        "pdf_page": 142,
+        "page_image_sha256": "cda3b6d4f6faf95a153e7804d17fc384803b4bbaa8e08683dba37b586e1ab727",
+        "page_cite": "p. 124",
+        "verbatim_quote": "The main vein in the present headings carries a trace of gold, a trace to 0.6 ounce of silver to the ton, 0.5 to 6 percent of lead, and 1.2 to 5.2 percent of zinc.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 0.5, "unit": "percent"},
+          {"commodity": "Zn", "value": 1.2, "unit": "percent"}
+        ],
+        "basis": "Present-heading vein; quantified lower endpoints retained, while trace gold and trace-to-0.6-ounce silver are omitted rather than represented as zero",
+        "years": "1933 field review"
+      }]
+    },
+    {
+      "mine_id": "nm-silver-king-mine",
+      "name": "Silver King mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-silver-king-b870-p131",
+        "source_id": "b870",
+        "pdf_page": 149,
+        "page_image_sha256": "0d3ad9aa5b07965b321c661635caab6ccb313ed9628f9285e8dbacc8748c739d",
+        "page_cite": "Ore-shipments table, p. 131",
+        "verbatim_quote": "49.6 0.42 2.74 30.0 Sorted ore from 150-foot level southwest of shaft. Vein 1 to 3 feet wide.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.42, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2.74, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 30, "unit": "percent"}
+        ],
+        "basis": "1929 table row: 49.6 dry tons of sorted ore; columns are gold, silver, and lead assays",
+        "years": "1929"
+      }]
+    },
+    {
+      "mine_id": "nm-lion-no-2-mine",
+      "name": "Lion No. 2 mine",
+      "district": "Central",
+      "county": "Grant",
+      "evidence": [{
+        "evidence_id": "nm-lion-no-2-b870-p134",
+        "source_id": "b870",
+        "pdf_page": 152,
+        "page_image_sha256": "326cb079774a62834ac34295c6ae0502fc186905d385aaaefa0f974c283ad834",
+        "page_cite": "p. 134",
+        "verbatim_quote": "Northeast from the shaft the vein contains 1 to 3 feet of cerusite, and 65 tons of cerusite ore was mined from two small stopes above the drift. This ore averaged 17.5 percent of lead and 0.8 ounce of silver to the ton, presumably after being sorted and screened.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Pb", "value": 17.5, "unit": "percent"},
+          {"commodity": "Ag", "value": 0.8, "unit": "troy_ounces_per_short_ton"}
+        ],
+        "basis": "Average of 65 tons of sorted and screened cerusite ore",
+        "years": "historic shipment reported 1936"
+      }]
+    }
+  ]
+}

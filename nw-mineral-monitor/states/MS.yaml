@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "state": "MS",
+  "name": "Mississippi",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-91.656, 30.138, -88.097, 34.997], "crs": "EPSG:4326", "note": "Clip source results to Mississippi's authoritative land boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Mississippi Department of Environmental Quality, Office of Geology (Mississippi Geological Survey)",
+    "catalog_url": "https://geology.deq.ms.gov/publications/",
+    "gis_endpoints": [
+      {"id": "ms_geology_publications_and_gis", "kind": "gis_download_catalog", "url": "https://geology.deq.ms.gov/publications/"},
+      {"id": "ms_geology_viewer", "kind": "interactive_map", "url": "https://geology.deq.ms.gov/viewer/"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "mdeq_geologic_map_2011",
+    "title": "Geologic Map of Mississippi, 2011 GIS files (after Bicker, 1969)",
+    "authority": "Mississippi Geological Survey",
+    "source_url": "https://geology.deq.ms.gov/publications/",
+    "map_url": "https://geology.deq.ms.gov/Publications/Maps_and_Charts/2011_MississippiGeologicMap/2011_MississippiGeologicMap.pdf",
+    "source_scale": "approximately 1:500,000 statewide compilation; exact source metadata must be pinned from the GIS package",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_dataset_download_requires_verification",
+    "provenance_note": "The official catalog lists free statewide GIS files, but the current link appears to use legacy package naming. Verify archive contents and metadata before marking best-available."
+  },
+  "faults": {
+    "source_id": "qfaults_ms_plus_mdeq_structural_features",
+    "title": "USGS Quaternary Faults baseline with MDEQ structural-features map",
+    "authority": "U.S. Geological Survey and Mississippi Geological Survey",
+    "source_url": "https://geology.deq.ms.gov/publications/",
+    "source_scale": "state structural overview approximately 1:500,000; Qfaults source-dependent",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "MDEQ catalogs 1988 and 2009 structural-feature maps, but no reviewed statewide vector package was verified."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "ms_geological_bulletins", "title": "Mississippi Geological Survey bulletins and county mineral-resource reports", "role": "state_geologist_and_mineral_serials", "primary": true, "url": "https://geology.deq.ms.gov/publications/", "status": "registered_not_extracted"},
+    {"source_id": "mississippi_geology", "title": "Mississippi Geology periodical", "role": "state_geology_and_mining_serial", "primary": true, "url": "https://geology.deq.ms.gov/publications/", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "ms_mdeq_aml",
+    "state_inventory_url": "https://www.mdeq.ms.gov/geology/work-areas/mining-and-reclamation/",
+    "status": "small_state_inventory_registered_no_public_export_verified",
+    "evidence": "MDEQ's FY2024 report documents four historic coal sites plus a later Winston County entrance reclaimed and states that a non-coal inventory was established; no accepted public feature export exists."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.sos.ms.gov/public-lands/16th-section-lands/16th-section-leases",
+    "evidence_url": "https://www.sos.ms.gov/content/documents/lands/Lands%20Handbook_2020.pdf",
+    "evidence": "Local school boards competitively bid mineral exploration and mining rights on Sixteenth Section trust lands under Mississippi Secretary of State supervision; applications begin with the relevant school district."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.sos.ms.gov/elections-voting/county-election-information",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_chancery_clerk_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Mississippi is a thin MLRS claim state; no accepted active/closed claim PMTiles and open-ground artifact exists."},
+    "geology_faults": {"finding": "The official map/GIS catalog is registered, but package metadata, statewide fault vector, tiling, and provenance are unresolved."},
+    "aeromag": {"finding": "No accepted Mississippi aeromag COG and survey-index provenance artifact exists."},
+    "grades": {"finding": "County mineral bulletins are primary sources, but 25 graded mines or an explicit audited low-endowment finding is pending."},
+    "recorders": {"finding": "Live-claim counties have not been reconciled to verified chancery-clerk recording vendors."},
+    "quad_maps": {"finding": "No accepted top-five Mississippi target quadrangle inventory exists."},
+    "ci_scale": {"finding": "Mississippi has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 source research records the unresolved GIS-package caveat; release remains disabled."}
+}

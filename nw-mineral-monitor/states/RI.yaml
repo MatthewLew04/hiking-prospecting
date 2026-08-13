@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "RI",
+  "name": "Rhode Island",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-71.862772, 41.146339, -71.12057, 42.018798],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Narragansett Bay islands and Block Island; authoritative coastline and state-waters boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "Rhode Island Geological Survey",
+    "catalog_url": "https://rigs.uri.edu/",
+    "gis_endpoints": [
+      {
+        "type": "rigis_arcgis_catalog_item",
+        "url": "https://www.arcgis.com/home/item.html?id=465ffe3fb6c640b18560f9e21332d391"
+      },
+      {
+        "type": "survey_maps_and_publications",
+        "url": "https://rigs.uri.edu/"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "sgmc_ri_rigs_100k_lineage",
+    "title": "Bedrock geology of Rhode Island vector compilation from Rhode Island Map Series No. 1",
+    "authority": "U.S. Geological Survey and Rhode Island Geological Survey",
+    "url": "https://rigs.uri.edu/",
+    "native_scale": "1:100,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "RIGS identifies Hermes, Gromet, and Murray (1994) as the statewide 1:100,000 source map; verify the RIGIS/SGMC vector's topology, completeness, and exact map lineage before acceptance."
+  },
+  "faults": {
+    "source_id": "sgmc_ri_rigs_100k_structures",
+    "title": "Rhode Island statewide bedrock-map faults and structures",
+    "authority": "U.S. Geological Survey and Rhode Island Geological Survey",
+    "url": "https://rigs.uri.edu/",
+    "native_scale": "1:100,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Verify a reusable line-feature layer from the 1994 map or SGMC, preserve structure class and source scale, and reconcile detailed quadrangle maps with Qfaults."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ri_rigs_serials",
+      "title": "Rhode Island Geological Survey maps and publications",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Rhode Island Map Series", "Geologic maps", "Mineral-resource reports", "Field-trip guidebooks"],
+      "url": "https://rigs.uri.edu/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "eamlis_ri_national_baseline",
+    "state_inventory_url": null,
+    "status": "no_comprehensive_official_state_inventory_identified",
+    "scope": "No statewide abandoned-mine inventory was identified in the RIGS or Rhode Island GIS catalogs; mine occurrences and active extraction data are not substitutes for AML status.",
+    "gap": "Seek a formal RIGS/DEM finding or a hazard-site export; retain e-AMLIS, USMIN, and MRDS only as separately labeled national baselines until then."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "no_general_public_mineral_leasing_portal_identified",
+    "portal_url": "https://dem.ri.gov/natural-resources-bureau/planning-development/land-conservation",
+    "authority_url": "https://dem.ri.gov/natural-resources-bureau/planning-development/land-conservation",
+    "evidence": "Rhode Island DEM publishes state land-conservation and property-management information, but no general state hard-rock mineral leasing or staking program was identified.",
+    "approach_route": "State parcel: verify mineral title and allowed use with DEM and the custodial agency; private parcel: negotiate with the mineral-estate owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://dem.ri.gov/natural-resources-bureau/planning-development/land-conservation",
+    "approach_route": "State conservation parcel: DEM/custodial-agency title and permission review; private parcel: mineral-owner negotiation. Open-ground scoring remains N/A."
+  },
+  "release": {
+    "note": "P3 literature-tier registry only; vector lineage, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending."
+  }
+}

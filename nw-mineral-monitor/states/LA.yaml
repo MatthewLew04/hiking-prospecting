@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "state": "LA",
+  "name": "Louisiana",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-94.045, 28.854, -88.757, 33.021], "crs": "EPSG:4326", "note": "Clip Gulf/offshore source responses to the authoritative Louisiana land boundary for statewide browser tiles."}
+  ],
+  "geological_survey": {
+    "name": "Louisiana Geological Survey",
+    "catalog_url": "https://www.lsu.edu/lgs/publications/catalog.php",
+    "gis_endpoints": [
+      {"id": "lgs_surface_geology", "kind": "arcgis_feature_service", "url": "https://maps.dotd.la.gov/topo/rest/services/OpenData/Surface_Geology/FeatureServer"},
+      {"id": "lgs_24k_surface_geology", "kind": "gis_download_viewer", "url": "https://www.lsu.edu/lgs/digital-resources/24k-surface-geology-map-viewer.php"},
+      {"id": "lgs_1984_geology_raster", "kind": "arcgis_image_service", "url": "https://maps.dotd.la.gov/imagery/rest/services/Products/1984_LA_32M_GeologicMap/ImageServer"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "lgs_surface_geology_1984",
+    "title": "Geologic Map of Louisiana and official Surface Geology feature service",
+    "authority": "Louisiana Geological Survey",
+    "source_url": "https://www.lsu.edu/lgs/publications/maps-atlases.php",
+    "gis_url": "https://maps.dotd.la.gov/topo/rest/services/OpenData/Surface_Geology/FeatureServer",
+    "source_scale": "1:500,000 statewide baseline; regional products at 1:100,000 and selected quadrangles at 1:24,000",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Use the state-hosted feature service for statewide coverage and the official 24K viewer for selective upgrades with product and scale attribution."
+  },
+  "faults": {
+    "source_id": "qfaults_la_plus_lgs_structure",
+    "title": "USGS Quaternary Faults baseline with Louisiana geologic-map structure",
+    "authority": "U.S. Geological Survey and Louisiana Geological Survey",
+    "source_url": "https://www.lsu.edu/lgs/publications/public-information-series.php",
+    "source_scale": "statewide geology 1:500,000; parish fault studies locally more detailed",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "LGS publishes detailed Baton Rouge fault studies, but no distinct current statewide state-fault vector was verified."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "lgs_early_annual_reports", "title": "Louisiana Geological Survey early and annual reports", "role": "state_geologist_annual_reports", "primary": true, "url": "https://www.lsu.edu/lgs/publications/geological-bulletins.php", "status": "registered_not_extracted"},
+    {"source_id": "lgs_mineral_resources", "title": "Louisiana Geological Survey mineral-resources series", "role": "state_mineral_resource_reports", "primary": true, "url": "https://www.lsu.edu/lgs/publications/catalog.php", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "la_denr_surface_mining_aml",
+    "state_inventory_url": "https://www.dnr.louisiana.gov/page/imd-sm-section",
+    "status": "coal_aml_program_registered_export_not_verified",
+    "evidence": "Louisiana DENR administers surface-mining and abandoned-mine reclamation for legacy coal impacts; no reviewed public statewide feature export or complete non-coal inventory is registered."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.denr.louisiana.gov/page/office-of-mineral-resources-omr-home",
+    "process_url": "https://www.denr.louisiana.gov/page/intro-administration-of-the-state-mineral-leasing-process",
+    "evidence": "The State Mineral and Energy Board and Office of Mineral Resources lease state and agency lands and water bottoms for minerals, oil, and gas through advertised bids."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "jurisdiction_model": "parish_clerks_of_court",
+    "directory_url": "https://www.laclerksofcourt.org/clerks-of-court/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_parish_inventory_and_clerk_vendor_review",
+    "note": "Louisiana uses parishes; retain the generic scope key for validator compatibility but spatially reconcile claims to parish clerks of court."
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Louisiana's thin MLRS population is configured nationally; accepted active/closed claim PMTiles and open-ground output are absent."},
+    "geology_faults": {"finding": "The official surface-geology service is registered; state-fault coverage, PMTiles, and source-scale audit are pending."},
+    "aeromag": {"finding": "No accepted Louisiana aeromag COG with survey-index provenance exists."},
+    "grades": {"finding": "Salt, lignite, and state mineral sources exist, but the 25-mine threshold or explicit audited low-endowment finding remains pending."},
+    "recorders": {"finding": "Live claims have not been joined to a complete parish clerk portal/vendor matrix."},
+    "quad_maps": {"finding": "No accepted top-five Louisiana target quad inventory exists."},
+    "ci_scale": {"finding": "Louisiana has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 state sources are registered; no DONE gate is promoted without an accepted artifact."}
+}

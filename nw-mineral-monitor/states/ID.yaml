@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "state": "ID",
+  "name": "Idaho",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-117.25, 41.98, -111.04, 49.01], "crs": "EPSG:4326", "note": "Clip the rectangular query envelope to Idaho's authoritative boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Idaho Geological Survey",
+    "catalog_url": "https://www.idahogeology.org/products/relevant-publications",
+    "gis_endpoints": [
+      {"id": "igs_state_geologic_map", "kind": "gis_download", "url": "https://idahogeology.org/maps-pubs-data/state-geologic-map"},
+      {"id": "igs_mines_and_minerals", "kind": "interactive_database", "url": "https://www.idahogeology.org/WebMap4/"},
+      {"id": "igs_usbm_documents", "kind": "document_catalog", "url": "https://idahogeology.org/geologic-resources/mines-minerals/us-bureau-of-mines-documents"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "igs_m9",
+    "title": "Geologic Map of Idaho, Map 9",
+    "authority": "Idaho Geological Survey",
+    "source_url": "https://idahogeology.org/maps-pubs-data/state-geologic-map",
+    "source_scale": "1:750,000 statewide GIS geodatabase; source index includes more detailed contributing maps",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Retain the Map 9 source-index identifier and original scale for every polygon rather than labeling all output 1:750,000."
+  },
+  "faults": {
+    "source_id": "qfaults_id_plus_igs_m9",
+    "title": "USGS Quaternary Faults baseline with IGS Map 9 structural linework",
+    "authority": "U.S. Geological Survey and Idaho Geological Survey",
+    "source_url": "https://idahogeology.org/maps-pubs-data/state-geologic-map",
+    "source_scale": "Qfaults source-dependent; Map 9 1:750,000 compilation",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "No separate, current, statewide IGS Quaternary-fault vector was confirmed in this review; keep activity semantics from Qfaults and bedrock structure from Map 9 distinct."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "id_state_mine_inspector_reports", "title": "Idaho State Mine Inspector annual reports", "role": "state_mine_inspector_annual_reports", "primary": true, "url": "https://www.idahogeology.org/WebMap4/", "status": "registered_and_partially_extracted"},
+    {"source_id": "id_mining_industry_reports", "title": "Annual Report of the Mining Industry of Idaho", "role": "state_mineral_industry_serial", "primary": true, "url": "https://www.idahogeology.org/products/relevant-publications", "status": "registered_and_partially_extracted"},
+    {"source_id": "id_usbm_documents", "title": "U.S. Bureau of Mines documents for Idaho", "role": "usb_mines_ri_ic_and_property_reports", "primary": true, "url": "https://idahogeology.org/geologic-resources/mines-minerals/us-bureau-of-mines-documents", "status": "registered_not_fully_extracted"}
+  ],
+  "aml": {
+    "source_id": "id_deq_inactive_mines",
+    "state_inventory_url": "https://www.deq.idaho.gov/waste-management-and-remediation/sampling-investigation-and-cleanup/preliminary-assessment-program/",
+    "status": "assessment_catalog_registered_not_full_inventory",
+    "evidence": "Idaho DEQ reports more than 8,500 inactive mines, mineral locations, and discoveries and publishes assessment reports, but the page is not a complete downloadable statewide AML feature inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://www.idl.idaho.gov/leasing/minerals-leasing/",
+    "map_url": "https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=7de650fa6b31479f859afc90e03953ba",
+    "evidence": "Idaho Department of Lands administers metallic and nonmetallic mineral leases and exploration locations over state endowment mineral estates; the leasing application identifies availability and lease activity."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://voteidaho.gov/county-clerk/",
+    "matrix": [],
+    "matrix_status": "partial_southeast_idaho_seed_pending_live_claim_reconciliation",
+    "note": "The existing portal config includes one verified Cassia manual workflow and several unverified neighboring counties; it is not a completed live-claim county matrix."
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Legacy Idaho active and closed claim files exist, but accepted PMTiles and regenerated open-ground output do not."},
+    "geology_faults": {"finding": "Map 9 is verified and Qfaults configured; PMTiles and the per-polygon source-scale audit remain pending."},
+    "aeromag": {"finding": "No accepted Idaho aeromagnetic COG with survey-index provenance exists."},
+    "grades": {"finding": "Substantial legacy grade and page-text material exists, but the statewide two-primary-source acceptance audit is not recorded as passed."},
+    "recorders": {"finding": "A small southeast Idaho seed matrix exists; all counties intersecting current live claims have not been reconciled."},
+    "quad_maps": {"finding": "No accepted top-five Idaho target quadrangle inventory exists."},
+    "ci_scale": {"finding": "Legacy statewide browser JSON is a regression candidate; Idaho has not passed PMTiles/COG budgets at national scale."}
+  },
+  "release": {"note": "Existing Idaho evidence is preserved, but no gate is silently promoted without a current artifact audit."}
+}

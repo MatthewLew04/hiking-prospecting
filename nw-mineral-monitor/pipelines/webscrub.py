@@ -18,11 +18,31 @@ site/data/history/{aoi}.json = {byName: {canon: [hit...]}, msha: [...]}
 """
 import io, json, os, re, sys, time, urllib.parse, zipfile
 from collections import defaultdict
-from common import load_aoi, cached_get, SITE, TODAY, write_json
+from common import (load_aoi, load_state, cached_get, SITE, TODAY, write_json,
+                    load_build_input)
 
 JUNK = re.compile(r'\b(gravel|pit|quarry|unnamed|unknown|prospect|placer|occurrence|'
                   r'deposit|deposits|clay|sand|stone|pumicite|cinder|borrow|'
                   r'area|adit|shaft|workings?)\b', re.I)
+DEFAULT_SETTINGS = {'max_features': 60, 'chronam_rps': 0.8}
+
+
+def webscrub_settings(aoi):
+    settings = {**DEFAULT_SETTINGS, **(aoi.get('webscrub') or {})}
+    if (not isinstance(settings['max_features'], int) or
+            isinstance(settings['max_features'], bool) or
+            settings['max_features'] < 1):
+        raise ValueError('webscrub.max_features must be a positive integer')
+    if (not isinstance(settings['chronam_rps'], (int, float)) or
+            isinstance(settings['chronam_rps'], bool) or
+            not 0 < settings['chronam_rps'] <= 2):
+        raise ValueError('webscrub.chronam_rps must be in (0, 2]')
+    return settings
+
+
+def state_search_name(code):
+    """Use the reviewable registry name, never a state-code special case."""
+    return load_state(code)['name']
 
 
 def strip_parens(name):
@@ -42,24 +62,40 @@ def gather_names(aoi):
     st = aoi['state']
     x0, y0, x1, y1 = aoi['bbox']
     ranked = []
-    g = json.load(open(os.path.join(SITE, 'data/grades/grades.json')))
+    with open(os.path.join(SITE, 'data/grades/grades.json'),
+              encoding='utf-8') as source:
+        g = json.load(source)
     for i in range(g['n']):
         if g['st'][i] == st and g['x'][i] is not None and x0 <= g['x'][i] <= x1 and y0 <= g['y'][i] <= y1:
             ranked.append(g['name'][i])
-    m = json.load(open(os.path.join(SITE, f'data/sites/mrds_{st.lower()}.json')))
-    for i in range(m['n']):
-        if m['x'][i] and x0 <= m['x'][i] <= x1 and y0 <= m['y'][i] <= y1 and m['nm'][i]:
-            ranked.append(m['nm'][i])
-    c = json.load(open(os.path.join(SITE, f'data/openground/{aoi["key"]}_claims.json')))
-    for row in c['active'] + c['closed']:
-        if row.get('name'): ranked.append(row['name'])
+    # Legacy AOI snapshots are optional research inputs, never a prerequisite
+    # for running Chronicling America in a newly registered state.
+    try:
+        m = load_build_input('sites', f'mrds_{st.lower()}')
+    except (KeyError, FileNotFoundError, ValueError):
+        m = None
+    if m:
+        for i in range(m['n']):
+            if (m['x'][i] is not None and m['y'][i] is not None and
+                    x0 <= m['x'][i] <= x1 and y0 <= m['y'][i] <= y1 and m['nm'][i]):
+                ranked.append(m['nm'][i])
+    claim_path = os.path.join(SITE, f'data/openground/{aoi["key"]}_claims.json')
+    if os.path.isfile(claim_path):
+        with open(claim_path, encoding='utf-8') as source:
+            c = json.load(source)
+        for row in c.get('active', []) + c.get('closed', []):
+            if row.get('name'):
+                ranked.append(row['name'])
+    for name in (aoi.get('webscrub') or {}).get('seed_names', []):
+        if isinstance(name, str) and name.strip():
+            ranked.append(name.strip())
     seen, out = set(), []
     for n in ranked:
         cn = canon(n)
         if len(cn) < 4 or JUNK.search(n or '') or cn in seen: continue
         seen.add(cn)
         out.append((cn, strip_parens(n)))
-    return out[:aoi['webscrub']['max_features']]
+    return out[:webscrub_settings(aoi)['max_features']]
 
 
 def chronam(term, state_word, rps):
@@ -82,9 +118,9 @@ def chronam(term, state_word, rps):
 _gb_fails = [0]
 
 
-def gbooks(term, rps):
+def gbooks(term, state_word, rps):
     if _gb_fails[0] >= 3: return []               # IP is rate-limited — stop burning time
-    q = urllib.parse.quote(f'"{term}" idaho mining')
+    q = urllib.parse.quote(f'"{term}" {state_word} mining')
     url = f'https://www.googleapis.com/books/v1/volumes?q={q}&maxResults=5'
     try:
         j = json.loads(cached_get(url, ttl_days=60, min_interval=1.0 / rps, tries=1))
@@ -138,13 +174,15 @@ def msha(aoi):
 
 def run(aoi_key=None):
     aoi = load_aoi(aoi_key)
+    settings = webscrub_settings(aoi)
+    state_word = state_search_name(aoi['state'])
     names = gather_names(aoi)
     print(f'sweeping {len(names)} canonical names')
-    rps = aoi['webscrub']['chronam_rps']
+    rps = settings['chronam_rps']
     by_name = {}
     for i, (cn, display) in enumerate(names):
-        hits = chronam(display, aoi['state'].replace('ID', 'idaho'), rps)
-        hits += gbooks(display, rps)
+        hits = chronam(display, state_word, rps)
+        hits += gbooks(display, state_word, rps)
         good = [h for h in hits if 'err' not in h]
         if good:
             # dedup by URL

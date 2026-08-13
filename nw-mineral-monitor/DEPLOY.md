@@ -1,6 +1,6 @@
 # Hosting the NW Mineral Monitor on AWS — step by step
 
-You'll end up with: your map at a public `https://` URL, served from S3 through CloudFront (fast + cheap), with a Lambda job that re-pulls **active mining claims from BLM every night** and closed claims monthly. The map also queries BLM live for whatever you're looking at when zoomed in — so claim boundaries are always current even between refreshes.
+You'll end up with: your map at a public `https://` URL, served from S3 through CloudFront (fast + cheap), with a Lambda job that re-pulls **active mining claims from BLM every night** and closed claims monthly into a private staging prefix. The browser reads checked PMTiles build artifacts, never those whole-state staging snapshots. It also queries BLM live for the current viewport when zoomed in, so the visible live-boundary overlay is current between PMTiles builds.
 
 **Estimated base cost: roughly $1–3/month** (S3 + CloudFront transfer;
 Lambda + EventBridge are comfortably inside the always-free tier at this
@@ -8,15 +8,19 @@ traffic). WS10 COGs and tile pyramids can be much larger than the base site,
 so their storage and egress are additional and depend on the number and
 resolution of published sheets. Teardown instructions are at the bottom.
 
-There are two paths. **Path A (recommended)** uses one script and takes ~15 minutes. **Path B** is every console click, if you'd rather see and understand each piece. Both produce identical results.
+The supported production path uses `infra/deploy.sh` and takes roughly 15
+minutes. The AWS console remains useful for inspecting the stack and its
+outputs, but a manual console upload is not equivalent: it cannot reproduce
+the repository validators, exact binary allowlists, remote checksum checks,
+or pointer-last publication order.
 
 ---
 
-## Before you start (both paths)
+## Before you start
 
 1. **An AWS account** — sign up at https://aws.amazon.com if you don't have one (needs a credit card; you'll stay in free-tier territory).
 2. **Sign in and pick a region.** Top-right of the AWS console, set the region to **US West (Oregon) — us-west-2**. (Any region works; Oregon is fitting and cheap. Whatever you pick, stay consistent.)
-3. You need the `nw-mineral-monitor/` folder from your repo on your machine (it contains `site/`, `infra/`, and this file).
+3. You need the `nw-mineral-monitor/` folder from your repo on your machine (it contains `site/`, `infra/`, and this file). Install Git LFS and run `git lfs pull` after cloning; PMTiles and COGs are LFS objects, and the deploy preflight intentionally rejects pointer-only files.
 
 ---
 
@@ -37,23 +41,95 @@ cd nw-mineral-monitor/infra
 chmod +x deploy.sh
 ./deploy.sh
 ```
-The script: creates the CloudFormation stack (bucket, CloudFront, Lambda, schedules) → uploads the real Lambda code → syncs the `site/` folder to S3 → triggers the first claims refresh → prints your URL.
+The script creates the CloudFormation stack (bucket, CloudFront, Lambda,
+schedules), packages the complete Lambda dependencies, validates and uploads
+the public site in dependency order, triggers the first claims refresh, and
+prints the URL.
 
 First run takes 5–10 minutes (CloudFront distributions are slow to create). When it prints `Your map is live at: https://dXXXXXXXX.cloudfront.net`, give CloudFront ~5 more minutes, then open the URL.
 
 ### A4. Verify (2 minutes)
-- Map loads, heatmap visible, header shows **177,994 SITES / 113,330 ACTIVE CLAIMS**.
-- Footer says `claims snapshot <today's date>` — that means the Lambda refresh worked.
+- Map loads, heatmap visible, header shows **898,684 SITES / 458,049 FED ACTIVE / 1,262,983 FED CLOSED / 39,320 AK ACTIVE+PENDING** for the committed baseline artifacts. Alaska counts are source polygons, not asserted unique claims; the Alaska total comprises 39,269 active and 51 pending polygons, and multipart serials may repeat.
+- Open **49-STATE COVERAGE** and confirm that every incomplete state says
+  **BUILDING**; a source registration must not appear as a released state.
 - Zoom into the Silver Valley, Idaho (search "bunker hill") past zoom 10.5 — a green **LIVE** badge should appear top-right with claim polygons fetched straight from BLM.
-- Console → **Lambda → nw-mineral-monitor-claims-updater → Monitor**: one successful invocation.
+- Console → **Lambda → nw-mineral-monitor-claims-updater → Monitor**: one successful invocation. Its output is private tile-build staging, not a browser JSON snapshot.
 
 That's it. Later:
 ```bash
 ./deploy.sh update-site   # after editing site files
 ./deploy.sh upload-ws10-assets  # explicit add/update of ignored quad rasters/tiles
-./deploy.sh refresh       # force a claims re-pull right now
+./deploy.sh upload-release-assets  # explicit add/update of immutable WS11 DONE artifacts
+./deploy.sh refresh       # force a private MLRS staging pull right now
 ./deploy.sh teardown      # delete everything
 ```
+
+### Public-site upload guard and stale binaries
+
+Before either `deploy` or `update-site` makes an AWS request,
+`pipelines/validate_public_site.py` inspects the whole `site/` tree. It rejects
+symlinks, hidden files, temporary/backup paths, sensitive credential/key
+extensions, and every PMTiles/TIFF not referenced by the current public
+manifest. Literal mutable tile paths in `index.html` are forbidden; the UI must
+resolve them through the manifest. The validator maps every exact friendly
+local build path to
+`map-assets/baselines/<full-sha256><original-suffix>`, recursively rewrites
+both plain paths and exact `pmtiles://` paths in a strict temporary deployment
+manifest, and verifies that duplicate browser descriptors still agree. Query
+string cache-busters and substring rewrites are rejected.
+
+The deploy uploads only the deduplicated content-addressed plan, verifies each
+remote object's byte count and full-object SHA-256, and gives these immutable
+objects a one-year cache policy. It never uploads or overwrites a friendly
+`data/tiles/...` binary key. After every dependency succeeds it uploads
+`coverage.json`, the transformed `manifest.json` pointer (never the checked-in
+friendly-path manifest), and finally `index.html`. A binary upload or
+verification failure therefore cannot advance the public pointers or UI, and
+an old cached manifest continues to name its old unmodified generation.
+
+Public binaries are excluded from both recursive `sync --delete` phases.
+Content-addressed generations are intentionally retained because cached old
+manifests may still reference them; the default CloudFront behavior can safely
+cache these unique `map-assets/baselines/` keys without range responses mixing
+bytes from different generations. There is no authenticated historical
+inventory that can prove when all clients have stopped using a generation, so
+the deploy does not guess and does not automatically delete one. To inspect
+the current local build allowlist:
+
+```bash
+python3 pipelines/validate_public_site.py --site site --format paths
+```
+
+Any future lifecycle cleanup must operate on an exact reviewed
+`map-assets/baselines/<sha>.<suffix>` key only after its retention window and
+all retained manifests have been audited. Never use a recursive/glob deletion,
+and never include `map-assets/releases/` or `ws10-assets/`; those immutable
+namespaces have separate lifecycle rules. Bucket versioning makes an exact
+mistaken deletion recoverable, but it is not a substitute for reviewing the
+key.
+
+---
+
+## WS11 state releases — immutable, gate-controlled upload
+
+Per-state PMTiles and COGs that pass the WS11 DONE gate live below
+`site/map-assets/releases/`. The normal `deploy` and `update-site` commands
+upload that tree before publishing the mutable manifest and registry pointers.
+The ordinary site sync continues to exclude `map-assets/`, so `--delete`
+cannot prune an older content-addressed generation. To upload the immutable
+tree alone after a reviewed build:
+
+```bash
+cd infra
+bash deploy.sh upload-release-assets
+```
+
+This command requires an empty release tree when zero states are released and
+rejects missing, unexpected, hidden/temporary, or symlinked objects otherwise.
+It never deletes remote objects, sets a one-year immutable cache policy, and
+invalidates only `/map-assets/releases/*`. A registry entry must not be enabled
+until the local artifact, hash, bytes, feature schema, and all DONE evidence
+pass the release validator.
 
 ---
 
@@ -121,12 +197,12 @@ deploy cannot erase it even though no matching local files exist. `teardown`
 is the exception: after its typed confirmation it intentionally empties the
 whole bucket, including WS10 assets.
 
-For a console-only deployment, repeat the same one-layer cycle: upload the
-current *contents* of `pipelines/cache/ws10/assets/` into a bucket folder
-named exactly `ws10-assets/`, verify and mark that layer ready, then evict it
-locally. Upload the final `site/data/geology-quads/` inventory only after all
-18 cycles. Preserve the directory/key layout: XYZ URLs depend on
-`{z}/{x}/{y}` matching those keys.
+For manual recovery or inspection, the equivalent object layout places the
+current *contents* of `pipelines/cache/ws10/assets/` below the exact
+`ws10-assets/` bucket prefix. This is not a supported replacement for the
+scripted upload/verify/mark-ready cycle. Preserve the directory/key layout:
+XYZ URLs depend on `{z}/{x}/{y}` matching those keys, and never advance the
+final `site/data/geology-quads/` inventory until all 18 scripted cycles pass.
 
 Rasters never belong in `site/`, even temporarily. Doing so bloats git and
 also turns the root site sync into an accidental lifecycle manager. The 14
@@ -157,52 +233,60 @@ draft remains unsent and is superseded for raster acquisition.
 
 ---
 
-## Path B — console, click by click (~40 min)
+## AWS console — inspection only, not a production deploy path
 
-### B1. Create the stack (bucket + CloudFront + Lambda + schedules in one shot)
-1. Console → search **CloudFormation** → **Create stack → With new resources (standard)**.
-2. "Specify template" → **Upload a template file** → choose `infra/template.yaml` → Next.
-3. Stack name: `nw-mineral-monitor` → Next.
-4. On "Configure stack options": scroll down, under **Capabilities** check *"I acknowledge that AWS CloudFormation might create IAM resources"* → Next → **Submit**.
-5. Wait for status **CREATE_COMPLETE** (~5–10 min; refresh occasionally). Open the **Outputs** tab and note three values: `SiteURL`, `BucketName`, `UpdaterFunctionName`.
+The former click-by-click Path B is retired. Pasting one Lambda source file
+omits its packaged runtime registry, clipping configuration, and helper
+modules. Dragging the roughly **2.11 GB** `site/` tree into S3 also bypasses
+the exact manifest-derived binary allowlist, immutable release authorization,
+remote SHA-256/size verification, and the binary-before-pointer/index-last
+failure boundary. It can expose partial or unvalidated state and is not a
+supported production procedure.
 
-### B2. Paste in the real Lambda code
-1. Console → **Lambda** → open **nw-mineral-monitor-claims-updater**.
-2. In the **Code** tab you'll see a placeholder `index.py`. Open `infra/lambda_updater.py` from the repo on your machine, copy ALL of it, and paste it over the placeholder contents.
-3. Click **Deploy** (the button above the editor).
+Use Path A above for every deploy and `bash infra/deploy.sh update-site` for a
+site-only publication. The console is still appropriate for watching
+CloudFormation complete, reading stack
+outputs, inspecting Lambda logs, and confirming S3/CloudFront state after the
+script succeeds.
 
-### B3. Upload the site
-1. Console → **S3** → open the bucket from `BucketName` (looks like `nw-mineral-monitor-123456789012`).
-2. Click **Upload** → **Add files / Add folder** → select the *contents* of the `site/` folder: `index.html`, the `assets` folder, and the `data` folder. (Important: `index.html` must land at the top level of the bucket, not inside a `site/` prefix.) Upload WS10 raster assets separately as described above; do not mix them into `site/`.
-3. Upload (~65 MB — a few minutes on ordinary broadband).
-
-### B4. First refresh + verify
-1. Lambda → **nw-mineral-monitor-claims-updater** → **Test** tab → create a test event named `active` with payload `{"mode":"active"}` → **Test**. It runs 2–4 minutes and returns per-state counts.
-2. Open the `SiteURL` from B1 and run the same checks as A4.
-
-The EventBridge schedules created by the stack (visible under **Amazon EventBridge → Rules**) now run the refresh automatically: active claims nightly at 09:10 UTC, closed claims on the 1st of each month in three batches.
+The deployed EventBridge rules run active-claim staging nightly at 09:10 UTC.
+Closed-claim staging runs in **eight batches across days 1–5 of each month**:
+three batches on day 1, two on day 2, then one batch on each of days 3, 4, and
+5. These jobs update private build staging; they do not directly replace the
+browser PMTiles.
 
 ---
 
-## How the auto-update works (what you just built)
+## How claim refresh and publication work
 
 ```
-             nightly 09:10 UTC              on page view
-EventBridge ───────────────► Lambda ──► S3 /data/claims/*.json ──► CloudFront ──► browser
-                              │                                                    │
-                              └── queries BLM MLRS GIS                             └── at zoom ≥ 10.5, browser ALSO
-                                  (active: daily, ~113k claims;                        queries BLM directly for the
-                                   closed: monthly, ~820k)                             current view — always live
+             nightly / monthly                    checked build + deploy
+EventBridge ───────────────► Lambda ──► private S3 staging/claims/*.json ─────┐
+                              │                                               │
+                              └── queries BLM MLRS GIS                        ▼
+                                                                   claims.pmtiles ──► browser
+
+At zoom ≥ 10.5 the browser independently queries BLM for the current viewport.
 ```
-The `data/*` path is cached at CloudFront for 15 minutes, so a fresh snapshot is visible at most 15 minutes after the Lambda finishes. Everything else (map code, USGS/state layers) is static and updates only when you re-upload.
+The bucket policy intentionally does not expose `staging/`, and production sets
+`LEGACY_JSON_STATES` to empty. Therefore `deploy.sh refresh` does **not** silently
+replace the public map: it refreshes inputs for a later validated PMTiles build.
+The committed `claims.pmtiles` changes only when its builder succeeds and the
+site is re-uploaded. The direct live-boundary overlay remains independent of
+that build cycle.
 
 ## The login (AWS Cognito)
 
-The stack creates a **Cognito user pool** with self-signup disabled and one user, **codyClinger**. Path A's `./deploy.sh` finishes the job automatically: it sets the permanent password (`testing123` by default — override with `COGNITO_USER=... COGNITO_PASS=... ./deploy.sh`) and uploads an `auth.json` (region + app-client id, both public-by-design values) to the bucket, which is what switches the site into login mode. Until `auth.json` exists in the bucket, the site is open — so local dev (`python3 -m http.server`) never asks you to sign in.
+The stack creates a **Cognito user pool** with self-signup disabled and three named users. Path A's `./deploy.sh` sets their permanent passwords and uploads an `auth.json` (region + app-client id, both public-by-design values), which switches the site into login mode. There are deliberately no passwords in the repository or fallback defaults: set `COGNITO_PASS`, `COGNITO_PASS_SEAN`, and `COGNITO_PASS_RACHEL` to distinct values of at least 12 characters containing uppercase, lowercase, a number, and a symbol before running `./deploy.sh` (optionally override the first username with `COGNITO_USER`). Until `auth.json` exists in the bucket, the site is open — so local dev (`python3 tools/range_server.py 8000`) never asks you to sign in. That range-capable server is required for PMTiles; plain `python3 -m http.server` is not supported.
 
 If you deployed **before** this feature existed, just run `./deploy.sh` again — CloudFormation adds the Cognito pieces to the existing stack in place, then the script re-uploads the site, writes `auth.json`, and sets the password. Sessions last 24 hours with a 30-day remember-me refresh token; SIGN OUT is in the header.
 
-**Path B equivalents:** after updating the stack with the new `template.yaml`, (1) upload the new `site/index.html` to the bucket, (2) create a file `auth.json` containing `{"region":"us-west-2","clientId":"<UserPoolClientId from stack Outputs>"}` and upload it to the bucket root, (3) set the password with the one CLI command below (the console can only issue temporary passwords — though the login page handles those too, by making the first sign-in permanent).
+Do not use a manual `auth.json`/`index.html` upload as a Path B substitute: it
+can advance the UI independently of its data dependencies. The supported
+deploy script writes `auth.json` only after the validated data pointers and
+uploads `index.html` last. The console remains suitable for inspecting the
+user pool; the CLI commands below are supported for individual user
+administration after a script deployment.
 
 **Managing users** (Cognito console → User pools → nw-mineral-monitor-users, or CLI):
 
@@ -215,7 +299,7 @@ aws cognito-idp admin-set-user-password --user-pool-id <UserPoolId> --username c
 aws cognito-idp admin-disable-user --user-pool-id <UserPoolId> --username codyClinger --region us-west-2
 ```
 
-**Honest scope:** sign-in is enforced by the app in the browser against real Cognito (wrong password = no session, and there's no way to reach the map UI without one). The underlying `data/*.json` files are still individually fetchable by someone who reads the page source and constructs URLs — they're public government data, so the gate is about controlling access to the *app*, not secrets. If you ever need hard enforcement at the CDN layer (every request checked), that's the "cognito-at-edge" Lambda@Edge pattern — say the word and it can be added, at the cost of a us-east-1 companion stack and slower teardowns. Also: `testing123` is a weak password on a public URL — worth changing once real use starts. Cognito cost at this scale: $0 (free tier covers the first 10,000 monthly active users).
+**Honest scope:** sign-in is enforced by the app in the browser against real Cognito (wrong password = no session, and there's no way to reach the map UI without one). The underlying public-data artifacts are still individually fetchable by someone who reads the page source and constructs URLs — the gate controls access to the *app*, not secrets. Private `staging/`, `watch/`, and `ckpt/` prefixes are excluded from CloudFront's bucket-policy resources. If you need hard enforcement at the CDN layer (every request checked), that requires a Cognito-at-edge companion design. Cognito cost at this scale: $0 (free tier covers the first 10,000 monthly active users).
 
 ## The AI answerer (Bedrock)
 
@@ -239,4 +323,7 @@ Facts worth knowing: requests require a signed-in Cognito session (the Lambda ve
 Buy/hold a domain in **Route 53** (or elsewhere) → **ACM** (in us-east-1!) → request a public certificate for `mines.yourdomain.com` → validate via DNS → CloudFront console → your distribution → Edit → add the Alternate domain name + attach the certificate → create a Route 53 **A record (alias)** pointing at the distribution. ~20 minutes, mostly waiting on certificate validation.
 
 ## Teardown
-Path A: `./deploy.sh teardown`. Path B: empty the S3 bucket (S3 → bucket → Empty), then CloudFormation → select the stack → **Delete**. This removes everything the stack created, including S3-only `ws10-assets/`; total cost stops immediately.
+Preferred teardown: `./deploy.sh teardown`. For emergency console cleanup,
+empty the exact stack-owned S3 bucket (including versions) and then delete the
+CloudFormation stack. This removes everything the stack created, including
+S3-only `ws10-assets/`; total cost stops immediately.

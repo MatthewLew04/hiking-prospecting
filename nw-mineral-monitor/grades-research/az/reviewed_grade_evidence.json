@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-arizona-reviewed-grade-extraction",
+  "state": "AZ",
+  "status": "reviewed",
+  "reviewed_on": "2026-08-13",
+  "reviewed_by": "WS11 source-page review",
+  "review_method": "Each quotation and numeric measurement was checked against the cited numbered page in the official AZGS-hosted or USGS PDF. All three historic grade documents are scanned publications: the mandatory SHA-256 of a 300-dpi page render is the review boundary, and OCR is used only as a diagnostic search cross-check. Range measurements preserve the stated lower endpoint rather than inventing an average.",
+  "mines": [
+    {
+      "mine_id": "az-cowboy-mine",
+      "name": "Cowboy mine",
+      "district": "Eureka",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-cowboy-produced-ore",
+        "source_id": "azbm-b137",
+        "pdf_page": 26,
+        "page_cite": "p. 26",
+        "page_image_sha256": "bab56afaa1edb3904405fa751046f69fc615d4bfb15a88a9635cc3f2c39cf8f3",
+        "verbatim_quote": "Some of this ore carried about an ounce of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 1, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported produced gold-lead ore",
+        "years": "1911, 1925, and 1931"
+      }]
+    },
+    {
+      "mine_id": "az-southern-cross-mine",
+      "name": "Southern Cross mine",
+      "district": "Eureka",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-southern-cross-1934-shipment",
+        "source_id": "azbm-b137",
+        "pdf_page": 27,
+        "page_cite": "p. 27",
+        "page_image_sha256": "0c60c4e6dd206f8543b93cb52ea4f3d838202d4abecc1d04a982fde3b0d68944",
+        "verbatim_quote": "During the first few months of 1934, the present owner, R. L. Gray, shipped from the property about 55 tons of ore that is reported to have contained from 0.75 to 1.0 ounce of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.75, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported lower endpoint of 55 tons shipped",
+        "years": "first few months of 1934"
+      }]
+    },
+    {
+      "mine_id": "az-mammoth-hubbard-mine",
+      "name": "Mammoth or Hubbard mine",
+      "district": "Eureka",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-mammoth-hubbard-1934-ore",
+        "source_id": "azbm-b137",
+        "pdf_page": 28,
+        "page_cite": "p. 28",
+        "page_image_sha256": "f5cbeb7d29f49d22efbfbeaffc88f0ce6cd7e5c0d7c8e573cc922058d597291d",
+        "verbatim_quote": "According to Mr. Hubbard, the ore mined from this shoot in January, 1934, averaged about 0.4 per cent of copper, 0.51 ounces of gold, and 2 to 3 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.51, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 0.4, "unit": "percent"}
+        ],
+        "basis": "reported ore-shoot average; silver uses stated lower endpoint",
+        "years": "January 1934"
+      }]
+    },
+    {
+      "mine_id": "az-sheldon-mine",
+      "name": "Sheldon mine",
+      "district": "Walker",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-sheldon-quartzose-and-1923-ore",
+        "source_id": "azbm-b137",
+        "pdf_page": 34,
+        "page_cite": "p. 34",
+        "page_image_sha256": "c98cc5e2e5b9fe34997633490da0a6a7b6fee3949da7a3f78f3fc730f14c24a0",
+        "verbatim_quote": "The quartzose ore is stated to contain an ounce or more of gold per ton, but the sericitic and pyritic granite is only about one-tenth as rich. The ore mined in 1923 was reported to average about 2.76 per cent of copper, 3.5 per cent of lead, $5 in gold, and 8.5 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 8.5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 2.76, "unit": "percent"},
+          {"commodity": "Pb", "value": 3.5, "unit": "percent"}
+        ],
+        "basis": "quartzose ore for Au; reported 1923 ore average for Ag, Cu, and Pb; the separate historic dollar value is not converted",
+        "years": "1923"
+      }]
+    },
+    {
+      "mine_id": "az-mccabe-gladstone-mine",
+      "name": "McCabe-Gladstone mine",
+      "district": "Bigbug",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-mccabe-gladstone-shipping-concentrates",
+        "source_id": "azbm-b137",
+        "pdf_page": 37,
+        "page_cite": "p. 37",
+        "page_image_sha256": "7f4e58eb4b1d0f450817e25e45b20aee7fed6f09e62f9bb57975a4256f9958e9",
+        "verbatim_quote": "The following analysis of the shipping ore and the concentrates is given: Silica, 31.4 per cent; copper, 2.0 per cent; lead, 2.1 per cent; zinc, 4.7 per cent; iron, 24.6 per cent; arsenic, 3.9 per cent; antimony, 1.0 per cent; sulphur, 20.4 per cent; gold, 1.6 ounces per ton; silver, 10.2 ounces per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.6, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 10.2, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 2, "unit": "percent"},
+          {"commodity": "Pb", "value": 2.1, "unit": "percent"},
+          {"commodity": "Zn", "value": 4.7, "unit": "percent"},
+          {"commodity": "Fe", "value": 24.6, "unit": "percent"}
+        ],
+        "basis": "reported analysis of shipping ore and concentrates",
+        "years": "reported in 1967 bulletin"
+      }]
+    },
+    {
+      "mine_id": "az-little-jessie-mine",
+      "name": "Little Jessie mine",
+      "district": "Bigbug",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-little-jessie-ore-range",
+        "source_id": "azbm-b137",
+        "pdf_page": 38,
+        "page_cite": "p. 38",
+        "page_image_sha256": "65b70e99327a14a7e685eb305240030124aac41e7f2ee6f2b4db61c0f8c56528",
+        "verbatim_quote": "He adds that the ore contains from one-half to one ounce of gold per ton and very little silver.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.5, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported ore range, lower endpoint",
+        "years": "reported in 1967 bulletin"
+      }]
+    },
+    {
+      "mine_id": "az-lelan-dividend-property",
+      "name": "Lelan-Dividend property",
+      "district": "Bigbug",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-lelan-dividend-pre-1923-production",
+        "source_id": "azbm-b137",
+        "pdf_page": 38,
+        "page_cite": "p. 38",
+        "page_image_sha256": "65b70e99327a14a7e685eb305240030124aac41e7f2ee6f2b4db61c0f8c56528",
+        "verbatim_quote": "He states that their ore production prior to 1923 was probably at least 10,000 tons which contained from a half to 3 ounces of gold per ton, together with a little silver, copper, and lead.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.5, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported pre-1923 production range, lower endpoint",
+        "years": "prior to 1923"
+      }]
+    },
+    {
+      "mine_id": "az-henrietta-big-bug-mine",
+      "name": "Henrietta or Big Bug mine",
+      "district": "Bigbug",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-henrietta-lower-level-ore",
+        "source_id": "azbm-b137",
+        "pdf_page": 39,
+        "page_cite": "p. 39",
+        "page_image_sha256": "460171644f8469d965bec39026f54fdd279dbd9c6100b9f68424c744bf1422d1",
+        "verbatim_quote": "Ore from the lower levels is reported to contain 3.2 per cent of copper and 14 per cent of iron, together with 0.2 ounces of gold and 2.7 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.2, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 2.7, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 3.2, "unit": "percent"},
+          {"commodity": "Fe", "value": 14, "unit": "percent"}
+        ],
+        "basis": "reported lower-level ore",
+        "years": "reported in 1967 bulletin"
+      }]
+    },
+    {
+      "mine_id": "az-french-lily-mine",
+      "name": "French Lily mine",
+      "district": "Black Canyon",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-french-lily-best-ore",
+        "source_id": "azbm-b137",
+        "pdf_page": 53,
+        "page_cite": "p. 54",
+        "page_image_sha256": "a600ce7c59cbe671acf5144203d85d63d8db791574dda0487adb1ee82601c7a3",
+        "verbatim_quote": "The best ore is said to contain 50 per cent of zinc and 1½ ounces of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Zn", "value": 50, "unit": "percent"}
+        ],
+        "basis": "reported best ore",
+        "years": "reported before 1923"
+      }]
+    },
+    {
+      "mine_id": "az-lincoln-mine",
+      "name": "Lincoln mine",
+      "district": "Pine Grove",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-lincoln-concentrates",
+        "source_id": "azbm-b137",
+        "pdf_page": 58,
+        "page_cite": "p. 59",
+        "page_image_sha256": "d833e131b95ed9087efce0e25049a3f3c6816cc90cd790842977888506bf9070",
+        "verbatim_quote": "The concentrates are reported to have contained 15 per cent of copper, one to 4 ounces of gold, and 10 to 24 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 10, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 15, "unit": "percent"}
+        ],
+        "basis": "reported concentrate ranges, lower endpoints",
+        "years": "reported in 1967 bulletin"
+      }]
+    },
+    {
+      "mine_id": "az-congress-mine",
+      "name": "Congress mine",
+      "district": "Martinez",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-congress-deep-sulphides",
+        "source_id": "azbm-b137",
+        "pdf_page": 71,
+        "page_cite": "p. 72",
+        "page_image_sha256": "4579b22b734ae280150cf3d28f7f819a7197999800c129e236e1c1c40991750a",
+        "verbatim_quote": "The 3,900-ft. level was the deepest point at which any considerable amount of development was done. For several levels above, there had been a gradual pinching of the pay shoot, which became small and irregular, although retaining its mineralogical characteristics and the small amount of sulphides which remained still showing the characteristically high gold contents, about 7 ounces per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 7, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported remaining sulphides in the deep pay shoot",
+        "years": "development through the 3,900-foot level"
+      }]
+    },
+    {
+      "mine_id": "az-moss-mine",
+      "name": "Moss mine",
+      "district": "Oatman",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-moss-220-level-vein",
+        "source_id": "azbm-b137",
+        "pdf_page": 93,
+        "page_cite": "p. 94",
+        "page_image_sha256": "92c7b9f889f587cdf3dbcd3dbd22a5c5a31a5a45c13031d9e058c952632e763e",
+        "verbatim_quote": "Ransome states that the vein on the 220 level appears to be 90 feet wide and as a whole probably carries from 0.15 to 0.20 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.15, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported whole-vein range on the 220 level, lower endpoint",
+        "years": "reported by Ransome before 1923"
+      }]
+    },
+    {
+      "mine_id": "az-iowa-mine",
+      "name": "Iowa mine",
+      "district": "Oatman",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-iowa-hanging-wall-width",
+        "source_id": "azbm-b137",
+        "pdf_page": 96,
+        "page_cite": "p. 97",
+        "page_image_sha256": "6b1f3784ea44225c947a0d6e3f1aae10172318c7bdb7d51798a98fefe5d0bb9e",
+        "verbatim_quote": "He states that its 3 feet of width adjacent to the hanging wall contains from 0.15 to 0.70 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.15, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported hanging-wall width range, lower endpoint",
+        "years": "reported by Schrader before 1923"
+      }]
+    },
+    {
+      "mine_id": "az-hardy-vein",
+      "name": "Hardy vein",
+      "district": "Oatman",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-hardy-prospected-vein",
+        "source_id": "azbm-b137",
+        "pdf_page": 97,
+        "page_cite": "p. 98",
+        "page_image_sha256": "1723711d5bc2c16000ea26c2ae88fc6d5aa8cef2174ad55ccf786aa9e55ede62",
+        "verbatim_quote": "Where prospected, the vein is reported to contain from 0.3 to 1.5 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.3, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "reported prospected vein range, lower endpoint",
+        "years": "reported in 1967 bulletin"
+      }]
+    },
+    {
+      "mine_id": "az-rainbow-mine",
+      "name": "Rainbow mine",
+      "district": "Chloride (Wallapai)",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-rainbow-45-assays",
+        "source_id": "azbm-b137",
+        "pdf_page": 112,
+        "page_cite": "p. 111",
+        "page_image_sha256": "059c8356029522f32fc7d251639b1d9b1807385e7403e62149b86695d178d45b",
+        "verbatim_quote": "Some forty-five assays from various parts of the Rainbow workings showed an average of 2 ounces of gold and 20 ounces of silver per ton, and about 12 per cent of lead.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 2, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 20, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 12, "unit": "percent"}
+        ],
+        "basis": "average of forty-five assays from the workings",
+        "years": "reported before 1967"
+      }]
+    },
+    {
+      "mine_id": "az-samoa-mine",
+      "name": "Samoa mine",
+      "district": "Chloride (Wallapai)",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-samoa-smelter-sheets",
+        "source_id": "azbm-b137",
+        "pdf_page": 113,
+        "page_cite": "p. 112",
+        "page_image_sha256": "3dc530dc9b1ff877194e0426f51e37f325d4cb6c511b3fe9681c48c042a00524",
+        "verbatim_quote": "As shown by smelter sheets, the ore shipped during 1903-1906 averaged 8 per cent of lead, 5 to 8 per cent of zinc, 15 ounces of silver, and 1½ ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 1.5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 15, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 8, "unit": "percent"},
+          {"commodity": "Zn", "value": 5, "unit": "percent"}
+        ],
+        "basis": "smelter-sheet average of shipped ore; zinc uses stated lower endpoint",
+        "years": "1903-1906"
+      }]
+    },
+    {
+      "mine_id": "az-tyler-mine",
+      "name": "Tyler mine",
+      "district": "Mineral Park (Wallapai)",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-tyler-last-carload",
+        "source_id": "azbm-b137",
+        "pdf_page": 113,
+        "page_cite": "p. 112",
+        "page_image_sha256": "3dc530dc9b1ff877194e0426f51e37f325d4cb6c511b3fe9681c48c042a00524",
+        "verbatim_quote": "The last carload shipped at the time of Schrader’s visit averaged 17.5 per cent of lead, 8 ounces of silver and 3.16 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 3.16, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 8, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 17.5, "unit": "percent"}
+        ],
+        "basis": "last carload shipped at the time of Schrader's visit",
+        "years": "1905-1907"
+      }]
+    },
+    {
+      "mine_id": "az-walkover-mine",
+      "name": "Walkover mine",
+      "district": "Cottonwood",
+      "county": "Mohave",
+      "evidence": [{
+        "evidence_id": "az-walkover-1933-34-carloads",
+        "source_id": "azbm-b137",
+        "pdf_page": 116,
+        "page_cite": "p. 115",
+        "page_image_sha256": "388137bb491dc9d7bc99aa3c33c860d0253e3344d5315be9164006a69f0162f8",
+        "verbatim_quote": "In 1933, the property was leased to F. Nielson and associates who, up to February, 1934, had shipped four carloads of ore that contained from 1.00 to 1.29 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 1, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "four shipped carloads, lower endpoint of reported range",
+        "years": "1933-February 1934"
+      }]
+    },
+    {
+      "mine_id": "az-engine-mine",
+      "name": "Engine mine",
+      "district": "Tombstone",
+      "county": "Cochise",
+      "evidence": [{
+        "evidence_id": "az-engine-1933-34-shipments",
+        "source_id": "azbm-b137",
+        "pdf_page": 124,
+        "page_cite": "p. 122",
+        "page_image_sha256": "724ff7aa7baf648e80beab249de8e530273d8ed46a0d067a384327bf8bfbae17",
+        "verbatim_quote": "Of this amount, 2,628 tons that averaged 8.9 per cent of lead, 0.338 ounces of gold, and 12.15 ounces of silver per ton came from the Engine mine, while 3,681 tons were mined by lessees mainly from the Head Center, Tranquility, Silver Thread, Toughnut, West Side, Flora Morrison, and Little Joe mines.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.338, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 12.15, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Pb", "value": 8.9, "unit": "percent"}
+        ],
+        "basis": "average of 2,628 tons shipped from the Engine mine",
+        "years": "November 1933-June 1934"
+      }]
+    },
+    {
+      "mine_id": "az-contention-mine",
+      "name": "Contention mine",
+      "district": "Tombstone",
+      "county": "Cochise",
+      "evidence": [{
+        "evidence_id": "az-contention-below-water-level-drift",
+        "source_id": "azbm-b137",
+        "pdf_page": 125,
+        "page_cite": "p. 123",
+        "page_image_sha256": "55222e0e4228ac6805d2ae77f5bcb2eb64342d62d4977e92767e6fbf4e674e4a",
+        "verbatim_quote": "In the Contention mine, a 140-foot drift about 90 feet below the water level gave an average assay of more than 5 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 5, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "average assay from a 140-foot drift below water level",
+        "years": "reported before 1967"
+      }]
+    },
+    {
+      "mine_id": "az-lucky-cuss-mine",
+      "name": "Lucky Cuss mine",
+      "district": "Tombstone",
+      "county": "Cochise",
+      "evidence": [{
+        "evidence_id": "az-lucky-cuss-two-shipments",
+        "source_id": "azbm-b137",
+        "pdf_page": 125,
+        "page_cite": "p. 123",
+        "page_image_sha256": "55222e0e4228ac6805d2ae77f5bcb2eb64342d62d4977e92767e6fbf4e674e4a",
+        "verbatim_quote": "Two shipments from below the water level of the Lucky Cuss contained 1.7 ounces of gold per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 1.7, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "two shipments from below water level",
+        "years": "reported before 1967"
+      }]
+    },
+    {
+      "mine_id": "az-alaskan-mine",
+      "name": "Alaskan mine",
+      "district": "Ellsworth (Harquahala Mountains)",
+      "county": "La Paz",
+      "evidence": [{
+        "evidence_id": "az-alaskan-1925-33-production",
+        "source_id": "azbm-b137",
+        "pdf_page": 135,
+        "page_cite": "p. 133",
+        "page_image_sha256": "ed87fc7a4f11c84af0731afe5e84f20763b06a9ccd207c61a3a2fca9ef4c85c3",
+        "verbatim_quote": "From January, 1925, to May, 1933, the mine produced 722 tons of ore that averaged 1.69 per cent of copper, 0.503 ounces of gold, and 0.37 ounces of silver per ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.503, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 0.37, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1.69, "unit": "percent"}
+        ],
+        "basis": "average of 722 tons produced",
+        "years": "January 1925-May 1933"
+      }]
+    },
+    {
+      "mine_id": "az-copper-chief-mine",
+      "name": "Copper Chief mine",
+      "district": "Verde",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-copper-chief-chalcocite-ore",
+        "source_id": "usgs-b782",
+        "pdf_page": 114,
+        "page_cite": "p. 92",
+        "page_image_sha256": "613b7917a7ab3fcc8d25d442da25f344410b779049fb8cbf755228f8555af599",
+        "verbatim_quote": "This chalcocite ore is reported to contain as much as 40 ounces of silver and 0.75 ounce of gold to the ton. The copper content is only about 1 or 2 per cent, in part as chalcocite, in part as carbonate.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.75, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 40, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 1, "unit": "percent"}
+        ],
+        "basis": "reported chalcocite ore; copper uses stated lower endpoint",
+        "years": "visited in 1922"
+      }]
+    },
+    {
+      "mine_id": "az-blue-bell-mine",
+      "name": "Blue Bell mine",
+      "district": "Bigbug",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-blue-bell-smelting-ore",
+        "source_id": "usgs-b782",
+        "pdf_page": 169,
+        "page_cite": "p. 145",
+        "page_image_sha256": "f845676e3343c4cdee04183f497fb582100771c13ae2b48a7f84a7a4260aa7d2",
+        "verbatim_quote": "The ore is classified as heavy smelting ore and siliceous concentrating ore and averages 3 per cent in copper. The smelting ore contains also 1.5 ounces of silver and 0.05 ounce of gold to the ton; the siliceous ore averages 1 ounce of silver and 0.03 ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.05, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 1.5, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 3, "unit": "percent"}
+        ],
+        "basis": "average copper grade and stated smelting-ore precious-metal grades",
+        "years": "reported in 1926"
+      }]
+    },
+    {
+      "mine_id": "az-de-soto-mine",
+      "name": "De Soto mine",
+      "district": "Peck",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-de-soto-total-yield",
+        "source_id": "usgs-b782",
+        "pdf_page": 191,
+        "page_cite": "p. 163",
+        "page_image_sha256": "41d0eb335ee4303ebca2301d3da8ad0d49154084f346c89138587f42306e7dc3",
+        "verbatim_quote": "The ore bodies, which carry pyrite-chalcopyrite ore and are contained in a chloritic schist, have yielded a total of 180,000 tons, averaging about 3.75 per cent of copper with 1 ounce of silver and 0.02 ounce of gold to the ton.",
+        "quote_verbatim": true,
+        "measurements": [
+          {"commodity": "Au", "value": 0.02, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Ag", "value": 1, "unit": "troy_ounces_per_short_ton"},
+          {"commodity": "Cu", "value": 3.75, "unit": "percent"}
+        ],
+        "basis": "reported average of 180,000 tons yielded",
+        "years": "production through 1922"
+      }]
+    },
+    {
+      "mine_id": "az-octave-mine",
+      "name": "Octave mine",
+      "district": "Weaver",
+      "county": "Yavapai",
+      "evidence": [{
+        "evidence_id": "az-octave-flotation-heads",
+        "source_id": "usbm-ic6991",
+        "pdf_page": 31,
+        "page_cite": "p. 23",
+        "page_image_sha256": "5b61229776c8ac34d51656579e82e882f62ad5d2180a0bb656d53918fe648209",
+        "verbatim_quote": "Typical head, tail, and concentrate assays from the flotation circuit are as follows: Flotation heads 0.3 gold ounce per ton.",
+        "quote_verbatim": true,
+        "measurements": [{"commodity": "Au", "value": 0.3, "unit": "troy_ounces_per_short_ton"}],
+        "basis": "typical flotation-head assay",
+        "years": "mill visited in 1936"
+      }]
+    }
+  ]
+}

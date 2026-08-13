@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-nevada-pp610-district-inventory",
+  "state": "NV",
+  "source_id": "pp610",
+  "review_scope": "The complete Nevada chapter of USGS Professional Paper 610, printed pages 171-200 (PDF pages 177-206). District names are transcribed from Figure 16 and the district headings; source_heading preserves the PDF text-layer spelling used for deterministic extraction.",
+  "districts": [
+    {"district_id": "nv-fairview", "name": "Fairview", "county": "Churchill", "pdf_page": 178, "source_heading": "FAIRVIEW DISTRICT"},
+    {"district_id": "nv-sand-springs", "name": "Sand Springs", "county": "Churchill", "pdf_page": 179, "source_heading": "SAND SPRINGS DISTRICT"},
+    {"district_id": "nv-wonder", "name": "Wonder", "county": "Churchill", "pdf_page": 179, "source_heading": "WONDER DISTRICT"},
+
+    {"district_id": "nv-eldorado", "name": "Eldorado", "county": "Clark", "pdf_page": 180, "source_heading": "ELDORADO DISTRICT"},
+    {"district_id": "nv-goodsprings", "name": "Goodsprings", "county": "Clark", "pdf_page": 180, "source_heading": "GOODSPRINGS DISTRICT"},
+    {"district_id": "nv-searchlight", "name": "Searchlight", "county": "Clark", "pdf_page": 181, "source_heading": "SEARCHLIGHT DISTRICT"},
+
+    {"district_id": "nv-edgemont", "name": "Edgemont", "county": "Elko", "pdf_page": 182, "source_heading": "EDGEMONT DISTRICT"},
+    {"district_id": "nv-gold-circle", "name": "Gold Circle", "county": "Elko", "pdf_page": 182, "source_heading": "GOLD CIRCLE DISTRICT"},
+    {"district_id": "nv-jarbidge", "name": "Jarbidge", "county": "Elko", "pdf_page": 182, "source_heading": "JARBIDGE DISTRICT"},
+    {"district_id": "nv-tuscarora", "name": "Tuscarora", "county": "Elko", "pdf_page": 182, "source_heading": "TUSCARORA DISTRICT"},
+
+    {"district_id": "nv-divide", "name": "Divide", "county": "Esmeralda", "pdf_page": 183, "source_heading": "DIVIDE DISTRICT"},
+    {"district_id": "nv-goldfield", "name": "Goldfield", "county": "Esmeralda", "pdf_page": 183, "source_heading": "GOLDFIELD DISTRICT"},
+    {"district_id": "nv-hornsilver", "name": "Hornsilver", "county": "Esmeralda", "pdf_page": 184, "source_heading": "HORNSILVER DISTRICT"},
+    {"district_id": "nv-lone-mountain", "name": "Lone Mountain", "county": "Esmeralda", "pdf_page": 184, "source_heading": "LONE MOUNTAIN DISTRICT"},
+    {"district_id": "nv-silver-peak", "name": "Silver Peak", "county": "Esmeralda", "pdf_page": 184, "source_heading": "SIJ,VER PEAK DISTRICT"},
+
+    {"district_id": "nv-buckhorn", "name": "Buckhorn", "county": "Eureka", "pdf_page": 185, "source_heading": "BUCKHORN DISTRICT"},
+    {"district_id": "nv-cortez", "name": "Cortez", "county": "Eureka", "pdf_page": 185, "source_heading": "CORTEZ DISTRICT"},
+    {"district_id": "nv-eureka", "name": "Eureka", "county": "Eureka", "pdf_page": 185, "source_heading": "EUREKA DISTRICT"},
+    {"district_id": "nv-lynn", "name": "Lynn", "county": "Eureka", "pdf_page": 186, "source_heading": "LYNN DISTRICT"},
+
+    {"district_id": "nv-awakening", "name": "Awakening", "county": "Humboldt", "pdf_page": 187, "source_heading": "AWAKENING DISTRICT"},
+    {"district_id": "nv-dutch-flat", "name": "Dutch Flat", "county": "Humboldt", "pdf_page": 187, "source_heading": "DUTCH FI,AT DISTRICT"},
+    {"district_id": "nv-gold-run", "name": "Gold Run", "county": "Humboldt", "pdf_page": 187, "source_heading": "GOLD RUN DISTRICT"},
+    {"district_id": "nv-national", "name": "National", "county": "Humboldt", "pdf_page": 187, "source_heading": "NATIONAL DISTRICT"},
+    {"district_id": "nv-paradise-valley", "name": "Paradise Valley", "county": "Humboldt", "pdf_page": 188, "source_heading": "PARADISE VAJ,LEY DISTRICT"},
+    {"district_id": "nv-potosi", "name": "Potosi", "county": "Humboldt", "pdf_page": 188, "source_heading": "POTOSI DISTRICT"},
+    {"district_id": "nv-warm-springs", "name": "Warm Springs", "county": "Humboldt", "pdf_page": 188, "source_heading": "WARM SPRINGS DISTRICT"},
+    {"district_id": "nv-winnemucca", "name": "Winnemucca", "county": "Humboldt", "pdf_page": 189, "source_heading": "WINNEMUCCA DISTRICT"},
+
+    {"district_id": "nv-battle-mountain", "name": "Battle Mountain", "county": "Lander", "pdf_page": 189, "source_heading": "BATI'LE MOUNTAIN DISTRICT"},
+    {"district_id": "nv-bullion", "name": "Bullion", "county": "Lander", "pdf_page": 190, "source_heading": "BULLION DISTRICT"},
+    {"district_id": "nv-hilltop", "name": "Hilltop", "county": "Lander", "pdf_page": 190, "source_heading": "HILLTOP DISTRICT"},
+    {"district_id": "nv-lewis", "name": "Lewis", "county": "Lander", "pdf_page": 190, "source_heading": "LEWIS DISTRICT"},
+    {"district_id": "nv-new-pass", "name": "New Pass", "county": "Lander", "pdf_page": 191, "source_heading": "NEW PASS DISTRICT"},
+    {"district_id": "nv-reese-river", "name": "Reese River", "county": "Lander", "pdf_page": 191, "source_heading": "Rl<~SE RIVER DISTRICT"},
+
+    {"district_id": "nv-delamar", "name": "Delamar", "county": "Lincoln", "pdf_page": 191, "source_heading": "DELAMAR DISTRICT"},
+    {"district_id": "nv-pioche", "name": "Pioche", "county": "Lincoln", "pdf_page": 192, "source_heading": "PIOCHE DISTRICT"},
+
+    {"district_id": "nv-como", "name": "Como", "county": "Lyon", "pdf_page": 193, "source_heading": "COMO DISTRICT"},
+    {"district_id": "nv-silver-city", "name": "Silver City", "county": "Lyon", "pdf_page": 193, "source_heading": "SILVER CITY DISTRICT"},
+    {"district_id": "nv-wilson", "name": "Wilson", "county": "Lyon", "pdf_page": 193, "source_heading": "WILSON DISTRICT"},
+
+    {"district_id": "nv-aurora", "name": "Aurora", "county": "Mineral", "pdf_page": 194, "source_heading": "AURORA DISTRICT"},
+    {"district_id": "nv-bell", "name": "Bell", "county": "Mineral", "pdf_page": 194, "source_heading": "BEJ.L DISTRICT"},
+    {"district_id": "nv-candelaria", "name": "Candelaria", "county": "Mineral", "pdf_page": 195, "source_heading": "CANDELARIA DISTRICT"},
+    {"district_id": "nv-garfield", "name": "Garfield", "county": "Mineral", "pdf_page": 195, "source_heading": "GARFIELD DISTRICT"},
+    {"district_id": "nv-gold-range", "name": "Gold Range", "county": "Mineral", "pdf_page": 196, "source_heading": "GOLD RANGE DISTRICT"},
+    {"district_id": "nv-hawthorne", "name": "Hawthorne", "county": "Mineral", "pdf_page": 196, "source_heading": "HAWTHORNE DISTRICT"},
+    {"district_id": "nv-mount-montgomery-oneota", "name": "Mount Montgomery and Oneota", "county": "Mineral", "pdf_page": 196, "source_heading": "MOUNT MONTGOMERY AND ONEOTA DISTRICTS"},
+    {"district_id": "nv-rawhide", "name": "Rawhide", "county": "Mineral", "pdf_page": 197, "source_heading": "RAWHIDE DISTRICT"},
+
+    {"district_id": "nv-bruner", "name": "Bruner", "county": "Nye", "pdf_page": 197, "source_heading": "BRUNER DISTRICT"},
+    {"district_id": "nv-bullfrog", "name": "Bullfrog", "county": "Nye", "pdf_page": 197, "source_heading": "BULLFROG DISTRICT"},
+    {"district_id": "nv-ellendale", "name": "Ellendale", "county": "Nye", "pdf_page": 198, "source_heading": "ELLENDALE DISTRICT"},
+    {"district_id": "nv-gold-hill", "name": "Gold Hill", "county": "Nye", "pdf_page": 198, "source_heading": "GOLD HILL DISTRICT"},
+    {"district_id": "nv-jackson", "name": "Jackson", "county": "Nye", "pdf_page": 198, "source_heading": ". JACKSON DISTRICT"},
+    {"district_id": "nv-jefferson-canyon", "name": "Jefferson Canyon", "county": "Nye", "pdf_page": 198, "source_heading": "JEFFERSON CANYON DISTRICT"},
+    {"district_id": "nv-johnnie", "name": "Johnnie", "county": "Nye", "pdf_page": 198, "source_heading": "JOHNNIE DISTRIC'r"},
+    {"district_id": "nv-lodi", "name": "Lodi", "county": "Nye", "pdf_page": 199, "source_heading": "LODI DISTRICT"},
+    {"district_id": "nv-manhattan", "name": "Manhattan", "county": "Nye", "pdf_page": 199, "source_heading": "MANHATTAN DISTRICT"},
+    {"district_id": "nv-northumberland", "name": "Northumberland", "county": "Nye", "pdf_page": 199, "source_heading": "NORTHUMBERLAND DISTRICT"},
+    {"district_id": "nv-round-mountain", "name": "Round Mountain", "county": "Nye", "pdf_page": 199, "source_heading": "ROUND MOUNTAIN DISTRICT"},
+    {"district_id": "nv-tonopah", "name": "Tonopah", "county": "Nye", "pdf_page": 200, "source_heading": "TON OF Ali DISTRICT"},
+    {"district_id": "nv-tybo", "name": "Tybo", "county": "Nye", "pdf_page": 200, "source_heading": "TYBO DISTRIC'l'"},
+    {"district_id": "nv-union", "name": "Union", "county": "Nye", "pdf_page": 201, "source_heading": "UNION DISTRICT"},
+
+    {"district_id": "nv-humboldt", "name": "Humboldt", "county": "Pershing", "pdf_page": 201, "source_heading": "HUMBOLDT DISTRICT"},
+    {"district_id": "nv-rochester", "name": "Rochester", "county": "Pershing", "pdf_page": 202, "source_heading": "ROCHESTER DISTRICT"},
+    {"district_id": "nv-rye-patch", "name": "Rye Patch", "county": "Pershing", "pdf_page": 202, "source_heading": "RYE PATCH DISTRICT"},
+    {"district_id": "nv-seven-troughs", "name": "Seven Troughs", "county": "Pershing", "pdf_page": 202, "source_heading": "SEVEN TROUGHS DISTRICT"},
+    {"district_id": "nv-sierra", "name": "Sierra", "county": "Pershing", "pdf_page": 202, "source_heading": "SIERRA DISTRICT"},
+    {"district_id": "nv-spring-valley", "name": "Spring Valley", "county": "Pershing", "pdf_page": 203, "source_heading": "SPRING VALLEY DISTRICT"},
+
+    {"district_id": "nv-comstock-lode", "name": "Comstock Lode", "county": "Storey", "pdf_page": 203, "source_heading": "COMSTOCK LODE DISTRICT"},
+    {"district_id": "nv-olinghouse", "name": "Olinghouse", "county": "Washoe", "pdf_page": 205, "source_heading": "OLINGHOUSE DISTRICT"},
+    {"district_id": "nv-cherry-creek", "name": "Cherry Creek", "county": "White Pine", "pdf_page": 205, "source_heading": "CHERRY CREF.K DISTRICT"},
+    {"district_id": "nv-ely", "name": "Ely", "county": "White Pine", "pdf_page": 205, "source_heading": "ELY DISTRICT"},
+    {"district_id": "nv-osceola", "name": "Osceola", "county": "White Pine", "pdf_page": 206, "source_heading": "OSCEOLA DISTRICT"}
+  ]
+}

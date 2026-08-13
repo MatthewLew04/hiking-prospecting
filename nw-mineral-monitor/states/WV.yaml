@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "WV",
+  "name": "West Virginia",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-82.645, 37.202, -77.719, 40.638],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip to the official West Virginia boundary before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "West Virginia Geological and Economic Survey",
+    "catalog_url": "https://www.wvgs.wvnet.edu/",
+    "gis_endpoints": [
+      {
+        "type": "statewide_geologic_map_and_gis_download",
+        "url": "https://www.wvgs.wvnet.edu/www/maps/geomap.htm"
+      },
+      {
+        "type": "interactive_geologic_map",
+        "url": "https://atlas2.wvgs.wvnet.edu/portal/apps/webappviewer/index.html?id=ab47a1fc20e4417aa47af96b4c83be28"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "wv_wvges_map1_revised_gems",
+    "title": "Statewide 1968 Revised GeMS Geologic Map-1 spatial files",
+    "authority": "West Virginia Geological and Economic Survey",
+    "url": "https://www.wvgs.wvnet.edu/www/maps/geomap.htm",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "schema": "USGS GeMS",
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Complete the WVGES download form, preserve GeMS provenance, and build the accepted PMTiles artifact."
+  },
+  "faults": {
+    "source_id": "wv_wvges_map1_faults",
+    "title": "Statewide Map-1 contacts and faults",
+    "authority": "West Virginia Geological and Economic Survey",
+    "url": "https://www.wvgs.wvnet.edu/www/maps/geomap.htm",
+    "native_scale": "1:250,000",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Extract fault classes from the GeMS linework and reconcile with Qfaults before tiled publication."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "wv_wvges_publications",
+      "title": "West Virginia Geological and Economic Survey publications catalog",
+      "role": "state_geologist_mine_inspector_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Reports of Investigations", "Coal and Mineral Resource Series"],
+      "url": "https://www.wvgs.wvnet.edu/",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "wv_dep_aml",
+    "state_inventory_url": "https://dep.wv.gov/dlr/aml/Pages/default.aspx",
+    "status": "state_program_registered_not_ingested",
+    "scope": "West Virginia DEP Office of Abandoned Mine Lands and Reclamation.",
+    "gap": "Acquire the official site/project inventory or reconcile state program records with e-AMLIS; do not use active permit footprints as AML proxies."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "limited parcel-specific leases or agreements for minerals under state authority; no single general hard-rock auction portal identified",
+    "portal_url": "https://apps.sos.wv.gov/adlaw/csr/rule.aspx?rule=58-02",
+    "evidence_url": "https://commerce.wv.gov/agencies/division-of-natural-resources/",
+    "evidence": "Official state rules and agency descriptions provide authority for certain state mineral interests and leases, but availability and administering entity are parcel-specific.",
+    "approach_route": "Identify the state landholding/mineral authority and seek parcel-specific authorization; for private or severed minerals perform title research and negotiate with the owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "approach_route": "State mineral interest: parcel-specific agency lease review; private/severed estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; the registered GeMS source has not been ingested or accepted and every DONE gate remains blocked."
+  }
+}

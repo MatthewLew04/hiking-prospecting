@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "state": "FL",
+  "name": "Florida",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-87.636, 24.395, -79.973, 31.002], "crs": "EPSG:4326", "note": "Clip the envelope and offshore geometry to Florida's authoritative land boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Florida Geological Survey",
+    "catalog_url": "https://floridadep.gov/fgs/data-maps/content/fgs-publications",
+    "gis_endpoints": [
+      {"id": "fgs_statemap_downloads", "kind": "gis_download_catalog", "url": "https://floridadep.gov/fgs/research/content/download-statemap-products"},
+      {"id": "fgs_interactive_maps", "kind": "gis_portal", "url": "https://floridadep.gov/fgs/data-maps"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "fgs_ms146",
+    "title": "Geologic Map of the State of Florida, Map Series 146",
+    "authority": "Florida Geological Survey",
+    "source_url": "https://doi.org/10.35256/MS146",
+    "catalog_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_54101.htm",
+    "source_scale": "1:750,000 complete statewide GIS; STATEMAP final products are 1:100,000 and now cover about 60.84 percent of the state",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Use MS146 for statewide completeness and official STATEMAP overlays where available, retaining each product identifier and native scale."
+  },
+  "faults": {
+    "source_id": "qfaults_fl_plus_ms146_structure",
+    "title": "USGS Quaternary Faults baseline with MS146 structural linework",
+    "authority": "U.S. Geological Survey and Florida Geological Survey",
+    "source_url": "https://floridadep.gov/fgs/research/content/geologic-mapping",
+    "source_scale": "MS146 1:750,000; Qfaults source-dependent",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "note": "No separate current statewide FGS active-fault vector was verified; preserve an explicit empty/unknown activity result rather than inferring no faults."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "fgs_publications", "title": "Florida Geological Survey publication catalog", "role": "state_geologist_bulletins_and_reports", "primary": true, "url": "https://floridadep.gov/fgs/data-maps/content/fgs-publications", "status": "registered_not_extracted"},
+    {"source_id": "fgs_statemap", "title": "Florida STATEMAP open-file map and report series", "role": "regional_primary_geology_reports", "primary": true, "url": "https://floridadep.gov/fgs/research/content/download-statemap-products", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "fl_nonmandatory_phosphate",
+    "state_inventory_url": "https://floridadep.gov/water/mine-restoration-funding-program",
+    "status": "commodity_specific_inventory_registered_not_ingested",
+    "evidence": "Florida DEP publishes a downloadable inventory and map for 149,130 acres of pre-July-1975 disturbed phosphate lands; it is commodity-specific and not a complete abandoned-mine inventory."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "parcel_specific_authorization_not_general_hardrock_portal",
+    "portal_url": "https://floridadep.gov/lands/bureau-public-land-administration/content/uplands-management",
+    "evidence_url": "https://floridadep.gov/lands/lands/content/faq-use-state-owned-land",
+    "evidence": "Florida's Board of Trustees/DEP administers state lands through parcel-specific leases and approvals; reviewed public guidance did not establish a general hard-rock trust-land mineral leasing portal."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.flclerks.com/page/FindaClerk",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_clerk_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Florida has a thin public-domain claim population; no accepted active/closed claim PMTiles or open-ground output exists."},
+    "geology_faults": {"finding": "MS146 and detailed partial STATEMAP coverage are registered; state fault gap, tiling, and scale lineage remain pending."},
+    "aeromag": {"finding": "No accepted Florida aeromag COG and survey-index provenance artifact exists."},
+    "grades": {"finding": "FGS phosphate and heavy-mineral sources are registered, but 25 graded mines or an explicit audited endowment finding has not been accepted."},
+    "recorders": {"finding": "The live-claim county set and clerk portal vendor matrix are not yet reconciled."},
+    "quad_maps": {"finding": "No accepted top-five Florida target quadrangle inventory exists."},
+    "ci_scale": {"finding": "Florida has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 source registry is populated; the state is not released on source registration alone."}
+}

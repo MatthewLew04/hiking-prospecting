@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "state": "AR",
+  "name": "Arkansas",
+  "regime": "claim",
+  "phase": 2,
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-94.62, 33.00, -89.64, 36.50], "crs": "EPSG:4326", "note": "Clip all responses to the authoritative Arkansas boundary before tiling."}
+  ],
+  "geological_survey": {
+    "name": "Arkansas Office of the State Geologist",
+    "catalog_url": "https://geology.arkansas.gov/publication/",
+    "gis_endpoints": [
+      {"id": "ar_geoscientific", "kind": "arcgis_map_service", "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Geoscientific/MapServer"},
+      {"id": "ar_geologic_maps", "kind": "map_catalog_and_web_map", "url": "https://geology.arkansas.gov/maps-and-data/geologic-maps.html"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ar_state_geologic_map_1993",
+    "title": "Geologic Map of Arkansas, revised 1993 digital GIS database",
+    "authority": "Arkansas Office of the State Geologist and U.S. Geological Survey",
+    "source_url": "https://pubs.usgs.gov/sm/arkansas/",
+    "state_program_url": "https://geology.arkansas.gov/geology/arkansas-geological-mapping-program.html",
+    "source_scale": "1:500,000 statewide vector; regional and quadrangle updates from 1:100,000 to 1:24,000",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "provenance_note": "Use the complete 1993 state vector as baseline and overlay official COGEO/STATEMAP mapping only with publication and native-scale lineage."
+  },
+  "faults": {
+    "source_id": "qfaults_ar_plus_state_structure",
+    "title": "USGS Quaternary Faults with Arkansas state-map structural linework",
+    "authority": "U.S. Geological Survey and Arkansas Office of the State Geologist",
+    "source_url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Geoscientific/MapServer/layers",
+    "source_scale": "statewide structure 1:500,000 with selected 1:24,000 regional layers; Qfaults source-dependent",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "note": "Do not assign Quaternary activity to general bedrock faults lacking Qfaults/state evidence."
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "ar_geological_survey_annual_reports", "title": "Annual Reports of the Geological Survey of Arkansas", "role": "state_geologist_annual_reports", "primary": true, "url": "https://geology.arkansas.gov/publication/annual-reports.html", "status": "registered_not_extracted"},
+    {"source_id": "ar_historical_publications", "title": "Arkansas Geological Survey historical publications", "role": "mineral_and_district_reports", "primary": true, "url": "https://geology.arkansas.gov/publication/historical-publications.html", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "ar_deq_aml",
+    "state_inventory_url": "https://www.adeq.state.ar.us/mining/",
+    "status": "coal_aml_program_registered_export_not_verified",
+    "evidence": "Arkansas DEQ administers the federal AML Reclamation Program and reclaims pre-1977 coal sites; no reviewed public statewide raw feature export or complete non-coal inventory is registered."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "portal_url": "https://cosl.org/Home/MineralLeasing",
+    "evidence": "The Arkansas Commissioner of State Lands administers mineral leases on state-owned lands and publishes the governing lease process; this is leasing, not federal-style staking."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://www.arcounties.org/counties/",
+    "matrix": [],
+    "matrix_status": "pending_live_claim_county_inventory_and_circuit_clerk_vendor_review"
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "Arkansas is a thin MLRS claim state; no accepted active/closed claim PMTiles and open-ground artifact exists."},
+    "geology_faults": {"finding": "The state vector and official geoscientific service are identified; tiling and per-polygon scale provenance are pending."},
+    "aeromag": {"finding": "No accepted Arkansas aeromag COG with survey-index provenance exists."},
+    "grades": {"finding": "Manganese, novaculite, bauxite, and other primary state reports are available, but the 25-mine threshold or explicit audited low-endowment finding is pending."},
+    "recorders": {"finding": "Current live-claim counties have not been reconciled to circuit-clerk recording portals and vendors."},
+    "quad_maps": {"finding": "No accepted quadrangle inventory for Arkansas's top five targets exists."},
+    "ci_scale": {"finding": "Arkansas has not passed tiled-only national storage and heap acceptance."}
+  },
+  "release": {"note": "P2 sources are registered; Arkansas remains gate-blocked until accepted artifacts exist."}
+}

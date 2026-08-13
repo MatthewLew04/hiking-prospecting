@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "dataset": "ws11-utah-grade-source-inventory",
+  "sources": [
+    {
+      "source_id": "pp38",
+      "title": "Economic Geology of the Bingham Mining District, Utah",
+      "authority": "U.S. Geological Survey",
+      "citation": "Boutwell, J. M., with sections by Keith, A., and Emmons, S. F., 1905, Economic Geology of the Bingham Mining District, Utah: U.S. Geological Survey Professional Paper 38, 413 p.",
+      "publication_year": 1905,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp38",
+      "document_url": "https://pubs.usgs.gov/pp/0038/report.pdf",
+      "local_path": "pipelines/cache/ut-grade-sources/usgs-pp38.pdf",
+      "bytes": 17543503,
+      "sha256": "494caf06f1ff193c09c57f0d1bc64fbbd3325818c2355fa97d8a14f5fccf678a",
+      "pages": 427,
+      "text_mode": "ocr"
+    },
+    {
+      "source_id": "pp107",
+      "title": "Geology and Ore Deposits of the Tintic Mining District, Utah",
+      "authority": "U.S. Geological Survey",
+      "citation": "Lindgren, W., and Loughlin, G. F., with a historical review by Heikes, V. C., 1919, Geology and Ore Deposits of the Tintic Mining District, Utah: U.S. Geological Survey Professional Paper 107, 282 p.",
+      "publication_year": 1919,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp107",
+      "document_url": "https://pubs.usgs.gov/pp/0107/report.pdf",
+      "local_path": "pipelines/cache/ut-grade-sources/usgs-pp107.pdf",
+      "bytes": 59069575,
+      "sha256": "536882df1f3ef475aa972d85b20e4a57e98666d3e7cee347e1d395b4c05764d5",
+      "pages": 323,
+      "text_mode": "ocr"
+    },
+    {
+      "source_id": "pp177",
+      "title": "The Gold Hill Mining District, Utah",
+      "authority": "U.S. Geological Survey",
+      "citation": "Nolan, T. B., 1935, The Gold Hill Mining District, Utah: U.S. Geological Survey Professional Paper 177, 172 p.",
+      "publication_year": 1935,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp177",
+      "document_url": "https://pubs.usgs.gov/pp/0177/pdf/pp177.pdf",
+      "local_path": "pipelines/cache/ut-grade-sources/usgs-pp177.pdf",
+      "bytes": 10856952,
+      "sha256": "958dcf7c2e2927a845fbec56682ae9ed3273efc93eafd1c8cca50d9a372eb7da",
+      "pages": 193,
+      "text_mode": "ocr"
+    },
+    {
+      "source_id": "pp610",
+      "title": "Principal Gold-Producing Districts of the United States",
+      "authority": "U.S. Geological Survey",
+      "citation": "Koschmann, A. H., and Bergendahl, M. H., 1968, Principal Gold-Producing Districts of the United States: U.S. Geological Survey Professional Paper 610, 283 p.",
+      "publication_year": 1968,
+      "catalog_url": "https://pubs.usgs.gov/publication/pp610",
+      "document_url": "https://pubs.usgs.gov/pp/0610/report.pdf",
+      "local_path": "pipelines/cache/ut-grade-sources/usgs-pp610.pdf",
+      "bytes": 39132819,
+      "sha256": "f4c1f048aaffe1e8d1431983e0a7b3f1bb543fab0f5380cd42e85c0a6a840896",
+      "pages": 290,
+      "text_mode": "embedded"
+    }
+  ]
+}

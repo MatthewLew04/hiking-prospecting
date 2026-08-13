@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "state": "NV",
+  "name": "Nevada",
+  "regime": "claim",
+  "phase": 1,
+  "open_ground": {
+    "mineral_estate": {
+      "status": "not_identified",
+      "authority": null,
+      "source_url": null,
+      "ownership_field": null,
+      "locatable_values": [],
+      "surface_management_is_not_title": true,
+      "reviewed": "2026-08-13",
+      "finding": "No reviewed statewide Nevada federal mineral-estate/title layer was identified. The national SMA layer and Nevada PLSS services do not establish public-domain mineral ownership and cannot support an OPEN classification."
+    }
+  },
+  "query_envelopes": [
+    {"id": "statewide", "bbox": [-120.01, 35.00, -114.03, 42.01], "crs": "EPSG:4326", "note": "Contains every Census TIGERweb January 1, 2025 authoritative Nevada clip vertex with margin; clip service results to that boundary before partitioning and tiling."}
+  ],
+  "geological_survey": {
+    "name": "Nevada Bureau of Mines and Geology",
+    "catalog_url": "https://pubs.nbmg.unr.edu/default.asp",
+    "gis_endpoints": [
+      {"id": "nbmg_geology", "kind": "arcgis_map_service", "url": "https://gisweb.unr.edu/nbmg/rest/services/Geology/NBMG_Geology/MapServer"},
+      {"id": "nbmg_quaternary_faults", "kind": "interactive_map", "url": "https://gisweb.unr.edu/QuaternaryFaults/"},
+      {"id": "nbmg_mining_district_collections", "kind": "document_collection", "url": "https://collections.nbmg.unr.edu/"}
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "nbmg_statewide_geology",
+    "title": "NBMG statewide geologic map services and USGS DS-249 Nevada compilation",
+    "authority": "Nevada Bureau of Mines and Geology and U.S. Geological Survey",
+    "source_url": "https://nbmg.unr.edu/Maps%26Data/StatewideGeologicMaps.html",
+    "gis_url": "https://gisweb.unr.edu/nbmg/rest/services/Geology/NBMG_Geology/MapServer",
+    "source_scale": "statewide DS-249 compilation 1:250,000; NBMG service includes source maps from approximately 1:500,000 through 1:24,000",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "state_baseline_pmtiles_published_not_done",
+    "baseline_manifest_keys": ["nv_usgs_ds249", "nv_nbmg_onegeology_250k"],
+    "baseline_artifacts": {
+      "nv_usgs_ds249": {"baseline_manifest_key": "national_baselines.nv_usgs_ds249", "baseline_browser_path": "data/tiles/states/nv/usgs-ds249.pmtiles", "baseline_features": 93392, "baseline_sha256": "c739d72d61f16b237bc7b67470f82735d22657b5172a8aa6f13bbab1944f32c3", "source_records": 93407, "encoding_exclusions": 15, "encoding_exclusion_reason": "below_mvt_maxzoom_encoding_resolution"},
+      "nv_nbmg_onegeology_250k": {"baseline_manifest_key": "national_baselines.nv_nbmg_onegeology_250k", "baseline_browser_path": "data/tiles/states/nv/nbmg-onegeology-250k.pmtiles", "baseline_features": 52017, "baseline_sha256": "c022bc0c5fbbf0a49af9aa64f04207e3e14c90ecdb6a9fb01d80039e98924cac"}
+    },
+    "provenance_note": "Distinct checksum-pinned USGS DS 249 and live NBMG OneGeology 1:250,000 baseline PMTiles are published with source/scale provenance. They are not a substitute for the best-scale multiscale NBMG review and do not complete the geology/faults DONE gate."
+  },
+  "faults": {
+    "source_id": "nbmg_m167",
+    "title": "Quaternary faults in Nevada, Map 167",
+    "authority": "Nevada Bureau of Mines and Geology",
+    "source_url": "https://pubs.nbmg.unr.edu/Quaternary-faults-in-Nevada-p/m167.htm",
+    "gis_url": "https://data.nbmg.unr.edu/public/freedownloads/m/m167.zip",
+    "source_scale": "1:1,000,000 compilation with source-specific trace provenance",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested"
+  },
+  "historic_serials": [
+    {"source_id": "pp610", "role": "district_anchor", "primary": true, "url": "https://pubs.usgs.gov/pp/0610/report.pdf"},
+    {"source_id": "nbmg_mining_district_files", "title": "NBMG Mining District Files", "role": "per_district_scanned_primary_files", "primary": true, "url": "https://nbmg.unr.edu/Collections/MiningDistricts/MiningDistricts.html", "collection_url": "https://collections.nbmg.unr.edu/", "status": "registered_not_extracted"},
+    {"source_id": "nbmg_report_47", "title": "Mining Districts of Nevada, Report 47 digital data", "role": "district_index_and_gis", "primary": true, "url": "https://pubs.nbmg.unr.edu/Mining-districts-NV-CD-ROM-p/r047d.htm", "status": "state_baseline_pmtiles_published_documents_not_extracted", "baseline_manifest_key": "national_baselines.nv_nbmg_mining_districts", "baseline_browser_path": "data/tiles/states/nv/nbmg-report47-districts.pmtiles", "baseline_features": 534, "baseline_sha256": "cdf93e935370ef294603d6339ea1de3d84c4392e315b4d310d45fb1e7741f28c"},
+    {"source_id": "nevada_mineral_industry", "title": "The Nevada Mineral Industry annual report series", "role": "state_mineral_industry_annual", "primary": true, "url": "https://pubs.nbmg.unr.edu/Mineral-Industry-s/1860.htm", "status": "registered_not_extracted"}
+  ],
+  "aml": {
+    "source_id": "nv_dom_aml",
+    "state_inventory_url": "https://www.minerals.nv.gov/programs/abandoned-mine-lands-aml/",
+    "status": "program_inventory_registered_export_not_verified",
+    "evidence": "Nevada's Division of Minerals identifies and ranks hazardous inactive mines, but the registry has not accepted a public statewide raw feature export."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "unknown_for_locatable_hardrock",
+    "portal_url": "https://lands.nv.gov/land-use-planning/land-portfolio",
+    "evidence_url": "https://www.leg.state.nv.us/nrs/nrs-322.html",
+    "evidence": "Nevada law and the Division of State Lands support state-land leases, but current official material reviewed did not establish a general locatable-hardrock trust-land lease offering; require parcel-specific agency confirmation."
+  },
+  "recorder": {
+    "scope": "counties_with_live_claims",
+    "directory_url": "https://tax.nv.gov/wp-content/uploads/2024/04/Nevada_County_Recorders_Map5.pdf",
+    "matrix": [],
+    "matrix_status": "partial_elko_lead_exists_pending_all_live_claim_counties",
+    "note": "The existing county configuration contains only an unverified Elko lead; that is not statewide recorder coverage."
+  },
+  "done_gate": {
+    "claims_or_land_context": {"finding": "A tiled compatibility baseline now exposes Nevada active claims and an explicitly partial closed snapshot; a complete release inventory and the separate PLSS open-ground archive are still absent."},
+    "geology_faults": {"finding": "Checksum-pinned USGS DS 249 geology/faults and distinct NBMG OneGeology baseline PMTiles are published with per-feature source/scale provenance. DS 249 exposes 93,392 rendered features from 93,407 non-null source records; 15 valid two-vertex fault traces measuring 0.09375–1.908042 m in native EPSG:26711 are exact-inventoried as below z12 MVT encoding resolution, with no geometry fabrication. The gate remains failed: Map 167 and the best-scale multiscale NBMG source-lineage audit are still pending."},
+    "aeromag": {"finding": "No accepted Nevada COG tied to a survey-index provenance artifact exists locally."},
+    "grades": {"finding": "Evidence-only research now covers 26 unique graded mines with 26 verbatim quotes/page cites from 12 official primary grade documents and all 71 PP 610 Nevada districts. This is not an accepted release evidence artifact, so the grades gate remains failed until the full state DONE contract passes.", "evidence_only_build_sha256": "8a90c388d3a6db082346135bf3a0d299239942de2afe5ea20fe7f74a573480da", "graded_mines": 26, "verbatim_quotes": 26, "page_cites": 26, "official_primary_documents": 12, "pp610_districts": 71},
+    "recorders": {"finding": "Only an unverified Elko seed exists; every county with a live claim needs a reviewed vendor and access method."},
+    "quad_maps": {"finding": "No accepted top-five Nevada target quad-map inventory exists."},
+    "ci_scale": {"finding": "Nevada's high claim count has not yet passed partitioned PMTiles/COG storage and heap acceptance."}
+  },
+  "release": {"note": "Nevada is the first P1 ingest target, but source registration alone does not satisfy a DONE gate."}
+}

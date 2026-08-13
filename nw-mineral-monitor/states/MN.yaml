@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "state": "MN",
+  "name": "Minnesota",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-97.239, 43.499, -89.491, 49.384],
+      "crs": "EPSG:4326",
+      "note": "State envelope; clip to the official Minnesota boundary, including Northwest Angle and state islands, before tiling."
+    }
+  ],
+  "geological_survey": {
+    "name": "Minnesota Geological Survey",
+    "catalog_url": "https://mngs.umn.edu/publications",
+    "gis_endpoints": [
+      {
+        "type": "institutional_repository",
+        "url": "https://conservancy.umn.edu/handle/11299/101466"
+      },
+      {
+        "type": "official_data_documentation",
+        "url": "https://conservancy.umn.edu/bitstreams/d4eaede0-2822-4b5d-ae2b-49a798d14e3e/download"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "mn_mgs_s21",
+    "title": "Bedrock Geologic Map of Minnesota, State Map Series S-21",
+    "authority": "Minnesota Geological Survey",
+    "url": "https://conservancy.umn.edu/handle/11299/101466",
+    "documentation_url": "https://conservancy.umn.edu/bitstreams/d4eaede0-2822-4b5d-ae2b-49a798d14e3e/download",
+    "native_scale": "1:500,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_verified_seamless_statewide_vector",
+    "best_available_verified": true,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Resolve the repository landing-record identifier during acquisition, retain S-21 source-map metadata, and create the accepted PMTiles artifact."
+  },
+  "faults": {
+    "source_id": "mn_mgs_s21_faults",
+    "title": "S-21 bedrock contacts and faults",
+    "authority": "Minnesota Geological Survey",
+    "url": "https://conservancy.umn.edu/handle/11299/101466",
+    "documentation_url": "https://conservancy.umn.edu/bitstreams/d4eaede0-2822-4b5d-ae2b-49a798d14e3e/download",
+    "native_scale": "1:500,000",
+    "source_files": ["pz_fault", "s21_pcln"],
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Separate contact versus fault semantics from the documented archive and reconcile state traces with Qfaults before tiling."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "mn_mgs_publications",
+      "title": "Minnesota Geological Survey publications catalog",
+      "role": "state_geologist_and_mineral_resources_serial_catalog",
+      "primary": true,
+      "series": ["Annual Reports", "Bulletins", "Information Circulars", "Report of Investigations", "State Map Series"],
+      "url": "https://mngs.umn.edu/publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "mn_dnr_underground_mines",
+    "state_inventory_url": "https://www.dnr.state.mn.us/lands_minerals/underground/index.html",
+    "status": "regional_state_inventory_registered_not_ingested",
+    "scope": "Minnesota DNR underground-mine mapping focused on the Mesabi Iron Range; not a complete statewide AML inventory.",
+    "gap": "Preserve the program's geographic limits and reconcile with USMIN, MRDS, e-AMLIS, and other DNR mine records."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": true,
+    "scope": "metallic-mineral leasing on qualifying state-managed mineral rights",
+    "portal_url": "https://www.dnr.state.mn.us/lands_minerals/metallic_nf/leasing/index.html",
+    "map_url": "https://www.dnr.state.mn.us/lands_minerals/webmaps/index.html",
+    "evidence": "Minnesota DNR publishes metallic-mineral lease procedures, lease-sale information, and state mineral/lease maps.",
+    "approach_route": "Verify state mineral ownership and current availability, then follow DNR lease-sale or negotiation procedures; pursue private title negotiation off the state mineral estate.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_mineral_route_url": "https://www.dnr.state.mn.us/lands_minerals/metallic_nf/leasing/index.html",
+    "approach_route": "State-owned minerals: DNR mineral lease route; private/severed estate: title research and private negotiation."
+  },
+  "release": {
+    "note": "Registry only; no Minnesota DONE gate is passed by source registration."
+  }
+}

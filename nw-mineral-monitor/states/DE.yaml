@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "DE",
+  "name": "Delaware",
+  "regime": "non_claim",
+  "phase": 4,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-75.788658, 38.451013, -75.048939, 39.839007],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Delaware Bay jurisdiction; clip land-context products to authoritative land and submerged-land boundaries."
+    }
+  ],
+  "geological_survey": {
+    "name": "Delaware Geological Survey",
+    "catalog_url": "https://www.dgs.udel.edu/publications",
+    "gis_endpoints": [
+      {
+        "type": "official_web_services_catalog",
+        "url": "https://www.dgs.udel.edu/web-services"
+      },
+      {
+        "type": "digital_data_catalog",
+        "url": "https://www.dgs.udel.edu/category/data-format/arcgis"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "de_dgs_generalized_geology",
+    "title": "Generalized Geologic Map of Delaware",
+    "authority": "Delaware Geological Survey",
+    "url": "https://www.dgs.udel.edu/delaware-geology/generalized-geologic-map-delaware",
+    "native_scale": "1:100,000 display compilation; source mapping includes 1:24,000 data",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_statewide_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Build the statewide mosaic from FirstMap/DGS county and quadrangle services and retain each source map's true scale rather than assigning 1:100,000 indiscriminately."
+  },
+  "faults": {
+    "source_id": "de_dgs_geology_structures",
+    "title": "Mapped structures in Delaware DGS geologic-map services",
+    "authority": "Delaware Geological Survey",
+    "url": "https://www.dgs.udel.edu/web-services",
+    "native_scale": "mixed, principally 1:24,000 and 1:100,000",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "DGS does not expose a reviewed single statewide fault layer in the catalog page; its catalog's legacy FirstMap Geology folder returned HTTP 404 during the 2026-08-12 review, so resolve the current production service, inventory its layers, and document no-data areas before acceptance."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "de_dgs_serials",
+      "title": "Delaware Geological Survey publications catalog",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Geologic Maps", "Open File Reports", "Reports of Investigation", "Annual Reports"],
+      "url": "https://www.dgs.udel.edu/publications",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "eamlis",
+    "state_inventory_url": null,
+    "status": "official_gap_national_baseline_only",
+    "scope": "No official statewide abandoned-metal-mine inventory was identified in the DGS publications and data catalogs.",
+    "finding_url": "https://www.dgs.udel.edu/publications",
+    "gap": "Use e-AMLIS plus USMIN/MRDS for baseline occurrences and preserve the explicit absence of a state AML export; do not relabel active or reclaimed permit data as AML."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_public_and_submerged_lands",
+    "portal_url": "https://dfm.delaware.gov/realprop/index.shtml",
+    "authority_url": "https://delcode.delaware.gov/title7/c061/index.html",
+    "evidence": "Title 7, Chapter 61 authorizes the Secretary and Governor to lease state-owned submerged and tidal lands for mineral exploration and production; it is a lease process, not staking or open ground.",
+    "approach_route": "Ask DNREC and the state real-property section whether a state-owned target is legally available for a mineral lease; otherwise negotiate with the recorded private mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://dfm.delaware.gov/realprop/index.shtml",
+    "approach_route": "State public/submerged land: DNREC and Governor-controlled lease route; private land: title research and negotiated access."
+  },
+  "release": {
+    "note": "Baseline registry only; geology/fault mosaic, AML finding, land-context cards, grade threshold finding, quads, and CI remain unaccepted."
+  }
+}

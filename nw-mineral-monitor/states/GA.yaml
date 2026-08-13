@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "state": "GA",
+  "name": "Georgia",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-85.605165, 30.355757, -80.839729, 35.000659],
+      "crs": "EPSG:4326",
+      "note": "State land envelope; coastal waters and islands require clipping to the authoritative state boundary."
+    }
+  ],
+  "geological_survey": {
+    "name": "Georgia Geologic Survey",
+    "catalog_url": "https://epd.georgia.gov/outreach/publications",
+    "gis_endpoints": [
+      {
+        "type": "map_catalog",
+        "url": "https://epd.georgia.gov/outreach/publications/georgia-geologic-survey-maps"
+      },
+      {
+        "type": "state_gis_clearinghouse",
+        "url": "https://data.georgiaspatial.org/"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "sgmc_ga_sm3",
+    "title": "SGMC vector compilation using Georgia Geologic Survey SM-3 as statewide source",
+    "authority": "U.S. Geological Survey and Georgia Geologic Survey",
+    "url": "https://epd.georgia.gov/outreach/publications/georgia-geologic-survey-maps",
+    "native_scale": "1:500,000 for Georgia Geologic Survey SM-3; SGMC retains polygon source scale",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_current_statewide_vector_candidate",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The state catalog currently exposes SM-3 as a PDF rather than a reviewed statewide feature service; verify the SGMC conversion against SM-3 and newer 1:24,000 maps before acceptance."
+  },
+  "faults": {
+    "source_id": "sgmc_ga_structures",
+    "title": "Georgia structural lines from SGMC/state-map compilation",
+    "authority": "U.S. Geological Survey and Georgia Geologic Survey",
+    "url": "https://epd.georgia.gov/outreach/publications/georgia-geologic-survey-maps",
+    "native_scale": "principally 1:500,000 statewide; larger-scale map sources vary",
+    "state_source_verified": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "No current official Georgia statewide fault feature service was identified; preserve SGMC/Qfaults provenance separately and inventory newer quadrangle structures."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ga_gs_serials",
+      "title": "Georgia Geologic Survey maps and publications",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Bulletins", "Information Circulars", "Regional Maps", "Special Publications"],
+      "url": "https://epd.georgia.gov/outreach/publications/georgia-geologic-survey-maps",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ga_epd_mining_facilities",
+    "state_inventory_url": "https://epd.georgia.gov/about-us/land-protection-branch/surface-mining",
+    "status": "official_permit_inventory_only",
+    "scope": "EPD publishes permitted surface-mining facilities and reclamation oversight, not a comprehensive pre-law abandoned-mine inventory.",
+    "gap": "Keep permitted/inactive/released facilities separate from historic AML occurrences; no official statewide AML export was identified."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "case_by_case_state_owned_lands",
+    "portal_url": "https://gspc.georgia.gov/property-sale-or-lease",
+    "authority_url": "https://gspc.georgia.gov/sites/gspc.georgia.gov/files/related_files/site_page/SPC%20Code_OCGA%2050-16-30_Through%202015%20Session.pdf",
+    "evidence": "O.C.G.A. 50-16-43 authorizes the State Properties Commission to permit exploration and competitively lease mineral resources on state-owned land; no standing open-ground or routine mineral-auction portal was identified.",
+    "approach_route": "Submit a parcel-specific inquiry to the State Properties Commission and custodial agency; on private land negotiate with the mineral-estate owner and obtain EPD permits as applicable.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://gspc.georgia.gov/property-sale-or-lease",
+    "approach_route": "State parcel: case-by-case State Properties Commission lease; private parcel: owner negotiation. No staking layer is applicable."
+  },
+  "release": {
+    "note": "Southern Appalachian priority registry only; state-map validation, mine grading, land context, quad inventory, tiles, and CI remain pending."
+  }
+}

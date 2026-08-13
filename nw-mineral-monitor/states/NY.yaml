@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "state": "NY",
+  "name": "New York",
+  "regime": "non_claim",
+  "phase": 3,
+  "query_envelopes": [
+    {
+      "id": "statewide",
+      "bbox": [-79.762152, 40.477399, -71.856214, 45.015865],
+      "crs": "EPSG:4326",
+      "note": "State envelope including Long Island and offshore islands; authoritative land and state-waters boundaries control clipping."
+    }
+  ],
+  "geological_survey": {
+    "name": "New York State Geological Survey",
+    "catalog_url": "https://www.nysm.nysed.gov/research-collections/geology",
+    "gis_endpoints": [
+      {
+        "type": "state_museum_gis_downloads",
+        "url": "https://www.nysm.nysed.gov/research-collections/geology/gis"
+      },
+      {
+        "type": "state_museum_collections",
+        "url": "https://www.nysm.nysed.gov/research-collections/geology/collections"
+      }
+    ],
+    "reviewed": "2026-08-12"
+  },
+  "geology": {
+    "source_id": "ny_nysgs_bedrock_250k",
+    "title": "New York State bedrock geology shapefiles",
+    "authority": "New York State Museum, New York State Geological Survey",
+    "url": "https://www.nysm.nysed.gov/research-collections/geology/gis",
+    "native_scale": "1:250,000",
+    "statewide": true,
+    "vector": true,
+    "registry_choice": "best_complete_statewide_vector",
+    "best_available_verified": false,
+    "source_scale_recorded_per_polygon": false,
+    "ingest_status": "registered_not_ingested",
+    "gap": "The official statewide download is split among five source-map sheets; mosaic without dissolving sheet or source lineage, normalize the master legend, and record 1:250,000 scale on every polygon."
+  },
+  "faults": {
+    "source_id": "ny_nysgs_brittle_structures",
+    "title": "Brittle Structures of New York (nyfaults)",
+    "authority": "New York State Museum, New York State Geological Survey",
+    "url": "https://www.nysm.nysed.gov/research-collections/geology/gis",
+    "native_scale": "statewide compilation; dataset metadata scale must be retained",
+    "state_source_verified": true,
+    "ingest_status": "registered_not_ingested",
+    "gap": "Retrieve the current metadata, retain source and confidence fields, and reconcile with bedrock-map structures and Qfaults without treating brittle-structure coverage as exhaustive."
+  },
+  "historic_serials": [
+    {
+      "source_id": "pp610",
+      "role": "district_anchor",
+      "primary": true,
+      "url": "https://pubs.usgs.gov/pp/0610/report.pdf"
+    },
+    {
+      "source_id": "ny_nysgs_serials",
+      "title": "New York State Museum and Geological Survey geology publications",
+      "role": "state_serial_catalog",
+      "primary": true,
+      "series": ["Museum Bulletins", "Memoirs", "Map and Chart Series", "Circulars", "Miscellaneous Publications", "State Geologist reports"],
+      "url": "https://www.nysm.nysed.gov/research-collections/geology",
+      "status": "registered_not_extracted"
+    }
+  ],
+  "aml": {
+    "source_id": "ny_dec_mined_land_and_historic_aml_finding",
+    "state_inventory_url": "https://dec.ny.gov/environmental-protection/mining-reclamation/mining-resources-data",
+    "evidence_url": "https://dec.ny.gov/sites/default/files/2025-05/dwsp2framework2025.pdf",
+    "status": "no_current_state_aml_program_historic_inventory_incomplete",
+    "scope": "DEC states that New York has no current abandoned-mine reclamation program. Its downloadable mined-land database contains most permitted mines since 1983 but only limited earlier records, so it is not a historic AML inventory.",
+    "gap": "Ingest the permit database only with its temporal and accuracy caveats; obtain the developing DEC/NYSM historic-mine inventory or document that it is not publicly available."
+  },
+  "trust_land": {
+    "mineral_leasing_offered": "limited_state_land_oil_gas_authorized_not_currently_active",
+    "portal_url": "https://dec.ny.gov/environmental-protection/oil-gas/state-land-oil-gas-leasing",
+    "authority_url": "https://dec.ny.gov/environmental-protection/oil-gas/state-land-oil-gas-leasing",
+    "evidence": "Environmental Conservation Law article 23 authorizes state-land oil, gas, and gas-storage leases. DEC says it has not actively leased in recent years but manages existing production and storage leases; this is not hard-rock staking.",
+    "approach_route": "Oil, gas, or storage target on eligible state land: contact DEC and the surface manager; other state mineral target: verify title and case-specific authority; private minerals: negotiate with the mineral owner.",
+    "reviewed": "2026-08-12"
+  },
+  "land_context": {
+    "mineral_ownership_verified": false,
+    "status": "registered_not_built",
+    "state_surface_source_url": "https://dec.ny.gov/nature/forests-trees/state-forests",
+    "approach_route": "Eligible state oil/gas target: DEC lease review; other state parcel: custodial-agency mineral-title review; private parcel: mineral-owner negotiation. Open-ground is N/A."
+  },
+  "release": {
+    "note": "P3 literature-tier registry only; five-sheet geology ingestion, AML availability finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending."
+  }
+}

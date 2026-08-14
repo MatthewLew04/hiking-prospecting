@@ -52,7 +52,9 @@ jobs:
       - run: python3 pipelines/build_coverage.py --check
       - run: python3 pipelines/validate_national.py --profile progress
       - run: python3 pipelines/validate_quad_geology.py --skip-assets
-      - run: python3 pipelines/validate_doc_store.py
+      - run: >-
+          python3 pipelines/validate_doc_store.py
+          --manifest tests/fixtures/ws12_document_store_manifest.json
       - run: npm run test:browser
 
   release-gate:

@@ -287,22 +287,18 @@ class DocumentAssetBridgeTests(unittest.TestCase):
 
 
 class ShippedDocumentAssetLineageTests(unittest.TestCase):
-    def test_if0126_harvest_bridge_keeps_the_25_document_pilot(self):
-        store = doc_store.load_manifest(ROOT / "site" / "data" / "docs" / "manifest.json")
-        rows = [
-            harvest_row(
-                "d29aab7b4e9fcde0e084dddc84ef9da37d0c15860af4674bf58bd0decd71e07f",
-                source_url=("https://idahogeology.org/Uploads/Data/MILS_MRDS/"
-                            "MILS-160230014.pdf"), byte_count=110833),
-            harvest_row(
-                "3c3fc7e970db5286640b83c35e886fc07a6db4c415e92782674aa94a3058a9a1",
-                source_url=("https://idahogeology.org/Uploads/Data/MILS_MRDS/"
-                            "MRDS-W015681.pdf"), byte_count=110393),
-        ]
+    def test_harvest_bridge_uses_the_sanitized_private_manifest_fixture(self):
+        store = doc_store.load_manifest(
+            ROOT / "tests" / "fixtures" / "ws12_document_store_manifest.json")
+        rows = [harvest_row(
+            document["doc_id"], source_url=document["source_url"],
+            byte_count=document["raw"]["bytes"],
+            rights_basis=document["rights"]["basis"])
+            for document in store["documents"]]
         catalog = assets.build_catalog(rows, store)
-        self.assertEqual(catalog["metrics"]["assets"], 25)
-        self.assertEqual(catalog["metrics"]["raw_store_ready"], 25)
-        self.assertEqual(catalog["metrics"]["searchable_store_ready"], 25)
+        self.assertEqual(catalog["metrics"]["assets"], 2)
+        self.assertEqual(catalog["metrics"]["raw_store_ready"], 2)
+        self.assertEqual(catalog["metrics"]["searchable_store_ready"], 2)
         if_ids = {row["sha256"] for row in rows}
         if_occurrences = [row for row in catalog["source_occurrences"]
                           if row["doc_id"] in if_ids]
@@ -310,6 +306,21 @@ class ShippedDocumentAssetLineageTests(unittest.TestCase):
         self.assertEqual({row["origin"] for row in if_occurrences}, {"harvest"})
         self.assertTrue(all(row["portal_id"] == "igs_mines"
                             for row in if_occurrences))
+
+    def test_public_if0126_index_is_minimized_but_keeps_both_hashes(self):
+        with open(ROOT / "site" / "data" / "docs" / "index.json",
+                  encoding="utf-8") as source:
+            index = json.load(source)
+        expected = {
+            "d29aab7b4e9fcde0e084dddc84ef9da37d0c15860af4674bf58bd0decd71e07f",
+            "3c3fc7e970db5286640b83c35e886fc07a6db4c415e92782674aa94a3058a9a1",
+        }
+        self.assertEqual(set(index["by_mine"]["IF0126"]), expected)
+        for document in index["documents"]:
+            self.assertNotIn("raw", document)
+            self.assertNotIn("searchable", document)
+            self.assertNotIn("rights", document)
+            self.assertNotIn("quote", document)
 
 
 if __name__ == "__main__":

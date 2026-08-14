@@ -29,7 +29,10 @@ import re
 
 DATASET = 'ws12-document-store'
 SCHEMA_VERSION = 1
-MANIFEST_RELATIVE = os.path.join('data', 'docs', 'manifest.json')
+# Root-relative operator artifact. The repository and site are public, so the
+# complete manifest (object keys + citation excerpts) lives only below the
+# ignored private runtime tree. Public clients receive a minimized catalog.
+MANIFEST_RELATIVE = os.path.join('var', 'ws12', 'document-store-manifest.json')
 STORE_PREFIX = 'docs'
 KEY_TEMPLATE = 'docs/{state}/{portal}/{mine_id}/{sha256}/{variant}.pdf'
 VARIANTS = ('raw', 'searchable')

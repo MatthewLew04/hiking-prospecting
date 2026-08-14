@@ -18,7 +18,8 @@ viewer cannot highlight is recorded as unlocated instead of asserted.
 Store objects are hardlinked to their sources where the bytes are identical,
 so a generation costs almost no disk.  The builder does not upload to S3,
 presign anything, edit ``states/*.yaml``, touch release flags, or change any
-other browser artifact than ``site/data/docs/manifest.json``.
+other browser artifact. Its complete manifest is written only to the ignored
+private runtime tree at ``var/ws12/document-store-manifest.json``.
 """
 from __future__ import annotations
 
@@ -510,7 +511,7 @@ def build(*, registry_path=REGISTRY, store_dir=DEFAULT_STORE, manifest_path=None
           require_harvest_lineage=None):
     probe = probe or _probe_pdf
     ocr = ocr or _ocr_pdf
-    manifest_path = manifest_path or os.path.join(SITE, doc_store.MANIFEST_RELATIVE)
+    manifest_path = manifest_path or os.path.join(ROOT, doc_store.MANIFEST_RELATIVE)
     registry = load_registry(registry_path)
     production_registry = (
         os.path.realpath(registry_path) == os.path.realpath(REGISTRY))
@@ -825,7 +826,8 @@ def main(argv=None):
     parser.add_argument('--store-dir', default=DEFAULT_STORE,
                         help='local store generation to build')
     parser.add_argument('--manifest', default=None,
-                        help='manifest to write (default site/data/docs/manifest.json)')
+                        help=('manifest to write (default '
+                              'var/ws12/document-store-manifest.json)'))
     parser.add_argument('--generated', default=None,
                         help='override the generated date (YYYY-MM-DD)')
     parser.add_argument('--legacy-limit', type=int, default=None,

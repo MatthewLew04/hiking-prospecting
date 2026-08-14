@@ -13,6 +13,8 @@ from unittest import mock
 
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+TEST_MANIFEST = os.path.join(
+    ROOT, 'tests', 'fixtures', 'ws12_document_store_manifest.json')
 sys.path.insert(0, os.path.join(ROOT, 'pipelines'))
 
 import build_doc_store as builder
@@ -604,12 +606,23 @@ class DeliveryGateTests(unittest.TestCase):
         return os.path.join(fixture.site, 'data', 'docs', 'manifest.json')
 
     def test_the_shipped_template_and_manifest_pass_the_gate(self):
-        result = gate.validate(
-            os.path.join(ROOT, 'site', doc_store.MANIFEST_RELATIVE))
+        result = gate.validate(TEST_MANIFEST)
         self.assertTrue(result['ok'])
         self.assertFalse(result['store_objects_hash_verified'])
         self.assertEqual(result['effect'],
                          'validation_only_no_upload_or_release_mutation')
+
+    def test_complete_manifest_cannot_enter_the_public_site_or_repository(self):
+        public_manifest = os.path.join(
+            ROOT, 'site', 'data', 'docs', 'manifest.json')
+        self.assertFalse(os.path.exists(public_manifest))
+        self.assertEqual(
+            doc_store.MANIFEST_RELATIVE,
+            os.path.join('var', 'ws12', 'document-store-manifest.json'))
+        with open(os.path.join(ROOT, '..', '.gitignore'), encoding='utf-8') as handle:
+            ignored = handle.read()
+        self.assertIn(
+            'nw-mineral-monitor/site/data/docs/manifest.json', ignored)
 
     def test_gate_fails_if_the_corpus_joins_the_public_prefix_allowlist(self):
         with open(os.path.join(ROOT, 'infra', 'template.yaml'), encoding='utf-8') as handle:
@@ -689,8 +702,7 @@ class ShippedCorpusTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.manifest = doc_store.load_manifest(
-            os.path.join(ROOT, 'site', doc_store.MANIFEST_RELATIVE))
+        cls.manifest = doc_store.load_manifest(TEST_MANIFEST)
 
     def test_the_if0126_subject_has_a_stored_citation_that_resolves(self):
         rows = doc_store.citations_for_subject(

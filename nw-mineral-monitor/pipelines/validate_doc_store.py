@@ -191,7 +191,7 @@ def validate(manifest_path, *, store_dir=None, template_path=TEMPLATE):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--manifest', default=os.path.join(SITE, doc_store.MANIFEST_RELATIVE),
+        '--manifest', default=os.path.join(ROOT, doc_store.MANIFEST_RELATIVE),
         help='WS12 document manifest to validate')
     parser.add_argument(
         '--store-dir', default=None,

@@ -568,7 +568,7 @@ upload_doc_store() {
   local inventory manifest_path manifest_sha manifest_size manifest_identity
   local -a put_args
   inventory="$(mktemp "${TMPDIR:-/tmp}/nwmm-doc-store.XXXXXX")"
-  manifest_path="$SITE/data/docs/manifest.json"
+  manifest_path="$HERE/../var/ws12/document-store-manifest.json"
   if ! python3 - "$HERE/../pipelines" "$manifest_path" > "$inventory" <<'PY'
 import sys
 sys.path.insert(0, sys.argv[1])

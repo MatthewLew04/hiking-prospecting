@@ -20,7 +20,7 @@ const {spawn} = require('node:child_process');
 const {chromium} = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
-const MANIFEST_FILE = path.join(ROOT, 'site', 'data', 'docs', 'manifest.json');
+const MANIFEST_FILE = path.join(ROOT, 'var', 'ws12', 'document-store-manifest.json');
 const STORE = path.join(ROOT, 'pipelines', 'cache', 'ws12', 'store');
 const MINE_ID = 'stategeo-igs-dd-1-if0126';
 const ACCESS_TOKEN = 'ws12-browser-acceptance-token';

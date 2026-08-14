@@ -32,7 +32,7 @@ import document_index
 SCHEMA_VERSION = 1
 DATASET = "ws12-document-assets"
 DEFAULT_HARVEST = Path("var/ws12/manifest.jsonl")
-DEFAULT_STORE_MANIFEST = Path("site/data/docs/manifest.json")
+DEFAULT_STORE_MANIFEST = Path("var/ws12/document-store-manifest.json")
 DEFAULT_OUTPUT = Path("var/ws12/document-assets.json")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")

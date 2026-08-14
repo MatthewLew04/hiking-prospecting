@@ -21,7 +21,8 @@ import doc_store
 VIEWER = os.path.join(ROOT, 'site', 'viewer.html')
 INDEX = os.path.join(ROOT, 'site', 'index.html')
 ASK_LAMBDA = os.path.join(INFRA, 'ask_lambda.py')
-MANIFEST = os.path.join(ROOT, 'site', doc_store.MANIFEST_RELATIVE)
+MANIFEST = os.path.join(
+    ROOT, 'tests', 'fixtures', 'ws12_document_store_manifest.json')
 
 
 class FakeClientError(Exception):
@@ -232,7 +233,9 @@ class PresignEndpointTests(unittest.TestCase):
         response = module.handler(_event(query={'catalog': '1'}), None)
         self.assertEqual(response['statusCode'], 200)
         catalog = self.body(response)
-        self.assertEqual(catalog['metrics']['documents'], 25)
+        self.assertEqual(
+            catalog['metrics']['documents'],
+            self.manifest['metrics']['documents'])
         document = catalog['documents'][0]
         for private in ('raw', 'searchable', 'rights'):
             self.assertNotIn(private, document)

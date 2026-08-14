@@ -617,6 +617,10 @@ class ReleaseAssetDeployTests(unittest.TestCase):
         manifest_capture = root / 'manifest-captures'
         manifest_capture.mkdir()
         env = os.environ.copy()
+        # This fixture supplies its own fake ``python3`` for the copied deploy
+        # script. An operator's real preflight decoder override must not leak
+        # into the synthetic environment and bypass that hermetic executable.
+        env.pop('NWMM_VALIDATOR_PYTHON', None)
         env.update({
             'PATH': f'{binary}{os.pathsep}{env["PATH"]}',
             'AWS_LOG': str(log),

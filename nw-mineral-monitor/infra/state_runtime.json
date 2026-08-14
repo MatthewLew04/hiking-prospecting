@@ -28,23 +28,55 @@
         "status": "building",
         "enabled": false,
         "baseline_visible": true,
-        "note": "ARDF and Alaska DNR state-claim baselines are visible and validated. Alaska remains BUILDING because federal Alaska MLRS and the other per-state DONE evidence/artifacts are incomplete.",
+        "note": "ARDF and the lossless base+precision Alaska DNR state-claim baselines are visible and validated. Alaska remains BUILDING because federal Alaska MLRS and the other per-state DONE evidence/artifacts are incomplete.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "recording_district",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -76,20 +108,52 @@
         "note": "Registry sources are researched; state-specific ingestion, target land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -123,20 +187,52 @@
         "note": "P2 sources are registered; Arkansas remains gate-blocked until accepted artifacts exist.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -167,23 +263,55 @@
         "status": "building",
         "enabled": false,
         "baseline_visible": true,
-        "note": "P1 source research is registered; release remains blocked on tiled ingestion and every state DONE gate.",
+        "note": "The exact AZGS state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Arizona remains building/disabled until the best-scale lineage review, accepted release artifacts, and every remaining DONE gate pass.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -217,20 +345,52 @@
         "note": "California remains disabled until its legacy browser JSON is replaced by accepted tiled artifacts and every gate passes.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -247,10 +407,10 @@
       "phase": 1,
       "query_envelopes": [
         [
-          -109.06,
-          36.99,
-          -102.04,
-          41.01
+          -109.062,
+          36.991,
+          -102.041,
+          41.005
         ]
       ],
       "claim_systems": [
@@ -261,23 +421,55 @@
         "status": "building",
         "enabled": false,
         "baseline_visible": true,
-        "note": "P1 registry complete at source-discovery level; state release stays gate-blocked.",
+        "note": "The exact Tweto/ON-006/ON-007 state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Colorado remains building/disabled until detailed-scale review, accepted release artifacts, and every remaining DONE gate pass.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -309,20 +501,52 @@
         "note": "Literature-tier registry complete only; no DONE gate is asserted and all tile, grade, target-card, quad, and CI acceptance work remains pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -354,20 +578,52 @@
         "note": "Baseline registry only; geology/fault mosaic, AML finding, land-context cards, grade threshold finding, quads, and CI remain unaccepted.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -384,10 +640,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -87.64,
-          24.4,
-          -80.03,
-          31.01
+          -87.636,
+          24.395,
+          -79.973,
+          31.002
         ]
       ],
       "claim_systems": [
@@ -401,20 +657,52 @@
         "note": "P2 source registry is populated; the state is not released on source registration alone.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -446,20 +734,52 @@
         "note": "Southern Appalachian priority registry only; state-map validation, mine grading, land context, quad inventory, tiles, and CI remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -491,20 +811,52 @@
         "note": "Registry only; multiscale mosaic QA and every artifact-dependent DONE item remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -538,20 +890,52 @@
         "note": "Existing Idaho evidence is preserved, but no gate is silently promoted without a current artifact audit.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -583,20 +967,52 @@
         "note": "Registry only; tiled geology/faults, AML reconciliation, target land context, graded-source evidence, quad inventory, and scale CI remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -628,20 +1044,52 @@
         "note": "Registry only; all artifact-backed state gates remain fail-closed.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -673,20 +1121,52 @@
         "note": "Registry only; the authoritative vector choice and all artifact-backed gates remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -718,20 +1198,52 @@
         "note": "Registry only; 24K seam QA, AML integration, target land context, grade evidence, quads, and scale CI remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -748,10 +1260,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -94.05,
-          28.85,
-          -88.82,
-          33.02
+          -94.045,
+          28.854,
+          -88.757,
+          33.021
         ]
       ],
       "claim_systems": [
@@ -765,20 +1277,52 @@
         "note": "P2 state sources are registered; no DONE gate is promoted without an accepted artifact.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -810,20 +1354,52 @@
         "note": "P3 literature-tier registry only; statewide vector/structure verification, explicit AML finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -855,20 +1431,52 @@
         "note": "P4 registry baseline only; the mixed-scale geology mosaic, AML export, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -900,20 +1508,52 @@
         "note": "Literature-tier registry only; state-land claim semantics must remain separate from federal claims, and every ingestion/grade/quad/CI gate is pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -945,20 +1585,52 @@
         "note": "Registry only; Michigan remains blocked on tiled artifacts, AML reconciliation, grade evidence, quads, and CI.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -990,20 +1662,52 @@
         "note": "Registry only; no Minnesota DONE gate is passed by source registration.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1035,20 +1739,52 @@
         "note": "Registry only; multiscale geology and every artifact-backed gate remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1065,10 +1801,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -91.66,
-          30.17,
-          -88.09,
-          35.01
+          -91.656,
+          30.138,
+          -88.097,
+          34.997
         ]
       ],
       "claim_systems": [
@@ -1082,20 +1818,52 @@
         "note": "P2 source research records the unresolved GIS-package caveat; release remains disabled.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1112,10 +1880,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -116.05,
-          44.35,
-          -104.04,
-          49.01
+          -116.051,
+          44.356,
+          -104.038,
+          49.002
         ]
       ],
       "claim_systems": [
@@ -1129,20 +1897,52 @@
         "note": "P2 sources are registered; existing legacy artifacts do not bypass the per-state DONE contract.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1174,20 +1974,52 @@
         "note": "P3 southern-Appalachian registry only; detailed-map gap fill, AML finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1221,20 +2053,52 @@
         "note": "P2 registry includes explicit bedrock-control and buried-fault caveats; state remains gate-blocked.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1251,10 +2115,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -104.06,
-          39.99,
-          -95.31,
-          43.01
+          -104.055,
+          39.999,
+          -95.307,
+          43.001
         ]
       ],
       "claim_systems": [
@@ -1268,20 +2132,52 @@
         "note": "P2 registry captures Nebraska's mixed-scale geology and AML source gap; state remains disabled.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1313,20 +2209,52 @@
         "note": "P3 literature-tier registry only; mixed-scale NHGS ingestion, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1358,20 +2286,52 @@
         "note": "P4 registry baseline only; NJGWS vector ingestion, AML normalization, land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1405,20 +2365,52 @@
         "note": "P1 source registry is populated; state remains disabled pending all acceptance artifacts.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1437,7 +2429,7 @@
         [
           -120.01,
           35.0,
-          -114.04,
+          -114.03,
           42.01
         ]
       ],
@@ -1452,20 +2444,52 @@
         "note": "Nevada is the first P1 ingest target, but source registration alone does not satisfy a DONE gate.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1497,20 +2521,52 @@
         "note": "P3 literature-tier registry only; five-sheet geology ingestion, AML availability finding, land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1542,20 +2598,52 @@
         "note": "Registry only; the 24K package, AML layers, land cards, grades, quads, and scale CI are unaccepted.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1587,20 +2675,52 @@
         "note": "Registry only; the statewide vector decision and all acceptance artifacts remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1617,10 +2737,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -124.57,
-          41.99,
-          -116.46,
-          46.3
+          -124.705,
+          41.991,
+          -116.462,
+          46.301
         ]
       ],
       "claim_systems": [
@@ -1634,20 +2754,52 @@
         "note": "P2 registry populated; OGDC and MILO source quality does not substitute for accepted local tiled artifacts.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1679,20 +2831,52 @@
         "note": "P4 registry baseline only; geology tiling, AML extraction, ownership cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1724,20 +2908,52 @@
         "note": "P3 literature-tier registry only; vector lineage, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1769,20 +2985,52 @@
         "note": "P3 southern-Appalachian registry only; detailed geology gap fill, AML finding, land-context cards, grade evidence, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1799,10 +3047,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -104.06,
-          42.48,
-          -96.44,
-          45.95
+          -104.059,
+          42.478,
+          -96.435,
+          45.947
         ]
       ],
       "claim_systems": [
@@ -1816,20 +3064,52 @@
         "note": "P2 registry prioritizes the Homestake belt while documenting the absence of a current state AML program; release remains disabled.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1861,20 +3141,52 @@
         "note": "P4 registry baseline only; state-vector verification, caveated AML ingestion, land-context cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1906,20 +3218,52 @@
         "note": "Registry only; BEG vector acquisition and every artifact-backed DONE item remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1936,10 +3280,10 @@
       "phase": 1,
       "query_envelopes": [
         [
-          -114.052,
-          36.998,
-          -109.041,
-          42.002
+          -114.054,
+          36.996,
+          -109.04,
+          42.003
         ]
       ],
       "claim_systems": [
@@ -1950,23 +3294,55 @@
         "status": "building",
         "enabled": false,
         "baseline_visible": true,
-        "note": "Registry only; Utah is P1 but remains disabled until claims/open-ground tiles and every DONE-gate artifact are accepted.",
+        "note": "The exact Map 179DM/DS-7/OFR-695/OFR-757 state-survey baseline set is validated and browser-visible through lazy PMTiles, but it is baseline_not_release. Utah remains building/disabled until best-scale geology review, accepted claims/open-ground and release artifacts, and every remaining DONE gate pass.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -1998,20 +3374,52 @@
         "note": "P3 southern-Appalachian registry only; BETA geology acceptance, separate AML ingestion, ownership cards, grade citations, quad inventory, and CI acceptance remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -2025,7 +3433,7 @@
     "VT": {
       "name": "Vermont",
       "regime": "non_claim",
-      "phase": 4,
+      "phase": 3,
       "query_envelopes": [
         [
           -73.438,
@@ -2043,20 +3451,52 @@
         "note": "Registry only; historic-mine data is not labeled as a complete AML layer and all DONE gates remain blocked.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -2073,10 +3513,10 @@
       "phase": 2,
       "query_envelopes": [
         [
-          -124.849,
-          45.543,
-          -116.916,
-          49.002
+          -124.85,
+          45.542,
+          -116.915,
+          49.004
         ]
       ],
       "claim_systems": [
@@ -2090,20 +3530,52 @@
         "note": "Registry only; claim/open-ground artifacts, recorder coverage, and every other acceptance gate remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -2135,20 +3607,52 @@
         "note": "Registry only; the multiscale bedrock mosaic and all artifact-backed gates remain unaccepted.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -2180,20 +3684,52 @@
         "note": "Registry only; the registered GeMS source has not been ingested or accepted and every DONE gate remains blocked.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,
@@ -2211,9 +3747,9 @@
       "query_envelopes": [
         [
           -111.056,
-          40.994,
-          -104.052,
-          45.005
+          40.993,
+          -104.051,
+          45.007
         ]
       ],
       "claim_systems": [
@@ -2227,20 +3763,52 @@
         "note": "Registry only; MLRS tiles, closed-claim/open-ground math, recorder matrix, and all other artifact-backed gates remain pending.",
         "acceptance": {
           "grades": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "graded_mines": 0,
             "primary_sources": 0,
             "verbatim_quotes": 0,
             "page_cites": 0,
             "low_endowment_finding": null
           },
+          "district_anchor": {
+            "source_id": "pp610",
+            "artifact": null,
+            "source_sha256": null,
+            "district_count": 0,
+            "complete": false,
+            "no_district_finding": null
+          },
           "recorders": {
-            "live_claim_counties": [],
-            "covered_counties": []
+            "jurisdiction_type": "county",
+            "inventory_complete": false,
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "active_claims": null,
+            "live_claim_jurisdiction_ids": [],
+            "covered_jurisdiction_ids": []
+          },
+          "expiration_watch": {
+            "evidence_artifact": null,
+            "evidence_sha256": null,
+            "evidence_bytes": null,
+            "run_id": null,
+            "generated": null,
+            "complete": false,
+            "system_ids": []
           },
           "quad_maps": {
+            "ranked_targets_artifact": null,
+            "ranked_targets_sha256": null,
+            "ranked_targets_bytes": null,
             "targets": []
           },
           "ci_scale": {
+            "evidence_artifact": null,
+            "sha256": null,
+            "bytes": null,
             "run_url": null,
             "commit": null,
             "state_toggle_green": false,

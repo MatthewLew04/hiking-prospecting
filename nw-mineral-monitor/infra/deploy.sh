@@ -84,8 +84,16 @@ preflight() {
   else
     refresh_public_baseline_deployment
   fi
-  python3 -m unittest discover -s "$HERE/../tests" -v
-  python3 "$HERE/../pipelines/validate_national.py" --profile progress
+  # Use the same strict runner as CI. It binds the repository's ``tests``
+  # namespace explicitly so an unrelated site-packages ``tests`` package
+  # cannot shadow shared fixtures during deployment preflight.
+  python3 "$HERE/../ci/run_tests.py"
+  # The strict test runtime may be a pinned geospatial environment, while the
+  # exhaustive pure-Python PMTiles decoder is materially faster in the system
+  # interpreter. Keep the default unchanged but allow operators to select that
+  # interpreter explicitly without weakening or skipping either gate.
+  validator_python="${NWMM_VALIDATOR_PYTHON:-python3}"
+  "$validator_python" "$HERE/../pipelines/validate_national.py" --profile progress
   python3 "$HERE/../pipelines/validate_quad_geology.py" --skip-assets
 }
 

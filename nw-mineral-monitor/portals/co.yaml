@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "CO",
+  "portals": [
+    {
+      "id": "cgs_publications", "jurisdiction": "CO",
+      "name": "Colorado Geological Survey Publications",
+      "tier": 1, "portal_type": "publication_catalog",
+      "entry_url": "https://coloradogeologicalsurvey.org/publications/",
+      "detail_page_pattern": "https://coloradogeologicalsurvey.org/publications/{publication_slug}/",
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "CGS series code/number or publication slug; no universal per-mine identifier.",
+      "status": "registered_publication_catalog",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://coloradogeologicalsurvey.org/publications/", "http_status": 200, "result": "The CGS catalog exposes publication detail pages and a mixture of free downloads and store products, including Bureau of Mines annual reports; it is not a per-mine attachment database."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Skip priced/store-only products and require public-domain evidence per free PDF before download."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "free public-domain CGS mining publications and mine/district citation joins", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "co_drms_permits", "jurisdiction": "CO",
+      "name": "Colorado DRMS imaged mine-permit documents",
+      "tier": 1, "portal_type": "permit_index_and_imaged_documents",
+      "entry_url": "https://drms.colorado.gov/data-search",
+      "detail_page_pattern": null,
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "DRMS mine/permit file number; imaged-document identifiers are subordinate to a permit record.",
+      "status": "blocked_by_access_controls",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://drms.colorado.gov/data-search", "http_status": null, "result": "The official data-search surface identifies permit records and imaged files, but automated arrival verification was blocked by the site's robots/access controls; no crawler is enabled without a reviewed API or export."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Permit-file public access and document rights must be confirmed separately; access controls are never bypassed."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "public-domain imaged permit documents by complete DRMS permit cursor", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

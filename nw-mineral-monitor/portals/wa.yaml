@@ -1,0 +1,13 @@
+{
+  "schema_version": 1, "jurisdiction": "WA", "portals": [
+    {
+      "id": "wa_geology_mines", "jurisdiction": "WA", "name": "Washington Geologic Information Portal mines and minerals theme / Publications Catalog",
+      "tier": 2, "portal_type": "interactive_gis_theme_and_publication_catalog", "entry_url": "https://geologyportal.dnr.wa.gov/",
+      "detail_page_pattern": null, "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])", "id_scheme": "Portal feature identifiers vary by mines/minerals layer; publications use Washington DNR series identifiers.",
+      "status": "probed_no_attachment_pattern",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://publicationcatalog.dnr.wa.gov/", "http_status": 200, "result": "The state exposes a mines/minerals map theme and a separate publication catalog, including coal mine maps, but no exhaustive per-feature PDF attachment relationship was verified."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Require affirmative public-domain status for each catalog file; map visibility alone is not a document-rights grant."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "mine/mineral feature records plus public-domain linked publications and mine maps", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

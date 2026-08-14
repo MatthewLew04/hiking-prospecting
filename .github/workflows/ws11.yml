@@ -35,7 +35,7 @@ jobs:
           python3 ci/verify_lfs.py
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '22'
+          node-version: '22.13.0'
           cache: npm
           cache-dependency-path: nw-mineral-monitor/package-lock.json
       - name: Install strict unit-test runtime
@@ -52,6 +52,7 @@ jobs:
       - run: python3 pipelines/build_coverage.py --check
       - run: python3 pipelines/validate_national.py --profile progress
       - run: python3 pipelines/validate_quad_geology.py --skip-assets
+      - run: python3 pipelines/validate_doc_store.py
       - run: npm run test:browser
 
   release-gate:

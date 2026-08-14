@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "MT",
+  "portals": [
+    {
+      "id": "mbmg_data_center", "jurisdiction": "MT",
+      "name": "Montana Bureau of Mines and Geology Data Center: AIM, Mining Archives, and Publications",
+      "tier": 1, "portal_type": "asp_record_databases_and_publication_catalog",
+      "entry_url": "https://mbmg.mtech.edu/DataCenter/main.asp",
+      "detail_page_pattern": "https://data.mbmg.mtech.edu/3D/DataViewer.asp?AimId={AIM_ID}&Database=2&focus=OnePage&getby=DIS",
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "AIM identifiers combine a county prefix with six digits; publication records use numeric pub_id values.",
+      "status": "probed_no_attachment_pattern",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://data.mbmg.mtech.edu/3D/DataViewer.asp?AimId=JF005396&Database=2&focus=OnePage&getby=DIS", "http_status": 200, "result": "The AIM detail record exposes structured mine, commodity, location, and narrative data but no per-mine PDF attachment list. Data Preservation advertises Mining-Related Property Files and the publication catalog has per-publication downloads; no exhaustive public file cursor was verified."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Do not infer public-domain rights for archived company files or paid catalog items; individual free government publications require a reviewed rights basis."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "AIM records, Mining Archives/property-file catalog, and free MBMG publication PDFs", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

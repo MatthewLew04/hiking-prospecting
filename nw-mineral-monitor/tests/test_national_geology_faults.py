@@ -98,6 +98,7 @@ class NationalGeologyFaultTests(unittest.TestCase):
         raw = arc_feature(9, properties={
             'STATE': 'NV', 'SGMC_LABEL': 'Tv', 'UNIT_NAME': 'Volcanic rocks',
             'GENERALIZED_LITH': 'Igneous, volcanic',
+            'MAJOR1': 'Rhyolite', 'MINOR1': 'Tuff',
             'REFERENCE': 'Example Survey, 1999, map, scale 1:250,000.',
             'DIGITAL_URL': 'https://example.test/source',
         }, geometry=POLYGON)
@@ -109,6 +110,9 @@ class NationalGeologyFaultTests(unittest.TestCase):
         self.assertTrue(props['source_id'].startswith('sgmc:NV:'))
         self.assertEqual(props['source_scale'], '1:250,000')
         self.assertIn('scale 1:250,000', props['source_ref'])
+        self.assertEqual(
+            props['description'],
+            'Volcanic rocks; Major lithologies: Rhyolite; Minor lithologies: Tuff')
         with self.assertRaisesRegex(RuntimeError, 'unsupported state'):
             leaked = dict(raw)
             leaked['properties'] = dict(raw['properties'], STATE='HI')
@@ -124,6 +128,7 @@ class NationalGeologyFaultTests(unittest.TestCase):
         self.assertEqual((state, status), ('AK', 'explicit'))
         self.assertEqual(feature['properties']['source_id'], 'sim3340:AC002')
         self.assertEqual(feature['properties']['source_scale'], '1:200,000')
+        self.assertEqual(feature['properties']['description'], 'Example unit')
         reserved = json.loads(json.dumps(raw))
         reserved['properties']['SOURCE'] = 'AC001'
         _, reserved_status, reserved_feature = geo._normalize_ak_geology(

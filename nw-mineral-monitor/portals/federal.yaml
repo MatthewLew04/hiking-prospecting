@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "federal",
+  "portals": [
+    {
+      "id": "osmre_nmmr", "jurisdiction": "federal", "name": "OSMRE National Mine Map Repository",
+      "tier": "federal", "portal_type": "national_mine_map_index_and_request_service", "entry_url": "https://mmr.osmre.gov/",
+      "detail_page_pattern": "https://mmr.osmre.gov/?DocumentNumber={document_number}", "pdf_link_pattern": null, "id_scheme": "Six- or seven-digit NMMR Document Number; one document may have multiple TIFF scenes and mine rows.",
+      "status": "manual_request_only",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://mmr.osmre.gov/Help", "http_status": 200, "result": "The searchable index and GIS are public, but OSMRE explicitly says map images are not downloadable from the site and must be requested by Document Number; commercial requests may incur fees."},
+      "access": {"mode": "manual_request", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Index metadata may be joined, but image requests are not automated and donated-map rights are not presumed public domain."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "NMMR document-number index only; images remain manual-request and rights-review items", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "usgs_pubs_warehouse", "jurisdiction": "federal", "name": "USGS Publications Warehouse",
+      "tier": "federal", "portal_type": "federal_publication_catalog_and_citation_join", "entry_url": "https://pubs.usgs.gov/",
+      "detail_page_pattern": "https://pubs.usgs.gov/publication/{publication_id}", "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])", "id_scheme": "USGS publication index ID and series/number.",
+      "status": "registered_publication_catalog",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://pubs.usgs.gov/", "http_status": 200, "result": "USGS provides publication records and report PDFs and is already a WS11 citation join; it is not a per-mine property-file attachment corpus."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "USGS-authored federal works are eligible under 17 U.S.C. 105; externally authored or hosted supplements require separate review."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "USGS-authored public-domain publications linked by mine/district citations", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "ngmdb", "jurisdiction": "federal", "name": "USGS National Geologic Map Database",
+      "tier": "federal", "portal_type": "map_catalog_citation_join", "entry_url": "https://ngmdb.usgs.gov/mapview/",
+      "detail_page_pattern": null, "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])", "id_scheme": "NGMDB product/catalog identifier; download authority and product format vary by publisher.",
+      "status": "index_only_no_public_documents",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://ngmdb.usgs.gov/mapview/", "http_status": 200, "result": "MapView and the NGMDB catalog identify maps and publisher links. NGMDB is retained as a citation join because it does not itself guarantee a public-domain PDF for every record."},
+      "access": {"mode": "index_only", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Publisher-specific rights control each linked map; do not treat catalog inclusion as public domain."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "citation and map-source join only; no blanket document harvest", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "msha_mdrs", "jurisdiction": "federal", "name": "MSHA Mine Data Retrieval System",
+      "tier": "federal", "portal_type": "operator_and_mine_record_database", "entry_url": "https://www.msha.gov/mdrs",
+      "detail_page_pattern": null, "pdf_link_pattern": null, "id_scheme": "MSHA Mine ID; operator and controller identifiers are separate fields.",
+      "status": "index_only_no_public_documents",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://www.msha.gov/mdrs", "http_status": 200, "result": "MDRS provides mine/operator history and downloadable datasets but is a structured 20th-century operator-record join, not a scanned per-mine PDF folder."},
+      "access": {"mode": "index_only", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Use federal structured records as joins; no scanned-document harvest is asserted."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "MSHA Mine ID and operator-history joins; no PDF attachment set", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

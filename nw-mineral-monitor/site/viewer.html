@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Source document — NW Mineral Monitor</title>
+<style>
+/* Same tokens as the map so a citation does not feel like a different app. */
+:root{--bg:#0b0d10;--panel:#12151a;--panel2:#171b21;--panel3:#1d222a;
+ --line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.13);
+ --ink:#e8e6df;--ink2:#a9aeb6;--mut:#71787f;--accent:#2dd4bf;--gold:#c98500;
+ --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --sans:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 var(--sans);
+ display:flex;flex-direction:column;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+header{flex:0 0 auto;background:var(--panel);border-bottom:1px solid var(--line);
+ padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.title{font-size:13px;font-weight:600;letter-spacing:.01em;min-width:0;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 220px}
+.meta{font:10.5px var(--mono);color:var(--mut);white-space:nowrap}
+.pager{display:flex;gap:6px;align-items:center;margin-left:auto}
+button{background:var(--panel3);border:1px solid var(--line2);color:var(--ink2);
+ border-radius:5px;padding:6px 10px;font:12px var(--sans);cursor:pointer;
+ min-height:34px;min-width:34px;touch-action:manipulation}
+button:hover:enabled{border-color:rgba(45,212,191,.4);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+#pageNo{width:60px;background:var(--bg);border:1px solid var(--line2);color:var(--ink);
+ border-radius:5px;padding:6px;font:12px var(--mono);text-align:center;min-height:34px}
+.quotebar{flex:0 0 auto;background:var(--panel2);border-bottom:1px solid var(--line);
+ padding:7px 12px;font-size:11.5px;color:var(--ink2);display:flex;gap:9px;align-items:baseline}
+/* A class rule beats the UA [hidden] rule, so restate it explicitly. */
+.quotebar[hidden]{display:none}
+.quotebar q{font-style:italic;border-left:2px solid var(--gold);padding-left:8px;
+ display:block;overflow-wrap:anywhere}
+.quotebar .st{font:10px var(--mono);color:var(--mut);white-space:nowrap}
+#stage{flex:1 1 auto;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch}
+.page{position:relative;margin:0 auto 14px;width:max-content;max-width:100%;
+ box-shadow:0 8px 30px rgba(0,0,0,.5)}
+/* Scanned bulletins are white paper; keep them white on this dark shell. */
+.page canvas{display:block;background:#fff;max-width:100%;height:auto}
+.textLayer{position:absolute;inset:0;overflow:hidden;opacity:1;line-height:1;
+ text-align:initial;forced-color-adjust:none;transform-origin:0 0}
+.textLayer span,.textLayer br{color:transparent;position:absolute;white-space:pre;
+ cursor:text;transform-origin:0 0}
+.textLayer .hl{background:rgba(201,133,0,.45);border-radius:2px;color:transparent}
+.textLayer ::selection{background:rgba(45,212,191,.35)}
+footer{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--line);
+ padding:7px 12px;font-size:10.5px;color:var(--mut);display:flex;gap:12px;
+ flex-wrap:wrap;align-items:center}
+footer a{overflow-wrap:anywhere}
+.note{padding:16px;color:var(--ink2);font-size:12.5px;max-width:640px;margin:0 auto}
+.note b{color:#e07373}
+.badge{display:inline-block;font:10px var(--mono);letter-spacing:.06em;
+ border:1px solid var(--line2);border-radius:3px;padding:2px 5px;color:var(--mut)}
+@media (max-width:900px){
+ header{padding:7px 9px;gap:7px}
+ .title{flex:1 1 100%;white-space:normal}
+ .meta{font-size:10px}
+ header>#meta{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+ .pager{margin-left:0;width:100%;justify-content:space-between}
+ button{padding:8px 12px;min-height:40px}
+ #stage{padding:6px}
+ .quotebar{flex-direction:column;gap:3px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="title" id="title">Loading source document…</div>
+  <div class="meta" id="meta"></div>
+  <div class="pager">
+    <button id="prev" type="button" aria-label="Previous page">‹</button>
+    <input id="pageNo" type="number" min="1" value="1" inputmode="numeric" aria-label="Page">
+    <span class="meta" id="pageOf"></span>
+    <button id="next" type="button" aria-label="Next page">›</button>
+    <button id="zoomOut" type="button" aria-label="Zoom out">−</button>
+    <button id="zoomIn" type="button" aria-label="Zoom in">+</button>
+  </div>
+</header>
+<div class="quotebar" id="quotebar" hidden>
+  <q id="quote"></q><span class="st" id="quoteState"></span>
+</div>
+<div id="stage"><div class="note" id="note">Opening the stored copy…</div></div>
+<footer id="prov"></footer>
+<script type="module">
+'use strict';
+/* The citation viewer.
+   It opens OUR stored copy of a source document, never the portal: portals
+   move and die, citations do not. The stored searchable copy carries its text
+   layer on the original pages, so page N of a citation is page N here, and the
+   cited quote can be found and highlighted in that layer.
+   Parameters ride in the fragment (#doc=…&page=…&q=…) so the document id and
+   the quote never appear in a request line, a proxy log, or a Referer. */
+import * as pdfjs from './assets/pdfjs/pdf.min.mjs';
+
+pdfjs.GlobalWorkerOptions.workerSrc = './assets/pdfjs/pdf.worker.min.mjs';
+const FONTS = './assets/pdfjs/standard_fonts/';
+// Scanned survey bulletins are JBIG2, whose decoder lives in WebAssembly from
+// pdf.js 6 on. Without this the page art silently fails to decode and the
+// reader gets a blank sheet with a working text layer over it.
+const WASM = './assets/pdfjs/wasm/';
+const AUTH_KEY = 'nwmm_auth';
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+const S = {doc:null, pdf:null, page:1, scale:null, quote:'', rendering:0, seq:0,
+  resignAttempts:0};
+
+function params(){
+  const raw = (location.hash || '').replace(/^#/, '') || location.search.replace(/^\?/, '');
+  const q = new URLSearchParams(raw);
+  return {doc:(q.get('doc') || q.get('doc_id') || '').trim(),
+          page:parseInt(q.get('page') || '', 10) || null,
+          quote:(q.get('q') || q.get('quote') || '').trim()};
+}
+function accessToken(){
+  try{ return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}').access || null; }
+  catch(e){ return null; }
+}
+async function docsUrl(){
+  try{
+    const r = await fetch('auth.json', {cache:'no-store'});
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j && j.docsUrl ? j.docsUrl : null;
+  }catch(e){ return null; }
+}
+function fail(html){
+  $('stage').innerHTML = `<div class="note"><b>Cannot open this document.</b><br>${html}</div>`;
+}
+
+/* Ask the docs API to mint a fresh short-TTL presigned URL. The viewer always
+   re-signs rather than carrying a signature in its own link, so a bookmarked
+   citation still works long after any one signature has expired. */
+async function resolve(){
+  const p = params();
+  if (!p.doc) return fail('No document was requested.');
+  S.quote = p.quote;
+  const endpoint = await docsUrl();
+  if (!endpoint)
+    return fail('This deployment has no document endpoint configured ' +
+      '(<code>docsUrl</code> is missing from <code>auth.json</code>).');
+  // Resolve against the page so a same-origin path endpoint works too.
+  const url = new URL(endpoint, location.href);
+  url.searchParams.set('doc_id', p.doc);
+  if (p.page) url.searchParams.set('page', p.page);
+  // The quote stays in this page's fragment and is matched client-side. It
+  // is not needed to authorize/sign the object and must not enter API Gateway
+  // request lines or access logs.
+  const token = accessToken();
+  const r = await fetch(url, {headers: token ? {'x-auth-token': token} : {}});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok)
+    return fail(esc(j.error || `Document endpoint returned HTTP ${r.status}.`) +
+      (r.status === 401 ? '<br>Sign in on the map, then reopen the citation.' : ''));
+  S.doc = j;
+  S.page = j.page || 1;
+  if (!S.quote && j.quote) S.quote = j.quote;
+  paintChrome();
+  await open(j.file_url);
+}
+
+function paintChrome(){
+  const d = S.doc;
+  document.title = `${d.title} — p. ${d.page}`;
+  $('title').textContent = d.title;
+  $('title').title = d.title;
+  $('meta').textContent = `${d.authority} · ${d.state}`;
+  $('pageOf').textContent = `/ ${d.pages}`;
+  $('pageNo').max = d.pages;
+  if (S.quote){
+    $('quotebar').hidden = false;
+    $('quote').textContent = S.quote;
+    $('quoteState').textContent = d.text_layer === 'absent'
+      ? 'no text layer — page shown, not searched'
+      : 'searching this stored page…';
+  }
+  const parts = [
+    `<span class="badge">${esc(d.page_cite || ('p. ' + d.page))}</span>`,
+    `<span>stored copy · sha256 ${esc(String(d.sha256).slice(0, 12))}… · ` +
+      `text layer ${esc(d.text_layer)}</span>`,
+    `<span>retrieved ${esc(d.retrieved)} from ` +
+      `<a href="${esc(d.catalog_url)}" target="_blank" rel="noreferrer">the publisher's catalog</a> ` +
+      `(<a href="${esc(d.source_url)}" target="_blank" rel="noreferrer">original URL</a>) — ` +
+      `shown for provenance; this viewer reads our stored copy.</span>`,
+  ];
+  $('prov').innerHTML = parts.join('');
+}
+
+async function open(fileUrl){
+  // Tear the previous document down first. Following a second citation would
+  // otherwise leave the old worker task holding the old file, and its pending
+  // page promise never settles — the reader is left staring at a blank stage.
+  if (S.pdf){
+    const previous = S.pdf;
+    S.pdf = null;
+    try{ await previous.destroy(); }catch(e){}
+  }
+  // Scanned bulletins are large and decode page images in WebAssembly; say
+  // what is being opened rather than showing a bare spinner-less blank.
+  $('stage').innerHTML = `<div class="note">Opening the stored copy — ` +
+    `${esc(S.doc.title)}, ${S.doc.pages} page${S.doc.pages===1?'':'s'}…</div>`;
+  try{
+    S.pdf = await pdfjs.getDocument({
+      url: fileUrl, standardFontDataUrl: FONTS, wasmUrl: WASM,
+      isEvalSupported: false,
+    }).promise;
+    await render();
+    S.resignAttempts = 0;
+  }catch(e){
+    await recoverSignedRead(e);
+  }
+}
+
+/* A 300-second signature can expire while a long scan is open on a phone.
+   Re-sign once for a failed read, preserving the hash-carried page and quote;
+   a persistent failure stops instead of looping or silently switching source. */
+async function recoverSignedRead(error){
+  if (S.resignAttempts < 1){
+    S.resignAttempts++;
+    $('stage').innerHTML = '<div class="note">Refreshing the private document link…</div>';
+    return resolve();
+  }
+  fail('The stored copy could not be read ' +
+    `(${esc(error && error.message || error)}). Reload the page to try again.`);
+}
+
+function fitScale(viewport){
+  const stage = $('stage');
+  const available = Math.max(240, stage.clientWidth - 24);
+  return Math.min(2.6, Math.max(0.35, available / viewport.width));
+}
+
+/* Build the page completely off-DOM, then swap it in as one node. A page turn
+   or a resize can supersede a render at any await; assembling in place would
+   let a superseded render leave a canvas with no text layer on screen, which
+   looks like a document whose quote cannot be found. */
+async function render(){
+  const seq = ++S.seq;
+  const page = await S.pdf.getPage(S.page);
+  if (seq !== S.seq) return;
+  const base = page.getViewport({scale:1});
+  if (S.scale == null) S.scale = fitScale(base);
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const viewport = page.getViewport({scale:S.scale});
+  const width = Math.floor(viewport.width), height = Math.floor(viewport.height);
+  const holder = document.createElement('div');
+  holder.className = 'page';
+  holder.style.width = `${width}px`;
+  holder.style.setProperty('--scale-factor', String(S.scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.floor(viewport.width * ratio);
+  canvas.height = Math.floor(viewport.height * ratio);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  holder.appendChild(canvas);
+  const layer = document.createElement('div');
+  layer.className = 'textLayer';
+  layer.style.width = `${width}px`;
+  layer.style.height = `${height}px`;
+  holder.appendChild(layer);
+  await page.render({
+    canvasContext: canvas.getContext('2d', {alpha:false}),
+    viewport,
+    transform: ratio === 1 ? null : [ratio, 0, 0, ratio, 0, 0],
+  }).promise;
+  if (seq !== S.seq) return;
+  const text = await page.getTextContent();
+  if (seq !== S.seq) return;
+  await new pdfjs.TextLayer({textContentSource:text, container:layer, viewport}).render();
+  if (seq !== S.seq) return;
+  const highlighted = highlight(layer);
+  if (S.quote) $('quoteState').textContent = highlighted
+    ? 'highlighted in the text layer'
+    : (S.doc.text_layer === 'absent'
+        ? 'no text layer — page shown, not searched'
+        : 'not located on this page — page shown as cited');
+  const stage = $('stage');
+  stage.replaceChildren(holder);
+  $('pageNo').value = S.page;
+  $('prev').disabled = S.page <= 1;
+  $('next').disabled = S.page >= S.pdf.numPages;
+  const mark = layer.querySelector('.hl');
+  if (mark) mark.scrollIntoView({block:'center'});
+}
+
+/* Highlight the cited quote inside the real text layer. Spans are matched
+   against the page's normalized text so an OCR line break inside the quote
+   still lights up the right run of words. Nothing is highlighted when the
+   quote is not on the page — a false highlight would be worse than none. */
+function highlight(layer){
+  if (!S.quote) return false;
+  const wanted = norm(S.quote);
+  if (wanted.length < 4) return false;
+  const spans = [...layer.querySelectorAll('span')];
+  if (!spans.length) return false;
+  let joined = '', offsets = [];
+  for (const span of spans){
+    const piece = norm(span.textContent);
+    if (!piece) continue;
+    if (joined) joined += ' ';
+    offsets.push({span, start: joined.length, end: joined.length + piece.length});
+    joined += piece;
+  }
+  let at = joined.indexOf(wanted), length = wanted.length;
+  if (at < 0){
+    const anchor = wanted.split(' ').slice(0, 8).join(' ');
+    if (anchor.length < 12) return false;
+    at = joined.indexOf(anchor);
+    length = anchor.length;
+    if (at < 0) return false;
+  }
+  const stop = at + length;
+  let marked = false;
+  for (const entry of offsets){
+    if (entry.end <= at || entry.start >= stop) continue;
+    entry.span.classList.add('hl');
+    marked = true;
+  }
+  return marked;
+}
+
+function go(page){
+  const target = Math.min(Math.max(1, page | 0), S.pdf ? S.pdf.numPages : 1);
+  if (target === S.page) return;
+  S.page = target;
+  const hash = new URLSearchParams(
+    (location.hash || '').replace(/^#/, ''));
+  hash.set('page', String(target));
+  history.replaceState(null, '', `#${hash}`);
+  render().catch(recoverSignedRead);
+}
+function zoom(by){
+  if (!S.pdf) return;
+  S.scale = Math.min(2.6, Math.max(0.35, (S.scale || 1) * by));
+  render().catch(recoverSignedRead);
+}
+
+$('prev').onclick = () => go(S.page - 1);
+$('next').onclick = () => go(S.page + 1);
+$('pageNo').onchange = event => go(parseInt(event.target.value, 10) || 1);
+$('zoomIn').onclick = () => zoom(1.25);
+$('zoomOut').onclick = () => zoom(0.8);
+document.addEventListener('keydown', event => {
+  if (event.target.tagName === 'INPUT') return;
+  if (event.key === 'ArrowRight' || event.key === 'PageDown') go(S.page + 1);
+  if (event.key === 'ArrowLeft' || event.key === 'PageUp') go(S.page - 1);
+});
+window.addEventListener('hashchange', () => {
+  S.scale = null;
+  resolve().catch(e => fail(esc(e && e.message || e)));
+});
+let resizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    S.scale = null;if (S.pdf)render().catch(recoverSignedRead);
+  }, 220);
+});
+
+resolve().catch(e => fail(esc(e && e.message || e)));
+</script>
+</body>
+</html>

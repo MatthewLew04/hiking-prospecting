@@ -116,3 +116,33 @@
     ranked NGMDB selections expose a reduced whole-sheet `preview_url` for
     orientation. Preview and legend metadata are mutually exclusive, and UI
     copy must not invite users to decode map colors from a generic preview.
+
+46. **A stored document's key path is where it is filed, not a claim
+    about what it covers.** WS12 stores every cited document twice under
+    `docs/{state}/{portal}/{mine_id}/{sha256}/{raw|searchable}.pdf` — the
+    raw original as the provenance copy and a searchable copy whose text
+    layer sits on those same pages. `doc_id` is the SHA-256 of the raw
+    bytes, so a citation survives re-OCR, a re-crawl, and a portal
+    redesign. Because one bulletin serves many mines, the `mine_id`
+    segment records a single filing subject and the manifest's `subjects`
+    array carries every mine the document is actually cited for; a
+    document about a district or a whole state is filed under a reserved
+    `district-` or `statewide-` key, and a national document under the
+    reserved `US` scope. Identifiers from different datasets are
+    namespaced (`ws9-`, `stategeo-`, `mrds-`, `usmin-`, `mlrs-`) so two
+    catalogues can never collide in one path. This does not mean a
+    document is irrelevant to a mine absent from its filing key, and it
+    does not make the store a substitute for the publisher's own record.
+
+47. **A searchable copy that equals its original is the honest outcome,
+    not a skipped step.** When a source PDF already carries a text layer,
+    WS12 stores the searchable variant as those same bytes and records
+    `text_layer.status: native`; only an image-only scan gets
+    `ocr_added`, with the tool named in the manifest. The builder refuses
+    an OCR pass that changes the page count or returns the original bytes,
+    so pagination stays 1:1 and page N of a citation is page N of the
+    object. Quotes are then located in that text layer, and one that
+    cannot be found is recorded `quote_located: false` and shown to the
+    reader as "not located on this page" rather than highlighted
+    somewhere plausible. This does not assert that OCR is accurate, and
+    an unlocated quote is not evidence the source is wrong.

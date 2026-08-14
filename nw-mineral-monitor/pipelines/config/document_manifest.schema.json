@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nw-mineral-monitor.example/schemas/ws12-harvest-manifest-row-v1.json",
+  "title": "WS12 harvested public-domain PDF manifest row",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version", "source_url", "portal_id", "portal_source", "mine_id",
+    "mine_name", "state", "document_title", "sha256", "bytes",
+    "retrieval_date", "content_type", "s3_uri", "public_domain", "paywalled",
+    "rights_basis"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "source_url": {"type": "string", "pattern": "^https?://"},
+    "portal_id": {"type": "string", "minLength": 1},
+    "portal_source": {"type": "string", "minLength": 1},
+    "mine_id": {"type": "string", "minLength": 1},
+    "mine_name": {"type": "string", "minLength": 1},
+    "mine_names": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "state": {"type": "string", "pattern": "^[A-Z]{2}$"},
+    "county": {"type": ["string", "null"]},
+    "trs": {
+      "oneOf": [
+        {"type": "string"},
+        {"type": "array", "items": {"type": "string"}}
+      ]
+    },
+    "document_title": {"type": "string", "minLength": 1},
+    "doc_date": {"type": ["string", "null"]},
+    "doc_type": {"type": ["string", "null"]},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "bytes": {"type": "integer", "minimum": 1},
+    "retrieval_date": {"type": "string", "format": "date"},
+    "content_type": {"enum": ["application/pdf", "application/octet-stream"]},
+    "s3_uri": {"type": "string", "pattern": "^s3://[^/]+/.+"},
+    "etag": {"type": ["string", "null"]},
+    "last_modified": {"type": ["string", "null"]},
+    "public_domain": {"const": true},
+    "paywalled": {"const": false},
+    "rights_basis": {"type": "string", "minLength": 1}
+  }
+}

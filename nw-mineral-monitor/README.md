@@ -54,6 +54,11 @@ content-addressed release evidence and every other gate item are accepted.
 | `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
 | `site/data/geology/` · `targets/` · `county/` | WS5–WS6 bundles: harmonized geologic map + faults + springs (cited per unit), ranked sinter-first targets with scoring rationale, county-recorder instruments + coverage |
 | `site/data/geology-quads/inventory.json` | WS10 top-grade-target map inventory, quad/candidate metadata, overlay pointers, provenance, georeference confidence, gaps, and 24k rescan references |
+| `site/data/docs/manifest.json` · `site/viewer.html` | WS12 local stored-document manifest (promoted only to private S3) and the PDF.js citation viewer a chip opens; signed-in browsers receive a minimized catalog from the Docs API |
+| `pipelines/cache/ws12/store/` | Gitignored local generation of the document store; hardlinked to its sources and uploaded explicitly to the private S3 `docs/` prefix — PDFs never enter git |
+| `portals/` · `pipelines/mine_file_harvest.py` | WS12 strict portal registry plus robots/terms-aware, throttled, resumable, hash-deduplicated public-document harvester |
+| `site/data/docs/` · `pipelines/document_index.py` | Public mine-document metadata/coverage plus the private OCR, page-chunk, embedding, identity-join, and citation-index builder |
+| `pipelines/spatial_store.py` · `infra/spatial_tools.py` | Private RTree spatial evidence store and ASK tools for geology, claims, mines, faults, magnetic grids, and mine documents |
 | `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
 | `MLRS-PUBLICATION.md` | Operator contract for building immutable 19-state federal active/closed PMTiles from checksum-pinned private staging |
@@ -64,6 +69,7 @@ content-addressed release evidence and every other gate item are accepted.
 | `ALASKA-GRADE-EVIDENCE.md` · `ARIZONA-GRADE-EVIDENCE.md` · `COLORADO-GRADE-EVIDENCE.md` · `NEVADA-GRADE-EVIDENCE.md` · `NEW-MEXICO-GRADE-EVIDENCE.md` · `UTAH-GRADE-EVIDENCE.md` · `SOUTH-DAKOTA-GRADE-EVIDENCE.md` | Reviewed state grade corpora, page/image hash verification, PP 610 district extraction, and evidence-only build workflows |
 | `RECORDER-EVIDENCE-PUBLICATION.md` | Exact 19-state live-claim jurisdiction join and reviewed recorder-portal coverage evidence contract, including Alaska recording districts |
 | `CI-ACCEPTANCE-EVIDENCE.md` | Content-addressed per-state browser acceptance evidence bound to the candidate manifest, coverage grid, budgets, tiled descriptors, real load/query/request observations, and state off/on lifecycle |
+| `DOCUMENT-STORE-PUBLICATION.md` | WS12 raw/searchable object contract, sha256 key scheme, OCR and quote-location rules, private presigned delivery, and the citation-to-page publication boundary |
 | `TARGET-SCORING-EVIDENCE.md` | Exact 49-state richOpen/land-context target-score evidence with regime-aware N/A-vs-zero ordering and checksum-bound grade, geology, and land inputs |
 | `ZERO-INVENTORY-EVIDENCE.md` | Content-addressed proof for truthful zero-feature state/layer results, bound to the fully scanned national archive instead of fake sentinel geometry |
 | `NATIONAL-GEOLOGY-FAULT-LOSSLESS.md` | Exact source-OID/row audit and fail-closed z12 `fid` reconciliation contract for the 49-state geology/fault PMTiles pair |
@@ -188,6 +194,37 @@ Final prepublish QA combines each layer's local checksum/tile validation and
 remote-object verification before eviction with a metadata/UI validation of
 the final 18-ready/zero-blocked set, the DWM-193 native-vector rescan,
 outbox guardrails, and the no-raster-in-git policy.
+
+## WS12 — mine files, cited documents, and GIS tools (2026-08-14)
+
+WS12 adds a validated 33-entry state/federal mine-file portal registry. Three
+reviewed adapters are executable today (IGS, AZGS ADMMR, and NBMG); every other
+requested portal is retained with an explicit publication-catalog,
+index-only, manual-request, access-blocked, or no-attachment result. The
+harvester obeys robots and reviewed terms, throttles by portal, resumes from a
+SQLite frontier, records candidates and skips, deduplicates by SHA-256, and
+writes byte-verified originals only to private S3. Rights fail closed: a
+publicly reachable file is downloaded only when state/federal public-domain
+status is established, and paywalled or ambiguous-rights material is skipped.
+See `MINE-FILE-HARVEST.md`.
+
+Eligible PDFs flow through page-preserving OCR, stronger-OCR fallback queues,
+page-local chunks, Titan embeddings, and exact-ID then fuzzy-name+TRS joins.
+The browser receives only compact metadata and coverage; original PDFs, OCR
+text, vectors, and the SQLite search index remain private. ASK document facts
+must come from bounded search hits and include document title, exact PDF page,
+and source URL. The IF0126 acceptance corpus includes its eligible USGS
+MILS/MRDS records; the rights-unverified corporate property file is recorded
+as a skip rather than silently treated as public domain. See
+`WS12-DOCUMENT-INDEX.md`.
+
+The coordinate tools query a generated SQLite/RTree evidence store (with an
+optional GeoParquet/DuckDB production export): `geology_at`, `claims_at`,
+`mines_near`, `faults_near`, `mag_at`, and `docs_for`. Geology and fault rows
+retain their named source map and representative-fraction scale. Queryable
+vectors and raster-only context stay distinct, so Jackson's 1:24,000 image
+cannot masquerade as a unit polygon while DWM-193's native 1:24,000 vectors
+can. See `WS12-GIS-TOOLS.md`.
 
 ## Auto-updating
 

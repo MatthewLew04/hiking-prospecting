@@ -56,6 +56,7 @@ class LfsDeliveryTests(unittest.TestCase):
         self.assertIn('gdal-bin', native_setup)
         self.assertIn('python3 ci/verify_runtime.py', workflow)
         self.assertIn('python3 ci/run_tests.py', workflow)
+        self.assertIn('python3 pipelines/validate_doc_store.py', workflow)
         self.assertIn('--only-binary=:all:', workflow)
         self.assertNotIn('python3 -m unittest discover', workflow)
         requirements = (PROJECT / 'ci' / 'requirements.txt').read_text(

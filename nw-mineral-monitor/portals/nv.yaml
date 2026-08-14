@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "NV",
+  "portals": [
+    {
+      "id": "nbmg_mining_district_files",
+      "jurisdiction": "NV",
+      "name": "Nevada Bureau of Mines and Geology Mining District Files",
+      "tier": 1,
+      "portal_type": "embedded_complete_legacy_inventory_plus_current_digital_library",
+      "entry_url": "https://collections.nbmg.unr.edu/",
+      "detail_page_pattern": "https://collections.nbmg.unr.edu/pages/view.php?ref={resource_id}",
+      "pdf_link_pattern": "(?i)\\.pdf$",
+      "id_scheme": "NBMG item number; legacy inventory rows additionally carry a four-digit district directory and PDF path.",
+      "status": "harvest_ready",
+      "probe": {
+        "checked": "2026-08-14",
+        "verified_url": "https://nbmg.unr.edu/Collections/MiningDistricts/MDDBTextSearch.html",
+        "http_status": 200,
+        "result": "The retired search page remains a 7.2 MB public static inventory with an embedded mddata array and direct data.nbmg.unr.edu/Public/MiningDistricts PDF paths. The current ResourceSpace library is searchable but imposes Crawl-delay: 10 and disallows /filestore."
+      },
+      "access": {
+        "mode": "public_download",
+        "robots": "respect",
+        "paywalled": false,
+        "official_public_documents_only": true,
+        "terms_status": "reviewed_no_automation_prohibition",
+        "terms_checked": "2026-08-14",
+        "terms_url": "https://nbmg.unr.edu/Collections/MiningDistricts/MDDBTextSearch.html",
+        "terms_note": "Reviewed the retired public search inventory and source robots policies; no prohibition on throttled access to its public index was found. Current ResourceSpace restrictions remain out of scope.",
+        "rights_note": "Mining District Files mix donated private material with government reports. The adapter inventories all rows but downloads only entries covered by an explicit public-domain URL rule; no blanket rights inference is made."
+      },
+      "rights_rules": [],
+      "crawler": {
+        "adapter": "nbmg_embedded_js",
+        "automation_permitted": true,
+        "min_interval_seconds": 1.0,
+        "index_url": "https://nbmg.unr.edu/Collections/MiningDistricts/MDDBTextSearch.html",
+        "document_base_url": "https://data.nbmg.unr.edu/Public/MiningDistricts/"
+      },
+      "harvest_state": {
+        "full_crawl_complete": false,
+        "crawl_scope": "complete embedded legacy index with public-domain-only document retrieval; current library retained as a reconciliation target",
+        "last_complete_cursor": null,
+        "manifest_sha256": null,
+        "completed_at": null
+      }
+    }
+  ]
+}

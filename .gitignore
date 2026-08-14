@@ -20,6 +20,14 @@ auth.json
 nw-mineral-monitor/node_modules/
 nw-mineral-monitor/test-results/
 
+# WS12 resumable crawl/OCR/spatial runtime state and manifests. Originals
+# are content-addressed S3 objects and must never be staged in git.
+nw-mineral-monitor/var/ws12/
+
+# WS12 durable crawl queues, private manifests/OCR indexes, and spatial stores.
+# Public metadata-only dashboard exports live under site/data/docs instead.
+nw-mineral-monitor/var/ws12/
+
 # Private statewide builder scratch space; never stage ZIP/SHP/GeoJSONSeq or
 # pending PMTiles intermediates from a production build.
 nw-mineral-monitor/build-inputs/.staging/

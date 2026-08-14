@@ -1,0 +1,13 @@
+{
+  "schema_version": 1, "jurisdiction": "VA", "portals": [
+    {
+      "id": "va_geology_collections", "jurisdiction": "VA", "name": "Virginia Geology and Mineral Resources Collections",
+      "tier": 3, "portal_type": "multi_collection_catalog_and_downloads", "entry_url": "https://www.energy.virginia.gov/geology/Collections.shtml",
+      "detail_page_pattern": null, "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])", "id_scheme": "Collection-specific catalog key; MRV, AML, economic-geology files, publications, field maps, and notebooks use separate namespaces.",
+      "status": "probed_no_attachment_pattern",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://www.energy.virginia.gov/geology/Collections.shtml", "http_status": 200, "result": "Virginia lists 9,500 Economic Geology Mineral Resources Files and download-capable publication/map collections, but no complete common record-to-file API or per-mine PDF pattern was verified."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "The Web Store mixes purchases and free downloads; skip paid material and require public-domain status per file."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "economic-geology/mineral-resource catalog records and public-domain downloads", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

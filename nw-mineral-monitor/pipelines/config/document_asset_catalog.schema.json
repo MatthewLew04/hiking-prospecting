@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nw-mineral-monitor.example/schemas/ws12-document-assets-v1.json",
+  "title": "Private WS12 normalized document-asset lineage catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "dataset", "generated", "metrics", "assets",
+    "source_occurrences", "mine_links"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "dataset": {"const": "ws12-document-assets"},
+    "generated": {"type": "string", "format": "date"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assets", "harvest_assets", "legacy_pilot_assets",
+        "source_occurrences", "mine_links", "raw_store_ready",
+        "searchable_store_ready", "searchable_pending"
+      ],
+      "properties": {
+        "assets": {"type": "integer", "minimum": 1},
+        "harvest_assets": {"type": "integer", "minimum": 0},
+        "legacy_pilot_assets": {"type": "integer", "minimum": 0},
+        "source_occurrences": {"type": "integer", "minimum": 1},
+        "mine_links": {"type": "integer", "minimum": 1},
+        "raw_store_ready": {"type": "integer", "minimum": 0},
+        "searchable_store_ready": {"type": "integer", "minimum": 0},
+        "searchable_pending": {"type": "integer", "minimum": 0}
+      }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/asset"}
+    },
+    "source_occurrences": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/occurrence"}
+    },
+    "mine_links": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/mineLink"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "strings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "nonemptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_id", "bytes", "content_type", "lineage_sources", "source_ids",
+        "rights", "raw", "searchable"
+      ],
+      "properties": {
+        "doc_id": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "content_type": {"const": "application/pdf"},
+        "lineage_sources": {"$ref": "#/$defs/nonemptyStrings"},
+        "source_ids": {"$ref": "#/$defs/strings"},
+        "rights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["public_domain", "paywalled", "bases"],
+          "properties": {
+            "public_domain": {"const": true},
+            "paywalled": {"const": false},
+            "bases": {"$ref": "#/$defs/nonemptyStrings"}
+          }
+        },
+        "raw": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "key", "sha256", "bytes", "archive_s3_uris"],
+          "properties": {
+            "status": {"enum": ["harvested", "store_ready"]},
+            "key": {"type": ["string", "null"]},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "bytes": {"type": "integer", "minimum": 1},
+            "archive_s3_uris": {"$ref": "#/$defs/strings"}
+          }
+        },
+        "searchable": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "key", "sha256", "bytes"],
+          "properties": {
+            "status": {"enum": ["pending", "store_ready"]},
+            "key": {"type": ["string", "null"]},
+            "sha256": {
+              "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+            },
+            "bytes": {"type": ["integer", "null"], "minimum": 1}
+          }
+        }
+      }
+    },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "occurrence_id", "doc_id", "origin", "portal_id", "portal_source",
+        "source_url", "titles", "states", "counties", "trs", "doc_dates",
+        "doc_types", "retrieval_dates", "archive_s3_uris", "catalog_urls",
+        "etags", "last_modified"
+      ],
+      "properties": {
+        "occurrence_id": {"type": "string", "pattern": "^occ-[0-9a-f]{64}$"},
+        "doc_id": {"$ref": "#/$defs/sha256"},
+        "origin": {"enum": ["harvest", "legacy_pilot"]},
+        "portal_id": {"type": "string", "minLength": 1},
+        "portal_source": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string", "pattern": "^https?://"},
+        "titles": {"$ref": "#/$defs/nonemptyStrings"},
+        "states": {"$ref": "#/$defs/nonemptyStrings"},
+        "counties": {"$ref": "#/$defs/strings"},
+        "trs": {"$ref": "#/$defs/strings"},
+        "doc_dates": {"$ref": "#/$defs/strings"},
+        "doc_types": {"$ref": "#/$defs/strings"},
+        "retrieval_dates": {"$ref": "#/$defs/nonemptyStrings"},
+        "archive_s3_uris": {"$ref": "#/$defs/strings"},
+        "catalog_urls": {"$ref": "#/$defs/strings"},
+        "etags": {"$ref": "#/$defs/strings"},
+        "last_modified": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "mineLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "link_id", "doc_id", "mine_namespace", "mine_id", "state",
+        "link_methods", "labels", "source_occurrence_ids"
+      ],
+      "properties": {
+        "link_id": {"type": "string", "pattern": "^mine-[0-9a-f]{64}$"},
+        "doc_id": {"$ref": "#/$defs/sha256"},
+        "mine_namespace": {"type": "string", "minLength": 1},
+        "mine_id": {"type": "string", "minLength": 1},
+        "state": {"type": "string", "pattern": "^[A-Z]{2}$"},
+        "link_methods": {"$ref": "#/$defs/nonemptyStrings"},
+        "labels": {"$ref": "#/$defs/nonemptyStrings"},
+        "source_occurrence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^occ-[0-9a-f]{64}$"}
+        }
+      }
+    }
+  }
+}

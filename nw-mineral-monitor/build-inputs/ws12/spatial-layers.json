@@ -1,0 +1,20 @@
+{
+  "schema": "nwmm.ws12.spatial-layers.v1",
+  "layers": [
+    {
+      "id": "national:geology:jackson-acceptance",
+      "kind": "geology",
+      "path": "site/data/spatial/sgmc-jackson-16735.geojson",
+      "sha256": "bf96d9932a06e259c1393c1c00a79c3d5561dd5e66a63fe8b749fe8d81344d67",
+      "bytes": 23231,
+      "title": "Jennings (2010), Geologic Map of California",
+      "citation": "Jennings, C.W., with modifications by Gutierrez, C., Bryant, W., Saucedo, G., and Wills, C., 2010, Geologic map of California, Version 2.0, CGS GDM No. 2, scale 1:750,000.",
+      "source_url": "https://ngmdb.usgs.gov/Prodesc/proddesc_96750.htm",
+      "scale": "1:750,000",
+      "scale_denominator": 750000,
+      "state": "CA",
+      "source_query": "USGS SGMC FeatureServer/3, OBJECTID=16735, outSR=4326",
+      "role": "Jackson acceptance point supplement; full national builds ingest the complete pre-tile SGMC sequence"
+    }
+  ]
+}

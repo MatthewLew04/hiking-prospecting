@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "ID",
+  "portals": [
+    {
+      "id": "igs_mines",
+      "jurisdiction": "ID",
+      "name": "Idaho Geological Survey Mines and Prospects / Mineral Property Files",
+      "tier": 1,
+      "portal_type": "arcgis_hub_metadata_plus_legacy_html_detail_files",
+      "entry_url": "https://idahogeology.org/WebMap4/",
+      "detail_page_pattern": "https://idahogeology.org/WebMap4/WebData/Mines.aspx?Operation=Details&IGSID={IGSID}",
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "IGSID is a two-letter Idaho 1:250,000 quadrangle code plus a zero-padded four-digit sequence; the current ArcGIS OBJECTID inventory is separately pinned and translated to IGSID.",
+      "status": "harvest_ready",
+      "probe": {
+        "checked": "2026-08-14",
+        "verified_url": "https://idahogeology.org/WebMap4/WebData/Mines.aspx?Operation=Details&IGSID=IF0126",
+        "http_status": 200,
+        "result": "IF0126 resolves as St. Louis Mine and exposes three PDF links. Official ArcGIS Hub metadata reports 9,424 current records and hasAttachments=false; the underlying services.arcgis.com feature inventory currently denies robots verification, so current IGSID membership and external popup links are recorded as access-blocked rather than inferred."
+      },
+      "access": {
+        "mode": "public_download",
+        "robots": "respect",
+        "paywalled": false,
+        "official_public_documents_only": true,
+        "terms_status": "reviewed_no_automation_prohibition",
+        "terms_checked": "2026-08-14",
+        "terms_url": "https://idahogeology.org/WebMap4/",
+        "terms_note": "Reviewed the IGS and ArcGIS Hub public-data pages and robots policies. Legacy document retrieval and Hub dataset metadata are crawlable; the underlying ArcGIS feature-service inventory is fail-closed because its robots endpoint returns HTTP 403.",
+        "rights_note": "Download only a link whose issuing authority establishes public-domain status. IGS MineDocs are not presumed public domain merely because the detail page is public."
+      },
+      "rights_rules": [
+        {
+          "url_pattern": "(?i)^https://(?:www\\.)?idahogeology\\.org/Uploads/Data/MILS_MRDS/(?:MILS|MRDS)-[^/?]+\\.pdf$",
+          "status": "public_domain",
+          "basis": "U.S. Geological Survey work; U.S. federal-government work is public domain under 17 U.S.C. 105."
+        }
+      ],
+      "crawler": {
+        "adapter": "igs_legacy_and_current",
+        "automation_permitted": true,
+        "min_interval_seconds": 1.0,
+        "current_item_id": "a2d491a1f53f449281e48e171c28ffaf",
+        "current_layer_url": "https://services.arcgis.com/WLhB60Nqwp4NnHz3/arcgis/rest/services/Mines_and_Prospects_of_Idaho/FeatureServer/0",
+        "current_hub_dataset_url": "https://hub.arcgis.com/api/v3/datasets/a2d491a1f53f449281e48e171c28ffaf_0",
+        "detail_url_template": "https://idahogeology.org/WebMap4/WebData/Mines.aspx?Operation=Details&IGSID={mine_id}",
+        "id_field": "IGSID",
+        "name_field": "NameList",
+        "metadata_fields": {"county": "CountyName", "trs": "plss"},
+        "arcgis_page_size": 100,
+        "acceptance_seed_ids": ["IF0126"],
+        "legacy_id_ranges": [
+          {"prefix": "AS", "start": 1, "end": 30},
+          {"prefix": "BA", "start": 1, "end": 207},
+          {"prefix": "BO", "start": 1, "end": 509},
+          {"prefix": "CH", "start": 1, "end": 1399},
+          {"prefix": "DI", "start": 1, "end": 251},
+          {"prefix": "DR", "start": 1, "end": 196},
+          {"prefix": "DU", "start": 1, "end": 676},
+          {"prefix": "EC", "start": 1, "end": 1471},
+          {"prefix": "GR", "start": 1, "end": 355},
+          {"prefix": "HA", "start": 1, "end": 1440},
+          {"prefix": "HM", "start": 1, "end": 285},
+          {"prefix": "IF", "start": 1, "end": 257},
+          {"prefix": "JV", "start": 1, "end": 182},
+          {"prefix": "PL", "start": 1, "end": 239},
+          {"prefix": "PO", "start": 1, "end": 282},
+          {"prefix": "PR", "start": 1, "end": 237},
+          {"prefix": "SA", "start": 1, "end": 331},
+          {"prefix": "SP", "start": 1, "end": 464},
+          {"prefix": "TF", "start": 1, "end": 118},
+          {"prefix": "WL", "start": 1, "end": 638}
+        ]
+      },
+      "harvest_state": {
+        "full_crawl_complete": false,
+        "crawl_scope": "public-domain PDFs from bounded legacy IGSID enumeration plus current ArcGIS Hub attachment metadata; feature-level current inventory remains robots-blocked",
+        "last_complete_cursor": null,
+        "manifest_sha256": null,
+        "completed_at": null
+      }
+    }
+  ]
+}

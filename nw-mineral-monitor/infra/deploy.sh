@@ -5,6 +5,9 @@
 #   ./deploy.sh update-site    # re-upload site/ only
 #   ./deploy.sh upload-ws10-assets  # upload ignored quad rasters/tiles (never deletes remote assets)
 #   ./deploy.sh upload-release-assets  # upload immutable, gate-approved WS11 state archives
+#   ./deploy.sh upload-doc-store [dir]  # upload + verify the private WS12 source-document corpus
+#   ./deploy.sh upload-doc-index [live.sqlite3]  # package + verify private WS12 OCR index
+#   ./deploy.sh upload-spatial-store [path]  # verify + upload private WS12 GIS database
 #   ./deploy.sh preflight           # run executable registry/data/tiling gates
 #   ./deploy.sh refresh        # trigger the claims updater now
 #   ./deploy.sh teardown       # delete everything (empties the bucket first)
@@ -21,6 +24,12 @@ RELEASE_ASSETS="$SITE/map-assets/releases"
 RELEASE_ASSET_PREFIX="map-assets/releases"
 RELEASE_ASSET_VALIDATOR="$HERE/../pipelines/validate_release_assets.py"
 PUBLIC_SITE_VALIDATOR="$HERE/../pipelines/validate_public_site.py"
+# WS12 source documents: private, never CloudFront-readable, served only by
+# the short-TTL presigned GETs the docs API mints for a signed-in caller.
+DOC_STORE="$HERE/../pipelines/cache/ws12/store"
+DOC_STORE_PREFIX="docs"
+DOC_STORE_MANIFEST_KEY="private/ws12/document-store-manifest.json"
+DOC_STORE_VALIDATOR="$HERE/../pipelines/validate_doc_store.py"
 EARLY_RELEASE_ALLOWLIST=""
 PUBLIC_BASELINE_UPLOAD_PLAN=""
 PUBLIC_DEPLOYMENT_MANIFEST=""
@@ -95,6 +104,15 @@ preflight() {
   validator_python="${NWMM_VALIDATOR_PYTHON:-python3}"
   "$validator_python" "$HERE/../pipelines/validate_national.py" --profile progress
   python3 "$HERE/../pipelines/validate_quad_geology.py" --skip-assets
+  # The separate presigned-PDF viewer predates the fail-closed Part A rights
+  # contract. Keep it out of ordinary deploys until its entire manifest has
+  # affirmative public-domain evidence; the canonical OCR/ASK index above is
+  # unaffected. An explicit opt-in still runs its own structural validator.
+  if [ "${ENABLE_LEGACY_DOC_STORE:-false}" = "true" ]; then
+    python3 "$DOC_STORE_VALIDATOR"
+  else
+    echo "    legacy document viewer disabled (rights review incomplete)"
+  fi
 }
 
 require_cognito_secrets() {
@@ -110,6 +128,27 @@ require_cognito_secrets() {
 }
 
 need() { command -v "$1" >/dev/null || { echo "ERROR: '$1' not found — see DEPLOY.md prerequisites"; exit 1; }; }
+
+# AWS CLI's socket read timeout does not cover a request body that stops
+# making forward progress. Bound the whole child process as well, so a durable
+# content-addressed upload can verify/retry instead of pinning the queue
+# forever on one object. subprocess.run kills and waits for the child on a
+# timeout before returning 124 to the shell retry loop.
+run_with_deadline() {
+  local seconds="$1"
+  shift
+  python3 - "$seconds" "$@" <<'PY'
+import subprocess
+import sys
+
+try:
+    completed = subprocess.run(sys.argv[2:], timeout=float(sys.argv[1]))
+except subprocess.TimeoutExpired:
+    raise SystemExit(124)
+raise SystemExit(completed.returncode)
+PY
+}
+
 if [ "${1:-deploy}" = "preflight" ]; then
   preflight
   exit 0
@@ -190,6 +229,114 @@ upload_ws10_assets() {
     fi
     echo "WS10 assets uploaded to $destination; no remote objects were removed."
   fi
+}
+
+upload_document_index() {
+  local bucket="$1"
+  local live_db="${2:-$HERE/../var/ws12/document-index.sqlite3}"
+  local package_path="$HERE/../var/ws12/deploy/document-index.sqlite3"
+  local metadata_path="$package_path.meta.json"
+  local verified sha bytes remote
+  [ -f "$live_db" ] || {
+    echo "ERROR: WS12 live document index not found: $live_db"
+    return 1
+  }
+  # package performs wal_checkpoint(TRUNCATE), a SQLite backup into DELETE
+  # journal mode, immutable reopen, integrity_check, and exact SHA/byte output.
+  python3 "$HERE/../pipelines/document_index.py" --db "$live_db" package \
+    --output "$package_path"
+  verified="$(python3 - "$package_path" "$metadata_path" <<'PY'
+import hashlib,json,os,sqlite3,sys
+path,meta_path=sys.argv[1:]
+meta=json.load(open(meta_path,encoding='utf-8'))
+digest=hashlib.sha256()
+with open(path,'rb') as source:
+    for block in iter(lambda:source.read(1 << 20),b''):
+        digest.update(block)
+h=digest.hexdigest(); n=os.path.getsize(path)
+if h != meta.get('sha256') or n != meta.get('bytes'):
+    raise SystemExit('package metadata does not match the exact database bytes')
+db=sqlite3.connect(f'file:{os.path.abspath(path)}?mode=ro&immutable=1',uri=True)
+try:
+    if db.execute('pragma integrity_check').fetchone()[0] != 'ok':
+        raise SystemExit('packaged document index failed immutable integrity_check')
+    if db.execute("select value from schema_meta where key='schema_version'").fetchone()[0] != '1':
+        raise SystemExit('packaged document index schema is not v1')
+finally:
+    db.close()
+print(f'{h} {n}')
+PY
+)"
+  sha="${verified%% *}"; bytes="${verified##* }"
+  aws s3 cp "$package_path" \
+    "s3://$bucket/private/ws12/document-index.sqlite3" --region "$REGION" \
+    --only-show-errors --sse AES256 --content-type application/vnd.sqlite3 \
+    --cache-control no-store --metadata "sha256=$sha,schema-version=1"
+  remote="$(aws s3api head-object --bucket "$bucket" \
+    --key private/ws12/document-index.sqlite3 --region "$REGION" \
+    --query '[ContentLength,Metadata.sha256]' --output text)"
+  [ "$remote" = "$bytes"$'\t'"$sha" ] || {
+    echo "ERROR: uploaded document index verification failed: local=$bytes/$sha remote=$remote"
+    return 1
+  }
+  echo "uploaded verified private document index: $bytes bytes · sha256 $sha"
+}
+
+upload_spatial_store() {
+  local bucket="$1"
+  local database="${2:-$HERE/../pipelines/cache/ws12/spatial.sqlite}"
+  local verified sha bytes remote sidecar
+  [ -f "$database" ] || {
+    echo "ERROR: generated WS12 spatial database not found: $database"
+    echo "       Build it with pipelines/spatial_store.py; generated stores stay out of git."
+    return 1
+  }
+  for sidecar in "$database-wal" "$database-shm"; do
+    [ ! -e "$sidecar" ] || {
+      echo "ERROR: refusing an uncheckpointed spatial store with sidecar: $sidecar"
+      return 1
+    }
+  done
+  verified="$(python3 - "$database" <<'PY'
+import hashlib,os,sqlite3,sys
+path=os.path.abspath(sys.argv[1])
+digest=hashlib.sha256()
+with open(path,'rb') as source:
+    for block in iter(lambda:source.read(1 << 20),b''):
+        digest.update(block)
+h=digest.hexdigest(); n=os.path.getsize(path)
+db=sqlite3.connect(f'file:{path}?mode=ro&immutable=1',uri=True)
+try:
+    if db.execute('pragma integrity_check').fetchone()[0] != 'ok':
+        raise SystemExit('spatial database failed immutable integrity_check')
+    version=db.execute(
+        "select value from store_metadata where key='schema_version'").fetchone()
+    if not version or version[0] != '1':
+        raise SystemExit('spatial database schema is not v1')
+    required={'layers','features','feature_index','rasters','documents','document_aliases'}
+    tables={row[0] for row in db.execute(
+        "select name from sqlite_master where type in ('table','view')")}
+    missing=sorted(required-tables)
+    if missing:
+        raise SystemExit(f'spatial database lacks required tables: {missing}')
+finally:
+    db.close()
+print(f'{h} {n}')
+PY
+)"
+  sha="${verified%% *}"; bytes="${verified##* }"
+  aws s3 cp "$database" \
+    "s3://$bucket/private/ws12/spatial.sqlite3" --region "$REGION" \
+    --only-show-errors --sse AES256 --content-type application/vnd.sqlite3 \
+    --cache-control no-store --metadata "sha256=$sha,schema-version=1"
+  remote="$(aws s3api head-object --bucket "$bucket" \
+    --key private/ws12/spatial.sqlite3 --region "$REGION" \
+    --query '[ContentLength,Metadata.sha256]' --output text)"
+  [ "$remote" = "$bytes"$'\t'"$sha" ] || {
+    echo "ERROR: uploaded spatial database verification failed: local=$bytes/$sha remote=$remote"
+    return 1
+  }
+  echo "uploaded verified private spatial database: $bytes bytes · sha256 $sha"
 }
 
 upload_release_assets() {
@@ -388,12 +535,182 @@ upload_and_verify_public_data_binaries() {
 
 sync_public_site_without_pointers() {
   local bucket="$1"
+  local -a legacy_excludes=()
+  if [ "${ENABLE_LEGACY_DOC_STORE:-false}" != "true" ]; then
+    legacy_excludes+=(--exclude "viewer.html" --exclude "assets/pdfjs/*")
+  fi
   aws s3 sync "$SITE" "s3://$bucket" --region "$REGION" --delete \
     --no-follow-symlinks --cache-control "public, max-age=3600" \
     --exclude "data/*" --exclude "auth.json" --exclude "index.html" \
     --exclude "*.pmtiles" --exclude "*.tif" --exclude "*.tiff" \
-    --exclude "ckpt/*" --exclude "watch/*" \
+    --exclude "ckpt/*" --exclude "watch/*" --exclude "$DOC_STORE_PREFIX/*" \
+    --exclude "private/*" --exclude "ws12/*" --exclude "originals/*" \
+    --exclude "staging/*" \
+    "${legacy_excludes[@]}" \
     --exclude "$WS10_ASSET_PREFIX/*" --exclude "$NATIONAL_ASSET_PREFIX/*"
+}
+
+upload_doc_store() {
+  local bucket="$1"
+  local store="${2:-$DOC_STORE}"
+  [ "${ENABLE_LEGACY_DOC_STORE:-false}" = "true" ] || {
+    echo "ERROR: legacy document viewer is disabled pending affirmative public-domain review." >&2
+    echo "       The canonical WS12 path is upload-doc-index; do not opt in merely because a file is publicly reachable." >&2
+    return 1
+  }
+  [ -d "$store" ] || { echo "ERROR: no local document store at $store; run pipelines/build_doc_store.py first" >&2; return 1; }
+  # Validate the manifest AND hash-verify every local object before a single
+  # byte moves. An unverified generation must not become the served corpus.
+  python3 "$DOC_STORE_VALIDATOR" --store-dir "$store"
+  local uploaded=0 reused=0 verified=0 key variant expected expected_b64 expected_size
+  local actual actual_size remote_identity cache_control tag_value
+  local put_attempt put_complete
+  local inventory manifest_path manifest_sha manifest_size manifest_identity
+  local -a put_args
+  inventory="$(mktemp "${TMPDIR:-/tmp}/nwmm-doc-store.XXXXXX")"
+  manifest_path="$SITE/data/docs/manifest.json"
+  if ! python3 - "$HERE/../pipelines" "$manifest_path" > "$inventory" <<'PY'
+import sys
+sys.path.insert(0, sys.argv[1])
+import doc_store
+manifest = doc_store.load_manifest(sys.argv[2])
+unresolved = doc_store.withheld_documents(manifest)
+if unresolved:
+    raise SystemExit('refusing upload: manifest contains rights-unresolved documents')
+for row in doc_store.servable_documents(manifest):
+    for variant in doc_store.VARIANTS:
+        entry = row[variant]
+        print(f"{entry['key']}\t{entry['sha256']}\t{entry['bytes']}")
+PY
+  then
+    rm -f "$inventory"
+    return 1
+  fi
+  while IFS=$'\t' read -r key expected expected_size; do
+    [ -n "$key" ] || continue
+    variant="${key##*/}"; variant="${variant%.pdf}"
+    expected_b64="$(printf '%s' "$expected" | xxd -r -p | base64)"
+    remote_identity="$(aws s3api head-object --bucket "$bucket" --key "$key" \
+      --region "$REGION" --checksum-mode ENABLED \
+      --query '[ChecksumSHA256,ContentLength]' --output text 2>/dev/null || echo '')"
+    read -r actual actual_size <<< "$remote_identity"
+    if [ "$expected_b64" = "$actual" ] && [ "$expected_size" = "$actual_size" ]; then
+      # Idempotent recrawls do not rewrite content-addressed objects.
+      reused=$((reused + 1))
+    else
+      if [ -n "$remote_identity" ] && [ "$variant" = "raw" ]; then
+        echo "ERROR: refusing to overwrite immutable raw object with a different identity: $key" >&2
+        rm -f "$inventory"
+        return 1
+      fi
+      if [ "$variant" = "raw" ]; then
+        cache_control="private, max-age=31536000, immutable"
+      else
+        # A searchable derivative may be replaced after stronger OCR. Do not
+        # let a year-long immutable browser cache hide that re-OCR product.
+        cache_control="private, max-age=300, must-revalidate"
+      fi
+      put_args=(aws s3api put-object --bucket "$bucket" --key "$key"
+        --body "$store/$key" --region "$REGION"
+        --content-type "application/pdf" --cache-control "$cache_control"
+        --tagging "ws12-variant=$variant" --checksum-algorithm SHA256
+        --checksum-sha256 "$expected_b64"
+        --cli-connect-timeout 30 --cli-read-timeout 120)
+      # The provenance original is create-only. A racing publisher can win,
+      # but this process will accept its object only after the same exact
+      # digest/byte verification below.
+      [ "$variant" != "raw" ] || put_args+=(--if-none-match '*')
+      put_complete=false
+      for put_attempt in 1 2 3; do
+        if run_with_deadline 180 env AWS_MAX_ATTEMPTS=1 AWS_RETRY_MODE=standard \
+            "${put_args[@]}" >/dev/null 2>&1; then
+          uploaded=$((uploaded + 1))
+          put_complete=true
+          break
+        fi
+        # A response can be lost after S3 commits the object, or another
+        # resumable worker can win the conditional raw write. Accept either
+        # case only when the committed bytes already have the exact manifest
+        # identity; never retry over a different immutable raw object.
+        remote_identity="$(aws s3api head-object --bucket "$bucket" --key "$key" \
+          --region "$REGION" --checksum-mode ENABLED \
+          --query '[ChecksumSHA256,ContentLength]' --output text 2>/dev/null || echo '')"
+        read -r actual actual_size <<< "$remote_identity"
+        if [ "$expected_b64" = "$actual" ] && [ "$expected_size" = "$actual_size" ]; then
+          reused=$((reused + 1))
+          put_complete=true
+          break
+        fi
+        if [ -n "$remote_identity" ] && [ "$variant" = "raw" ]; then
+          echo "ERROR: refusing to overwrite immutable raw object with a different identity: $key" >&2
+          rm -f "$inventory"
+          return 1
+        fi
+        [ "$put_attempt" -ge 3 ] || sleep "$put_attempt"
+      done
+      if [ "$put_complete" != "true" ]; then
+        echo "ERROR: document upload failed after 3 bounded attempts: $key" >&2
+        rm -f "$inventory"
+        return 1
+      fi
+    fi
+    # Only raw originals are tagged for the lifecycle transition to
+    # Infrequent Access; searchable copies stay hot because every citation
+    # opens one. Repairing a tag does not alter the immutable object bytes.
+    aws s3api put-object-tagging --bucket "$bucket" --key "$key" --region "$REGION" \
+      --tagging "TagSet=[{Key=ws12-variant,Value=$variant}]" >/dev/null
+    # Local success is never remote proof: read the object's own recorded
+    # digest back and compare it to the manifest before counting it verified.
+    remote_identity="$(aws s3api head-object --bucket "$bucket" --key "$key" \
+      --region "$REGION" --checksum-mode ENABLED \
+      --query '[ChecksumSHA256,ContentLength]' --output text 2>/dev/null || echo '')"
+    read -r actual actual_size <<< "$remote_identity"
+    tag_value="$(aws s3api get-object-tagging --bucket "$bucket" --key "$key" \
+      --region "$REGION" --query 'TagSet[?Key==`ws12-variant`].Value | [0]' \
+      --output text 2>/dev/null || echo '')"
+    if [ "$expected_b64" = "$actual" ] && \
+        [ "$expected_size" = "$actual_size" ]; then
+      [ "$tag_value" = "$variant" ] || {
+        echo "ERROR: $key has the wrong lifecycle variant tag" >&2
+        rm -f "$inventory"
+        return 1
+      }
+      verified=$((verified + 1))
+    else
+      echo "ERROR: $key did not verify remotely after upload (sha256 and bytes required)" >&2
+      rm -f "$inventory"
+      return 1
+    fi
+  done < "$inventory"
+  rm -f "$inventory"
+
+  # Publish the source-of-truth manifest only after all objects verify. It is
+  # private and read by the authenticated Docs API; the browser receives a
+  # minimized catalog response with no S3 keys.
+  read -r manifest_sha manifest_size <<< "$(python3 - "$manifest_path" <<'PY'
+import hashlib,os,sys
+path=sys.argv[1]; digest=hashlib.sha256()
+with open(path,'rb') as source:
+    for block in iter(lambda:source.read(1 << 20),b''):
+        digest.update(block)
+print(digest.hexdigest(),os.path.getsize(path))
+PY
+)"
+  aws s3api put-object --bucket "$bucket" --key "$DOC_STORE_MANIFEST_KEY" \
+    --body "$manifest_path" --region "$REGION" --content-type "application/json" \
+    --cache-control "private, no-store" --metadata "sha256=$manifest_sha" \
+    --checksum-algorithm SHA256 >/dev/null
+  manifest_identity="$(aws s3api head-object --bucket "$bucket" \
+    --key "$DOC_STORE_MANIFEST_KEY" --region "$REGION" --checksum-mode ENABLED \
+    --query '[ChecksumSHA256,ContentLength,Metadata.sha256]' --output text)"
+  read -r actual actual_size expected <<< "$manifest_identity"
+  if [ "$(printf '%s' "$manifest_sha" | xxd -r -p | base64)" != "$actual" ] || \
+      [ "$manifest_size" != "$actual_size" ] || [ "$manifest_sha" != "$expected" ]; then
+    echo "ERROR: private document manifest did not verify remotely" >&2
+    return 1
+  fi
+  aws s3 rm "s3://$bucket/data/docs/manifest.json" --region "$REGION" --only-show-errors
+  echo "    document store: $uploaded uploaded, $reused reused, $verified verified remotely; private manifest verified"
 }
 
 sync_public_data_without_pointers_or_binaries() {
@@ -404,7 +721,24 @@ sync_public_data_without_pointers_or_binaries() {
     --exclude "evidence/watch/*" \
     --exclude "$WS10_ASSET_PREFIX/*" --exclude "$NATIONAL_ASSET_PREFIX/*" \
     --exclude "*.pmtiles" --exclude "*.tif" --exclude "*.tiff" \
-    --exclude "manifest.json" --exclude "coverage.json"
+    --exclude "manifest.json" --exclude "coverage.json" \
+    --exclude "docs/manifest.json"
+  # The explicit deny in the bucket policy is the hard boundary; this exact
+  # cleanup also removes a stale object left by an older deployment.
+  aws s3 rm "s3://$bucket/data/docs/manifest.json" --region "$REGION" --only-show-errors
+}
+
+remove_disabled_legacy_document_assets() {
+  local bucket="$1"
+  [ "${ENABLE_LEGACY_DOC_STORE:-false}" != "true" ] || return 0
+  # `aws s3 sync --delete` deliberately preserves excluded keys. Remove the
+  # optional viewer's public entry points explicitly so true -> false is a
+  # real rollback boundary. These entry points are regenerated from tracked
+  # source when re-enabled; private source documents are never removed here.
+  aws s3 rm "s3://$bucket/viewer.html" --region "$REGION" --only-show-errors
+  aws s3 rm "s3://$bucket/assets/pdfjs/" --recursive --region "$REGION" --only-show-errors
+  aws s3 rm "s3://$bucket/data/docs/manifest.json" --region "$REGION" --only-show-errors
+  echo "    legacy document viewer entry points disabled (private documents untouched)"
 }
 
 upload_public_data_pointers() {
@@ -439,11 +773,11 @@ upload_public_index() {
 remove_legacy_browser_json() {
   local bucket="$1"
   # These exact public prefixes contain only superseded whole-state columnar
-  # snapshots. Bucket versioning makes the removal recoverable, while the
-  # current versions disappear from CloudFront immediately.
+  # snapshots. They can be regenerated from the canonical source datasets;
+  # the public copies disappear from CloudFront immediately.
   aws s3 rm "s3://$bucket/data/claims/" --recursive --region "$REGION" --only-show-errors
   aws s3 rm "s3://$bucket/data/sites/" --recursive --region "$REGION" --only-show-errors
-  echo "    removed public legacy data/claims and data/sites snapshots (recoverable via S3 versions)"
+  echo "    removed public legacy data/claims and data/sites snapshots (regenerable from source data)"
 }
 
 wait_for_clear_state() {
@@ -470,6 +804,7 @@ case "${1:-deploy}" in
     wait_for_clear_state
     aws cloudformation deploy --template-file "$HERE/template.yaml" \
       --stack-name "$STACK" --region "$REGION" --capabilities CAPABILITY_IAM \
+      --parameter-overrides EnableLegacyDocumentStore="${ENABLE_LEGACY_DOC_STORE:-false}" \
       --no-fail-on-empty-changeset
 
     BUCKET="$(outputs BucketName)"; FN="$(outputs UpdaterFunctionName)"; URL="$(outputs SiteURL)"
@@ -482,10 +817,22 @@ case "${1:-deploy}" in
     rm -f "$HERE/updater.zip"
     ASKFN="$(outputs AskFunctionName)"
     if [ -n "$ASKFN" ] && [ "$ASKFN" != "None" ]; then
-      ( cd "$HERE" && rm -f ask.zip && cp ask_lambda.py index.py && zip -q ask.zip index.py && rm index.py )
+      ( cd "$HERE" && rm -f ask.zip && cp ask_lambda.py index.py && \
+        zip -qj ask.zip index.py document_tools.py spatial_tools.py ../pipelines/spatial_store.py && \
+        rm index.py )
       aws lambda update-function-code --function-name "$ASKFN" --region "$REGION" \
         --zip-file "fileb://$HERE/ask.zip" >/dev/null
       rm -f "$HERE/ask.zip"
+    fi
+    DOCSFN="$(outputs DocsFunctionName)"
+    if [ -n "$DOCSFN" ] && [ "$DOCSFN" != "None" ]; then
+      # The presign API shares one implementation of the store contract with
+      # the builder and the gate, so a key scheme can never drift between them.
+      ( cd "$HERE" && rm -f docs.zip && cp docs_lambda.py index.py && \
+        zip -qj docs.zip index.py ../pipelines/doc_store.py && rm index.py )
+      aws lambda update-function-code --function-name "$DOCSFN" --region "$REGION" \
+        --zip-file "fileb://$HERE/docs.zip" >/dev/null
+      rm -f "$HERE/docs.zip"
     fi
     WATCHFN="$(outputs WatchFunctionName)"
     if [ -n "$WATCHFN" ] && [ "$WATCHFN" != "None" ]; then
@@ -508,11 +855,14 @@ case "${1:-deploy}" in
     sync_public_site_without_pointers "$BUCKET"
     upload_and_verify_public_data_binaries "$BUCKET"
     sync_public_data_without_pointers_or_binaries "$BUCKET"
+    remove_disabled_legacy_document_assets "$BUCKET"
     upload_public_data_pointers "$BUCKET"
     remove_legacy_browser_json "$BUCKET"
 
     POOL="$(outputs UserPoolId)"; CLIENT="$(outputs UserPoolClientId)"; ASKURL="$(outputs AskUrl)"
-    printf '{"region":"%s","clientId":"%s","askUrl":"%s"}' "$REGION" "$CLIENT" "$ASKURL" > /tmp/auth.json
+    DOCSURL="$(outputs DocsUrl)"; [ "$DOCSURL" = "None" ] && DOCSURL=""
+    printf '{"region":"%s","clientId":"%s","askUrl":"%s","docsUrl":"%s"}' \
+      "$REGION" "$CLIENT" "$ASKURL" "$DOCSURL" > /tmp/auth.json
     aws s3 cp /tmp/auth.json "s3://$BUCKET/auth.json" --region "$REGION" \
       --cache-control "public, max-age=300" --content-type "application/json"
     # one entry per login — users are created by template.yaml (UserPoolUser
@@ -557,6 +907,7 @@ case "${1:-deploy}" in
     sync_public_site_without_pointers "$BUCKET"
     upload_and_verify_public_data_binaries "$BUCKET"
     sync_public_data_without_pointers_or_binaries "$BUCKET"
+    remove_disabled_legacy_document_assets "$BUCKET"
     upload_public_data_pointers "$BUCKET"
     remove_legacy_browser_json "$BUCKET"
     upload_public_index "$BUCKET"
@@ -586,6 +937,31 @@ case "${1:-deploy}" in
     [ -n "$DIST" ] && [ "$DIST" != "None" ] && aws cloudfront create-invalidation \
       --distribution-id "$DIST" --paths "/$RELEASE_ASSET_PREFIX/*" \
       --query 'Invalidation.Id' --output text
+    ;;
+  upload-doc-store)
+    BUCKET="$(outputs BucketName)"
+    [ -n "$BUCKET" ] && [ "$BUCKET" != "None" ] || {
+      echo "ERROR: stack '$STACK' has no BucketName output; deploy the stack first."
+      exit 1
+    }
+    upload_doc_store "$BUCKET" "${2:-$DOC_STORE}"
+    ;;
+  upload-doc-index)
+    BUCKET="$(outputs BucketName)"
+    [ -n "$BUCKET" ] && [ "$BUCKET" != "None" ] || {
+      echo "ERROR: stack '$STACK' has no BucketName output; deploy the stack first."
+      exit 1
+    }
+    upload_document_index "$BUCKET" "${2:-$HERE/../var/ws12/document-index.sqlite3}"
+    ;;
+  upload-spatial-store)
+    BUCKET="$(outputs BucketName)"
+    [ -n "$BUCKET" ] && [ "$BUCKET" != "None" ] || {
+      echo "ERROR: stack '$STACK' has no BucketName output; deploy the stack first."
+      exit 1
+    }
+    upload_spatial_store "$BUCKET" \
+      "${2:-$HERE/../pipelines/cache/ws12/spatial.sqlite}"
     ;;
   preflight)
     preflight
@@ -624,5 +1000,5 @@ case "${1:-deploy}" in
     aws cloudformation delete-stack --stack-name "$STACK" --region "$REGION"
     echo "delete requested — watch progress in the CloudFormation console"
     ;;
-  *) echo "usage: ./deploy.sh [deploy|update-site|upload-ws10-assets|upload-release-assets|preflight|refresh|watch [daily|seasonal]|teardown]"; exit 1 ;;
+  *) echo "usage: ./deploy.sh [deploy|update-site|upload-ws10-assets|upload-release-assets|upload-doc-store [dir]|upload-doc-index [live.sqlite3]|upload-spatial-store [spatial.sqlite3]|preflight|refresh|watch [daily|seasonal]|teardown]"; exit 1 ;;
 esac

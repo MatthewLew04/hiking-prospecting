@@ -1,0 +1,13 @@
+{
+  "schema_version": 1, "jurisdiction": "OR", "portals": [
+    {
+      "id": "dogami_milo", "jurisdiction": "OR", "name": "DOGAMI Mineral Information Layer for Oregon (MILO)",
+      "tier": 2, "portal_type": "gis_mineral_occurrence_layer_and_historical_mining_index", "entry_url": "https://www.oregon.gov/dogami/milo/Pages/index.aspx",
+      "detail_page_pattern": null, "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])", "id_scheme": "MILO occurrence/site identifier in the GIS dataset; historic archive documents use separate filenames and publication identifiers.",
+      "status": "probed_no_attachment_pattern",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://gis.dogami.oregon.gov/arcgis/rest/services/Public/OGDC/MapServer", "http_status": 200, "result": "MILO and the public OGDC service expose mineral-occurrence records and historical-mining resources, but a complete per-site attachment endpoint was not confirmed."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Historic company files and state publications need item-level rights review before original retrieval."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "MILO sites and explicitly public-domain historic mining PDFs", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

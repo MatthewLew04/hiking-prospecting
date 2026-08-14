@@ -303,11 +303,21 @@ footer .right{margin-left:auto}
 #authBtn:disabled{opacity:.5;cursor:wait}
 #authErr{min-height:16px;font-size:11.5px;color:#e07373;text-align:center;margin-top:10px}
 .auth-foot{font-size:9.5px;color:var(--mut);text-align:center;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+/* ---------- WS12 stored-source citation chips ---------- */
+.docchip{display:inline-block;margin:5px 5px 0 0;max-width:100%;background:rgba(201,133,0,.12);
+  border:1px solid rgba(201,133,0,.45);border-radius:4px;color:var(--gold);padding:4px 8px;
+  font:11px var(--sans);text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.docchip:hover{background:rgba(201,133,0,.22)}
+.docref{border-left:2px solid rgba(201,133,0,.45);padding:0 0 0 9px;margin:8px 0}
+.docref .t{font-size:11.5px;color:var(--ink)}
+.docref .q{font-size:11.5px;color:var(--ink2);font-style:italic;margin:2px 0;overflow-wrap:anywhere}
+.docref .n{font:10px var(--mono);color:var(--mut)}
 /* mobile overrides for late-defined components — must stay LAST in the stylesheet */
 @media (max-width:900px){
   #askPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;height:62vh;min-height:300px;border-radius:14px 14px 0 0;z-index:1600}
   .msg{font-size:13px}
   .ask-in input{padding:13px 12px;font-size:13px}
+  .docchip{padding:8px 11px;font-size:12px}
   .auth-card{padding:22px 18px 16px}
   #alertsPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;max-height:55vh;border-radius:14px 14px 0 0;z-index:1600}
   #dropOverlay .in{padding:26px 20px;font-size:12.5px;text-align:center}
@@ -411,7 +421,7 @@ footer .right{margin-left:auto}
   <div class="modal-head"><h2>INTEL — TOP 10 · JULY 2026</h2><button onclick="toggleModal('intelModal',0)">✕</button></div>
   <div class="modal-body" id="intelBody"></div></div></div>
 <div class="modal" id="coverageModal"><div class="modal-card qwide">
-  <div class="modal-head"><h2>WS11 — 49-STATE DONE GATE</h2><button onclick="toggleModal('coverageModal',0)">✕</button></div>
+  <div class="modal-head"><h2>DATA COVERAGE + MINE-FILE HARVEST</h2><button onclick="toggleModal('coverageModal',0)">✕</button></div>
   <div class="modal-body" id="coverageBody">Loading coverage…</div></div></div>
 <div class="modal" id="quadInventoryModal"><div class="modal-card qwide">
   <div class="modal-head"><h2>GEOLOGY (QUAD) — MAP INVENTORY</h2><button onclick="toggleModal('quadInventoryModal',0)">✕</button></div>
@@ -441,7 +451,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-13-ws11';
+const BUILD = '2026-08-14-ws12';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // BLM's current public-domain claim-state set. Non-claim states use land
@@ -518,7 +528,10 @@ let QGRADE = [];          // grade row index -> inventory target index
 let QTARGETIDX = {}, QLAYERIDX = {};
 const QSTATE = {status:'loading', enabled:new Set(), opacity:.65, errors:{}, loaded:{}};
 const QSOURCE = {};       // MapLibre source id -> inventory layer id
-let MAN = null, COVERAGE = null, curated = [], cassia = [], auto = [];
+let MAN = null, COVERAGE = null, DOC_COVERAGE = null, curated = [], cassia = [], auto = [];
+let DOCS = null;          // WS12 stored source documents + resolved citations
+const DOC_OPEN_QUOTES = Object.create(null); // doc/page -> exact quote from this ASK turn
+const DOC_SEARCH_CITATIONS = Object.create(null); // normalized source/page -> raw sha256
 let map, tipEl, liveAbort = null;
 const WS11_LAYER_STATE = {}, WS11_LAYER_SPEC = {}, WS11_CLAIM_LAYER = {}, WS11_HOVER_LAYERS = [];
 const WS11_RASTER_SPECS = {}, WS11_VECTOR_GROUPS = {};
@@ -923,8 +936,9 @@ function dbgPanel(){
 }
 async function boot(){
   guardStorage();                           // fire-and-forget, never blocks boot
-  [MAN, COVERAGE] = await Promise.all([
-    jget('data/manifest.json'), jget('data/coverage.json').catch(()=>null)]);
+  [MAN, COVERAGE, DOC_COVERAGE] = await Promise.all([
+    jget('data/manifest.json'), jget('data/coverage.json').catch(()=>null),
+    jget('data/docs/coverage.json').catch(()=>null)]);
   initMap();
   if (/[?&]debug=1/.test(location.search)) dbgPanel();
 }
@@ -982,6 +996,7 @@ function initMap(){
       task('geophys',loadGeophys),
       task('userLayers',loadUserLayers),
       task('countyAlerts',async()=>{await loadCounty();await loadAlerts();}),
+      task('docs',loadDocs),
       task('stats',()=>refreshStats()),
       task('live',()=>refreshLive()),
     ];
@@ -1967,6 +1982,7 @@ function showGrade(i){
           ['County', GR.cnty&&GR.cnty[i]? esc(GR.cnty[i])+' Co.':null],
           ['Records', GR.nrec[i]>1? GR.nrec[i]+' grade records for this mine':null]])}
     <div class="desc" style="border-left:2px solid var(--gold);padding-left:9px;font-style:italic">“${esc(GR.quote[i])}”</div>
+    ${docChipForQuote(GR.quote[i])}
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
     <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
@@ -2812,9 +2828,25 @@ function renderCoverage(){
       const detail=g.finding?(g.finding+(g.evidence&&g.evidence!==g.finding?' — '+g.evidence:'')):g.evidence;
       return `<td title="${esc(detail)}" style="text-align:center;color:${c};font:700 14px var(--mono)">${icons[g.status]||'?'}</td>`;}).join('')+
     `<td><span class="badge ${r.enabled?'active':'abandoned'}">${r.enabled?'DONE':'BUILDING'}</span></td></tr>`).join('');
-  el.innerHTML=`<p><b style="color:var(--ink)">${COVERAGE.summary.gate_complete}/49</b> states pass every applicable gate; <b style="color:var(--ink)">${COVERAGE.summary.released}</b> are release-enabled. Baseline national services may be visible for building states, but an incomplete state is never presented as shipped.</p>
+  const docMetric=v=>v==null?'<span style="color:var(--mut)">unknown</span>':fmt(Number(v));
+  const docRows=DOC_COVERAGE&&Array.isArray(DOC_COVERAGE.portals)?DOC_COVERAGE.portals.map(r=>{
+    const errors=Array.isArray(r.errors)?r.errors.length:Number(r.errors||0);
+    const crawl=r.crawl_complete&&r.cursor_exhausted?'FULL':r.crawl_started?'PARTIAL':'NOT STARTED';
+    const blocker=r.completion_blocker&&r.completion_blocker.reason;
+    return `<tr><td><b style="color:var(--ink)">${esc(r.portal)}</b><br><span style="font-size:9px;color:var(--mut)">${esc(r.state||'federal')} · ${crawl}${blocker?' · BLOCKED: '+esc(blocker):''}</span></td>`+
+      `<td>${docMetric(r.found)}</td><td>${docMetric(r.downloaded)}</td>`+
+      `<td>${docMetric(r.ocrd)}</td><td>${docMetric(r.indexed)}</td>`+
+      `<td>${docMetric(r.embedded)}</td><td>${docMetric(r.pending_fallback)}</td>`+
+      `<td style="color:${errors?'#e07373':'#71787f'}">${r.errors==null?docMetric(null):fmt(errors)}</td></tr>`;
+  }).join(''):'';
+  const totals=DOC_COVERAGE&&DOC_COVERAGE.totals||{};
+  const docSection=DOC_COVERAGE?`<h3>WS12 — MINE-FILE DOCUMENT PIPELINE</h3>
+    <p><b style="color:var(--ink)">${fmt(Number(totals.indexed||0))}</b> eligible unique documents indexed from <b style="color:var(--ink)">${fmt(Number(totals.discovered_links??totals.found??0))}</b> known portal links. Counts are operational evidence, not a claim that a portal is complete; completion requires its resumable crawl cursor and manifest audit.</p>
+    <div class="qtablewrap"><table><tr><th>Portal</th><th>Found</th><th>Downloaded</th><th>OCR'd</th><th>Indexed</th><th>Embedded</th><th>Fallback pending</th><th>Errors</th></tr>${docRows}</table></div>`:
+    `<h3>WS12 — MINE-FILE DOCUMENT PIPELINE</h3><div class="callout">Document coverage artifact unavailable. This is unknown, not zero.</div>`;
+  el.innerHTML=`<h3>WS11 — 49-STATE DONE GATE</h3><p><b style="color:var(--ink)">${COVERAGE.summary.gate_complete}/49</b> states pass every applicable gate; <b style="color:var(--ink)">${COVERAGE.summary.released}</b> are release-enabled. Baseline national services may be visible for building states, but an incomplete state is never presented as shipped.</p>
     <p style="font-size:10.5px;color:var(--mut)">Hover a cell for its explicit evidence/gap. ✓ pass · × fail · ! blocked · — legally not applicable.</p>
-    <div class="qtablewrap"><table><tr><th>State</th>${COVERAGE.gate_keys.map(k=>`<th>${labels[k]||k}</th>`).join('')}<th>Release</th></tr>${rows}</table></div>`;
+    <div class="qtablewrap"><table><tr><th>State</th>${COVERAGE.gate_keys.map(k=>`<th>${labels[k]||k}</th>`).join('')}<th>Release</th></tr>${rows}</table></div>${docSection}`;
 }
 
 /* ================= INTEL + ASK-the-data ================= */
@@ -2828,7 +2860,7 @@ function initIntel(){
   $('btnIntel').onclick = ()=>toggleModal('intelModal',1);
   $('btnAsk').onclick = ()=>{ $('askPanel').classList.add('open'); $('askInput').focus();
     if (!$('askMsgs').children.length) botMsg(
-      `<b>Ask the data.</b> I answer from the loaded map tiles and curated research layers — nothing leaves your browser. Try:`,
+      `<b>Ask the data.</b> I answer through bounded map, GIS, and page-cited document tools; hosted AI requests use the authenticated ASK service. Try:`,
       ['how many gold producers in montana','silver mines near philipsburg','tell me about the owyhee district',
        'where should I prospect','claims in wyoming','top 10'].map(q=>({label:q, fn:()=>{ userMsg(q); answer(q); }})));
   };
@@ -2882,12 +2914,277 @@ function setUiStatus(v){ S.status=v;
 /* --- AI answerer (Bedrock via the ask Lambda; tools execute HERE) --- */
 const AI = {on:true, hist:[]};
 const aiAvailable = ()=> !!(AUTH.cfg && AUTH.cfg.askUrl);
-function trimJson(o, max=10000){ let s=JSON.stringify(o);
-  while (s.length>max && o.sample && o.sample.length>1){ o.sample.pop(); o.truncated=true; s=JSON.stringify(o); }
-  return o; }
+function trimJson(o, max=10000){
+  let s=JSON.stringify(o);const keys=['sample','units','higher_resolution_raster_context',
+    'claims','mines','faults','documents','surveys','covering_surveys'];
+  while(s.length>max){
+    const key=keys.filter(k=>Array.isArray(o[k])&&o[k].length>1)
+      .sort((a,b)=>JSON.stringify(o[b]).length-JSON.stringify(o[a]).length)[0];
+    if(!key)break;o[key].pop();o.truncated=true;s=JSON.stringify(o);
+  }
+  return o;
+}
+/* WS12 spatial tools. Production calls the private SQLite/DuckDB service
+   through the authenticated ASK endpoint. The local path remains useful when
+   that generated database is not deployed: it queries loaded PMTiles plus
+   native WS10 vector JSON and labels viewport/raster limitations explicitly. */
+const WS12_TOOL_NAMES=new Set(['geology_at','claims_at','mines_near','faults_near','mag_at','docs_for','search_documents']);
+const WS12_CACHE={quadVectors:null,acceptanceVectors:undefined,docs:undefined};
+const WS12_SOURCE_URLS={'133':'https://doi.org/10.3133/ds1052','281':'https://www.idahogeology.org/product/DWM-49'};
+function ws12Args(a, radiusRequired=false){
+  const lat=Number(a.lat),lon=Number(a.lon),radius=Number(a.radius_m);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat < -90||lat > 90||lon < -180||lon > 180)
+    throw new Error('lat/lon must be finite WGS84 coordinates');
+  if(radiusRequired&&(!Number.isFinite(radius)||radius<0))throw new Error('radius_m must be non-negative');
+  return {lat,lon,radius};
+}
+function ws12ScaleDenominator(value){
+  if(Number.isFinite(+value)&&+value>0&&typeof value!=='string')return Math.round(+value);
+  const vals=[];for(const m of String(value||'').matchAll(/1\s*:\s*([0-9][0-9,.]*)\s*([km]?)/ig)){
+    let n=Number(m[1].replaceAll(',',''));if(m[2].toLowerCase()==='k')n*=1000;
+    else if(m[2].toLowerCase()==='m')n*=1000000;if(Number.isFinite(n)&&n>0)vals.push(Math.round(n));
+  }
+  const unique=[...new Set(vals)];return unique.length===1?unique[0]:null;
+}
+function ws12PointOnSegment(lon,lat,a,b){
+  const cross=(lon-a[0])*(b[1]-a[1])-(lat-a[1])*(b[0]-a[0]);
+  if(Math.abs(cross)>1e-10*Math.max(1,Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1])))return false;
+  return (lon-a[0])*(lon-b[0])+(lat-a[1])*(lat-b[1])<=1e-10;
+}
+function ws12PointInRing(lon,lat,ring){
+  if(!Array.isArray(ring)||ring.length<3)return false;let inside=false,prev=ring[ring.length-1];
+  for(const cur of ring){
+    if(ws12PointOnSegment(lon,lat,prev,cur))return true;
+    if((prev[1]>lat)!==(cur[1]>lat)&&lon<(cur[0]-prev[0])*(lat-prev[1])/(cur[1]-prev[1])+prev[0])inside=!inside;
+    prev=cur;
+  }return inside;
+}
+function ws12PointInPolygon(lon,lat,rings){
+  return !!(rings&&rings.length&&ws12PointInRing(lon,lat,rings[0])&&
+    !rings.slice(1).some(r=>ws12PointInRing(lon,lat,r)));
+}
+function ws12GeometryCovers(g,lon,lat){
+  if(!g)return false;const c=g.coordinates||[];
+  if(g.type==='Point')return Math.abs(c[0]-lon)<1e-10&&Math.abs(c[1]-lat)<1e-10;
+  if(g.type==='Polygon')return ws12PointInPolygon(lon,lat,c);
+  if(g.type==='MultiPolygon')return c.some(p=>ws12PointInPolygon(lon,lat,p));
+  if(g.type==='LineString')return c.slice(1).some((p,i)=>ws12PointOnSegment(lon,lat,c[i],p));
+  if(g.type==='MultiLineString')return c.some(line=>ws12GeometryCovers({type:'LineString',coordinates:line},lon,lat));
+  return false;
+}
+function ws12SegmentM(lat,lon,a,b){
+  const sy=Math.PI*6371008.8/180,sx=sy*Math.cos((lat+a[1]+b[1])*Math.PI/540);
+  const ax=(a[0]-lon)*sx,ay=(a[1]-lat)*sy,bx=(b[0]-lon)*sx,by=(b[1]-lat)*sy;
+  const dx=bx-ax,dy=by-ay,d=dx*dx+dy*dy,t=d?Math.max(0,Math.min(1,-(ax*dx+ay*dy)/d)):0;
+  return Math.hypot(ax+t*dx,ay+t*dy);
+}
+function ws12LineM(lat,lon,line){
+  if(!line||!line.length)return Infinity;if(line.length===1)return havKm(lat,lon,line[0][1],line[0][0])*1000;
+  return Math.min(...line.slice(1).map((p,i)=>ws12SegmentM(lat,lon,line[i],p)));
+}
+function ws12GeometryM(g,lat,lon){
+  if(!g)return Infinity;const c=g.coordinates||[];
+  if(g.type==='Point')return havKm(lat,lon,c[1],c[0])*1000;
+  if(g.type==='LineString')return ws12LineM(lat,lon,c);
+  if(g.type==='MultiLineString')return Math.min(...c.map(line=>ws12LineM(lat,lon,line)));
+  if(g.type==='Polygon')return ws12PointInPolygon(lon,lat,c)?0:Math.min(...c.map(r=>ws12LineM(lat,lon,r)));
+  if(g.type==='MultiPolygon')return Math.min(...c.map(p=>ws12GeometryM({type:'Polygon',coordinates:p},lat,lon)));
+  return Infinity;
+}
+function ws12BoundsCover(bounds,lon,lat){
+  return Array.isArray(bounds)&&bounds.length===4&&lon>=+bounds[0]&&lon<=+bounds[2]&&lat>=+bounds[1]&&lat<=+bounds[3];
+}
+async function ws12QuadVectors(){
+  if(WS12_CACHE.quadVectors)return WS12_CACHE.quadVectors;
+  let inventory=QUAD;try{if(!inventory)inventory=await jget('data/geology-quads/inventory.json');}catch(e){}
+  const rows=[];
+  for(const layer of inventory&&inventory.layers||[]){
+    const vector=layer.vector;if(!vector||vector.status!=='ready'||!(vector.data_url||vector.file))continue;
+    try{const data=await jget(vector.data_url||vector.file);rows.push({data,layer});}catch(e){}
+  }
+  WS12_CACHE.quadVectors=rows;return rows;
+}
+async function ws12AcceptanceVectors(){
+  if(WS12_CACHE.acceptanceVectors!==undefined)return WS12_CACHE.acceptanceVectors||[];
+  try{
+    const data=await jget('data/spatial/sgmc-jackson-16735.geojson');
+    WS12_CACHE.acceptanceVectors=Array.isArray(data.features)?data.features:[];
+  }catch(e){WS12_CACHE.acceptanceVectors=null;}
+  return WS12_CACHE.acceptanceVectors||[];
+}
+function ws12UnitRow(unit,data,layer){
+  const src=(data.sources||{})[String(unit.src)]||{},rawScale=src.scale_note||src.scale||layer&&layer.scale||null;
+  const denominator=ws12ScaleDenominator(src.scale_denominator||src.native_scale)||ws12ScaleDenominator(rawScale)||ws12ScaleDenominator(unit.co);
+  return {layer_id:layer&&layer.id||`ws6-${data.aoi}-${unit.src}`,feature_id:unit.id,
+    unit_symbol:unit.unit_label||unit.sn||unit.map_unit||null,unit_name:unit.unit_name||unit.nm||null,
+    description:unit.description||unit.de||null,age:unit.age||null,lithology:unit.lithology||unit.li||null,
+    source_map:layer&&layer.label||src.title||src.ref||`Geologic map ${unit.src}`,
+    source_citation:src.ref||layer&&layer.citation||null,source_url:src.url||WS12_SOURCE_URLS[String(unit.src)]||layer&&layer.product_url||layer&&layer.source_url||null,
+    source_scale:rawScale,scale_denominator:denominator,source_id:unit.src,state:layer&&layer.state||null,
+    evidence_kind:'vector_unit'};
+}
+function ws12MvtFeatures(source,sourceLayer){
+  if(!map.getSource(source))return [];try{return map.querySourceFeatures(source,{sourceLayer})||[];}catch(e){return [];}
+}
+function ws12MvtGeologySources(){
+  const rows=[{source:'national-geology',sourceLayer:'geology',label:'USGS SGMC / Alaska SIM 3340'}];
+  for(const group of Object.values(WS11_VECTOR_GROUPS))for(const spec of group.specs||[])
+    if(spec.kind==='geology')rows.push({source:group.source_id,sourceLayer:spec.source_layer,label:spec.title||spec.id,state:spec.state,spec});
+  for(const descriptor of STATE_SURVEY_LAYERS)for(const layer of descriptor.layers||[])
+    if(stateSurveyFeatureKind(layer)==='geology')rows.push({source:descriptor.source_id,sourceLayer:layer.source_layer,
+      label:descriptor.toggle_label,state:descriptor.state,descriptor});
+  return rows;
+}
+function ws12MvtUnit(feature,source){
+  const p=feature.properties||{},rawScale=p.source_scale||p.scale||source.spec&&source.spec.source_scale||null;
+  return {layer_id:source.sourceLayer,feature_id:p.source_id||p.fid||feature.id,
+    unit_symbol:p.unit_label||p.map_unit||p.unit_symbol||p.sn||null,unit_name:p.unit_name||p.nm||null,
+    description:p.unit_description||p.description||p.full_description||p.de||null,
+    age:p.age||p.age_range||[p.age_min,p.age_max].filter(Boolean).join(' to ')||null,
+    lithology:p.lithology||p.li||null,source_map:p.source_title||p.publication_id||source.label,
+    source_citation:p.source_ref||p.citation||source.spec&&source.spec.source_ref||null,
+    source_url:p.source_url||source.spec&&source.spec.source_url||null,source_scale:rawScale,
+    scale_denominator:ws12ScaleDenominator(p.scale_denominator)||ws12ScaleDenominator(rawScale),
+    source_id:p.source_id||p.source_dataset||p.src||null,state:p.st||source.state||null,evidence_kind:'vector_unit'};
+}
+async function ws12GeologyAt(a){
+  const {lat,lon}=ws12Args(a),units=[],seen=new Set();
+  const datasets=[];if(GEO)datasets.push({data:GEO,layer:null});datasets.push(...await ws12QuadVectors());
+  for(const {data,layer} of datasets)for(const unit of data.units||[]){
+    if(!ws12GeometryCovers({type:'MultiPolygon',coordinates:unit.g},lon,lat))continue;
+    const row=ws12UnitRow(unit,data,layer),key=`${row.layer_id}:${row.feature_id}`;if(!seen.has(key)){seen.add(key);units.push(row);}
+  }
+  for(const source of ws12MvtGeologySources())for(const feature of ws12MvtFeatures(source.source,source.sourceLayer)){
+    if(!ws12GeometryCovers(feature.geometry,lon,lat))continue;const row=ws12MvtUnit(feature,source);
+    const key=`${row.layer_id}:${row.feature_id}`;if(!seen.has(key)){seen.add(key);units.push(row);}
+  }
+  for(const feature of await ws12AcceptanceVectors()){
+    if(!ws12GeometryCovers(feature.geometry,lon,lat))continue;
+    const row=ws12MvtUnit(feature,{source:'ws12-acceptance',sourceLayer:'sgmc-jackson-16735',
+      label:'Jennings (2010), Geologic Map of California',state:'CA'});
+    const key=`${row.layer_id}:${row.feature_id}`;if(!seen.has(key)){seen.add(key);units.push(row);}
+  }
+  units.sort((x,y)=>(x.scale_denominator==null)-(y.scale_denominator==null)||(x.scale_denominator||Infinity)-(y.scale_denominator||Infinity)||String(x.layer_id).localeCompare(String(y.layer_id)));
+  const rasterContext=[];
+  for(const layer of QUAD&&QUAD.layers||[]){
+    if(!layer.raster||layer.raster.status!=='ready'||!ws12BoundsCover(layer.raster.bounds,lon,lat)||layer.vector&&layer.vector.status==='ready')continue;
+    rasterContext.push({raster_id:layer.id,source_map:layer.label,source_citation:layer.citation,
+      source_url:layer.product_url||layer.source_url,source_scale:layer.scale,
+      scale_denominator:ws12ScaleDenominator(layer.scale),evidence_kind:'raster_map_context',
+      unit_status:'not_queryable_from_raster',limitation:'This georeferenced map image covers the point, but native unit GIS is not ingested; it is visual context and cannot source a rock-unit classification.'});
+  }
+  rasterContext.sort((x,y)=>(x.scale_denominator||Infinity)-(y.scale_denominator||Infinity));
+  return {query:{lat,lon},status:'loaded_viewport_and_ws10_vectors',count:units.length,units,finest:units[0]||null,
+    higher_resolution_raster_context:rasterContext,
+    ordering:'finest exact representative-fraction vector scale first; unknown scales last',
+    note:'Vector polygons only determine units. PMTiles results are viewport-scoped in this fallback; raster-only context never determines a unit.'};
+}
+function ws12ClaimsAt(a){
+  const {lat,lon}=ws12Args(a),includeClosed=a.include_closed!==false,radius=Math.max(0,Number(a.representative_point_radius_m??50));
+  const claims=[],seen=new Set();
+  for(const mode of includeClosed?['active','closed']:['active'])for(const spec of claimTileSpecs(mode,'all'))
+    for(const feature of ws12MvtFeatures(spec.source,spec.sourceLayer)){
+      const p=feature.properties||{},g=feature.geometry,d=ws12GeometryM(g,lat,lon),polygon=['Polygon','MultiPolygon'].includes(g&&g.type);
+      if((polygon&&d!==0)||(!polygon&&d>radius))continue;
+      const id=p.serial||p.source_oid||feature.id,key=`${spec.system}:${mode}:${p.st}:${id}`;if(seen.has(key))continue;seen.add(key);
+      claims.push({claim_id:id,name:p.nm||p.name||null,status:p.disp||p.status||mode,claim_type:p.type||null,
+        system:spec.system,state:p.st||spec.state||null,distance_m:+d.toFixed(2),
+        relationship:polygon?'polygon_covers_point':'representative_point_nearby',exact_claim_geometry:polygon,
+        source_url:p.url||p.source_url||null,source_layer:spec.sourceLayer});
+    }
+  claims.sort((x,y)=>x.distance_m-y.distance_m||String(x.claim_id).localeCompare(String(y.claim_id)));
+  return {query:{lat,lon},status:'loaded_viewport',count:claims.length,claims,
+    note:'Viewport-scoped fallback. Polygon coverage is spatial evidence; representative-point proximity cannot establish claim coverage.'};
+}
+function ws12MinesNear(a){
+  const {lat,lon,radius}=ws12Args(a,true),limit=Math.min(100,Math.max(1,Number(a.limit)||25)),rows=[],seen=new Set();
+  const sources=[['national-mrds','mrds','USGS MRDS'],['national-usmin','usmin','USGS USMIN'],
+    ['national-stategeo','stategeo','State geological survey'],['national-ardf','ardf','USGS ARDF']];
+  for(const [source,sourceLayer,label] of sources)for(const f of ws12MvtFeatures(source,sourceLayer)){
+    const p=f.properties||{},xy=pointXY(f);if(!xy)continue;const d=havKm(lat,lon,xy[1],xy[0])*1000;if(d>radius)continue;
+    const id=p.id||p.source_id||p.serial||f.id||`${xy[0]},${xy[1]}`,key=`${source}:${id}`;if(seen.has(key))continue;seen.add(key);
+    rows.push({mine_id:id,mine_name:p.nm||p.site_name||p.typ||'(unnamed)',state:p.st||null,distance_m:+d.toFixed(2),
+      commodities:p.commodities||p.commodity||p.c||null,status:p.status||p.stx||null,source:label,
+      source_url:p.source_url||p.url||null,lat:xy[1],lon:xy[0]});
+  }
+  rows.sort((x,y)=>x.distance_m-y.distance_m||String(x.mine_id).localeCompare(String(y.mine_id)));
+  return {query:{lat,lon,radius_m:radius},status:'loaded_viewport',count:rows.length,mines:rows.slice(0,limit),
+    truncated:rows.length>limit,note:'PMTiles fallback covers only records loaded around the current viewport.'};
+}
+async function ws12FaultsNear(a){
+  const {lat,lon,radius}=ws12Args(a,true),limit=Math.min(100,Math.max(1,Number(a.limit)||25)),rows=[],seen=new Set();
+  const datasets=[];if(GEO)datasets.push({data:GEO,layer:null});datasets.push(...await ws12QuadVectors());
+  for(const {data,layer} of datasets)for(const fault of data.faults||[]){
+    const d=ws12LineM(lat,lon,fault.path);if(d>radius)continue;const src=(data.sources||{})[String(fault.src)]||{};
+    const id=fault.id||`${fault.src}:${rows.length}`,key=`json:${id}`;if(seen.has(key))continue;seen.add(key);
+    const rawScale=src.scale_note||src.scale||layer&&layer.scale||null;
+    rows.push({fault_id:id,fault_name:fault.nm||null,fault_type:fault.ty||null,distance_m:+d.toFixed(2),
+      source_map:layer&&layer.label||src.ref||`Mapped faults ${fault.src}`,source_citation:src.ref||layer&&layer.citation||null,
+      source_url:src.url||layer&&layer.product_url||layer&&layer.source_url||null,source_scale:rawScale,
+      scale_denominator:ws12ScaleDenominator(src.scale_denominator)||ws12ScaleDenominator(rawScale),state:layer&&layer.state||null});
+  }
+  const sources=[{source:'national-faults',sourceLayer:'faults',label:'USGS SGMC / Qfaults'},
+    ...Object.values(WS11_VECTOR_GROUPS).flatMap(group=>(group.specs||[]).filter(spec=>spec.kind==='faults').map(spec=>({source:group.source_id,sourceLayer:spec.source_layer,label:spec.title||spec.id,spec,state:spec.state}))),
+    ...STATE_SURVEY_LAYERS.flatMap(descriptor=>(descriptor.layers||[]).filter(layer=>stateSurveyFeatureKind(layer)==='fault').map(layer=>({source:descriptor.source_id,sourceLayer:layer.source_layer,label:descriptor.toggle_label,state:descriptor.state})))];
+  for(const source of sources)for(const f of ws12MvtFeatures(source.source,source.sourceLayer)){
+    const p=f.properties||{},d=ws12GeometryM(f.geometry,lat,lon);if(d>radius)continue;
+    const id=p.source_id||p.fid||f.id,key=`${source.source}:${id}`;if(seen.has(key))continue;seen.add(key);
+    const rawScale=p.source_scale||p.scale||source.spec&&source.spec.source_scale||null;
+    rows.push({fault_id:id,fault_name:p.name||p.fault_name||p.nm||null,fault_type:p.fault_type||p.ty||null,
+      distance_m:+d.toFixed(2),source_map:p.source_title||p.publication_id||source.label,
+      source_citation:p.source_ref||p.citation||null,source_url:p.source_url||null,source_scale:rawScale,
+      scale_denominator:ws12ScaleDenominator(p.scale_denominator)||ws12ScaleDenominator(rawScale),state:p.st||source.state||null});
+  }
+  rows.sort((x,y)=>x.distance_m-y.distance_m||(x.scale_denominator||Infinity)-(y.scale_denominator||Infinity));
+  return {query:{lat,lon,radius_m:radius},status:'loaded_viewport_and_ws10_vectors',count:rows.length,
+    faults:rows.slice(0,limit),truncated:rows.length>limit,note:'Every fault row names its map and scale; PMTiles rows are viewport-scoped in this fallback.'};
+}
+function ws12MagAt(a){
+  const {lat,lon}=ws12Args(a),surveys=[];
+  for(const f of ws12MvtFeatures('gp-surveys','surveys'))if(ws12GeometryCovers(f.geometry,lon,lat)){
+    const p=f.properties||{};surveys.push({survey_id:p.id||p.src_id||f.id,name:p.nm||null,year:p.yr||null,
+      kind:p.kind||null,line_spacing_km:p.spacing||null,flight_altitude_m:p.alt||null,source:p.src||'USGS survey index',
+      publication:p.pub||null});
+  }
+  return {query:{lat,lon},status:'numeric_cog_sampler_not_deployed',value_nt:null,surveys,
+    note:'The browser display raster is colourized and is never converted to nT. Configure the private spatial DB/COG sampler for a numeric value; null is unknown, not zero.'};
+}
+async function ws12DocsFor(a){
+  const mineId=String(a.mine_id||'').trim();if(!mineId)throw new Error('mine_id is required');
+  if(WS12_CACHE.docs===undefined){try{WS12_CACHE.docs=await jget('data/docs/index.json');}catch(e){WS12_CACHE.docs=null;}}
+  const index=WS12_CACHE.docs;if(!index||!Array.isArray(index.documents)||!index.by_mine)
+    return {mine_id:mineId,status:'not_loaded',count:null,documents:[],note:'The WS12 public document index is not loaded; this is not an empty document set.'};
+  const ids=index.by_mine[mineId]||index.by_mine[mineId.toUpperCase()]||[];
+  const wanted=new Set(ids.map(String)),documents=index.documents.filter(d=>wanted.has(String(d.document_id))).map(d=>({
+    document_id:d.document_id,title:d.title,portal:d.portal,portal_id:d.portal_id,state:d.state,county:d.county,trs:d.trs,
+    doc_date:d.doc_date,doc_type:d.doc_type,page_count:d.page_count,indexed_pages:d.indexed_pages,
+    source_url:d.source_url,mine_names:d.mine_names||[],
+    citation:{document_title:d.title,source_url:d.source_url}}));
+  return {mine_id:mineId,status:'loaded',count:documents.length,documents};
+}
+async function ws12Remote(name,input){
+  if(!AUTH.cfg||!AUTH.cfg.askUrl)return null;
+  try{
+    const response=await fetch(AUTH.cfg.askUrl,{method:'POST',headers:{'Content-Type':'application/json',
+      ...(accessToken()?{'x-auth-token':accessToken()}:{})},body:JSON.stringify({localTool:{name,input}})});
+    const body=await response.json().catch(()=>({}));if(!response.ok)return null;
+    return body.result||body;
+  }catch(e){return null;}
+}
+async function execWs12Tool(name,a){
+  const remote=await ws12Remote(name,a||{});if(remote&&remote.status!=='not_loaded')return trimJson(remote,14000);
+  if(name==='search_documents')return remote||{status:'not_loaded',count:null,hits:[],
+    error:'The private OCR index is not deployed; document evidence is unavailable, not empty.'};
+  const local=name==='geology_at'?await ws12GeologyAt(a):name==='claims_at'?ws12ClaimsAt(a):
+    name==='mines_near'?ws12MinesNear(a):name==='faults_near'?await ws12FaultsNear(a):
+      name==='mag_at'?ws12MagAt(a):await ws12DocsFor(a);
+  if(remote&&remote.status==='not_loaded')local.production_store_status='not_loaded';
+  return trimJson(local,14000);
+}
 function execTool(name, a){
   try{
     a=a||{};
+    if (WS12_TOOL_NAMES.has(name)) return execWs12Tool(name,a);
     if (name==='query_sites') return trimJson(execQuerySites(a));
     if (name==='query_claims') return trimJson(execQueryClaims(a));
     if (name==='get_district'){
@@ -2927,7 +3224,9 @@ function execTool(name, a){
           au_opt:GR.au[i], ag_opt:GR.ag[i], usd_per_ton:GR.usd[i], basis:GR.basis[i], years:GR.yrs[i],
           tonnage:GR.ton?GR.ton[i]:null, status:GR.ds?GR.ds[i]:null, workings:GR.wt?GR.wt[i]:null,
           prod_size:GR.pz?GR.pz[i]:null, county:GR.cnty?GR.cnty[i]:null,
-          open_ground:og, quote:GR.quote[i], source:GR.src[i], lat:GR.y[i], lon:GR.x[i]}))});
+          open_ground:og, quote:GR.quote[i], source:GR.src[i],
+          stored_document:docToolCitationForQuote(GR.quote[i])||undefined,
+          lat:GR.y[i], lon:GR.x[i]}))});
     }
     if (name==='query_openground'){
       if (!OG || !PLSSIDX) return {error:'open-ground grid not loaded (Cassia AOI only)'};
@@ -2969,6 +3268,7 @@ function execTool(name, a){
           regime:row.regime,release:row.release,enabled:row.enabled,gate_passed:row.gate_passed,
           incomplete:Object.entries(row.gates||{}).filter(([,gate])=>gate.status!=='pass').map(([gate])=>gate)})};
     }
+    if (name==='open_doc') return execOpenDoc(a);
     if (name==='resolve_place'){
       const p = findPlace(String(a.name||''));
       return p? {label:p.label, lat:p.lat, lon:p.lon} : {error:'not found in the current district and place index — try a larger nearby town'};
@@ -3152,6 +3452,7 @@ async function aiAnswer(q){
                  {role:'assistant', content:[{text:'Context noted.'}]});
   }
   const msgs = [...AI.hist, {role:'user', content:[{text:q}]}];
+  const opened = [];
   for (let round=0; round<7; round++){
     /* NB: custom header, NOT Authorization — a public Lambda Function URL
        treats an Authorization header as a (failed) AWS SigV4 attempt → 403 */
@@ -3169,13 +3470,27 @@ async function aiAnswer(q){
         const out = await execTool(c.toolUse.name, c.toolUse.input);   // some executors (watch digest) are async
         lines.push(`→ ${c.toolUse.name}${out && out.count!=null? ' · '+fmt(out.count)+' hits' : out && out.error? ' · '+esc(out.error.slice(0,40)) : ''}`);
         paint(null);
+        // Remember every document the model actually opened, so a citation
+        // still reaches the reader as a chip even if the answer text forgets
+        // to include one.
+        if (c.toolUse.name==='search_documents' && out && Array.isArray(out.hits))
+          for (const hit of out.hits) rememberSearchDocumentHit(hit);
+        if (c.toolUse.name==='open_doc' && out && out.ok){
+          rememberDocQuote(out.doc_id, out.page, out.quote);
+          opened.push(out);
+        }
         results.push({toolResult:{toolUseId:c.toolUse.toolUseId, content:[{json: out}]}});
       }
       msgs.push({role:'user', content: results});
       continue;
     }
     const text = (j.message.content||[]).filter(c=>c.text).map(c=>c.text).join('\n').trim();
-    paint(mdToHtml(text || '(no answer)'));
+    let html = mdToHtml(text || '(no answer)');
+    const missing = opened.filter(o=>html.indexOf(o.doc_id)<0);
+    if (missing.length)
+      html += `<div class="chiprow">${missing.map(o=>docChip(o.doc_id, o.page,
+        esc(`${docShortTitle(o.title)}, ${o.page_cite}`), o.quote)).join('')}</div>`;
+    paint(html);
     AI.hist = msgs.slice(-12);
     return;
   }
@@ -3203,7 +3518,20 @@ function mdToHtml(t){
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')
     .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, '$1<i>$2</i>')
     .replace(/`([^`\n]+)`/g, '<code>$1</code>')
-    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    // WS12 citation chip: [Title, p. N](doc:<sha256>#<page>) opens OUR stored
+    // copy at that page. It runs BEFORE the http link rule so a doc: citation
+    // can never fall through and be rendered as an ordinary outbound link.
+    .replace(/\[([^\]]+)\]\(doc:([0-9a-f]{16,64})(?:#(\d{1,5}))?(?:\?q=([A-Za-z0-9_-]+))?\)/g,
+      (whole, label, id, page, quoteToken)=>docChip(id, page||1, label,
+        docDecodeQuote(quoteToken)||docQuoteFor(id, page||1)) ||
+        `<span class="mdli">${label}</span>`)
+    // The canonical document-search tool returns a stable title/page/source
+    // URL citation. If that source is in our stored corpus, turn it into the
+    // same S3-backed chip even when the model omitted an explicit open_doc
+    // round. Unstored sources remain normal provenance links.
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,
+      (whole, label, url)=>docChipForCitation(label, url) ||
+        `<a href="${url}" target="_blank">${label}</a>`)
     .replace(/^\s*[-*•]\s+(.+)$/gm, '<span class="mdli">· $1</span>')
     .replace(/^\s*(\d+)\.\s+(.+)$/gm, '<span class="mdli">$1. $2</span>');
   return t.replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>')
@@ -3223,6 +3551,216 @@ function routeAI(q, localNote){
   }
 }
 
+/* ---------- WS12 addendum: stored source documents ----------
+   A citation is only worth as much as the page it points at, so we keep our
+   own copy of every cited document in S3 and open THAT, never the portal.
+   Portals move and die; a stored copy keyed on the raw file's sha256 survives
+   re-OCR, re-crawls, and portal redesigns. This module resolves a citation to
+   a doc id + page + quote and hands it to viewer.html, which mints a fresh
+   short-TTL presigned URL and highlights the quote in the PDF's text layer. */
+const docsAvailable = ()=> !!(DOCS && DOCS.documents && DOCS.documents.length);
+async function loadDocs(){
+  if (!(AUTH.cfg&&AUTH.cfg.docsUrl)){ DOCS=null; return; }
+  // The source-of-truth manifest is private. Request only the minimized
+  // browser catalog through the same authenticated API that signs PDFs.
+  try{
+    const url=new URL(AUTH.cfg.docsUrl,location.href);url.searchParams.set('catalog','1');
+    const response=await fetch(url,{headers:accessToken()?{'x-auth-token':accessToken()}: {}});
+    DOCS=response.ok?await response.json():null;
+  }catch(e){DOCS=null;}
+  if (!DOCS) return;
+  DOCS.byId = {}; DOCS.bySource = {}; DOCS.byQuote = {}; DOCS.bySubject = {};
+  DOCS.byUrl = {}; DOCS.byTitle = {}; DOCS.byDocPage = {};
+  for (const d of DOCS.documents||[]){
+    DOCS.byId[d.doc_id] = d;
+    DOCS.byTitle[String(d.title||'').trim().toLowerCase()] = d;
+    for (const url of [d.source_url,d.catalog_url].filter(Boolean)){
+      DOCS.byUrl[String(url)] = d;
+      DOCS.byUrl[esc(String(url))] = d;
+      DOCS.byUrl[docUrlKey(url)] = d;
+    }
+    for (const s of d.source_ids||[]) DOCS.bySource[s] = d;
+  }
+  for (const c of DOCS.citations||[]){
+    DOCS.byQuote[docQuoteKey(c.quote)] = c;
+    (DOCS.byDocPage[docPageKey(c.doc_id,c.page)] =
+      DOCS.byDocPage[docPageKey(c.doc_id,c.page)]||[]).push(c);
+    (DOCS.bySubject[c.state+'/'+c.mine_id] = DOCS.bySubject[c.state+'/'+c.mine_id]||[]).push(c);
+  }
+}
+const docQuoteKey = q => String(q||'').replace(/\s+/g,' ').trim().toLowerCase().slice(0,220);
+const docPageKey = (docId,page) => `${String(docId||'').toLowerCase()}/${Math.max(1,parseInt(page,10)||1)}`;
+function docUrlKey(value){
+  try{
+    const u=new URL(String(value||'').replaceAll('&amp;','&'),location.href);
+    u.hostname=u.hostname.toLowerCase().replace(/^www\./,'');u.hash='';
+    return u.toString();
+  }catch(e){return String(value||'').replaceAll('&amp;','&').trim();}
+}
+const docSearchKey = (url,page) => `${docUrlKey(url)}/${Math.max(1,parseInt(page,10)||1)}`;
+function docEncodeQuote(value){
+  if (!value) return '';
+  const bytes=new TextEncoder().encode(String(value));let binary='';
+  for(const byte of bytes)binary+=String.fromCharCode(byte);
+  return btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
+}
+function docDecodeQuote(value){
+  if (!value) return '';
+  try{
+    let token=String(value).replaceAll('-','+').replaceAll('_','/');
+    while(token.length%4)token+='=';
+    return new TextDecoder().decode(Uint8Array.from(atob(token),c=>c.charCodeAt(0)));
+  }catch(e){return '';}
+}
+function rememberDocQuote(docId,page,quote){
+  if (!/^[0-9a-f]{16,64}$/i.test(String(docId||'')) || !quote) return;
+  // Search excerpts may carry boundary ellipses; those are presentation, not
+  // PDF text. The viewer's normalized anchor matcher handles OCR line breaks.
+  const clean=String(quote).replace(/^…+|…+$/g,'').trim().slice(0,2000);
+  if (clean) DOC_OPEN_QUOTES[docPageKey(docId,page)] = clean;
+}
+function rememberSearchDocumentHit(hit){
+  if (!hit || !/^[0-9a-f]{64}$/i.test(String(hit.document_id||''))) return;
+  const citation=hit.citation||{},page=Number(hit.page||citation.page)||1;
+  if (citation.source_url)
+    DOC_SEARCH_CITATIONS[docSearchKey(citation.source_url,page)] =
+      String(hit.document_id).toLowerCase();
+  rememberDocQuote(hit.document_id,page,hit.excerpt);
+}
+function docQuoteFor(docId,page){
+  const key=docPageKey(docId,page);
+  if (DOC_OPEN_QUOTES[key]) return DOC_OPEN_QUOTES[key];
+  const rows=DOCS&&DOCS.byDocPage&&DOCS.byDocPage[key]||[];
+  return rows.length===1 ? rows[0].quote : '';
+}
+/* Resolve whatever a caller happens to hold — a doc id, a source id, or just
+   the quote a grade row already renders — to a stored citation. */
+function docFind(ref){
+  if (!docsAvailable() || !ref) return null;
+  const key = String(ref).trim();
+  if (DOCS.byId[key]) return {doc:DOCS.byId[key], citation:null};
+  if (DOCS.bySource[key]) return {doc:DOCS.bySource[key], citation:null};
+  const c = DOCS.byQuote[docQuoteKey(key)];
+  if (c) return {doc:DOCS.byId[c.doc_id], citation:c};
+  const lower = key.toLowerCase();
+  if (/^[0-9a-f]{8,}$/.test(lower)){
+    const hits = Object.keys(DOCS.byId).filter(id=>id.startsWith(lower));
+    if (hits.length===1) return {doc:DOCS.byId[hits[0]], citation:null};
+  }
+  return null;
+}
+/* Open the stored copy. viewer.html is same-origin, so it reuses the signed-in
+   session and asks the docs API for its own fresh signature — nothing secret
+   ever rides in this URL. */
+function openDoc(ref, page, quote){
+  const hit = docFind(ref);
+  if (!hit) return null;
+  const c = hit.citation;
+  const params = new URLSearchParams({doc: hit.doc.doc_id});
+  const target = page || (c && c.page) || 1;
+  params.set('page', String(target));
+  const q = quote || (c && c.quote) || docQuoteFor(hit.doc.doc_id,target) || '';
+  if (q) params.set('q', q);
+  const url = `viewer.html#${params}`;
+  window.open(url, '_blank', 'noopener');
+  return {doc:hit.doc, citation:c, page:target, url};
+}
+/* The ASK tool. It executes in the browser like every other tool: it resolves
+   the citation against the loaded manifest and opens the viewer. It never
+   fetches the portal, and it says so when a document is not stored rather
+   than handing the model a URL that might rot. */
+function execOpenDoc(a){
+  if (!docsAvailable())
+    return {error:'the stored document manifest is not loaded on this deployment'};
+  const hit = docFind(a.doc_id || a.source_id || a.quote);
+  if (!hit)
+    return {error:'no stored document matches '+String(a.doc_id||a.source_id||'(nothing)')+
+      ' — cite the portal link instead and say the page is not stored'};
+  const d=hit.doc,target=Math.max(1,parseInt(a.page,10)||1);
+  const rows=DOCS.byDocPage[docPageKey(d.doc_id,target)]||[];
+  const c=rows.find(row=>a.quote&&docQuoteKey(row.quote)===docQuoteKey(a.quote)) ||
+    hit.citation || (rows.length===1?rows[0]:null);
+  const quote = a.quote || (c&&c.quote) || docQuoteFor(d.doc_id,target) || '';
+  rememberDocQuote(d.doc_id,target,quote);
+  const params=new URLSearchParams({doc:d.doc_id,page:String(target)});
+  if(quote)params.set('q',quote);
+  const quoteToken=docEncodeQuote(quote);
+  return {ok:true, opened:false, resolved:true, doc_id:d.doc_id, title:d.title, authority:d.authority,
+    page:target, pages:d.pages, page_cite:(c&&c.page_cite)||('p. '+target),
+    quote_located:!!(c&&c.quote_located), text_layer:d.text_layer.status,
+    quote,
+    viewer_url:`viewer.html#${params}`,
+    citation_chip:`[${d.title}, p. ${target}](doc:${d.doc_id}#${target}${quoteToken?'?q='+quoteToken:''})`,
+    source_url:d.source_url, retrieved:d.retrieved,
+    note:'Paste citation_chip verbatim. The reader opens the private stored copy at this page; the quote is carried into the viewer for highlighting.'};
+}
+/* Chip markup. The doc id is validated as hex before it reaches an inline
+   handler; labelHtml must already be escaped by the caller, because the AI
+   answer path hands us text that mdToHtml has escaped once already. */
+function docChip(docId, page, labelHtml, quote){
+  if (!/^[0-9a-f]{16,64}$/.test(String(docId||''))) return '';
+  const n = Math.max(1, parseInt(page,10)||1);
+  const q=quote || docQuoteFor(docId,n) || '';
+  return `<button class="docchip" data-doc="${docId}" data-page="${n}" data-quote="${esc(q)}" `+
+    `onclick="openDoc(this.dataset.doc,Number(this.dataset.page),this.dataset.quote)" `+
+    `title="Opens our stored copy at this page — not the portal">📄 ${labelHtml}</button>`;
+}
+function docChipForQuote(quote, label){
+  const hit = docFind(quote);
+  if (!hit || !hit.citation) return '';
+  return docChip(hit.doc.doc_id, hit.citation.page,
+    esc(label || `${docShortTitle(hit.doc.title)}, ${hit.citation.page_cite}`),
+    hit.citation.quote);
+}
+function docToolCitationForQuote(quote){
+  const hit=docFind(quote);
+  if (!hit || !hit.citation) return null;
+  return {doc_id:hit.doc.doc_id,pdf_page:hit.citation.page,
+    page_cite:hit.citation.page_cite,source_url:hit.doc.source_url,
+    quote_located:!!hit.citation.quote_located};
+}
+function docChipForCitation(label,url){
+  if (!docsAvailable()) return '';
+  const page=String(label||'').match(/\bp\.\s*(\d{1,5})\b/i);
+  if (!page) return '';
+  const runtimeId=DOC_SEARCH_CITATIONS[docSearchKey(url,page[1])];
+  const d=(runtimeId&&DOCS.byId[runtimeId]) || DOCS.byUrl[String(url)] ||
+    DOCS.byUrl[docUrlKey(url)] || null;
+  if (!d) return '';
+  const title=String(label).replace(/,?\s*p\.\s*\d{1,5}\s*$/i,'').trim().toLowerCase();
+  if (title && DOCS.byTitle[title] && DOCS.byTitle[title].doc_id!==d.doc_id) return '';
+  const n=Number(page[1]);
+  return docChip(d.doc_id,n,label,docQuoteFor(d.doc_id,n));
+}
+const docShortTitle = t => { t=String(t||''); return t.length>44? t.slice(0,42)+'…' : t; };
+/* The dossier's References section. A mine dossier is keyed by grade-row
+   index, so the row's own verbatim quote is what identifies the subject in
+   the store; every other citation filed against that subject comes with it.
+   A dossier with no stored document renders nothing rather than an empty
+   heading that would read as "no sources exist". */
+function docRefsForDossier(kind, key){
+  if (kind!=='mine' || !GR || !docsAvailable()) return '';
+  const hit = docFind(GR.quote[Number(key)]);
+  if (!hit || !hit.citation) return '';
+  return docRefsHtml(hit.citation.state, hit.citation.mine_id);
+}
+/* Every stored citation filed against one subject — the dossier References
+   list. A subject with no stored document says so; it is not rendered as
+   "no sources exist". */
+function docRefsHtml(state, mineId){
+  if (!docsAvailable()) return '';
+  const rows = (DOCS.bySubject[state+'/'+mineId]||[]);
+  if (!rows.length) return '';
+  return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">REFERENCES — STORED SOURCE DOCUMENTS</h3>`+
+    rows.map(c=>{
+      const d = DOCS.byId[c.doc_id]||{};
+      return `<div class="docref"><div class="t">${esc(d.title||'')}</div>`+
+        `<div class="q">“${esc(c.quote)}”</div>`+
+        `<div class="n">${esc(d.authority||'')} · ${esc(c.page_cite)}`+
+        `${c.quote_located?'':' · quote not located in the text layer'}</div>`+
+        docChip(c.doc_id, c.page, esc('open '+c.page_cite), c.quote)+`</div>`;
+    }).join('');
+}
 /* --- the query engine --- */
 const GAZ = {'tonopah':[38.07,-117.23],'goldfield':[37.71,-117.24],'virginia city':[39.31,-119.65],
  'ely':[39.25,-114.89],'elko':[40.83,-115.76],'winnemucca':[40.97,-117.74],'austin':[39.49,-117.07],
@@ -4293,6 +4831,7 @@ async function showDossier(kind, key){
   openDetail(`<h2>${esc(d.title)}</h2>
     <div class="badges">${badge('exploration','DOSSIER')} <span class="badge abandoned">CASSIA AOI</span></div>
     ${facts||'<div class="src">no compiled facts</div>'}
+    ${docRefsForDossier(kind, key)}
     ${histH}
     <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">GO DEEPER — PUBLIC RECORDS</h3>${links}
     <div class="src">${esc(DOS.addresses_note||'')}</div>`);

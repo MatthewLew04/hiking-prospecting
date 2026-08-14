@@ -31,6 +31,18 @@ Parameters:
       Legacy-only AOI bbox (x0,y0,x1,y1). Scheduled expiration watches use
       the exact 19 registry claim states and never this compatibility bbox.
 
+  EnableLegacyDocumentStore:
+    Type: String
+    Default: 'false'
+    AllowedValues: [ 'true', 'false' ]
+    Description: >-
+      Opt-in for the separate presigned-PDF viewer corpus. Keep false until
+      every manifest row carries the same affirmative public-domain evidence
+      required by the canonical WS12 harvester/document index.
+
+Conditions:
+  LegacyDocumentStoreEnabled: !Equals [ !Ref EnableLegacyDocumentStore, 'true' ]
+
 Resources:
 
   SiteBucket:
@@ -48,6 +60,37 @@ Resources:
               SSEAlgorithm: AES256
       VersioningConfiguration:
         Status: Enabled
+      # The WS12 viewer fetches a stored PDF straight from S3 with a
+      # presigned URL, so S3 — not CloudFront — answers that cross-origin
+      # request. GET/HEAD only, and the signature is what authorizes it: a
+      # wildcard origin grants nothing to a caller without a valid signature.
+      # PDF.js reads byte ranges, so Range must be accepted and the range
+      # response headers must be exposed.
+      CorsConfiguration:
+        CorsRules:
+          - Id: ws12-presigned-document-reads
+            AllowedMethods: [ GET, HEAD ]
+            AllowedOrigins: [ '*' ]
+            AllowedHeaders: [ range, if-match, if-none-match, if-modified-since ]
+            ExposedHeaders: [ Accept-Ranges, Content-Length, Content-Range, ETag ]
+            MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          # Raw originals are the provenance copy: read rarely, kept forever.
+          # Searchable copies stay hot because every citation opens one.
+          - Id: ws12-raw-originals-to-ia
+            Status: Enabled
+            Prefix: 'docs/'
+            # S3's post-2024 default silently excludes objects below 128 KiB.
+            # Some one-page mine records (including both IF0126 files) are
+            # smaller, so opt this exact rule into all positive object sizes.
+            ObjectSizeGreaterThan: '0'
+            TagFilters:
+              - Key: ws12-variant
+                Value: raw
+            Transitions:
+              - StorageClass: STANDARD_IA
+                TransitionInDays: 30
 
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -112,15 +155,31 @@ Resources:
             Effect: Allow
             Principal: { Service: cloudfront.amazonaws.com }
             Action: s3:GetObject
-            # Deliberately omit staging/, watch/, and ckpt/: raw national
-            # snapshots and operational state are not public web assets.
+            # Deliberately omit staging/, watch/, ckpt/, and docs/: raw
+            # national snapshots, operational state, and the WS12 source
+            # document corpus are not public web assets. docs/ in particular
+            # must stay uncrawlable — it is served only by the short-TTL
+            # presigned GETs the docs API mints for a signed-in caller.
             Resource:
               - !Sub '${SiteBucket.Arn}/index.html'
+              - !Sub '${SiteBucket.Arn}/viewer.html'
               - !Sub '${SiteBucket.Arn}/auth.json'
               - !Sub '${SiteBucket.Arn}/assets/*'
               - !Sub '${SiteBucket.Arn}/data/*'
               - !Sub '${SiteBucket.Arn}/ws10-assets/*'
               - !Sub '${SiteBucket.Arn}/map-assets/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+          # data/* contains ordinary public dashboard metadata, but the full
+          # document catalog includes subjects and verbatim citation text.
+          # Keep that exact source-of-truth manifest behind the authenticated
+          # Docs API even if an operator accidentally uploads the old key.
+          - Sid: DenyCloudFrontDocumentManifest
+            Effect: Deny
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/data/docs/manifest.json'
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
@@ -607,6 +666,11 @@ Resources:
                 Resource:
                   - 'arn:aws:bedrock:*::foundation-model/*'
                   - !Sub 'arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/*'
+              - Effect: Allow
+                Action: [ s3:GetObject ]
+                Resource:
+                  - !Sub '${SiteBucket.Arn}/private/ws12/document-index.sqlite3'
+                  - !Sub '${SiteBucket.Arn}/private/ws12/spatial.sqlite3'
 
   AskFunction:
     Type: AWS::Lambda::Function
@@ -614,7 +678,11 @@ Resources:
       FunctionName: !Sub '${ProjectName}-ask'
       Runtime: python3.12
       Handler: index.handler
-      MemorySize: 512
+      # The first GIS request downloads and SHA-verifies the national spatial
+      # store before API Gateway's 30-second integration timeout.
+      MemorySize: 3008
+      EphemeralStorage:
+        Size: 10240
       Timeout: 60
       Role: !GetAtt AskRole.Arn
       Environment:
@@ -623,6 +691,14 @@ Resources:
           # Verified against Bedrock model cards 2026-07: Opus 4.7 = best on Bedrock;
           # Nova 2 Lite = first-party floor that needs no Anthropic use-case form.
           MODEL_IDS: 'us.anthropic.claude-opus-4-7,us.anthropic.claude-sonnet-4-6,us.anthropic.claude-haiku-4-5-20251001-v1:0,us.amazon.nova-2-lite-v1:0'
+          DOC_INDEX_BUCKET: !Ref SiteBucket
+          DOC_INDEX_KEY: 'private/ws12/document-index.sqlite3'
+          DOC_INDEX_MAX_BYTES: '3700000000'
+          DOC_VECTOR_SEARCH: 'true'
+          SPATIAL_DB_BUCKET: !Ref SiteBucket
+          SPATIAL_DB_KEY: 'private/ws12/spatial.sqlite3'
+          SPATIAL_DB_MAX_BYTES: '8000000000'
+          ENABLE_LEGACY_DOC_STORE: !Ref EnableLegacyDocumentStore
       Code:
         ZipFile: |
           def handler(event, context):
@@ -640,6 +716,17 @@ Resources:
         AllowMethods: [ POST, OPTIONS ]
         AllowHeaders: [ x-auth-token, content-type ]
 
+  AskAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref AskApi
+      AuthorizerType: JWT
+      IdentitySource: [ '$request.header.x-auth-token' ]
+      JwtConfiguration:
+        Audience: [ !Ref UserPoolClient ]
+        Issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
+      Name: !Sub '${ProjectName}-ask-cognito-jwt'
+
   AskIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -655,6 +742,8 @@ Resources:
       ApiId: !Ref AskApi
       RouteKey: 'POST /ask'
       Target: !Sub 'integrations/${AskIntegration}'
+      AuthorizationType: JWT
+      AuthorizerId: !Ref AskAuthorizer
 
   AskStage:
     Type: AWS::ApiGatewayV2::Stage
@@ -670,6 +759,120 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AskApi}/*'
+
+  # ---------- WS12 document store (citation → primary source) ----------
+  DocsRole:
+    Type: AWS::IAM::Role
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: docs-read-and-sign
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Read-only, and only the manifest plus the corpus it names.
+              # A presigned URL can never grant more than this role holds.
+              - Effect: Allow
+                Action: [ s3:GetObject ]
+                Resource:
+                  - !Sub '${SiteBucket.Arn}/private/ws12/document-store-manifest.json'
+                  - !Sub '${SiteBucket.Arn}/docs/*'
+
+  DocsFunction:
+    Type: AWS::Lambda::Function
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      FunctionName: !Sub '${ProjectName}-docs'
+      Runtime: python3.12
+      Handler: index.handler
+      # Signing is arithmetic; the only real work is holding the validated
+      # manifest across warm invocations.
+      MemorySize: 512
+      Timeout: 30
+      Role: !GetAtt DocsRole.Arn
+      Environment:
+        Variables:
+          BUCKET: !Ref SiteBucket
+          MANIFEST_KEY: 'private/ws12/document-store-manifest.json'
+          SITE_URL: !Sub 'https://${Distribution.DomainName}'
+          # Long enough to open a scanned bulletin on a phone at an outcrop,
+          # short enough that a copied link is not a distribution channel.
+          PRESIGN_TTL: '300'
+          MANIFEST_TTL: '300'
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              return {"statusCode": 501, "body": "placeholder - upload infra/docs_lambda.py"}
+
+  # Same reasoning as AskApi: some org guardrails (SCPs) block anonymous
+  # lambda:InvokeFunctionUrl, so this is an HTTP API, not a Function URL.
+  DocsApi:
+    Type: AWS::ApiGatewayV2::Api
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      Name: !Sub '${ProjectName}-docs-api'
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowOrigins: [ '*' ]
+        AllowMethods: [ GET, OPTIONS ]
+        AllowHeaders: [ x-auth-token, content-type ]
+
+  DocsAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      ApiId: !Ref DocsApi
+      AuthorizerType: JWT
+      IdentitySource: [ '$request.header.x-auth-token' ]
+      JwtConfiguration:
+        Audience: [ !Ref UserPoolClient ]
+        Issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
+      Name: !Sub '${ProjectName}-docs-cognito-jwt'
+
+  DocsIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      ApiId: !Ref DocsApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt DocsFunction.Arn
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 15000
+
+  DocsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      ApiId: !Ref DocsApi
+      RouteKey: 'GET /doc'
+      Target: !Sub 'integrations/${DocsIntegration}'
+      AuthorizationType: JWT
+      AuthorizerId: !Ref DocsAuthorizer
+
+  DocsStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      ApiId: !Ref DocsApi
+      StageName: '$default'
+      AutoDeploy: true
+
+  DocsApiPermission:
+    Type: AWS::Lambda::Permission
+    Condition: LegacyDocumentStoreEnabled
+    Properties:
+      FunctionName: !Ref DocsFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${DocsApi}/*'
 
   # ---------- Cognito login ----------
   UserPool:
@@ -759,3 +962,11 @@ Outputs:
   WatchFunctionName:
     Description: The expiration-watch Lambda
     Value: !Ref WatchFunction
+  DocsUrl:
+    Condition: LegacyDocumentStoreEnabled
+    Description: Source-document endpoint (goes in auth.json)
+    Value: !Sub 'https://${DocsApi}.execute-api.${AWS::Region}.amazonaws.com/doc'
+  DocsFunctionName:
+    Condition: LegacyDocumentStoreEnabled
+    Description: The WS12 document presign Lambda
+    Value: !Ref DocsFunction

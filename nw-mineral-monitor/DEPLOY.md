@@ -60,6 +60,7 @@ That's it. Later:
 ./deploy.sh update-site   # after editing site files
 ./deploy.sh upload-ws10-assets  # explicit add/update of ignored quad rasters/tiles
 ./deploy.sh upload-release-assets  # explicit add/update of immutable WS11 DONE artifacts
+./deploy.sh upload-doc-store  # upload + remotely verify the private WS12 source-document corpus
 ./deploy.sh refresh       # force a private MLRS staging pull right now
 ./deploy.sh teardown      # delete everything
 ```
@@ -107,6 +108,54 @@ and never include `map-assets/releases/` or `ws10-assets/`; those immutable
 namespaces have separate lifecycle rules. Bucket versioning makes an exact
 mistaken deletion recoverable, but it is not a substitute for reviewing the
 key.
+
+---
+
+## WS12 stored source documents — private, presigned, opt-in
+
+This section sits before the WS11 one to keep DEPLOY's newest-first order.
+
+Citation chips open our own archived copy of a cited document, not the
+portal that published it, so a citation still resolves after the portal
+moves or dies. Each document is stored twice under a private `docs/` prefix
+— the raw original and a searchable copy whose text layer sits on the same
+pages — and the corpus is deliberately **not** in the CloudFront bucket-policy
+allowlist. The only way to read one is a 300-second presigned GET that the
+`nw-mineral-monitor-docs` Lambda mints after checking your Cognito session.
+The full manifest is private at
+`private/ws12/document-store-manifest.json`. Signed-in clients receive a
+minimized catalog from the Docs API; CloudFront explicitly denies the former
+`data/docs/manifest.json` path as well as every PDF under `docs/`.
+
+Delivery is opt-in. `ENABLE_LEGACY_DOC_STORE` defaults to `false`, and an
+ordinary deploy therefore ships neither `viewer.html`, the vendored PDF.js
+payload, the manifest, nor the corpus — and actively removes them if they
+were published before. Turn it on only when every row you intend to serve
+carries an affirmative public-domain basis:
+
+```bash
+export ENABLE_LEGACY_DOC_STORE=true
+bash deploy.sh upload-doc-store   # PDFs + private manifest first; remotely re-verified
+bash deploy.sh deploy             # creates Docs API/Lambda, JWT binding, viewer, and auth.json
+```
+
+When enabling from `false`, `update-site` is not enough: it cannot create the
+conditional Docs API/Lambda or write a new `docsUrl` output into `auth.json`.
+The full deploy requires the existing Cognito password environment variables;
+coordinate it with any active WS11 owner before publishing shared site files.
+
+`upload-doc-store` refuses to run without that variable, re-runs the store
+gate with `--store-dir`, sends the manifest digest explicitly with
+`--checksum-sha256`, and reads the digest back with `head-object
+--checksum-mode ENABLED` before counting it verified. Each PUT has three
+bounded attempts plus an exact remote-identity check, so a stalled transport
+cannot pin the resumable queue. Local success is never treated as remote
+proof.
+
+Raw originals are tagged `ws12-variant=raw` and move to Infrequent Access
+after 30 days; searchable copies stay hot because every citation opens one.
+Both `deploy` and `update-site` exclude `docs/*` from every
+`aws s3 sync --delete`, so the corpus is never pruned by a site sync.
 
 ---
 
@@ -317,6 +366,9 @@ Facts worth knowing: requests require a signed-in Cognito session (the Lambda ve
 - **ASK chat says "Bedrock could not serve <model>"** — first-time Anthropic use-case form (see the AI section above: playground once, then retry), or an IAM/SCP restriction, or a bad MODEL_ID. **"session expired"** — sign out/in (the AI endpoint checks your Cognito token). **"model is throttled"** — Bedrock burst limit; retry in a few seconds.
 - **Stack create failed with "BucketName already exists"** — you deployed before; either reuse that stack (CloudFormation → update) or delete the old one first.
 - **Changed a file but the site didn't update** — CloudFront caching. Data refreshes within 15 min; for `index.html` changes either wait an hour, or CloudFront console → your distribution → Invalidations → create invalidation for `/*`.
+- **A citation chip opens a viewer that says "no document endpoint configured"** — `auth.json` has no `docsUrl`. It is written only by the full `deploy` path, not `update-site`, and only when the stack exposes the `DocsUrl` output. Re-run `./deploy.sh` (with `ENABLE_LEGACY_DOC_STORE=true` if you intend to serve documents), then hard-reload.
+- **The viewer opens but the scanned page is blank under a working highlight** — the vendored PDF.js WebAssembly decoders are missing. Survey scans are JBIG2. Run `npm run vendor:pdfjs`, confirm `site/assets/pdfjs/wasm/jbig2.wasm` exists, then `update-site`.
+- **`https://<distribution>/docs/...` returns 200** — stop. The document corpus must be uncrawlable; a 200 means `docs/*` reached the bucket-policy allowlist. Remove it from `SiteBucketPolicy` and redeploy the stack before doing anything else.
 - **A GEOLOGY (QUAD) toggle returns 403/404** — the inventory pointer was deployed before its S3 object, or its key does not match the local asset layout. Run `upload-ws10-assets` first, verify the object under the bucket's `ws10-assets/` prefix, then `update-site`. A low-confidence plate should stay in review rather than being patched around with a misleading URL.
 
 ## Optional: custom domain
@@ -326,4 +378,5 @@ Buy/hold a domain in **Route 53** (or elsewhere) → **ACM** (in us-east-1!) →
 Preferred teardown: `./deploy.sh teardown`. For emergency console cleanup,
 empty the exact stack-owned S3 bucket (including versions) and then delete the
 CloudFormation stack. This removes everything the stack created, including
-S3-only `ws10-assets/`; total cost stops immediately.
+S3-only `ws10-assets/` and the private WS12 `docs/` corpus; total cost stops
+immediately.

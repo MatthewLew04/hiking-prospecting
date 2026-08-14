@@ -446,9 +446,25 @@ def _normalize_sgmc_geology(feature, fid):
         source_record_id=p.get('objectid'),
         scale_status=status, reference=reference,
         source_url=p.get('digital_url') or p.get('ngmdb1') or SGMC_DOI)
+    unit_name = _text(p.get('unit_name'), 160)
+    description_parts = [unit_name] if unit_name else []
+    for label, fields in (
+            ('Major lithologies', ('major1', 'major2')),
+            ('Minor lithologies', ('minor1', 'minor2')),
+            ('Incidental lithologies', ('incidental',))):
+        values = []
+        for field in fields:
+            value = _text(p.get(field), 100)
+            if value and value not in values:
+                values.append(value)
+        if values:
+            description_parts.append(f'{label}: {", ".join(values)}')
     props.update({
         'unit_label': _text(p.get('sgmc_label') or p.get('orig_label'), 40),
-        'unit_name': _text(p.get('unit_name'), 160),
+        'unit_name': unit_name,
+        # These are the official SGMC descriptive/lithology fields, composed
+        # without interpretation so geology_at can return more than a symbol.
+        'description': _text('; '.join(description_parts), 500),
         'lithology': _text(p.get('generalized_lith') or p.get('major1'), 100),
         'age_min': _text(p.get('age_min'), 80),
         'age_max': _text(p.get('age_max'), 80),
@@ -524,9 +540,12 @@ def _normalize_ak_geology(feature, fid, references):
         source_id=f'sim3340:{source}', scale=scale, scale_status=status,
         source_record_id=p.get('objectid'),
         reference=reference, source_url=AK_DOI)
+    unit_name = _text(p.get('state_unitname'), 160)
     props.update({
         'unit_label': _text(p.get('state_label') or p.get('state_label2'), 40),
-        'unit_name': _text(p.get('state_unitname'), 160),
+        'unit_name': unit_name,
+        # SIM 3340's STATE_UNITNAME is its published full unit description.
+        'description': unit_name,
         'age': _text(p.get('age_range'), 100),
         'quadrangle': _text(p.get('quadrangle'), 60),
         'color': _text(p.get('rgb_color'), 20),
@@ -1202,12 +1221,29 @@ def build():
             geology_sequence, pending_geology, 'geology',
             'U.S. Geological Survey SGMC v1.1 and SIM 3340',
             geology_stats['n'], geology_stats)
+        spatial_db = os.environ.get('NWMM_SPATIAL_DB')
+        if spatial_db:
+            from spatial_store import SpatialStore
+            with SpatialStore(spatial_db) as store:
+                store.initialize()
+                store.ingest_geojson(
+                    geology_sequence, layer_id='national:geology', kind='geology',
+                    title='USGS SGMC v1.1 and Alaska SIM 3340',
+                    source_url=SGMC_DOI)
         os.unlink(geology_sequence)
         faults_stats = _stream_faults(faults_sequence, references, qfault_paths)
         faults_build = _build_twice(
             faults_sequence, pending_faults, 'faults',
             'U.S. Geological Survey SGMC v1.1, SIM 3340, and Qfaults',
             faults_stats['n'], faults_stats)
+        if spatial_db:
+            from spatial_store import SpatialStore
+            with SpatialStore(spatial_db) as store:
+                store.initialize()
+                store.ingest_geojson(
+                    faults_sequence, layer_id='national:faults', kind='fault',
+                    title='USGS SGMC v1.1, Alaska SIM 3340, and USGS Qfaults',
+                    source_url=QFAULTS_DOI)
         os.unlink(faults_sequence)
 
         geology_entry, faults_entry = _publication_entries(

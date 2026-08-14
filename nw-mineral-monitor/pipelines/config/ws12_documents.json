@@ -1,0 +1,1361 @@
+{
+ "schema_version": 1,
+ "dataset": "ws12-document-registry",
+ "portals": {
+  "pubs.usgs.gov": "usgs-pubs",
+  "dggs.alaska.gov": "dggs-alaska",
+  "data.azgs.arizona.edu": "azgs-repository",
+  "data.nbmg.unr.edu": "nbmg-digital-library",
+  "digital.library.unt.edu": "unt-digital-library",
+  "www.idahogeology.org": "igs-mines"
+ },
+ "documents": [
+  {
+   "source_id": "igs-mils-160230014",
+   "state": "ID",
+   "portal": "igs-mines",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "retrieved": "2026-08-14",
+   "title": "MILS-160230014: SAINT LOUIS MINE — U.S. Bureau of Mines MAS/MILS record",
+   "authority": "U.S. Geological Survey Data Series 52, served by the Idaho Geological Survey",
+   "citation": "McFaul, E.J., Mason, G.T., Ferguson, W.B., and Lipin, B.R., 2000, MILS-160230014: SAINT LOUIS MINE: U.S. Geological Survey Data Series 52 (Minerals Availability System / Mineral Industry Location Subsystem), record 160230014; served by the Idaho Geological Survey as a reference document of Mines and Prospects of Idaho (DD-1) record IF0126.",
+   "publication_year": 2000,
+   "catalog_url": "https://www.idahogeology.org/WebMap4/WebData/Mines.aspx?Operation=Details&IGSID=IF0126",
+   "document_url": "https://www.idahogeology.org/Uploads/Data/MILS_MRDS/MILS-160230014.pdf",
+   "local_path": "pipelines/cache/ws12/manual-if0126/MILS-160230014.pdf",
+   "bytes": 110833,
+   "sha256": "d29aab7b4e9fcde0e084dddc84ef9da37d0c15860af4674bf58bd0decd71e07f",
+   "pages": 1,
+   "subjects": [
+    {
+     "state": "ID",
+     "mine_id": "stategeo-igs-dd-1-if0126",
+     "label": "St. Louis Mine (IGS DD-1 IF0126), Lava Creek district"
+    }
+   ],
+   "license_note": "Federal public-domain data republished by the Idaho Geological Survey. The sheet itself states that the current IGS database may supersede it.",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "igs-mrds-w015681",
+   "state": "ID",
+   "portal": "igs-mines",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "retrieved": "2026-08-14",
+   "title": "MRDS-W015681: ST. LOUIS MINE — USGS Mineral Resources Data System record",
+   "authority": "U.S. Geological Survey Data Series 20, served by the Idaho Geological Survey",
+   "citation": "Mason, G.T., and Arndt, R.E., 1996, MRDS-W015681: ST. LOUIS MINE: U.S. Geological Survey Data Series 20 (Mineral Resources Data System), record W015681; served by the Idaho Geological Survey as a reference document of Mines and Prospects of Idaho (DD-1) record IF0126.",
+   "publication_year": 1996,
+   "catalog_url": "https://www.idahogeology.org/WebMap4/WebData/Mines.aspx?Operation=Details&IGSID=IF0126",
+   "document_url": "https://www.idahogeology.org/Uploads/Data/MILS_MRDS/MRDS-W015681.pdf",
+   "local_path": "pipelines/cache/ws12/manual-if0126/MRDS-W015681.pdf",
+   "bytes": 110393,
+   "sha256": "3c3fc7e970db5286640b83c35e886fc07a6db4c415e92782674aa94a3058a9a1",
+   "pages": 1,
+   "subjects": [
+    {
+     "state": "ID",
+     "mine_id": "stategeo-igs-dd-1-if0126",
+     "label": "St. Louis Mine (IGS DD-1 IF0126), Lava Creek district"
+    }
+   ],
+   "license_note": "Federal public-domain data republished by the Idaho Geological Survey. IGS records the author surname as \"Ardnt\"; the USGS Data Series 20 spelling is Arndt.",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "atdm-mr191-5",
+   "state": "AK",
+   "portal": "dggs-alaska",
+   "mine_id": "statewide-ak",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ak_grade_sources.json",
+   "subjects": [
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-bohemia-basin",
+     "label": "Bohemia Basin deposits"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-copper-center-prospect",
+     "label": "Copper Center prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-fleming-island-deposit",
+     "label": "Fleming Island deposit"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-mertie-lode",
+     "label": "Mertie Lode"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-rich-hill-mine",
+     "label": "Rich Hill copper mine"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-salt-chuck-mine",
+     "label": "Salt Chuck (Goodro) mine"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-shepard-mine",
+     "label": "Shepard mine"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-snipe-bay-deposit",
+     "label": "Snipe Bay deposit"
+    }
+   ],
+   "public_domain": false,
+   "rights_basis": "State geological survey publication served openly by its own digital library. Public reachability is not an affirmative public-domain basis, so the row is held pending review and is not served."
+  },
+  {
+   "source_id": "usbm-ofr50-94",
+   "state": "AK",
+   "portal": "dggs-alaska",
+   "mine_id": "district-prince-william-sound",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ak_grade_sources.json",
+   "subjects": [
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-blackjack-prospect",
+     "label": "Blackjack prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-brown-bear-prospect",
+     "label": "Brown Bear prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-cedar-bay-ridge-occurrence",
+     "label": "Cedar Bay Ridge occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-columbia-red-metals-prospect",
+     "label": "Columbia Red Metals prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-dado-no-1-prospect",
+     "label": "Dado No. 1 prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-finski-bay-prospect",
+     "label": "Finski Bay prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-four-in-one-prospect",
+     "label": "Four-In-One prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-glendenning-prospect",
+     "label": "Glendenning prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-globe-prospect",
+     "label": "Globe prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-idle-claim-prospect",
+     "label": "Idle Claim prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-long-bay-no-1-occurrence",
+     "label": "Long Bay No. 1 occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-miners-river-discovery-prospect",
+     "label": "Miners River Discovery prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-miners-river-nickel-prospect",
+     "label": "Miners River Nickel prospect"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-miners-river-no-1-occurrence",
+     "label": "Miners River No. 1 occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-miners-river-no-2-occurrence",
+     "label": "Miners River No. 2 occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-saddle-occurrence",
+     "label": "Saddle occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-slipper-point-occurrence",
+     "label": "Slipper Point occurrence"
+    },
+    {
+     "state": "AK",
+     "mine_id": "ws9-ak-wells-bay-prospect",
+     "label": "Wells Bay prospect"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "azbm-b137",
+   "state": "AZ",
+   "portal": "azgs-repository",
+   "mine_id": "statewide-az",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/az_grade_sources.json",
+   "subjects": [
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-alaskan-mine",
+     "label": "Alaskan mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-congress-mine",
+     "label": "Congress mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-contention-mine",
+     "label": "Contention mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-cowboy-mine",
+     "label": "Cowboy mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-engine-mine",
+     "label": "Engine mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-french-lily-mine",
+     "label": "French Lily mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-hardy-vein",
+     "label": "Hardy vein"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-henrietta-big-bug-mine",
+     "label": "Henrietta or Big Bug mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-iowa-mine",
+     "label": "Iowa mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-lelan-dividend-property",
+     "label": "Lelan-Dividend property"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-lincoln-mine",
+     "label": "Lincoln mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-little-jessie-mine",
+     "label": "Little Jessie mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-lucky-cuss-mine",
+     "label": "Lucky Cuss mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-mammoth-hubbard-mine",
+     "label": "Mammoth or Hubbard mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-mccabe-gladstone-mine",
+     "label": "McCabe-Gladstone mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-moss-mine",
+     "label": "Moss mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-rainbow-mine",
+     "label": "Rainbow mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-samoa-mine",
+     "label": "Samoa mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-sheldon-mine",
+     "label": "Sheldon mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-southern-cross-mine",
+     "label": "Southern Cross mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-tyler-mine",
+     "label": "Tyler mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-walkover-mine",
+     "label": "Walkover mine"
+    }
+   ],
+   "public_domain": false,
+   "rights_basis": "State geological survey publication served openly by its own digital library. Public reachability is not an affirmative public-domain basis, so the row is held pending review and is not served."
+  },
+  {
+   "source_id": "pp610",
+   "state": "AZ",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-az",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/az_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usbm-ic6991",
+   "state": "AZ",
+   "portal": "azgs-repository",
+   "mine_id": "ws9-az-octave-mine",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/az_grade_sources.json",
+   "subjects": [
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-octave-mine",
+     "label": "Octave mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b782",
+   "state": "AZ",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-az",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/az_grade_sources.json",
+   "subjects": [
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-blue-bell-mine",
+     "label": "Blue Bell mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-copper-chief-mine",
+     "label": "Copper Chief mine"
+    },
+    {
+     "state": "AZ",
+     "mine_id": "ws9-az-de-soto-mine",
+     "label": "De Soto mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "b478",
+   "state": "CO",
+   "portal": "usgs-pubs",
+   "mine_id": "district-lake-city",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/co_grade_sources.json",
+   "subjects": [
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-black-crook",
+     "label": "Black Crook mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-gallic-vulcan",
+     "label": "Gallic-Vulcan mines"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-golden-fleece",
+     "label": "Golden Fleece mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-monte-queen",
+     "label": "Monte Queen mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-moro",
+     "label": "Moro mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-vermont",
+     "label": "Vermont mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp359",
+   "state": "CO",
+   "portal": "usgs-pubs",
+   "mine_id": "district-central-city",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/co_grade_sources.json",
+   "subjects": [
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-argo",
+     "label": "Argo mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-bullion-gulch-eureka",
+     "label": "Bullion mine (Gulch/Eureka)"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-carr",
+     "label": "Carr mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-carroll",
+     "label": "Carroll mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-champion",
+     "label": "Champion mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-chase",
+     "label": "Chase mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-corydon",
+     "label": "Corydon mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-cyclops",
+     "label": "Cyclops mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-essex",
+     "label": "Essex mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-german-quartz-hill",
+     "label": "German mine (Quartz Hill)"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-gilpin-eureka",
+     "label": "Gilpin-Eureka mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-gold-cup",
+     "label": "Gold Cup mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-hubert",
+     "label": "Hubert mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-kansas",
+     "label": "Kansas lode"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-ok",
+     "label": "O.K. mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-old-town",
+     "label": "Old Town mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-perrin",
+     "label": "Perrin mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-pewabic",
+     "label": "Pewabic mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-pittsburg",
+     "label": "Pittsburg mine"
+    },
+    {
+     "state": "CO",
+     "mine_id": "ws9-co-saratoga",
+     "label": "Saratoga mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp610",
+   "state": "CO",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-co",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/co_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "b870",
+   "state": "NM",
+   "portal": "usgs-pubs",
+   "mine_id": "district-central",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nm_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-ground-hog-mine",
+     "label": "Ground Hog mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-lion-no-2-mine",
+     "label": "Lion No. 2 mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-lucky-bill-mine",
+     "label": "Lucky Bill mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-owl-mine",
+     "label": "Owl mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-silver-king-mine",
+     "label": "Silver King mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-three-brothers-mine",
+     "label": "Three Brothers mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp610",
+   "state": "NM",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-nm",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nm_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp68",
+   "state": "NM",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-nm",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nm_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-american-property",
+     "label": "American property"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-apache-no-2-mine",
+     "label": "Apache mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-barnett-property",
+     "label": "Barnett property"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-bonanza-hillsboro",
+     "label": "Bonanza mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-bunkhouse-workings",
+     "label": "Bunkhouse workings"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-cleveland-group",
+     "label": "Cleveland group"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-daisy-mine-fremont",
+     "label": "Daisy mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-doyle-property",
+     "label": "Doyle property"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-eagle-mine-fremont",
+     "label": "Eagle mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-emporia-incline",
+     "label": "Emporia Incline"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-international-mine",
+     "label": "International mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-ivanhoe-grafton",
+     "label": "Ivanhoe mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-jessie-chance-ore-body",
+     "label": "Jessie-Chance ore body"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-mahoning-group",
+     "label": "Mahoning group"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-nana-mine",
+     "label": "Nana mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-new-era-mine",
+     "label": "New Era mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-silver-fox-mine",
+     "label": "Silver Fox mine"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-thirty-stope",
+     "label": "Thirty Stope"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-victor-no-2-claim",
+     "label": "Victor No. 2 claim"
+    },
+    {
+     "state": "NM",
+     "mine_id": "ws9-nm-wicks-mine",
+     "label": "Wicks mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "nbmg-mdf-21600006",
+   "state": "NV",
+   "portal": "nbmg-digital-library",
+   "mine_id": "ws9-nv-great-bend-surface-dump",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-great-bend-surface-dump",
+     "label": "Great Bend mine surface ore dump"
+    }
+   ],
+   "public_domain": false,
+   "rights_basis": "State geological survey publication served openly by its own digital library. Public reachability is not an affirmative public-domain basis, so the row is held pending review and is not served."
+  },
+  {
+   "source_id": "nbmg-mdf-21600019",
+   "state": "NV",
+   "portal": "nbmg-digital-library",
+   "mine_id": "district-goldfield",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-florence-west-crosscut",
+     "label": "Florence mine western crosscut branch vein"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-grizzly-bear-shaft",
+     "label": "Grizzly Bear shaft"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-jumbo-extension",
+     "label": "Jumbo Extension"
+    }
+   ],
+   "public_domain": false,
+   "rights_basis": "State geological survey publication served openly by its own digital library. Public reachability is not an affirmative public-domain basis, so the row is held pending review and is not served."
+  },
+  {
+   "source_id": "pp610",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-nv",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b407",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "ws9-nv-montgomery-shoshone",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-montgomery-shoshone",
+     "label": "Montgomery-Shoshone mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b408",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-nv",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-leopard-mine",
+     "label": "Leopard mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-little-gem-mine",
+     "label": "Little Gem mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-lucky-girl-group",
+     "label": "Lucky Girl group"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-ruby-claim",
+     "label": "Ruby claim"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-sweepstakes-claim",
+     "label": "Sweepstakes claim"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b414",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-nv",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-arizona-mine",
+     "label": "Arizona mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-mazuma-hills-mine",
+     "label": "Mazuma Hills mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b601",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "district-national",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-neversweat-shaft",
+     "label": "Neversweat shaft"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-walker-lease",
+     "label": "Walker lease"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b715k",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "ws9-nv-tonopah-divide-mine",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-tonopah-divide-mine",
+     "label": "Tonopah Divide mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b741",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "ws9-nv-starlight-mine",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-starlight-mine",
+     "label": "Starlight mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b762",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "district-rochester",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-abe-lincoln-mine",
+     "label": "Abe Lincoln mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-big-four-lease",
+     "label": "Big Four lease"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-codd-lease",
+     "label": "Codd lease"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-octopus-mine",
+     "label": "Octopus mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-rochester-silver-corp",
+     "label": "Rochester Silver Corporation mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b906d",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "ws9-nv-duplex-mine",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-duplex-mine",
+     "label": "Duplex mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-pp171",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "district-pioche",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-combined-metals-mine",
+     "label": "Combined Metals mine"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-prince-mine",
+     "label": "Prince mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-pp406",
+   "state": "NV",
+   "portal": "usgs-pubs",
+   "mine_id": "district-eureka",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/nv_grade_sources.json",
+   "subjects": [
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-consolidated-eureka",
+     "label": "Consolidated Eureka Mining Company"
+    },
+    {
+     "state": "NV",
+     "mine_id": "ws9-nv-eureka-corp",
+     "label": "Eureka Corporation, Ltd."
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp610",
+   "state": "SD",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-sd",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/sd_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usbm-b427",
+   "state": "SD",
+   "portal": "unt-digital-library",
+   "mine_id": "statewide-sd",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/sd_grade_sources.json",
+   "subjects": [
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-big-hit",
+     "label": "Big Hit group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-black-diamond-gold-mountain",
+     "label": "Black Diamond-Gold Mountain group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-clover-leaf",
+     "label": "Clover Leaf mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-cutting",
+     "label": "Cutting mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-deadbroke",
+     "label": "Deadbroke group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-echo",
+     "label": "Echo lode"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-gold-fish",
+     "label": "Gold Fish group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-golden-summit",
+     "label": "Golden Summit mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-hard-scrabble",
+     "label": "Hard Scrabble group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-inca",
+     "label": "Inca group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-keystone",
+     "label": "Keystone mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-lucky-boy",
+     "label": "Lucky Boy mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-mascot",
+     "label": "Mascot mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-minnie-may",
+     "label": "Minnie May group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-newark",
+     "label": "Newark mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-old-bill",
+     "label": "Old Bill (El Dorado) mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-oneonta",
+     "label": "Oneonta lode"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-ragged-top-mines",
+     "label": "Ragged Top Mines"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-rough-rider",
+     "label": "Rough Rider group"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-saginaw",
+     "label": "Saginaw (Gold Reserve) property"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "usgs-b1332a",
+   "state": "SD",
+   "portal": "usgs-pubs",
+   "mine_id": "district-hill-city-rochford-area",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/sd_grade_sources.json",
+   "subjects": [
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-cochrane",
+     "label": "Cochrane mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-golden-west",
+     "label": "Golden West mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-king-of-the-west",
+     "label": "King of the West mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-montana",
+     "label": "Montana mine"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-sec12-quartz-vein",
+     "label": "Sec. 12 arsenopyrite-quartz test-pit prospect"
+    },
+    {
+     "state": "SD",
+     "mine_id": "ws9-sd-standby",
+     "label": "Standby mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp610",
+   "state": "US",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-us",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ak_grade_sources.json",
+   "filing": true,
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp107",
+   "state": "UT",
+   "portal": "usgs-pubs",
+   "mine_id": "district-tintic",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ut_grade_sources.json",
+   "subjects": [
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-centennial-eureka-mine",
+     "label": "Centennial Eureka mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-colorado-mine",
+     "label": "Colorado mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-eureka-hill-mine",
+     "label": "Eureka Hill mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-gemini-mine",
+     "label": "Gemini mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-mammoth-mine",
+     "label": "Mammoth mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-victoria-mine",
+     "label": "Victoria mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp177",
+   "state": "UT",
+   "portal": "usgs-pubs",
+   "mine_id": "district-gold-hill-clifton",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ut_grade_sources.json",
+   "subjects": [
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-monocco-claim",
+     "label": "Monocco claim"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-new-baltimore-mine",
+     "label": "New Baltimore mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-rube-mine",
+     "label": "Rube mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp38",
+   "state": "UT",
+   "portal": "usgs-pubs",
+   "mine_id": "district-bingham",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ut_grade_sources.json",
+   "subjects": [
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-columbia-mine",
+     "label": "Columbia mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-congor-mine",
+     "label": "Congor mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-highland-boy-mine",
+     "label": "Highland Boy mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-hoogley-mine",
+     "label": "Hoogley mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-julia-dean-mine",
+     "label": "Julia Dean mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-midland-mine",
+     "label": "Midland mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-montezuma-mine",
+     "label": "Montezuma mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-navajo-tunnels",
+     "label": "Navajo tunnels"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-neptune-mine",
+     "label": "Neptune mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-old-jordan-mine",
+     "label": "Old Jordan mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-old-telegraph-mine",
+     "label": "Old Telegraph mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-phoenix-mine",
+     "label": "Phoenix mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-red-wing-extension-mine",
+     "label": "Red Wing Extension mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-silver-bell-mine",
+     "label": "Silver Bell mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-tiewaukee-mine",
+     "label": "Tiewaukee mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-vespasian-mine",
+     "label": "Vespasian mine"
+    },
+    {
+     "state": "UT",
+     "mine_id": "ws9-ut-winamuck-mine",
+     "label": "Winamuck mine"
+    }
+   ],
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  },
+  {
+   "source_id": "pp610",
+   "state": "UT",
+   "portal": "usgs-pubs",
+   "mine_id": "statewide-ut",
+   "retrieved": "2026-08-13",
+   "inventory": "pipelines/config/ut_grade_sources.json",
+   "public_domain": true,
+   "rights_basis": "Work of the United States Government prepared by an officer or employee as part of official duties; not subject to copyright under 17 U.S.C. 105."
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1, "jurisdiction": "MO", "portals": [
+    {
+      "id": "mo_mine_map_repository", "jurisdiction": "MO", "name": "Missouri Mine Map Repository",
+      "tier": 3, "portal_type": "historic_mine_map_repository", "entry_url": "https://dnr.mo.gov/land-geology/maps-data-research/mine-map-repository",
+      "detail_page_pattern": null, "pdf_link_pattern": null, "id_scheme": "Repository mine-map identifiers; a stable public download identifier pattern was not exposed on the landing page.",
+      "status": "manual_request_only",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://dnr.mo.gov/land-geology/maps-data-research/mine-map-repository", "http_status": 200, "result": "Missouri maintains an official mine-map repository, but the reviewed public surface describes holdings/contact access rather than an exhaustive click-to-download PDF corpus."},
+      "access": {"mode": "manual_request", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Do not automate requests or presume public-domain rights in operator-submitted mine maps."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "repository index and future explicitly public-domain digital mine maps", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

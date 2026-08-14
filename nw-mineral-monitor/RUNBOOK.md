@@ -288,3 +288,85 @@ as the other layers. The project owner waived a separate reuse review for
 this academic deployment;
 that decision does not assert an open license. The email-delivered CGS PDF
 and nonpublic native GIS are not prerequisites for publishing this raster.
+## Mine-file OCR and document search (WS12)
+
+See `WS12-DOCUMENT-INDEX.md` for the manifest, rights, OCR fallback, identity,
+embedding, citation, and private deployment contracts. The short operator
+sequence is `ingest` → `ocr` → `import-sites`/`link` → `export` → `package`;
+publish the verified private DB only with `./infra/deploy.sh upload-doc-index`.
+Never sync `var/ws12/`, OCR work files, originals, or SQLite/WAL sidecars into
+`site/` or git.
+
+## Stored source documents and the citation viewer (WS12 addendum)
+
+### Prerequisites
+
+The builder needs PyMuPDF for page probing and, for image-only scans only,
+either `ocrmypdf` or `tesseract`:
+
+```bash
+python3 -c "import fitz; print(fitz.__doc__)"
+ocrmypdf --version || tesseract --version
+```
+
+`ocrmypdf --skip-text` is preferred; the PyMuPDF+Tesseract fallback inserts an
+invisible text layer at the recognised word boxes of the untouched original
+page. Both preserve pagination, and the builder refuses a product that does
+not. The browser viewer needs the vendored PDF.js payload, including its
+WebAssembly decoders — survey scans are JBIG2, and without
+`site/assets/pdfjs/wasm/` the page art silently fails to decode:
+
+```bash
+npm run vendor:pdfjs
+```
+
+### Build the store
+
+```bash
+python3 pipelines/build_doc_store.py \
+  --registry pipelines/config/ws12_documents.json \
+  --store-dir pipelines/cache/ws12/store
+python3 pipelines/validate_doc_store.py --store-dir pipelines/cache/ws12/store
+```
+
+The store hardlinks its objects to the staged sources wherever the bytes are
+identical, so a full generation adds only the OCR products to disk — worth
+knowing on a machine that has been near full before. Rows whose
+`public_domain` is false are never read, copied, OCR'd, or published; they
+stay in the registry as a visible gap. A build takes several minutes,
+almost all of it OCR.
+
+### Publish in this order
+
+```bash
+# 1. Objects first. The uploader re-validates and hash-verifies locally,
+#    then re-reads each object's recorded digest from S3 before counting it.
+ENABLE_LEGACY_DOC_STORE=true bash infra/deploy.sh upload-doc-store
+
+# 2. When enabling from false, deploy the conditional Docs API/Lambda and the
+#    viewer only after the PDFs and private manifest exist.
+ENABLE_LEGACY_DOC_STORE=true bash infra/deploy.sh deploy
+```
+
+Verify against CloudFront and S3 afterwards:
+
+1. `curl -I https://<distribution>/viewer.html` returns 200.
+2. `curl -I https://<distribution>/data/docs/manifest.json` returns 403.
+3. `curl -I https://<distribution>/docs/` returns 403 — the corpus must stay
+   uncrawlable. A 200 here is a stop-the-line failure.
+4. An unauthenticated request to the Docs API returns 401; its JWT authorizer
+   is bound to this stack's Cognito issuer and app client.
+5. Sign in, ask a question that cites a stored document, and click the chip:
+   the viewer opens the stored copy at the cited page with the quote
+   highlighted, and the footer names the sha256 and the retrieval date.
+6. `aws s3api get-object-tagging --bucket <bucket> --key docs/.../raw.pdf`
+   shows `ws12-variant=raw`, which is what the lifecycle rule transitions.
+
+### Rights rule
+
+A document is stored only when its registry row states an affirmative
+public-domain basis. Public reachability is not a licence, and a file is not
+promoted merely because a portal serves it without a login. When a review
+resolves a withheld row, flip `public_domain` in
+`pipelines/config/ws12_documents.json`, record the basis, and rebuild — do
+not hand-edit the manifest, which is regenerated and byte-compared.

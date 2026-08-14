@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "CA",
+  "portals": [
+    {
+      "id": "ca_mines_online", "jurisdiction": "CA",
+      "name": "California DOC Mines Online",
+      "tier": 1, "portal_type": "arcgis_smara_mine_inventory",
+      "entry_url": "https://maps.conservation.ca.gov/mol/",
+      "detail_page_pattern": "https://gis.conservation.ca.gov/server/rest/services/MOL/MOLMines/FeatureServer/0/query?where=MINE_ID%3D%27{MINE_ID}%27",
+      "pdf_link_pattern": null,
+      "id_scheme": "SMARA/DOC MINE_ID in the MOLMines feature layer.",
+      "status": "index_only_no_public_documents",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://gis.conservation.ca.gov/server/rest/services/MOL/MOLMines/FeatureServer/0", "http_status": 200, "result": "The public ArcGIS mine layer is queryable and supplies mine/operator/status attributes, but advertises no scanned-document attachments or per-mine PDF relationship."},
+      "access": {"mode": "index_only", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Use MOL as a site-record join only; do not infer rights in regulator or operator documents."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "MOL mine identifier inventory and document joins; no attachment set asserted", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "cgs_information_warehouse", "jurisdiction": "CA",
+      "name": "California Geological Survey Information Warehouse / Library holdings",
+      "tier": 1, "portal_type": "scanned_holdings_and_publication_catalog",
+      "entry_url": "https://www.conservation.ca.gov/cgs/library",
+      "detail_page_pattern": null,
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "CGS publication/collection identifiers; no stable public per-mine detail identifier was verified.",
+      "status": "probed_no_attachment_pattern",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://www.conservation.ca.gov/cgs/library", "http_status": 200, "result": "CGS exposes library and scanned serial holdings, but arrival probing did not reveal an exhaustive public per-mine detail-to-document cursor comparable to IGS."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "California state publications are not presumed public domain; require a rights statement per file and skip purchase/request-only items."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "CGS scanned mining holdings with explicit public-domain rights and stable catalog identifiers", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

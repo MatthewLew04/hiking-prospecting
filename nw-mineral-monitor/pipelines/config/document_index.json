@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "manifest_path": "var/ws12/manifest.jsonl",
+  "database_path": "var/ws12/document-index.sqlite3",
+  "package_path": "var/ws12/deploy/document-index.sqlite3",
+  "work_path": "pipelines/cache/ws12",
+  "public_index_path": "site/data/docs/index.json",
+  "public_coverage_path": "site/data/docs/coverage.json",
+  "ocr": {
+    "preferred": "ocrmypdf/tesseract",
+    "installed_fallback": "pdftoppm/tesseract",
+    "text_extractor": "pdftotext",
+    "quality_threshold": 0.62,
+    "strong_fallback_command_env": "DOC_OCR_FALLBACK_COMMAND_JSON"
+  },
+  "chunks": {
+    "target_chars": 1400,
+    "overlap_chars": 180,
+    "page_local": true
+  },
+  "embeddings": {
+    "production_provider": "bedrock",
+    "model": "amazon.titan-embed-text-v2:0",
+    "dimensions": 1024
+  },
+  "runtime": {
+    "s3_key": "private/ws12/document-index.sqlite3",
+    "max_hits": 12,
+    "max_excerpt_chars": 1000
+  }
+}

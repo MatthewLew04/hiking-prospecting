@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "AZ",
+  "portals": [
+    {
+      "id": "azgs_admmr",
+      "jurisdiction": "AZ",
+      "name": "Arizona Geological Survey ADMMR Mining Collections",
+      "tier": 1,
+      "portal_type": "paginated_json_collection_repository",
+      "entry_url": "https://mininginfo.azgs.arizona.edu/",
+      "detail_page_pattern": "https://data.azgs.arizona.edu/api/v1/metadata?collection_group=ADMM&offset={offset}",
+      "pdf_link_pattern": "(?i)\\.pdf$",
+      "id_scheme": "AZGS collection_id, usually ADMM-{epoch}-{suffix}; legacy Resource IDs remain collection metadata rather than the primary API key.",
+      "status": "harvest_ready",
+      "probe": {
+        "checked": "2026-08-14",
+        "verified_url": "https://data.azgs.arizona.edu/api/v1/metadata?collection_group=ADMM&limit=2",
+        "http_status": 200,
+        "result": "The Mining Info application identifies itself as the replacement for minedata.azgs.arizona.edu. Its public API reports 21,502 ADMM collections, paginates metadata, declares private status and a license per collection, and serves named collection files."
+      },
+      "access": {
+        "mode": "public_download",
+        "robots": "respect",
+        "paywalled": false,
+        "official_public_documents_only": true,
+        "terms_status": "reviewed_no_automation_prohibition",
+        "terms_checked": "2026-08-14",
+        "terms_url": "https://mininginfo.azgs.arizona.edu/",
+        "terms_note": "Reviewed the public Mining Info application, API behavior, and permissive robots policy; no automated-download prohibition was found.",
+        "rights_note": "The crawler accepts only collection metadata that explicitly declares public-domain status; Creative Commons and missing-license records are logged rights_unverified and skipped."
+      },
+      "rights_rules": [],
+      "crawler": {
+        "adapter": "azgs_metadata",
+        "automation_permitted": true,
+        "min_interval_seconds": 1.0,
+        "metadata_url": "https://data.azgs.arizona.edu/api/v1/metadata",
+        "collection_group": "ADMM",
+        "collection_file_base": "https://data.azgs.arizona.edu/api/v1/collections",
+        "page_size": 100
+      },
+      "harvest_state": {
+        "full_crawl_complete": false,
+        "crawl_scope": "public-domain PDF members of every non-private ADMM API collection; legacy minedata URLs are provenance only",
+        "last_complete_cursor": null,
+        "manifest_sha256": null,
+        "completed_at": null
+      }
+    }
+  ]
+}

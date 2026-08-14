@@ -1,14 +1,17 @@
 {
   "name": "nw-mineral-monitor",
   "private": true,
-  "version": "11.0.0",
-  "description": "Build and acceptance dependencies for WS11 tiled delivery",
+  "version": "12.0.0",
+  "description": "Build and acceptance dependencies for WS12 mine-file and GIS tools",
   "scripts": {
     "vendor:pmtiles": "cp node_modules/pmtiles/dist/pmtiles.js site/assets/pmtiles.js",
+    "vendor:pdfjs": "mkdir -p site/assets/pdfjs/standard_fonts site/assets/pdfjs/wasm && cp node_modules/pdfjs-dist/legacy/build/pdf.min.mjs node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs site/assets/pdfjs/ && cp node_modules/pdfjs-dist/LICENSE site/assets/pdfjs/LICENSE && cp node_modules/pdfjs-dist/standard_fonts/* site/assets/pdfjs/standard_fonts/ && cp node_modules/pdfjs-dist/wasm/* site/assets/pdfjs/wasm/",
     "test:python": "python3 -m unittest discover -s tests -v",
-    "test:browser": "node tools/measure.js"
+    "test:browser": "node tools/measure.js",
+    "test:doc-viewer": "node tools/test_doc_viewer.js"
   },
   "dependencies": {
+    "pdfjs-dist": "6.2.108",
     "pmtiles": "4.5.0"
   },
   "devDependencies": {

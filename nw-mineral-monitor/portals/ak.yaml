@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "AK",
+  "portals": [
+    {
+      "id": "usgs_ardf", "jurisdiction": "AK",
+      "name": "USGS Alaska Resource Data File site records",
+      "tier": 1, "portal_type": "federal_site_record_feature_layer_and_quadrangle_reports",
+      "entry_url": "https://mrdata.usgs.gov/ardf/",
+      "detail_page_pattern": "https://mrdata.usgs.gov/ardf/show-ardf.php?ardf_num={ARDF_NO}",
+      "pdf_link_pattern": null,
+      "id_scheme": "ARDF number is a quadrangle code followed by a three-digit site sequence.",
+      "status": "index_only_no_public_documents",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/ARDF_features/FeatureServer/0", "http_status": 200, "result": "The public USGS layer supplies site descriptions and references but has no ArcGIS attachments. ARDF reports are a site-record source and citation join, not a click-a-mine scanned property-file collection."},
+      "access": {"mode": "index_only", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "USGS-authored ARDF records are federal works, but cited third-party references are not automatically public domain or downloadable."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "ARDF site-record and citation inventory; no attachment harvest asserted", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    },
+    {
+      "id": "ak_dggs_publications", "jurisdiction": "AK",
+      "name": "Alaska DGGS Publications Database",
+      "tier": 1, "portal_type": "publication_search_and_report_downloads",
+      "entry_url": "https://dggs.alaska.gov/pubs/",
+      "detail_page_pattern": "https://dggs.alaska.gov/pubs/id/{publication_id}",
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "DGGS publication series/number and internal publication ID; records may contain multiple report sheets/files.",
+      "status": "registered_publication_catalog",
+      "probe": {"checked": "2026-08-14", "verified_url": "https://dggs.alaska.gov/pubs/", "http_status": 200, "result": "The official catalog provides searchable per-publication records and report files, including mineral-industry and annual-report series, but it is publication-centric rather than a per-mine attachment portal."},
+      "access": {"mode": "review_required", "robots": "respect", "paywalled": false, "official_public_documents_only": true, "rights_note": "Public access is not itself public-domain proof; only files with an affirmative government/public-domain declaration enter the manifest."},
+      "harvest_state": {"full_crawl_complete": false, "crawl_scope": "DGGS report PDFs with mine/district joins and affirmative public-domain rights", "last_complete_cursor": null, "manifest_sha256": null, "completed_at": null}
+    }
+  ]
+}

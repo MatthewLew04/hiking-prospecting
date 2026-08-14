@@ -1,0 +1,49 @@
+{
+ "schema_version": 1,
+ "dataset": "ws12-reviewed-citations",
+ "reviewed_on": "2026-08-14",
+ "reviewed_by": "WS12 stored-document page review",
+ "review_method": "Each quotation was read off the cited page of the stored searchable copy and recorded verbatim, including the scanned document's own OCR spellings. The builder re-locates every quote in that copy's text layer and records quote_located false rather than asserting a highlight it cannot produce. These are the citations for documents that carry no WS9 reviewed grade evidence; they state what the record says, not a grade conclusion. The Idaho Mineral Property File IF0131_001 is deliberately absent: the WS12 harvest rights gate logged it rights_unverified (a shared corporate property file with no established public-domain basis) and skipped it, and this store honours the same determination rather than storing it because it happens to be reachable.",
+ "citations": [
+  {
+   "citation_id": "igs-if0126-mrds-district",
+   "source_id": "igs-mrds-w015681",
+   "state": "ID",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "mine_name": "St. Louis Mine",
+   "page_cite": "p. 1",
+   "pdf_page": 1,
+   "quote": "Mining District Name: LAVA CREEK DISTRICT County: BUTTE"
+  },
+  {
+   "citation_id": "igs-if0126-mrds-commodity",
+   "source_id": "igs-mrds-w015681",
+   "state": "ID",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "mine_name": "St. Louis Mine",
+   "page_cite": "p. 1",
+   "pdf_page": 1,
+   "quote": "Commodity: AG PB CU ZN BI Longitude: 113-35-13W Latitude: 43-35-17N Township: 003N Range: 024E Section: 15"
+  },
+  {
+   "citation_id": "igs-if0126-mils-workings",
+   "source_id": "igs-mils-160230014",
+   "state": "ID",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "mine_name": "Saint Louis Mine",
+   "page_cite": "p. 1",
+   "pdf_page": 1,
+   "quote": "Operation Type: UNDERG Status: DEVEL DE Commodities: SILVE, ZINC, LEAD, BISMU"
+  },
+  {
+   "citation_id": "igs-if0126-mils-precision",
+   "source_id": "igs-mils-160230014",
+   "state": "ID",
+   "mine_id": "stategeo-igs-dd-1-if0126",
+   "mine_name": "Saint Louis Mine",
+   "page_cite": "p. 1",
+   "pdf_page": 1,
+   "quote": "Map Name: GROUSE Quad Name: IDAHO FALLS Precision of Point: 100M"
+  }
+ ]
+}

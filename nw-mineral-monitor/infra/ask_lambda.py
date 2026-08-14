@@ -25,7 +25,7 @@ MODELS = [m.strip() for m in _env_models.split(",") if m.strip()] or [
 _working = {"id": None}                              # sticky across warm invocations
 ALLOW_ANON = os.environ.get("ALLOW_ANON", "false").lower() == "true"
 ENABLE_LEGACY_DOC_STORE = os.environ.get(
-    "ENABLE_LEGACY_DOC_STORE", "false").lower() == "true"
+    "ENABLE_LEGACY_DOC_STORE", "true").lower() == "true"
 MAX_BODY = 120_000          # bytes of conversation we will relay
 MAX_MSGS = 24
 
@@ -55,7 +55,7 @@ Rules:
 
 if ENABLE_LEGACY_DOC_STORE:
     SYSTEM += """
-- Use open_doc only for the separately rights-reviewed stored-PDF viewer corpus. Pass its page and quote and paste the returned citation chip verbatim. If it is unavailable, keep the canonical title/page/source-URL citation from search_documents."""
+- Use open_doc whenever a citation points at a document in the rights-reviewed stored-PDF corpus. Pass its page and quote and paste the returned citation chip verbatim, so the reader opens our stored copy at that page rather than a portal URL that may have moved. If open_doc reports the document is not stored, keep the canonical title/page/source-URL citation from search_documents."""
 
 TOOLS = [
  {"toolSpec": {"name": "query_sites", "description": "Count and sample mine/prospect/mineral-site records (MRDS + state surveys, or USMIN workings). Filters combine with AND.",
@@ -161,7 +161,7 @@ TOOLS = [
      "filter_status": {"enum": ["all","existing","old"]}}}}}},
  ]
 
-LEGACY_OPEN_DOC_TOOL = {"toolSpec": {"name": "open_doc", "description": "Open a rights-reviewed stored PDF in the optional private viewer at a cited page. This tool is not advertised unless ENABLE_LEGACY_DOC_STORE=true.",
+LEGACY_OPEN_DOC_TOOL = {"toolSpec": {"name": "open_doc", "description": "Open a rights-reviewed stored PDF in the private citation viewer at a cited page, with the quote highlighted in its text layer. Identify the document by doc_id (the SHA-256 of the raw original), a unique hex prefix, or a stable source_id. It opens our archived copy, never the originating portal, so a citation still resolves after that portal moves or dies. Withheld from the tool set when a deployment sets ENABLE_LEGACY_DOC_STORE to anything but true.",
   "inputSchema": {"json": {"type": "object", "properties": {
     "doc_id": {"type": "string"}, "page": {"type": "integer", "minimum": 1},
     "quote": {"type": "string", "maxLength": 2000}}, "required": ["doc_id"]}}}}

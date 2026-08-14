@@ -127,24 +127,31 @@ The full manifest is private at
 minimized catalog from the Docs API; CloudFront explicitly denies the former
 `data/docs/manifest.json` path as well as every PDF under `docs/`.
 
-Delivery is opt-in. `ENABLE_LEGACY_DOC_STORE` defaults to `false`, and an
-ordinary deploy therefore ships neither `viewer.html`, the vendored PDF.js
-payload, the manifest, nor the corpus — and actively removes them if they
-were published before. Turn it on only when every row you intend to serve
-carries an affirmative public-domain basis:
+Delivery is on by default. `ENABLE_LEGACY_DOC_STORE` defaults to `true`,
+which is safe because the store builder refuses to read the bytes of any row
+without an affirmative public-domain basis — an unresolved document is never
+stored, so it can never be served. Publish objects before the pointer:
 
 ```bash
-export ENABLE_LEGACY_DOC_STORE=true
 bash deploy.sh upload-doc-store   # PDFs + private manifest first; remotely re-verified
 bash deploy.sh deploy             # creates Docs API/Lambda, JWT binding, viewer, and auth.json
 ```
 
-When enabling from `false`, `update-site` is not enough: it cannot create the
-conditional Docs API/Lambda or write a new `docsUrl` output into `auth.json`.
-The full deploy requires the existing Cognito password environment variables;
-coordinate it with any active WS11 owner before publishing shared site files.
+Set `ENABLE_LEGACY_DOC_STORE=false` to withhold the viewer and its corpus from
+a deployment: that ships neither `viewer.html`, the vendored PDF.js payload,
+the manifest, nor the PDFs, and actively removes them if they were published
+before. Going from withheld back to served needs the full `deploy`, not
+`update-site` — only `deploy` can create the conditional Docs API/Lambda and
+write a new `docsUrl` into `auth.json`. It requires the existing Cognito
+password environment variables; coordinate it with any active WS11 owner
+before publishing shared site files.
 
-`upload-doc-store` refuses to run without that variable, re-runs the store
+Deploy the current template before, or in the same run as, any change to this
+switch. Flipping the stack parameter against an older deployed template
+mis-wires the presign Lambda to a stale manifest key; `deploy.sh deploy`
+avoids this by sending the template and the parameter together.
+
+`upload-doc-store` refuses to run while the switch is off, re-runs the store
 gate with `--store-dir`, sends the manifest digest explicitly with
 `--checksum-sha256`, and reads the digest back with `head-object
 --checksum-mode ENABLED` before counting it verified. Each PUT has three
@@ -366,7 +373,7 @@ Facts worth knowing: requests require a signed-in Cognito session (the Lambda ve
 - **ASK chat says "Bedrock could not serve <model>"** — first-time Anthropic use-case form (see the AI section above: playground once, then retry), or an IAM/SCP restriction, or a bad MODEL_ID. **"session expired"** — sign out/in (the AI endpoint checks your Cognito token). **"model is throttled"** — Bedrock burst limit; retry in a few seconds.
 - **Stack create failed with "BucketName already exists"** — you deployed before; either reuse that stack (CloudFormation → update) or delete the old one first.
 - **Changed a file but the site didn't update** — CloudFront caching. Data refreshes within 15 min; for `index.html` changes either wait an hour, or CloudFront console → your distribution → Invalidations → create invalidation for `/*`.
-- **A citation chip opens a viewer that says "no document endpoint configured"** — `auth.json` has no `docsUrl`. It is written only by the full `deploy` path, not `update-site`, and only when the stack exposes the `DocsUrl` output. Re-run `./deploy.sh` (with `ENABLE_LEGACY_DOC_STORE=true` if you intend to serve documents), then hard-reload.
+- **A citation chip opens a viewer that says "no document endpoint configured"** — `auth.json` has no `docsUrl`. It is written only by the full `deploy` path, not `update-site`, and only when the stack exposes the `DocsUrl` output. Re-run `./deploy.sh` (a full deploy, not `update-site`), then hard-reload. If the deployment sets `ENABLE_LEGACY_DOC_STORE=false`, the Docs API is withheld by design.
 - **The viewer opens but the scanned page is blank under a working highlight** — the vendored PDF.js WebAssembly decoders are missing. Survey scans are JBIG2. Run `npm run vendor:pdfjs`, confirm `site/assets/pdfjs/wasm/jbig2.wasm` exists, then `update-site`.
 - **`https://<distribution>/docs/...` returns 200** — stop. The document corpus must be uncrawlable; a 200 means `docs/*` reached the bucket-policy allowlist. Remove it from `SiteBucketPolicy` and redeploy the stack before doing anything else.
 - **A GEOLOGY (QUAD) toggle returns 403/404** — the inventory pointer was deployed before its S3 object, or its key does not match the local asset layout. Run `upload-ws10-assets` first, verify the object under the bucket's `ws10-assets/` prefix, then `update-site`. A low-confidence plate should stay in review rather than being patched around with a misleading URL.

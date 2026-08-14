@@ -104,14 +104,15 @@ preflight() {
   validator_python="${NWMM_VALIDATOR_PYTHON:-python3}"
   "$validator_python" "$HERE/../pipelines/validate_national.py" --profile progress
   python3 "$HERE/../pipelines/validate_quad_geology.py" --skip-assets
-  # The separate presigned-PDF viewer predates the fail-closed Part A rights
-  # contract. Keep it out of ordinary deploys until its entire manifest has
-  # affirmative public-domain evidence; the canonical OCR/ASK index above is
-  # unaffected. An explicit opt-in still runs its own structural validator.
-  if [ "${ENABLE_LEGACY_DOC_STORE:-false}" = "true" ]; then
+  # The presigned-PDF citation viewer ships by default: the store builder
+  # refuses to read the bytes of a row without an affirmative public-domain
+  # basis, so every stored document already carries the evidence the
+  # fail-closed Part A rights contract requires. Set the variable to any
+  # other value to withhold the viewer and its corpus from a deployment.
+  if [ "${ENABLE_LEGACY_DOC_STORE:-true}" = "true" ]; then
     python3 "$DOC_STORE_VALIDATOR"
   else
-    echo "    legacy document viewer disabled (rights review incomplete)"
+    echo "    document viewer withheld by ENABLE_LEGACY_DOC_STORE"
   fi
 }
 
@@ -536,7 +537,7 @@ upload_and_verify_public_data_binaries() {
 sync_public_site_without_pointers() {
   local bucket="$1"
   local -a legacy_excludes=()
-  if [ "${ENABLE_LEGACY_DOC_STORE:-false}" != "true" ]; then
+  if [ "${ENABLE_LEGACY_DOC_STORE:-true}" != "true" ]; then
     legacy_excludes+=(--exclude "viewer.html" --exclude "assets/pdfjs/*")
   fi
   aws s3 sync "$SITE" "s3://$bucket" --region "$REGION" --delete \
@@ -553,9 +554,9 @@ sync_public_site_without_pointers() {
 upload_doc_store() {
   local bucket="$1"
   local store="${2:-$DOC_STORE}"
-  [ "${ENABLE_LEGACY_DOC_STORE:-false}" = "true" ] || {
-    echo "ERROR: legacy document viewer is disabled pending affirmative public-domain review." >&2
-    echo "       The canonical WS12 path is upload-doc-index; do not opt in merely because a file is publicly reachable." >&2
+  [ "${ENABLE_LEGACY_DOC_STORE:-true}" = "true" ] || {
+    echo "ERROR: the document viewer is withheld by ENABLE_LEGACY_DOC_STORE, so its corpus must not be uploaded." >&2
+    echo "       Unset the variable to restore the default, or leave it off and use upload-doc-index alone." >&2
     return 1
   }
   [ -d "$store" ] || { echo "ERROR: no local document store at $store; run pipelines/build_doc_store.py first" >&2; return 1; }
@@ -730,7 +731,7 @@ sync_public_data_without_pointers_or_binaries() {
 
 remove_disabled_legacy_document_assets() {
   local bucket="$1"
-  [ "${ENABLE_LEGACY_DOC_STORE:-false}" != "true" ] || return 0
+  [ "${ENABLE_LEGACY_DOC_STORE:-true}" != "true" ] || return 0
   # `aws s3 sync --delete` deliberately preserves excluded keys. Remove the
   # optional viewer's public entry points explicitly so true -> false is a
   # real rollback boundary. These entry points are regenerated from tracked
@@ -804,7 +805,7 @@ case "${1:-deploy}" in
     wait_for_clear_state
     aws cloudformation deploy --template-file "$HERE/template.yaml" \
       --stack-name "$STACK" --region "$REGION" --capabilities CAPABILITY_IAM \
-      --parameter-overrides EnableLegacyDocumentStore="${ENABLE_LEGACY_DOC_STORE:-false}" \
+      --parameter-overrides EnableLegacyDocumentStore="${ENABLE_LEGACY_DOC_STORE:-true}" \
       --no-fail-on-empty-changeset
 
     BUCKET="$(outputs BucketName)"; FN="$(outputs UpdaterFunctionName)"; URL="$(outputs SiteURL)"

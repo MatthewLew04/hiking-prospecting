@@ -208,7 +208,7 @@ manifest SHA-256.
 ## Promotion and deploy boundary
 
 ```bash
-ENABLE_LEGACY_DOC_STORE=true bash infra/deploy.sh upload-doc-store
+bash infra/deploy.sh upload-doc-store
 ```
 
 `upload-doc-store` runs the gate with `--store-dir` first, so an unverified
@@ -261,9 +261,10 @@ unlocated citations are quotes whose text-layer match failed — degraded scan
 OCR, or a printed page whose reviewed number does not match the PDF index;
 each opens its cited page without a highlight and is counted honestly in
 `metrics.citations_quote_located`. Idaho has no reviewed grade evidence, so
-its stored documents carry reviewed WS12 citations instead. Delivery is also
-gated: `ENABLE_LEGACY_DOC_STORE` defaults to false, so an ordinary deploy
-ships neither the viewer nor the corpus. Neither a cached PDF nor an uploaded
+its stored documents carry reviewed WS12 citations instead. Delivery is on by
+default: `ENABLE_LEGACY_DOC_STORE` defaults to true, which is safe because an
+unresolved row is never stored and so can never be served; set it false to
+withhold the viewer and its corpus from a deployment. Neither a cached PDF nor an uploaded
 object is a substitute for the publisher's record, and the store does not
 claim reuse rights beyond each document's recorded basis.
 

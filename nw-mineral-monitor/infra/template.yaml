@@ -33,12 +33,14 @@ Parameters:
 
   EnableLegacyDocumentStore:
     Type: String
-    Default: 'false'
+    Default: 'true'
     AllowedValues: [ 'true', 'false' ]
     Description: >-
-      Opt-in for the separate presigned-PDF viewer corpus. Keep false until
-      every manifest row carries the same affirmative public-domain evidence
-      required by the canonical WS12 harvester/document index.
+      Serve the presigned-PDF citation viewer corpus. Enabled by default now
+      that the builder refuses to store a row without an affirmative
+      public-domain basis, so every stored document already carries the
+      evidence the canonical WS12 harvester/document index requires. Set
+      false to withhold the viewer and its corpus from a deployment.
 
 Conditions:
   LegacyDocumentStoreEnabled: !Equals [ !Ref EnableLegacyDocumentStore, 'true' ]

@@ -42,12 +42,25 @@ fake_exceptions.ClientError = FakeClientError
 fake_botocore = types.ModuleType("botocore")
 fake_botocore.exceptions = fake_exceptions
 
-with mock.patch.dict(sys.modules, {
-        "boto3": fake_boto3,
-        "botocore": fake_botocore,
-        "botocore.exceptions": fake_exceptions,
-}):
-    ask_lambda = importlib.import_module("ask_lambda")
+def _load_ask_lambda():
+    """Import a fresh relay module under the current environment.
+
+    The tool set and system prompt are built at import time from
+    ENABLE_LEGACY_DOC_STORE, so proving both sides of that switch means
+    importing twice rather than mutating the module afterwards.
+    """
+    with mock.patch.dict(sys.modules, {
+            "boto3": fake_boto3,
+            "botocore": fake_botocore,
+            "botocore.exceptions": fake_exceptions,
+    }):
+        sys.modules.pop("ask_lambda", None)
+        module = importlib.import_module("ask_lambda")
+        sys.modules.pop("ask_lambda", None)
+    return module
+
+
+ask_lambda = _load_ask_lambda()
 
 
 def conversation_with_search_result():
@@ -83,11 +96,27 @@ class DocumentAskRuntimeTests(unittest.TestCase):
     def test_tool_contract_includes_bounded_document_search(self):
         specs = {row["toolSpec"]["name"]: row["toolSpec"] for row in ask_lambda.TOOLS}
         self.assertIn("search_documents", specs)
-        self.assertNotIn("open_doc", specs)
         self.assertEqual(specs["search_documents"]["inputSchema"]["json"]
                          ["properties"]["limit"]["maximum"], 12)
         self.assertIn("[document title, p. N](source_url)", ask_lambda.SYSTEM)
-        self.assertNotIn("Use open_doc", ask_lambda.SYSTEM)
+
+    def test_the_stored_document_viewer_is_offered_by_default(self):
+        # The store builder refuses to read the bytes of a row without an
+        # affirmative public-domain basis, so nothing unresolved can reach the
+        # tool set. Serving is therefore the default, and the switch below is
+        # a deployment's way to withhold it rather than a rights gate.
+        specs = {row["toolSpec"]["name"] for row in ask_lambda.TOOLS}
+        self.assertIn("open_doc", specs)
+        self.assertIn("Use open_doc", ask_lambda.SYSTEM)
+        self.assertTrue(ask_lambda.ENABLE_LEGACY_DOC_STORE)
+
+    def test_a_deployment_can_still_withhold_the_stored_document_viewer(self):
+        with mock.patch.dict(os.environ, {"ENABLE_LEGACY_DOC_STORE": "false"}):
+            withheld = _load_ask_lambda()
+        specs = {row["toolSpec"]["name"] for row in withheld.TOOLS}
+        self.assertNotIn("open_doc", specs)
+        self.assertNotIn("Use open_doc", withheld.SYSTEM)
+        self.assertIn("search_documents", specs)
 
     def test_site_sync_protects_private_ws12_and_original_prefixes(self):
         script = (ROOT / "infra" / "deploy.sh").read_text(encoding="utf-8")

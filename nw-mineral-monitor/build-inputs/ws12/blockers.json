@@ -1,0 +1,106 @@
+{
+ "schema_version": 1,
+ "dataset": "ws12-blocker-handoff-ledger",
+ "updated": "2026-08-14",
+ "note": "Machine-readable ledger of unmet dependencies and blockers for the 49-state WS12 program. Owners: this_task (WS12), ws11 (the WS11 agent), external (a source portal or deployment action). Nothing here is fabricated as zero or silently weakened; each row names evidence and a safe next step.",
+ "blockers": [
+  {
+   "id": "ws11-commit-ordering-validate-doc-store",
+   "owner": "ws11",
+   "kind": "commit_ordering",
+   "status": "resolved",
+   "evidence": "Was: uncommitted ws11.yml referenced untracked pipelines/validate_doc_store.py. Resolved mid-session by commits 02da7e9..d859c3e, which committed the WS12 file set together with the workflow/test edits.",
+   "last_attempted_action": "Verified pipelines/validate_doc_store.py is tracked at d859c3e.",
+   "safe_next_step": "None; keep future WS12 additions committed with any CI step that invokes them."
+  },
+  {
+   "id": "ws11-commit-ordering-spatial-store-import",
+   "owner": "ws11",
+   "kind": "commit_ordering",
+   "status": "resolved",
+   "evidence": "Was: build_national_geology_faults_pmtiles.py imported untracked spatial_store. Resolved by the same 02da7e9..d859c3e commit set; pipelines/spatial_store.py is tracked.",
+   "last_attempted_action": "Verified tracked at d859c3e.",
+   "safe_next_step": "None."
+  },
+  {
+   "id": "ws11-no-released-state-artifacts",
+   "owner": "ws11",
+   "kind": "dependency_not_ready",
+   "evidence": "No states/*.yaml carries release.enabled=true or status done; site/map-assets/releases/ is absent. WS12 release gates that consume content-addressed WS11 state artifacts have nothing to pin yet; only checksum-pinned baselines under site/data/tiles/ exist.",
+   "last_attempted_action": "Consumed baselines only (checksum-pinned).",
+   "safe_next_step": "WS12 keeps consuming WS11 baselines by exact hash; per-state WS12 gates remain building until WS11 releases exist."
+  },
+  {
+   "id": "ws11-aeromag-absent-from-manifest",
+   "owner": "ws11",
+   "kind": "dependency_not_ready",
+   "evidence": "site/data/manifest.json has zero tiled_layers with kind='aeromag'; mag_at therefore has no numeric COG source anywhere and truthfully returns not_covered / survey footprints only.",
+   "last_attempted_action": "Verified via audit 2026-08-14.",
+   "safe_next_step": "When WS11 publishes aeromag COG descriptors, WS12 ingests them checksum-pinned and adds per-state numeric mag_at acceptance points."
+  },
+  {
+   "id": "igs-current-inventory-robots-403",
+   "owner": "external",
+   "kind": "access_blocked",
+   "evidence": "services.arcgis.com robots endpoint answers HTTP 403; exact current IGSID membership and external popup links are recorded access-blocked (crawl_completion_blocker robots_denied_http_403), never inferred.",
+   "last_attempted_action": "Probe recorded 2026-08-14 in portals/id.yaml.",
+   "safe_next_step": "Periodic identified-client re-probe; consider the official Hub metadata channel for inventory reconciliation."
+  },
+  {
+   "id": "nbmg-current-resourcespace-crawl-delay",
+   "owner": "external",
+   "kind": "access_restricted",
+   "evidence": "Current NBMG ResourceSpace robots.txt requires a 10-second crawl delay and disallows /filestore; only the retired static legacy inventory is a permitted harvest surface.",
+   "last_attempted_action": "Recorded in portals/nv.yaml; legacy adapter bound.",
+   "safe_next_step": "Legacy inventory harvest first; current-library reconciliation needs a reviewed, delay-honoring plan for permitted paths only."
+  },
+  {
+   "id": "co-drms-access-blocked",
+   "owner": "external",
+   "kind": "access_blocked",
+   "evidence": "portals/co.yaml co_drms_permits: blocked_by_access_controls; arrival verification blocked by robots/access controls, probe.http_status null.",
+   "last_attempted_action": "Probe recorded 2026-08-14.",
+   "safe_next_step": "Seek a reviewed API or export channel from DRMS before any crawler exists."
+  },
+  {
+   "id": "ma-nh-vt-ilmines-blocked",
+   "owner": "external",
+   "kind": "access_blocked",
+   "evidence": "2026-08-14 identified-client probes: MA hosts unreachable (TLS/connection failures) plus mass.gov HTTP 403; NH des.nh.gov HTTP 403 on page and robots; VT dec.vermont.gov HTTP 403 (CloudFront); IL ILMINES wiki HTTP 418 after redirect.",
+   "last_attempted_action": "Two bounded probe passes with the honest client string; recorded fail-closed in portals/{ma,nh,vt,il}.yaml.",
+   "safe_next_step": "Re-probe later from the identified client; if still blocked, request access or record manual-request paths. Never disguise the client to bypass."
+  },
+  {
+   "id": "rights-review-pending-4-rows",
+   "owner": "this_task",
+   "kind": "rights_review",
+   "evidence": "pipelines/config/ws12_documents.json rows atdm-mr191-5 (AK), azbm-b137 (AZ), nbmg-mdf-21600006 and nbmg-mdf-21600019 (NV) are registered but withheld: open serving is not an affirmative public-domain basis.",
+   "last_attempted_action": "Rows registered with public_domain false; bytes never stored.",
+   "safe_next_step": "Item-level rights research; admit only on affirmative state/federal public-domain basis."
+  },
+  {
+   "id": "quote-location-degraded-61-citations",
+   "owner": "this_task",
+   "kind": "ocr_quality",
+   "evidence": "61 of 202 citations are quote_located false (CO 6/26, SD 14/26 located); they open the cited page without a highlight.",
+   "last_attempted_action": "Citations preserved with quote_located false rather than dropped.",
+   "safe_next_step": "Route affected pages through the stronger OCR fallback queue and re-locate quotes without changing doc_id."
+  },
+  {
+   "id": "deployed-stack-divergence",
+   "owner": "external",
+   "kind": "deployment",
+   "evidence": "Live stack (2026-08-14T08:10Z) predates the working-tree template: POST /ask has no gateway JWT authorizer (in-Lambda cognito.get_user only), lifecycle rule lacks the ObjectSizeGreaterThan '0' sub-128KiB override, DenyCloudFrontDocumentManifest is absent, docs presign API undeployed (EnableLegacyDocumentStore=false), and dormant deployed Docs resources point at the stale manifest key data/docs/manifest.json.",
+   "last_attempted_action": "Audited live stack read-only 2026-08-14.",
+   "safe_next_step": "Run ./deploy.sh deploy, which sends the current template and EnableLegacyDocumentStore together in one change set. The working-tree default is now true; do not flip the stack parameter out of band against the older deployed template, which would mis-wire the presign Lambda to the stale manifest key."
+  },
+  {
+   "id": "harvest-runtime-requires-aws",
+   "owner": "this_task",
+   "kind": "runtime_dependency",
+   "evidence": "S3OriginalSink requires boto3 or the AWS CLI for real harvests; production crawls must run with AWS credentials and the private bucket.",
+   "last_attempted_action": "Verified in code audit.",
+   "safe_next_step": "Run production crawls via the documented deploy.sh/harvest workflow with credentials present."
+  }
+ ]
+}

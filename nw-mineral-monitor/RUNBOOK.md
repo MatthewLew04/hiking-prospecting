@@ -341,11 +341,12 @@ almost all of it OCR.
 ```bash
 # 1. Objects first. The uploader re-validates and hash-verifies locally,
 #    then re-reads each object's recorded digest from S3 before counting it.
-ENABLE_LEGACY_DOC_STORE=true bash infra/deploy.sh upload-doc-store
+bash infra/deploy.sh upload-doc-store
 
-# 2. When enabling from false, deploy the conditional Docs API/Lambda and the
-#    viewer only after the PDFs and private manifest exist.
-ENABLE_LEGACY_DOC_STORE=true bash infra/deploy.sh deploy
+# 2. Then the Docs API/Lambda, viewer, and auth.json — only after the PDFs
+#    and the private manifest exist. Serving is the default; a deployment
+#    that sets ENABLE_LEGACY_DOC_STORE=false withholds both instead.
+bash infra/deploy.sh deploy
 ```
 
 Verify against CloudFront and S3 afterwards:

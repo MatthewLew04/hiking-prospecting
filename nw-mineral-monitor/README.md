@@ -54,7 +54,7 @@ content-addressed release evidence and every other gate item are accepted.
 | `site/data/plss/` · `openground/` · `dossiers/` · `history/` · `alerts/` · `userlayers/` | WS1–WS4 bundles: PLSS sections, section-status grid, mine dossiers, web-scrub corpus, watch digests, ingested layers |
 | `site/data/geology/` · `targets/` · `county/` | WS5–WS6 bundles: harmonized geologic map + faults + springs (cited per unit), ranked sinter-first targets with scoring rationale, county-recorder instruments + coverage |
 | `site/data/geology-quads/inventory.json` | WS10 top-grade-target map inventory, quad/candidate metadata, overlay pointers, provenance, georeference confidence, gaps, and 24k rescan references |
-| `site/data/docs/manifest.json` · `site/viewer.html` | WS12 local stored-document manifest (promoted only to private S3) and the PDF.js citation viewer a chip opens; signed-in browsers receive a minimized catalog from the Docs API |
+| `var/ws12/document-store-manifest.json` · `site/viewer.html` | WS12 ignored/private stored-document manifest and the PDF.js citation viewer a chip opens; signed-in browsers receive a minimized catalog from the Docs API |
 | `pipelines/cache/ws12/store/` | Gitignored local generation of the document store; hardlinked to its sources and uploaded explicitly to the private S3 `docs/` prefix — PDFs never enter git |
 | `portals/` · `pipelines/mine_file_harvest.py` | WS12 strict portal registry plus robots/terms-aware, throttled, resumable, hash-deduplicated public-document harvester |
 | `site/data/docs/` · `pipelines/document_index.py` | Public mine-document metadata/coverage plus the private OCR, page-chunk, embedding, identity-join, and citation-index builder |

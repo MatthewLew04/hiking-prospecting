@@ -8,7 +8,7 @@ npm run test:doc-viewer
 
 The test requires the ignored document store produced by
 `pipelines/build_doc_store.py`. It SHA-256 verifies the actual IF0126
-searchable PDF against `site/data/docs/manifest.json`, serves the repository
+searchable PDF against `var/ws12/document-store-manifest.json`, serves the repository
 through `tools/range_server.py`, and mocks only the authenticated Docs API
 resolution response.
 

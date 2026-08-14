@@ -8,8 +8,9 @@ occurrence; the reviewed inventories supply the remaining legacy pilot plus
 page counts and citation metadata. The builder admits a document only when its
 URL, byte count, SHA-256, page count, and rights reconcile, writes exactly two
 objects per document, resolves reviewed citations against the stored text
-layer, and emits `site/data/docs/manifest.json` plus the private, gitignored
-lineage catalog `var/ws12/document-assets.json`.
+layer, and emits the private, gitignored manifest
+`var/ws12/document-store-manifest.json` plus the private lineage catalog
+`var/ws12/document-assets.json`.
 `pipelines/config/ws12_documents.json` registers 35 rows; the current
 generation stores the 25 documents whose rights are affirmatively resolved.
 
@@ -170,12 +171,13 @@ a 300-second TTL. `site/viewer.html` opens that object, pins the page, and
 highlights the quote in the text layer. The originating portal URL is
 displayed beside the document for provenance and is never fetched.
 
-`site/data/docs/manifest.json` is the reviewed local build artifact. Promotion
-uploads it to private key `private/ws12/document-store-manifest.json`; the
-CloudFront policy explicitly denies the old public path. After authentication,
-the Docs API returns a minimized browser catalog with titles, stable IDs,
-subject joins, and reviewed citations but no S3 keys, object hashes, or rights
-internals. The browser never downloads the source-of-truth manifest directly.
+`var/ws12/document-store-manifest.json` is the reviewed, gitignored local build
+artifact. Promotion uploads it to private key
+`private/ws12/document-store-manifest.json`; the CloudFront policy explicitly
+denies the old public path. After authentication, the Docs API returns a
+minimized browser catalog with titles, stable IDs, subject joins, and reviewed
+citations but no S3 keys, object hashes, or rights internals. The browser never
+downloads the source-of-truth manifest directly.
 
 Raw originals are tagged `ws12-variant=raw` at upload and transition to
 Infrequent Access after 30 days. Searchable copies stay in Standard because

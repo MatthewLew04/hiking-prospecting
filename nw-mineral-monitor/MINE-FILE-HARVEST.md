@@ -154,7 +154,7 @@ gitignored; no PDF bytes or local cache paths are written):
 ```bash
 python3 pipelines/document_assets.py \
   --harvest-manifest var/ws12/manifest.jsonl \
-  --document-store-manifest site/data/docs/manifest.json \
+  --document-store-manifest var/ws12/document-store-manifest.json \
   --output var/ws12/document-assets.json
 ```
 

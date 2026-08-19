@@ -42,18 +42,25 @@ fake_exceptions.ClientError = FakeClientError
 fake_botocore = types.ModuleType("botocore")
 fake_botocore.exceptions = fake_exceptions
 
-def _load_ask_lambda():
+def _load_ask_lambda(enable_legacy_doc_store=None):
     """Import a fresh relay module under the current environment.
 
     The tool set and system prompt are built at import time from
     ENABLE_LEGACY_DOC_STORE, so proving both sides of that switch means
     importing twice rather than mutating the module afterwards.
     """
-    with mock.patch.dict(sys.modules, {
-            "boto3": fake_boto3,
-            "botocore": fake_botocore,
-            "botocore.exceptions": fake_exceptions,
-    }):
+    # Deployment preflight inherits ENABLE_LEGACY_DOC_STORE from the operator.
+    # Isolate the module's default test from that outer setting while still
+    # testing the explicit false branch below.
+    with mock.patch.dict(os.environ), mock.patch.dict(sys.modules, {
+                "boto3": fake_boto3,
+                "botocore": fake_botocore,
+                "botocore.exceptions": fake_exceptions,
+        }):
+        if enable_legacy_doc_store is None:
+            os.environ.pop("ENABLE_LEGACY_DOC_STORE", None)
+        else:
+            os.environ["ENABLE_LEGACY_DOC_STORE"] = enable_legacy_doc_store
         sys.modules.pop("ask_lambda", None)
         module = importlib.import_module("ask_lambda")
         sys.modules.pop("ask_lambda", None)
@@ -111,8 +118,7 @@ class DocumentAskRuntimeTests(unittest.TestCase):
         self.assertTrue(ask_lambda.ENABLE_LEGACY_DOC_STORE)
 
     def test_a_deployment_can_still_withhold_the_stored_document_viewer(self):
-        with mock.patch.dict(os.environ, {"ENABLE_LEGACY_DOC_STORE": "false"}):
-            withheld = _load_ask_lambda()
+        withheld = _load_ask_lambda("false")
         specs = {row["toolSpec"]["name"] for row in withheld.TOOLS}
         self.assertNotIn("open_doc", specs)
         self.assertNotIn("Use open_doc", withheld.SYSTEM)

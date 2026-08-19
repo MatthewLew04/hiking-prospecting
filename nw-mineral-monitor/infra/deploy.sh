@@ -536,19 +536,23 @@ upload_and_verify_public_data_binaries() {
 
 sync_public_site_without_pointers() {
   local bucket="$1"
-  local -a legacy_excludes=()
+  # Bash 3.2 treats an empty array expansion as an unbound variable under
+  # ``set -u``. Keep the command itself in the array so the default-enabled
+  # viewer path is safe on the macOS system Bash as well as newer runtimes.
+  local -a sync_args
+  sync_args=(aws s3 sync "$SITE" "s3://$bucket" --region "$REGION" --delete
+    --no-follow-symlinks --cache-control "public, max-age=3600"
+    --exclude "data/*" --exclude "auth.json" --exclude "index.html"
+    --exclude "*.pmtiles" --exclude "*.tif" --exclude "*.tiff"
+    --exclude "ckpt/*" --exclude "watch/*" --exclude "$DOC_STORE_PREFIX/*"
+    --exclude "private/*" --exclude "ws12/*" --exclude "originals/*"
+    --exclude "staging/*")
   if [ "${ENABLE_LEGACY_DOC_STORE:-true}" != "true" ]; then
-    legacy_excludes+=(--exclude "viewer.html" --exclude "assets/pdfjs/*")
+    sync_args+=(--exclude "viewer.html" --exclude "assets/pdfjs/*")
   fi
-  aws s3 sync "$SITE" "s3://$bucket" --region "$REGION" --delete \
-    --no-follow-symlinks --cache-control "public, max-age=3600" \
-    --exclude "data/*" --exclude "auth.json" --exclude "index.html" \
-    --exclude "*.pmtiles" --exclude "*.tif" --exclude "*.tiff" \
-    --exclude "ckpt/*" --exclude "watch/*" --exclude "$DOC_STORE_PREFIX/*" \
-    --exclude "private/*" --exclude "ws12/*" --exclude "originals/*" \
-    --exclude "staging/*" \
-    "${legacy_excludes[@]}" \
-    --exclude "$WS10_ASSET_PREFIX/*" --exclude "$NATIONAL_ASSET_PREFIX/*"
+  sync_args+=(--exclude "$WS10_ASSET_PREFIX/*"
+    --exclude "$NATIONAL_ASSET_PREFIX/*")
+  "${sync_args[@]}"
 }
 
 upload_doc_store() {

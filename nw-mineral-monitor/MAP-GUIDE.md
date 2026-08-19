@@ -240,6 +240,22 @@ survey footprints with year, line spacing, and flight height. A 1969 survey
 flown at 8-km line spacing and a modern drape survey look identical in a
 pretty colored raster — hover before you trust a pixel.
 
+## Part 6½ — Standing in the terrain (3D TERRAIN)
+
+**3D RELIEF** turns the flat map into real topography (USGS 3DEP/SRTM
+composite, ~30 m). Everything already on screen — mines, claims, targets,
+live geology, even the geophysics rasters — drapes onto it automatically.
+Drag with the right mouse button (or ctrl-drag, or two fingers) to tilt and
+orbit; the slider exaggerates relief up to 3×. The prospecting logic: old
+workings sit where ore met *access* — adits punch into steep range fronts,
+placers hug drainage. Flat maps hide that; a tilted view over SAT with
+**HILLSHADE** on reads like standing on the ridge. Hillshade also works
+alone in 2D as a cheap way to see range fronts and scarps.
+
+This is the fly-around. The modeling-grade 3-D lives in Leapfrog Geo:
+`pipelines/leapfrog_export.py` packages any AOI (points with grades, GIS
+layers, a real DEM, one `.omf` bundle) for it — see `LEAPFROG.md`.
+
 ## Part 7 — The paper trail: records, dossiers, alerts
 
 **COUNTY RECORDS.** New claims appear at the county recorder *weeks to

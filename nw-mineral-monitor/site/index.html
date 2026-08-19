@@ -370,6 +370,9 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>GEOPHYSICS — WS7</h3><div id="layersGP"></div>
         <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
         <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>3D TERRAIN</h3><div id="layers3D"></div>
+        <div id="t3dSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="t3dExag" min="10" max="30" value="15" style="width:100%"><div class="subnote" style="padding-left:0" id="t3dExagLbl">vertical exaggeration ×1.5 — drag with right mouse (or ctrl-drag / two fingers) to tilt & orbit</div></div>
+        <div class="subnote" id="t3dNote" style="padding-left:0"></div></div>
       <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
         <div class="subnote" id="ctyNote" style="padding-left:0"></div>
         <div id="ctyBtns"></div></div>
@@ -451,7 +454,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-14-ws12';
+const BUILD = '2026-08-18-3d';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // BLM's current public-domain claim-state set. Non-claim states use land
@@ -994,6 +997,7 @@ function initMap(){
       task('countyGold',loadCountyGold),
       task('mapGeology',()=>loadMsGeo()),
       task('geophys',loadGeophys),
+      task('terrain3d',()=>loadTerrain3D()),
       task('userLayers',loadUserLayers),
       task('countyAlerts',async()=>{await loadCounty();await loadAlerts();}),
       task('docs',loadDocs),
@@ -4519,7 +4523,7 @@ function gpDisable(k){
 async function loadGeophys(){
   // surface WebGL context loss instead of a silent white map
   map.on('webglcontextlost', ()=>{
-    loadbar('⚠ graphics context lost — this GPU ran out of memory. Reload and enable fewer layers (heavy: closed claims × all states, SAT + geophysics together).');
+    loadbar('⚠ graphics context lost — this GPU ran out of memory. Reload and enable fewer layers (heavy: closed claims × all states, SAT + geophysics together, 3D terrain + SAT + geophysics).');
   });
   for (const k of Object.keys(GP_RASTERS)){
     const r = GP_RASTERS[k];
@@ -4596,6 +4600,71 @@ function gpSurvTip(p){
     p.spacing?`${p.spacing} km lines`:null, p.alt?`${p.alt} m ${p.alt_type||''}`:null,
     p.lnkm?`${p.lnkm} line-km`:null].filter(Boolean);
   return bits.join(' · ');
+}
+
+/* ---------- 3D terrain (AWS terrarium raster-dem) ----------
+   In-browser 3D: every layer already on the map — mines, claims, targets,
+   live geology, geophysics rasters — drapes onto real relief; DOM markers
+   ride the surface too. Same GPU hygiene as the geophysics rasters: DEM
+   sources exist ONLY while enabled and are FULLY torn down on disable
+   (setTerrain(null) first, then removeLayer+removeSource frees the tile
+   textures). Modeling-grade 3D lives in Leapfrog via
+   pipelines/leapfrog_export.py — see LEAPFROG.md; this is the fly-around. */
+const T3D = {terrain:false, hs:false, exag:1.5};
+const T3D_TILES = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+const T3D_ATTRIB = 'Terrain © <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a> (Mapzen terrarium: 3DEP/SRTM)';
+function t3dDemSource(id){
+  if (!map.getSource(id))
+    map.addSource(id, {type:'raster-dem', tiles:[T3D_TILES], encoding:'terrarium',
+                       tileSize:256, maxzoom:13, attribution:T3D_ATTRIB});
+}
+function t3dApply(){
+  // terrain and hillshade keep SEPARATE dem sources on purpose: maplibre
+  // overscales a shared source per consumer and re-fetches anyway, and
+  // separate sources mean disable of one never strands the other's textures.
+  if (T3D.terrain){
+    t3dDemSource('t3d-dem');
+    map.setTerrain({source:'t3d-dem', exaggeration:T3D.exag});
+  } else if (map.getTerrain && map.getTerrain()){
+    map.setTerrain(null);
+    if (map.getSource('t3d-dem')) map.removeSource('t3d-dem');
+  }
+  if (T3D.hs){
+    t3dDemSource('t3d-hsrc');
+    if (!map.getLayer('t3d-hs'))
+      map.addLayer({id:'t3d-hs', type:'hillshade', source:'t3d-hsrc',
+        paint:{'hillshade-exaggeration':.55,
+               'hillshade-shadow-color':'#04060a','hillshade-highlight-color':'#b9c6d4',
+               'hillshade-accent-color':'#0d1117'}}, 'county-line');
+  } else {
+    if (map.getLayer('t3d-hs')) map.removeLayer('t3d-hs');
+    if (map.getSource('t3d-hsrc')) map.removeSource('t3d-hsrc');
+  }
+  $('t3dSlider').style.display = T3D.terrain? '':'none';
+  $('t3dNote').textContent = T3D.terrain?
+    'Real relief under everything currently on the map (terrarium composite of USGS 3DEP/SRTM, ~30 m). Try SAT + hillshade over a target, then tilt low along the range front. GPU note: terrain + SAT + a geophys raster is a heavy combo on weak machines.':
+    (T3D.hs? 'Hillshade only (2D) — cheap way to read range fronts and vein-scarps without tilting.':'');
+}
+function loadTerrain3D(){
+  const mk = (id, label, on) => {
+    const row = document.createElement('label');
+    row.className='lrow'; row.innerHTML = `<input type="checkbox" id="${id}"> <span>${label}</span>`;
+    $('layers3D').appendChild(row);
+    $(id).onchange = on;
+  };
+  mk('t3dTgl','3D RELIEF (TERRAIN)', e=>{
+    T3D.terrain = e.target.checked;
+    t3dApply();
+    if (T3D.terrain && map.getPitch() < 20) map.easeTo({pitch:60, duration:900});
+    if (!T3D.terrain) map.easeTo({pitch:0, duration:700});
+  });
+  mk('t3dHsTgl','HILLSHADE', e=>{ T3D.hs = e.target.checked; t3dApply(); });
+  $('t3dExag').oninput = e=>{
+    T3D.exag = (+e.target.value)/10;
+    $('t3dExagLbl').textContent = `vertical exaggeration ×${T3D.exag.toFixed(1)} — drag with right mouse (or ctrl-drag / two fingers) to tilt & orbit`;
+    if (T3D.terrain && map.getSource('t3d-dem'))
+      map.setTerrain({source:'t3d-dem', exaggeration:T3D.exag});
+  };
 }
 
 /* ---------- county gold-signal ranking ---------- */

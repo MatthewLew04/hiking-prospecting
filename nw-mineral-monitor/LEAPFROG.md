@@ -1,0 +1,79 @@
+# Leapfrog Geo integration
+
+Two directions, both shipped:
+
+1. **Monitor → Leapfrog** — `pipelines/leapfrog_export.py` packages an AOI's
+   research bundles as files Leapfrog Geo imports natively (points + grades,
+   GIS vectors, a real DEM, and one `.omf` bundle).
+2. **3-D in the browser** — the map's **3D TERRAIN** sidebar section drapes
+   every layer over real relief (AWS terrarium tiles, ~30 m). That is the
+   fly-around; Leapfrog is the modeling environment.
+
+## Why files, not an API
+
+Leapfrog projects are local, proprietary databases; the supported ways in are
+its file importers and, since the Evo era, Seequent's cloud (Central /
+[Seequent Evo](https://developer.seequent.com/) and its Geoscience Object
+API). Evo requires a Seequent ID, an org tenancy, and OAuth — the right tool
+for enterprise sync, overkill for a prospecting workflow. The file path is
+version-proof and offline: **CSV points, ESRI shapefiles, Arc/Info ASCII
+grids, and OMF v0.9** all import into every Leapfrog Geo release this decade.
+The exporter targets exactly those four.
+
+The `.omf` writer here is stdlib-only and byte-validated round-trip against
+the reference `omf` 1.0.1 reader (the OMF v0.9 implementation Leapfrog's
+importer matches — the modern successor to that package no longer installs on
+current Python, which is why the format is written directly).
+
+## Export a kit
+
+```bash
+python3 pipelines/leapfrog_export.py --aoi cassia
+# district-scale kit at full DEM resolution:
+python3 pipelines/leapfrog_export.py --aoi cassia \
+    --bbox -113.75 42.05 -113.45 42.30 --cell 30
+```
+
+Output lands in `exports/leapfrog/<aoi>/` (a generated artifact — commit it
+or not as you like; terrain tiles cache under the already-ignored
+`pipelines/cache/`): `mines_grades.csv`, `targets.csv`, `claims_active/closed.csv+.shp`,
+`geology_units.shp`, `faults.shp`, `plss_sections.shp` (open-ground status
+attribute), `topo_dem.asc(+.prj)`, `<aoi>.omf`, and a `README-LEAPFROG.md`
+with the exact click-path (Topographies → Import Elevation Grid; GIS Data →
+Import Vector Data + drape; Points → Import Points; or one-shot
+`OMF > Import`).
+
+Everything is written in **WGS84 / UTM (zone auto-picked from the AOI,
+EPSG stated in the README)** in meters, because Leapfrog is a Cartesian XYZ
+package — raw lon/lat imports as a flat pancake. Elevations are sampled from
+the same terrarium composite the map's 3-D mode streams; tiles cache under
+`pipelines/cache/terrain/`. Offline runs degrade honestly: Z becomes 0 and
+the kit's README says so.
+
+## What Leapfrog adds on top of this
+
+The kit gives Leapfrog topography, draped geology/faults/claims, and graded
+mine points — enough to *see* a district in 3-D and sketch section lines.
+Leapfrog's actual power (implicit modeling: RBF-interpolated veins, grade
+shells, geological contacts) needs **drillhole intervals or structural
+measurements**, which the public sources here don't carry. When a target
+graduates to samples — or a nearby operator's drilling shows up in county
+records / NI 43-101 filings — that data goes into Leapfrog as
+collar/survey/assay CSVs alongside this kit's context layers.
+
+Round-tripping back: Leapfrog exports meshes (OBJ/DXF) and its own OMF; the
+map's MY DATA ingester takes GeoJSON/KML/zipped SHP, so 2-D footprints of
+modeled surfaces can come back as map layers. A mesh viewer in the browser is
+possible (MapLibre custom layer / three.js) but is not built.
+
+## Honesty notes
+
+- OMF-imported objects in Leapfrog **cannot be reloaded** — re-import after a
+  refresh; prefer the CSV/SHP route for layers you expect to update from the
+  monitor.
+- Claim points are BLM MLRS **centroids**, sections' `status` is a research
+  lead, grades are cited historic figures with sources attached — the same
+  disclaimers as the map, now in 3-D. None of it is a title search or a
+  resource estimate.
+- Terrain is a public ~30 m composite: good for draping and access thinking,
+  not survey-grade.

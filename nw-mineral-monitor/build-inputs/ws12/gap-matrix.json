@@ -1,0 +1,618 @@
+{
+  "dataset": "ws12-49-state-gap-matrix",
+  "federal_row": {
+    "current_truth": "4 federal portals registered (2 index-only, 1 manual-request, 1 publication catalog); 1 US-scope document (PP 610) stored",
+    "next_action": "use federal sources as identity/citation joins and gap-fill only; never as proof a state portal was exhaustively harvested",
+    "owner": "this_task",
+    "sources": [
+      "msha_mdrs",
+      "ngmdb",
+      "osmre_nmmr",
+      "usgs_pubs_warehouse"
+    ]
+  },
+  "generated_from": [
+    "portals/*.yaml",
+    "site/data/docs/coverage.json",
+    "site/data/docs/manifest.json"
+  ],
+  "rows": [
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (index_only_no_public_documents, registered_publication_catalog); 1 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ak_dggs_publications",
+        "usgs_ardf"
+      ],
+      "state": "AK",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "al_survey_publications"
+      ],
+      "state": "AL",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ar_survey_publications"
+      ],
+      "state": "AR",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (harvest_ready); 2 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "run the reviewed production adapter to full cursor exhaustion in restartable batches",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "azgs_admmr"
+      ],
+      "state": "AZ",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (index_only_no_public_documents, probed_no_attachment_pattern); no documents stored; no crawl started; GIS test point pinned",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ca_mines_online",
+        "cgs_information_warehouse"
+      ],
+      "state": "CA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (blocked_by_access_controls, registered_publication_catalog); 2 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "cgs_publications",
+        "co_drms_permits"
+      ],
+      "state": "CO",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ct_deep_geological_survey"
+      ],
+      "state": "CT",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "de_survey_publications"
+      ],
+      "state": "DE",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "fl_survey_publications"
+      ],
+      "state": "FL",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ga_survey_publications"
+      ],
+      "state": "GA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ia_survey_publications"
+      ],
+      "state": "IA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (harvest_ready); 2 document(s) in the verified private store; harvest started (targeted only); GIS test point pinned",
+      "next_action": "run the reviewed production adapter to full cursor exhaustion in restartable batches",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "igs_mines"
+      ],
+      "state": "ID",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (blocked_by_access_controls, entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "il_ilmines_wiki",
+        "il_survey_publications"
+      ],
+      "state": "IL",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "in_cmis",
+        "in_survey_publications"
+      ],
+      "state": "IN",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ks_survey_publications"
+      ],
+      "state": "KS",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "2 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ky_mine_maps",
+        "ky_survey_publications"
+      ],
+      "state": "KY",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "la_survey_publications"
+      ],
+      "state": "LA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (blocked_by_access_controls); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "re-probe with the identified client; if still refused, pursue reviewed/manual access",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ma_survey_publications"
+      ],
+      "state": "MA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "md_survey_publications"
+      ],
+      "state": "MD",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "me_survey_publications"
+      ],
+      "state": "ME",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "mi_survey_publications"
+      ],
+      "state": "MI",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "mn_survey_publications"
+      ],
+      "state": "MN",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (manual_request_only); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "mo_mine_map_repository"
+      ],
+      "state": "MO",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ms_survey_publications"
+      ],
+      "state": "MS",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "mbmg_data_center"
+      ],
+      "state": "MT",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nc_survey_publications"
+      ],
+      "state": "NC",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nd_survey_publications"
+      ],
+      "state": "ND",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ne_survey_publications"
+      ],
+      "state": "NE",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (blocked_by_access_controls); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "re-probe with the identified client; if still refused, pursue reviewed/manual access",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nh_survey_publications"
+      ],
+      "state": "NH",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nj_survey_publications"
+      ],
+      "state": "NJ",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); 2 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nmbgmr_mines"
+      ],
+      "state": "NM",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (harvest_ready); 10 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "run the reviewed production adapter to full cursor exhaustion in restartable batches",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "nbmg_mining_district_files"
+      ],
+      "state": "NV",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ny_survey_publications"
+      ],
+      "state": "NY",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "oh_mine_map_viewer"
+      ],
+      "state": "OH",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ok_survey_publications"
+      ],
+      "state": "OK",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "dogami_milo"
+      ],
+      "state": "OR",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "pa_phummis"
+      ],
+      "state": "PA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ri_survey_publications"
+      ],
+      "state": "RI",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "sc_survey_publications"
+      ],
+      "state": "SC",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (registered_publication_catalog); 2 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "sdgs_publications"
+      ],
+      "state": "SD",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "tn_survey_publications"
+      ],
+      "state": "TN",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "tx_beg_publications"
+      ],
+      "state": "TX",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); 3 document(s) in the verified private store; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "ugs_geodata_archive"
+      ],
+      "state": "UT",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "va_geology_collections"
+      ],
+      "state": "VA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (blocked_by_access_controls); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "re-probe with the identified client; if still refused, pursue reviewed/manual access",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "vt_survey_publications"
+      ],
+      "state": "VT",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "wa_geology_mines"
+      ],
+      "state": "WA",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "wi_survey_publications"
+      ],
+      "state": "WI",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (entry_verified_discovery_pending); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "enumerate catalog/detail/attachment patterns from the verified entry point; register rights rules",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "wv_survey_publications"
+      ],
+      "state": "WV",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    },
+    {
+      "acceptance_test": "tests/test_ws12_scope.py coverage assertions; per-state acceptance per IDAHO-QUALITY definition-of-done items 1-10",
+      "current_truth": "1 portal(s) registered (probed_no_attachment_pattern); no documents stored; no crawl started; no GIS test point registered",
+      "next_action": "deepen the existing probe into an executable adapter or an evidence-backed negative finding",
+      "owner": "this_task",
+      "required_artifact": "exhausted reconciled crawl + provenance store + OCR/index + joins + GIS test points + per-state acceptance evidence",
+      "sources": [
+        "wsgs_mines"
+      ],
+      "state": "WY",
+      "ws11_dependency": "release artifacts pending for all 49 states; consuming checksum-pinned baselines only"
+    }
+  ],
+  "schema_version": 1,
+  "scope_states": 49,
+  "updated": "2026-08-14"
+}

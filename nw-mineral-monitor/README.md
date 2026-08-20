@@ -61,7 +61,7 @@ content-addressed release evidence and every other gate item are accepted.
 | `pipelines/spatial_store.py` · `infra/spatial_tools.py` | Private RTree spatial evidence store and ASK tools for geology, claims, mines, faults, magnetic grids, and mine documents |
 | `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
-| `pipelines/leapfrog_export.py` · `exports/leapfrog/` | Leapfrog Geo starter kits per AOI: UTM points w/ grades (CSV), GIS shapefiles, Arc/Info ASCII DEM, and a round-trip-validated OMF v0.9 bundle — see [`LEAPFROG.md`](LEAPFROG.md); the map's 3D TERRAIN section is the in-browser counterpart |
+| `pipelines/leapfrog_export.py` · `exports/leapfrog/` | Leapfrog Geo starter kits: the map's **LEAPFROG EXPORT** button packages the current view client-side (UTM CSVs w/ grades, AOI shapefiles, Arc/Info ASCII DEM, round-trip-validated OMF v0.9, README) and the pipeline builds full-AOI kits — see [`LEAPFROG.md`](LEAPFROG.md); 3D TERRAIN is the in-browser counterpart |
 | `MLRS-PUBLICATION.md` | Operator contract for building immutable 19-state federal active/closed PMTiles from checksum-pinned private staging |
 | `OPEN-GROUND-PUBLICATION.md` | Conservative PLSS-section open-ground derivation and immutable PMTiles publication contract for the exact 19 claim states |
 | `NONCLAIM-EQUIVALENTS-PUBLICATION.md` | Exact 30-state AML/trust-land inventory, evidence, and immutable PMTiles publication contract for the non-claim regime |

@@ -17,7 +17,7 @@
         "checked": "2026-08-14",
         "verified_url": "https://data.azgs.arizona.edu/api/v1/metadata?collection_group=ADMM&limit=2",
         "http_status": 200,
-        "result": "The Mining Info application identifies itself as the replacement for minedata.azgs.arizona.edu. Its public API reports 21,502 ADMM collections, paginates metadata, declares private status and a license per collection, and serves named collection files."
+        "result": "The Mining Info application identifies itself as the replacement for minedata.azgs.arizona.edu. Its public API reports 21,502 ADMM collections, paginates metadata, declares private status and a license per collection, and serves named collection files. 2026-08-17 finding: the corpus is uniformly CC BY-NC-SA 4.0; PDF members (~17,165, largely publications and reports) are harvestable under the licensed-copy class, but the per-mine folder scans are served as individual JPG page images that the PDF-only contract excludes - an image-admission and PDF-assembly path is required for per-mine coverage."
       },
       "access": {
         "mode": "public_download",

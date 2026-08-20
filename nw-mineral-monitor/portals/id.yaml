@@ -35,6 +35,11 @@
           "url_pattern": "(?i)^https://(?:www\\.)?idahogeology\\.org/Uploads/Data/MILS_MRDS/(?:MILS|MRDS)-[^/?]+\\.pdf$",
           "status": "public_domain",
           "basis": "U.S. Geological Survey work; U.S. federal-government work is public domain under 17 U.S.C. 105."
+        },
+        {
+          "url_pattern": "(?i)^https://(?:www\\.)?idahogeology\\.org/Uploads/Data/MineDocs/[^/?]+\\.pdf$",
+          "status": "state_archive_research_copy",
+          "basis": "IGS Mineral Property File scan served publicly by the Idaho Geological Survey; mixed third-party authorship, so no public-domain assertion is made. Retained only as a private research copy under a separate S3 prefix, always manifested public_domain=false, and excluded from the public-domain corpus, index, and viewer."
         }
       ],
       "crawler": {

@@ -1,7 +1,7 @@
 {
  "schema_version": 1,
  "dataset": "ws12-blocker-handoff-ledger",
- "updated": "2026-08-14",
+ "updated": "2026-08-17",
  "note": "Machine-readable ledger of unmet dependencies and blockers for the 49-state WS12 program. Owners: this_task (WS12), ws11 (the WS11 agent), external (a source portal or deployment action). Nothing here is fabricated as zero or silently weakened; each row names evidence and a safe next step.",
  "blockers": [
   {
@@ -101,6 +101,14 @@
    "evidence": "S3OriginalSink requires boto3 or the AWS CLI for real harvests; production crawls must run with AWS credentials and the private bucket.",
    "last_attempted_action": "Verified in code audit.",
    "safe_next_step": "Run production crawls via the documented deploy.sh/harvest workflow with credentials present."
+  },
+  {
+   "id": "azgs-per-mine-scans-are-jpg-pages",
+   "owner": "this_task",
+   "kind": "scope_gap",
+   "evidence": "AZGS ADMMR per-mine folder collections expose individual JPG page scans (e.g. CUL-63.jpg, File0081R.jpg per the 2026-08-17 API sample); the PDF-only pdf_link_pattern admits the ~17,165 PDF members (publications/reports) but excludes the per-mine page scans entirely.",
+   "last_attempted_action": "Licensed PDF crawl launched 2026-08-17; JPG members recorded via source_records only.",
+   "safe_next_step": "Design a reviewed image-admission path: fetch JPG page scans per collection under the same CC BY-NC-SA class, assemble page-ordered searchable PDFs preserving scan identity, and keep the assembled artifact distinct from raw originals in the store contract."
   }
  ]
 }

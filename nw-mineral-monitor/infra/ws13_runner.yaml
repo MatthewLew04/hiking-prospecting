@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  WS13 compute runner: one auto-terminating EC2 instance that executes a
+  named pipeline script from the S3 bundle against the WS12 corpus and the
+  ws13/ working prefix, then uploads results and shuts down (terminate on
+  shutdown). No ingress; management via SSM only.
+
+Parameters:
+  BucketName:
+    Type: String
+  ScriptArgs:
+    Type: String
+    Description: Arguments passed to runner_ws13.sh (script name + flags).
+  RunnerPrefix:
+    Type: String
+    Default: ws13/runner
+    AllowedPattern: 'ws13/[a-z0-9/_-]+'
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+  InstanceType:
+    Type: String
+    Default: c7g.xlarge
+  DiskGb:
+    Type: Number
+    Default: 150
+
+Resources:
+  RunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ec2.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: ws13-corpus-and-work
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub arn:aws:s3:::${BucketName}/ws12/*
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource: !Sub arn:aws:s3:::${BucketName}/ws13/*
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::${BucketName}
+                Condition:
+                  StringLike:
+                    's3:prefix': ['ws12/*', 'ws13/*']
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0
+
+  RunnerProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref RunnerRole]
+
+  RunnerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref RunnerProfile
+      InstanceInitiatedShutdownBehavior: terminate
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs: {VolumeSize: !Ref DiskGb, VolumeType: gp3,
+                DeleteOnTermination: true}
+      Tags:
+        - {Key: Name, Value: ws13-runner}
+        - {Key: project, Value: nw-mineral-monitor}
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -x
+          mkdir -p /opt/ws13 && cd /opt/ws13
+          for attempt in 1 2 3 4 5; do
+            aws s3 cp s3://${BucketName}/${RunnerPrefix}/bundle.tar.gz . && break
+            sleep 15
+          done
+          tar xzf bundle.tar.gz
+          chmod +x runner_ws13.sh
+          nohup ./runner_ws13.sh ${BucketName} ${RunnerPrefix} ${ScriptArgs} \
+            > /var/log/ws13-runner.log 2>&1 &
+
+Outputs:
+  InstanceId:
+    Value: !Ref RunnerInstance

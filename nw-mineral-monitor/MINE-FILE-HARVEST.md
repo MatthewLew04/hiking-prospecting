@@ -1,12 +1,20 @@
 # WS12 mine-file harvest
 
 Part A is a registry-driven, fail-closed document harvester. The registry is
-`portals/*.yaml`; `pipelines/portal_registry.py` validates all 33 named state
-and federal entries. Every portal records its type, verified entry URL,
+`portals/*.yaml`; `pipelines/portal_registry.py` validates all 59 named state
+and federal entries and asserts the exact 49-state scope (Alaska in scope;
+Hawaii and the District of Columbia out of scope) with a portal packet for
+every in-scope state. Every portal records its type, verified entry URL,
 detail-page and PDF patterns (including explicit `null` findings), identifier
 scheme, probe result, access status, and an unasserted harvest state. The
 registry deliberately distinguishes a harvestable source from an index-only,
-manual-request, publication-only, blocked, or probed-no-attachment source.
+manual-request, publication-only, blocked, entry-verified-pending-discovery,
+or probed-no-attachment source. The 2026-08-14 identified-client probe cohort
+registered the final 23 states: 20 verified entry points (including the
+Kentucky Mine Mapping Information System, Indiana CMIS, and the Ohio DNR
+mines map viewer) carry `entry_verified_discovery_pending`, and MA, NH, VT,
+plus the ISGS ILMINES wiki are recorded `blocked_by_access_controls` with the
+exact refusal evidence (WAF 403s, connection failures, one HTTP 418).
 
 The executable adapters currently cover the three largest verified machine
 patterns:
@@ -33,20 +41,44 @@ completed cursor and manifest evidence.
 
 ## Rights and access gate
 
-The scope is strict public-domain material, not merely material that can be
-opened in a browser. A document task is created only when a portal/file rule
-provides an affirmative public-domain basis. Every manifest row therefore has
-the literal values `public_domain: true` and `paywalled: false`, plus a
-nonempty `rights_basis`. Unknown rights, Creative Commons licenses, corporate
-property files, purchase-only items, authentication responses, and detected
+The public corpus scope is strict public-domain material, not merely material
+that can be opened in a browser. A `public_domain` document task is created
+only when a portal/file rule provides an affirmative public-domain basis; its
+manifest row has the literal values `public_domain: true` and
+`paywalled: false`, plus a nonempty `rights_basis`. Unknown rights, Creative
+Commons licenses, purchase-only items, authentication responses, and detected
 paywalls are skipped and retained in the SQLite `document_candidates` audit.
+
+A second, explicitly opt-in admission class exists for state archive files
+served publicly by the survey itself (currently the IGS MineDocs property
+files): `state_archive_research_copy`. These rows are never rights-washed —
+they are manifested with `public_domain: false` and
+`admission_class: state_archive_research_copy`, stored under the separate
+private prefix `ws12/research-copies/`, and are excluded by policy filters
+from the public-domain document store, the citation index
+(`document_index.py` ingest), and the lineage catalog (`document_assets.py`).
+They exist only as private research copies. Admission requires the
+`--admit-research-copies` crawl flag plus a portal `rights_rules` entry whose
+`basis` states the retention rationale; the default crawl skips them with the
+explicit reason `research_copy_admission_disabled`.
+
+A third opt-in class, `cc_by_nc_sa_licensed`, covers files the issuing survey
+explicitly licences CC BY-NC-SA 4.0 (the AZGS ADMMR collections). Rows are
+manifested `public_domain: false` with the licence and per-collection
+attribution recorded in `rights_basis`, stored under the separate private
+prefix `ws12/licensed-copies/`, excluded from the public-domain corpus and
+index, and admitted only with `--admit-licensed-copies`. The licence's
+attribution, non-commercial, and share-alike terms travel with every row;
+compliance with the non-commercial term is the operator's responsibility.
 
 This matters for the IGS acceptance record. IF0126 exposes three links:
 
 - `MILS-160230014.pdf` — eligible USGS federal work;
 - `MRDS-W015681.pdf` — eligible USGS federal work;
 - `IF0131_001.pdf` — a shared/secondary MineDocs property file with no
-  established public-domain basis, logged as `rights_unverified` and skipped.
+  established public-domain basis: skipped by default
+  (`research_copy_admission_disabled`), or stored as a labeled private
+  research copy when the flag is set — never as public domain.
 
 The crawler checks `robots.txt` before every URL, uses its crawl delay when it
 is stricter than the registry throttle, retries transient responses through

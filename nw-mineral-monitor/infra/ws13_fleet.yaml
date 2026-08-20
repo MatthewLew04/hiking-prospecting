@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  WS13 OCR/embed worker fleet: an Auto Scaling Group of c7g.4xlarge nodes
+  (8 worker processes each) consuming the SQS work queue, writing to the
+  data-plane Postgres and ws13/ S3 prefix. Scales on queue depth; each node
+  exits its workers when the queue drains and the ASG is then scaled to zero
+  by the operator (or the schedule). Private nodes, SSM-managed only.
+
+Parameters:
+  BucketName: {Type: String}
+  QueueUrl: {Type: String}
+  QueueName: {Type: String, Default: ws13-ocr-work}
+  DbSecretArn: {Type: String}
+  DbEndpoint: {Type: String}
+  WorkerSecurityGroupId: {Type: AWS::EC2::SecurityGroup::Id}
+  SubnetIds: {Type: List<AWS::EC2::Subnet::Id>}
+  DesiredCapacity: {Type: Number, Default: 0}
+  MaxSize: {Type: Number, Default: 40}
+  InstanceType: {Type: String, Default: c7g.4xlarge}
+  WorkersPerNode: {Type: Number, Default: 8}
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+Resources:
+  WorkerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: ec2.amazonaws.com}, Action: sts:AssumeRole}]
+      ManagedPolicyArns: [arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore]
+      Policies:
+        - PolicyName: ws13-worker
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: s3:GetObject, Resource: !Sub 'arn:aws:s3:::${BucketName}/ws12/*'}
+              - {Effect: Allow, Action: [s3:GetObject, s3:PutObject], Resource: !Sub 'arn:aws:s3:::${BucketName}/ws13/*'}
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::${BucketName}
+                Condition: {StringLike: {'s3:prefix': ['ws12/*', 'ws13/*']}}
+              - Effect: Allow
+                Action: [sqs:ReceiveMessage, sqs:DeleteMessage, sqs:ChangeMessageVisibility, sqs:GetQueueAttributes, sqs:SendMessage]
+                Resource:
+                  - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${QueueName}
+                  - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:ws13-ocr-dlq
+              - {Effect: Allow, Action: secretsmanager:GetSecretValue, Resource: !Ref DbSecretArn}
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource:
+                  - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.cohere.embed-v4:0
+                  - arn:aws:bedrock:*::foundation-model/cohere.embed-v4:0
+                  - !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0
+
+  WorkerProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: {Roles: [!Ref WorkerRole]}
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: ws13-worker
+      LaunchTemplateData:
+        ImageId: !Ref AmiId
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile: {Arn: !GetAtt WorkerProfile.Arn}
+        SecurityGroupIds: [!Ref WorkerSecurityGroupId]
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs: {VolumeSize: 200, VolumeType: gp3, DeleteOnTermination: true}
+        TagSpecifications:
+          - ResourceType: instance
+            Tags: [{Key: Name, Value: ws13-worker}, {Key: project, Value: nw-mineral-monitor}]
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -x
+            TOKEN=$(curl -sX PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 300')
+            export AWS_DEFAULT_REGION=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+            dnf install -y python3-pip python3-boto3 docker postgresql16 >> /var/log/ws13-setup.log 2>&1
+            systemctl start docker
+            for a in 1 2 3 4 5; do python3 -m pip install --quiet "psycopg[binary]" && break; sleep 20; done
+            mkdir -p /opt/ws13/scratch /opt/ws13/var/ws12 && cd /opt/ws13
+            for a in 1 2 3 4 5; do aws s3 cp s3://${BucketName}/ws13/fleet/bundle.tar.gz . && break; sleep 15; done
+            tar xzf bundle.tar.gz
+            PW=$(aws secretsmanager get-secret-value --secret-id ${DbSecretArn} --query SecretString --output text | python3 -c 'import json,sys;print(json.load(sys.stdin)["password"])')
+            export WS13_BUCKET=${BucketName} WS13_QUEUE_URL=${QueueUrl}
+            export WS13_DB_DSN="postgresql://nwmm:$PW@${DbEndpoint}:5432/nwmm?sslmode=require"
+            docker pull docker.io/jbarlow83/ocrmypdf:latest >> /var/log/ws13-setup.log 2>&1
+            # exactly one node seeds: an SQS-backed lock via S3 conditional put
+            touch /opt/ws13/empty; if aws s3api put-object --bucket ${BucketName} --key ws13/fleet/seed.lock --body /opt/ws13/empty --if-none-match '*' >> /var/log/ws13-setup.log 2>&1; then
+              aws s3 cp s3://${BucketName}/ws13/fleet/manifest.jsonl var/ws12/manifest.jsonl >> /var/log/ws13-setup.log 2>&1 || true
+              python3 ws13_seed.py --bucket ${BucketName} --queue-url ${QueueUrl} --dsn "$WS13_DB_DSN" >> /var/log/ws13-seed.log 2>&1
+              aws s3 cp /var/log/ws13-seed.log s3://${BucketName}/ws13/fleet/seed.log
+            else
+              # wait for the seeder to finish schema init before workers start
+              until aws s3 ls s3://${BucketName}/ws13/fleet/seed.log >/dev/null 2>&1; do sleep 15; done
+            fi
+            for i in $(seq 1 ${WorkersPerNode}); do
+              WS13_WORKER_ID="$(hostname)-$i" nohup python3 ws13_worker.py >> /var/log/ws13-worker-$i.log 2>&1 &
+            done
+            # when every worker exits (queue drained), upload logs and shut down
+            nohup bash -c 'while pgrep -f ws13_worker.py >/dev/null; do sleep 60; done; aws s3 cp /var/log/ s3://${BucketName}/ws13/fleet/logs/$(hostname)/ --recursive --exclude "*" --include "ws13-*" ; shutdown -h now' >/dev/null 2>&1 &
+
+  Fleet:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: ws13-workers
+      LaunchTemplate: {LaunchTemplateId: !Ref LaunchTemplate, Version: !GetAtt LaunchTemplate.LatestVersionNumber}
+      MinSize: 0
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
+      VPCZoneIdentifier: !Ref SubnetIds
+      NewInstancesProtectedFromScaleIn: false
+      Tags: [{Key: Name, Value: ws13-worker, PropagateAtLaunch: true}]
+
+Outputs:
+  AsgName: {Value: !Ref Fleet}

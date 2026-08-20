@@ -203,6 +203,18 @@ def extract_trs(text: str, limit: int = 24) -> tuple[str, ...]:
     return tuple(out)
 
 
+def _is_research_copy_row(value) -> bool:
+    """Part A research/licensed copies are truthfully non-public-domain rows.
+
+    They are deliberately excluded from the public-domain citation index and
+    viewer corpus; this is a policy filter, not silent data loss — the harvest
+    manifest and Part A coverage retain the rows and their admission_class.
+    """
+    return (isinstance(value, dict) and
+            value.get("admission_class") in (
+                "state_archive_research_copy", "cc_by_nc_sa_licensed"))
+
+
 def parse_manifest_row(value: dict, base_dir: str | os.PathLike[str] = ".") -> ManifestRow:
     if not isinstance(value, dict):
         raise DocumentIndexError("manifest row must be an object")
@@ -281,6 +293,8 @@ def read_manifest(path: str | os.PathLike[str]) -> Iterator[ManifestRow]:
             if not isinstance(values, list):
                 raise DocumentIndexError("JSON manifest must be an array")
             for value in values:
+                if _is_research_copy_row(value):
+                    continue
                 yield parse_manifest_row(value, manifest.parent)
             return
         for line_no, line in enumerate(itertools.chain((first,), handle), 1):
@@ -289,6 +303,8 @@ def read_manifest(path: str | os.PathLike[str]) -> Iterator[ManifestRow]:
                 continue
             try:
                 value = json.loads(line)
+                if _is_research_copy_row(value):
+                    continue
                 yield parse_manifest_row(value, manifest.parent)
             except (ValueError, DocumentIndexError) as exc:
                 raise DocumentIndexError(f"{manifest}:{line_no}: {exc}") from exc

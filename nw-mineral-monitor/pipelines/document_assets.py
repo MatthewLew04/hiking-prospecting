@@ -104,6 +104,10 @@ def read_harvest_manifest(path: str | os.PathLike[str]) -> list[document_index.M
                 if not isinstance(value, dict):
                     raise DocumentAssetError(
                         f"harvest manifest line {line_number} must be an object")
+                # Research copies are truthfully non-public-domain and are
+                # excluded from the public-domain lineage catalog by policy.
+                if document_index._is_research_copy_row(value):
+                    continue
                 try:
                     rows.append(document_index.parse_manifest_row(
                         value, Path(path).resolve().parent))

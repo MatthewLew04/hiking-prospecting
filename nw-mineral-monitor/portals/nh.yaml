@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "NH",
+  "portals": [
+    {
+      "id": "nh_survey_publications",
+      "jurisdiction": "NH",
+      "name": "New Hampshire Geological Survey (NHDES) records",
+      "tier": 3,
+      "portal_type": "survey_entry_point_probe",
+      "entry_url": "https://www.des.nh.gov/land/geology",
+      "detail_page_pattern": null,
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "NHGS publication identifiers; no per-mine attachment identifier verified yet.",
+      "status": "blocked_by_access_controls",
+      "probe": {
+        "checked": "2026-08-14",
+        "verified_url": "https://www.des.nh.gov/land/geology",
+        "http_status": 403,
+        "result": "des.nh.gov answered HTTP 403 'Access Denied' to the identified client on both /land/geology and the site root on 2026-08-14 (WAF block, including robots.txt). Fail closed; reviewed access required."
+      },
+      "access": {
+        "mode": "review_required",
+        "robots": "respect",
+        "paywalled": false,
+        "official_public_documents_only": true,
+        "rights_note": "Require an affirmative item-level public-domain basis before downloading any file; state authorship alone is not sufficient."
+      },
+      "harvest_state": {
+        "full_crawl_complete": false,
+        "crawl_scope": "no crawl scope; access blocked to the identified client",
+        "last_complete_cursor": null,
+        "manifest_sha256": null,
+        "completed_at": null
+      }
+    }
+  ]
+}

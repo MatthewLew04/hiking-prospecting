@@ -28,7 +28,23 @@ STATUS_VALUES = frozenset((
     'probed_empty',
     'blocked_by_access_controls',
     'registered_publication_catalog',
+    # The official entry point answered an identified-client probe, but
+    # catalog/attachment discovery has not run yet.  This is weaker than
+    # probed_no_attachment_pattern: it asserts reachability only, never a
+    # negative finding about attachments.
+    'entry_verified_discovery_pending',
 ))
+
+# The exact WS12 program scope: 49 states.  Alaska is in scope; Hawaii and
+# the District of Columbia are out of scope.  validate_registry() enforces
+# both this constant's own shape and 49/49 portal-packet coverage, so a
+# silently dropped state cannot pass CI.
+SCOPE_STATES = frozenset(
+    'AK AL AR AZ CA CO CT DE FL GA IA ID IL IN KS KY LA MA MD ME MI MN MO '
+    'MS MT NC ND NE NH NJ NM NV NY OH OK OR PA RI SC SD TN TX UT VA VT WA '
+    'WI WV WY'.split()
+)
+EXCLUDED_JURISDICTIONS = frozenset(('HI', 'DC'))
 ACCESS_MODES = frozenset((
     'public_download', 'index_only', 'manual_request', 'review_required',
 ))
@@ -74,6 +90,35 @@ REQUIRED_PORTALS = {
     'usgs_pubs_warehouse': 'federal',
     'ngmdb': 'federal',
     'msha_mdrs': 'federal',
+    # 2026-08-14 identified-client probe cohort: the 23 remaining in-scope
+    # states.  Entries verified reachable carry entry_verified_discovery_pending;
+    # refused or unreachable hosts carry blocked_by_access_controls.
+    'al_survey_publications': 'AL',
+    'ct_deep_geological_survey': 'CT',
+    'de_survey_publications': 'DE',
+    'ia_survey_publications': 'IA',
+    'il_survey_publications': 'IL',
+    'il_ilmines_wiki': 'IL',
+    'in_survey_publications': 'IN',
+    'in_cmis': 'IN',
+    'ks_survey_publications': 'KS',
+    'ky_survey_publications': 'KY',
+    'ky_mine_maps': 'KY',
+    'ma_survey_publications': 'MA',
+    'md_survey_publications': 'MD',
+    'me_survey_publications': 'ME',
+    'mn_survey_publications': 'MN',
+    'nh_survey_publications': 'NH',
+    'nj_survey_publications': 'NJ',
+    'ny_survey_publications': 'NY',
+    'oh_mine_map_viewer': 'OH',
+    'ok_survey_publications': 'OK',
+    'ri_survey_publications': 'RI',
+    'tn_survey_publications': 'TN',
+    'tx_beg_publications': 'TX',
+    'vt_survey_publications': 'VT',
+    'wi_survey_publications': 'WI',
+    'wv_survey_publications': 'WV',
 }
 
 PORTAL_ID_RE = re.compile(r'^[a-z][a-z0-9_]{2,63}$')
@@ -201,6 +246,32 @@ def validate_portal(row, path='<portal>'):
             if not _text(access.get('terms_note'), 25):
                 errors.append(f'{path}: executable portal needs terms_note')
 
+    rights_rules = row.get('rights_rules')
+    if rights_rules is not None:
+        if not isinstance(rights_rules, list):
+            errors.append(f'{path}: rights_rules must be an array')
+        else:
+            for index, rule in enumerate(rights_rules):
+                label = f'{path}.rights_rules[{index}]'
+                if not isinstance(rule, dict):
+                    errors.append(f'{label}: must be an object')
+                    continue
+                pattern = rule.get('url_pattern')
+                try:
+                    re.compile(pattern if isinstance(pattern, str) else '')
+                except re.error:
+                    errors.append(f'{label}: url_pattern must compile')
+                if not _text(pattern):
+                    errors.append(f'{label}: url_pattern is required')
+                if rule.get('status') not in (
+                        'public_domain', 'state_archive_research_copy'):
+                    errors.append(
+                        f'{label}: status must be public_domain or '
+                        f'state_archive_research_copy')
+                if not _text(rule.get('basis'), 12):
+                    errors.append(f'{label}: basis must explain the rights '
+                                  f'determination (>= 12 chars)')
+
     crawler = row.get('crawler')
     if status == 'harvest_ready':
         if not isinstance(crawler, dict):
@@ -255,7 +326,7 @@ def load_registry(portals_dir=PORTALS_DIR, validate=True):
     portals = {}
     files = sorted(
         name for name in os.listdir(portals_dir)
-        if name.endswith('.yaml') and not name.startswith('_'))
+        if name.endswith('.yaml') and not name.startswith(('_', '.')))
     for name in files:
         path = os.path.join(portals_dir, name)
         envelope = _read(path)
@@ -287,12 +358,30 @@ def load_registry(portals_dir=PORTALS_DIR, validate=True):
     return portals
 
 
-def validate_registry(portals_dir=PORTALS_DIR):
+def validate_scope():
+    """Assert the exact 49-state program scope; returns error strings."""
     errors = []
+    if len(SCOPE_STATES) != 49:
+        errors.append(
+            f'scope must contain exactly 49 unique state codes, found '
+            f'{len(SCOPE_STATES)}')
+    if 'AK' not in SCOPE_STATES:
+        errors.append('Alaska (AK) is in scope and must be present')
+    for excluded in sorted(EXCLUDED_JURISDICTIONS):
+        if excluded in SCOPE_STATES:
+            errors.append(f'{excluded} is out of scope and must be absent')
+    if not all(STATE_RE.fullmatch(code) for code in SCOPE_STATES):
+        errors.append('scope codes must be two-letter state codes')
+    return errors
+
+
+def validate_registry(portals_dir=PORTALS_DIR):
+    errors = list(validate_scope())
     try:
         portals = load_registry(portals_dir, validate=True)
     except PortalRegistryError as exc:
-        return {'ok': False, 'errors': str(exc).splitlines(), 'portals': 0}
+        return {'ok': False, 'errors': errors + str(exc).splitlines(),
+                'portals': 0}
     missing = sorted(set(REQUIRED_PORTALS) - set(portals))
     extra_mismatch = sorted(
         portal_id for portal_id, jurisdiction in REQUIRED_PORTALS.items()
@@ -302,7 +391,18 @@ def validate_registry(portals_dir=PORTALS_DIR):
     if extra_mismatch:
         errors.append(
             'required portal jurisdiction mismatch: ' + ', '.join(extra_mismatch))
-    return {'ok': not errors, 'errors': errors, 'portals': len(portals)}
+    covered = {row['jurisdiction'] for row in portals.values()} - {'federal'}
+    uncovered = sorted(SCOPE_STATES - covered)
+    out_of_scope = sorted(covered - SCOPE_STATES)
+    if uncovered:
+        errors.append(
+            'in-scope states without a portal packet: ' + ', '.join(uncovered))
+    if out_of_scope:
+        errors.append(
+            'portal packets outside the 49-state scope: ' +
+            ', '.join(out_of_scope))
+    return {'ok': not errors, 'errors': errors, 'portals': len(portals),
+            'states_covered': len(covered)}
 
 
 def main(argv=None):

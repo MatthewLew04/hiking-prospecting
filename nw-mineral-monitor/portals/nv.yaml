@@ -14,10 +14,10 @@
       "id_scheme": "NBMG item number; legacy inventory rows additionally carry a four-digit district directory and PDF path.",
       "status": "harvest_ready",
       "probe": {
-        "checked": "2026-08-14",
+        "checked": "2026-08-15",
         "verified_url": "https://nbmg.unr.edu/Collections/MiningDistricts/MDDBTextSearch.html",
         "http_status": 200,
-        "result": "The retired search page remains a 7.2 MB public static inventory with an embedded mddata array and direct data.nbmg.unr.edu/Public/MiningDistricts PDF paths. The current ResourceSpace library is searchable but imposes Crawl-delay: 10 and disallows /filestore."
+        "result": "The retired search page remains a 7.2 MB public static inventory with an embedded mddata array (29,379 rows, 24,158 unique PDF paths) and direct data.nbmg.unr.edu/Public/MiningDistricts PDF paths. A source comment in the page itself states the embedded array is \"only a portion of the records\", so this surface is a partial inventory and can never establish an exhausted district-file cursor. The current ResourceSpace library is searchable but robots-restricted (Crawl-delay 10; /filestore disallowed) and remains the reconciliation target for the full MDDB."
       },
       "access": {
         "mode": "public_download",
@@ -30,7 +30,13 @@
         "terms_note": "Reviewed the retired public search inventory and source robots policies; no prohibition on throttled access to its public index was found. Current ResourceSpace restrictions remain out of scope.",
         "rights_note": "Mining District Files mix donated private material with government reports. The adapter inventories all rows but downloads only entries covered by an explicit public-domain URL rule; no blanket rights inference is made."
       },
-      "rights_rules": [],
+      "rights_rules": [
+        {
+          "url_pattern": "(?i)^https://data\\.nbmg\\.unr\\.edu/Public/MiningDistricts/[^?]+\\.pdf$",
+          "status": "state_archive_research_copy",
+          "basis": "NBMG Mining District File scan served publicly by the Nevada Bureau of Mines and Geology; no public-domain assertion is made. Retained only as a private research copy under a separate S3 prefix, always manifested public_domain=false, and excluded from the public-domain corpus, index, and viewer."
+        }
+      ],
       "crawler": {
         "adapter": "nbmg_embedded_js",
         "automation_permitted": true,
@@ -40,7 +46,7 @@
       },
       "harvest_state": {
         "full_crawl_complete": false,
-        "crawl_scope": "complete embedded legacy index with public-domain-only document retrieval; current library retained as a reconciliation target",
+        "crawl_scope": "partial embedded legacy index (source-declared portion of MDDB); public-domain rows plus opt-in research copies; current library retained as a reconciliation target",
         "last_complete_cursor": null,
         "manifest_sha256": null,
         "completed_at": null

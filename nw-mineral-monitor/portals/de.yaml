@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "jurisdiction": "DE",
+  "portals": [
+    {
+      "id": "de_survey_publications",
+      "jurisdiction": "DE",
+      "name": "Delaware Geological Survey publications and geologic records",
+      "tier": 3,
+      "portal_type": "survey_entry_point_probe",
+      "entry_url": "https://www.dgs.udel.edu/",
+      "detail_page_pattern": null,
+      "pdf_link_pattern": "(?i)\\.pdf(?:$|[?#])",
+      "id_scheme": "DGS publication series (Bulletin, Report of Investigations, Open File); no per-mine attachment identifier verified yet.",
+      "status": "entry_verified_discovery_pending",
+      "probe": {
+        "checked": "2026-08-14",
+        "verified_url": "https://www.dgs.udel.edu/",
+        "http_status": 200,
+        "result": "Official DGS site reachable (HTTP 200, title 'Homepage | The Delaware Geological Survey'); robots.txt HTTP 200. Catalog discovery pending."
+      },
+      "access": {
+        "mode": "review_required",
+        "robots": "respect",
+        "paywalled": false,
+        "official_public_documents_only": true,
+        "rights_note": "Require an affirmative item-level public-domain basis before downloading any file; state authorship alone is not sufficient."
+      },
+      "harvest_state": {
+        "full_crawl_complete": false,
+        "crawl_scope": "publication/document catalog discovery pending; only the official entry point is verified",
+        "last_complete_cursor": null,
+        "manifest_sha256": null,
+        "completed_at": null
+      }
+    }
+  ]
+}

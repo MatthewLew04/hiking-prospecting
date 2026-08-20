@@ -2,12 +2,45 @@
 
 Two directions, both shipped:
 
-1. **Monitor → Leapfrog** — `pipelines/leapfrog_export.py` packages an AOI's
-   research bundles as files Leapfrog Geo imports natively (points + grades,
-   GIS vectors, a real DEM, and one `.omf` bundle).
+1. **Monitor → Leapfrog** — two ways:
+   - **On the website**: the sidebar's **LEAPFROG EXPORT** section. Frame the
+     area (zoom ≥ 8), turn on the layers you want, click **EXPORT CURRENT
+     VIEW FOR LEAPFROG**, and the browser builds and downloads a zip of
+     Leapfrog-ready files — no tools, no terminal.
+   - **Scripted**: `pipelines/leapfrog_export.py` packages a full AOI from
+     the repo bundles (same formats, finer DEM control, refreshable).
 2. **3-D in the browser** — the map's **3D TERRAIN** sidebar section drapes
    every layer over real relief (AWS terrarium tiles, ~30 m). That is the
    fly-around; Leapfrog is the modeling environment.
+
+## The in-map export button
+
+Everything is generated client-side (the same vendored JSZip the MY DATA
+ingester uses; OMF blobs use the browser's native CompressionStream) and all
+coordinates land in **WGS84 / UTM, zone auto-picked from the view center,
+EPSG stated in the bundled README**. The zip contains, depending on what is
+in view and toggled on:
+
+- `mines_grades.csv` — graded mines inside the view (full columnar table,
+  bbox-filtered — not tile-dependent), all commodity columns + sources.
+- `mrds_sites.csv`, `usmin_features.csv`, `statesurvey_sites.csv`,
+  `ardf_sites.csv`, `claims_active.csv`, `claims_closed.csv` — **viewport
+  snapshots**: exactly the features the browser has loaded for the current
+  view and zoom, deduplicated. Never a statewide archive; the bundled README
+  repeats this.
+- `<aoi>_geology_units.shp`, `<aoi>_faults.shp`, `<aoi>_plss_sections.shp`
+  (with open-ground status), `<aoi>_targets.csv` — full AOI vectors for any
+  AOI bundle intersecting the view (whole features, not clipped).
+- `topo_dem.asc` + `.prj` — Arc/Info ASCII grid sampled from terrarium tiles
+  at a zoom picked from the view size (cell auto-chosen, ≤ ~1.5 M cells).
+- `view.omf` — OMF v0.9 bundle of the point sets (grades attached), draped
+  faults, and a decimated topo mesh. Skipped with a note on browsers without
+  CompressionStream.
+- `README-LEAPFROG.md` — CRS, counts, the import click-path, honesty notes.
+
+Terrain fetches carry a 20 s timeout: offline or blocked, the export still
+completes with elevation 0 and says so. The button refuses world-scale views
+(zoom ≥ 8) so a mis-click can't try to package a continent.
 
 ## Why files, not an API
 

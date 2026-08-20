@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  WS12 detached harvest runner: one small auto-terminating EC2 instance that
+  resumes the mine-file crawl from the durable queue bundle in S3, writes a
+  status heartbeat, uploads final state, and shuts itself down (terminate on
+  shutdown). No ingress; management via SSM only.
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Private project bucket holding ws12/* prefixes.
+  PortalId:
+    Type: String
+    Default: igs_mines
+    AllowedPattern: '[a-z][a-z0-9_]{2,63}'
+    Description: Registry portal id this runner crawls.
+  RunnerPrefix:
+    Type: String
+    Default: ws12/runner
+    AllowedPattern: 'ws12/[a-z0-9/_-]+'
+    Description: S3 prefix for this runner's bundle, status, and final state.
+  PeerMode:
+    Type: String
+    Default: solo
+    AllowedValues: [solo, peer]
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+  InstanceType:
+    Type: String
+    Default: t4g.small
+
+Resources:
+  RunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ec2.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: ws12-prefix-only
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource: !Sub arn:aws:s3:::${BucketName}/ws12/*
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::${BucketName}
+                Condition:
+                  StringLike: {'s3:prefix': 'ws12/*'}
+
+  RunnerProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref RunnerRole]
+
+  RunnerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref RunnerProfile
+      InstanceInitiatedShutdownBehavior: terminate
+      Tags:
+        - {Key: Name, Value: !Sub 'ws12-harvest-${PortalId}'}
+        - {Key: project, Value: nw-mineral-monitor}
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -x
+          dnf install -y python3-boto3 || true
+          mkdir -p /opt/ws12 && cd /opt/ws12
+          for attempt in 1 2 3 4 5; do
+            aws s3 cp s3://${BucketName}/${RunnerPrefix}/bundle.tar.gz . && break
+            sleep 15
+          done
+          tar xzf bundle.tar.gz
+          chmod +x runner.sh
+          nohup ./runner.sh ${BucketName} ${PortalId} ${RunnerPrefix} ${PeerMode} \
+            > /var/log/ws12-runner.log 2>&1 &
+
+Outputs:
+  InstanceId:
+    Value: !Ref RunnerInstance

@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  WS13 data plane: one operational Postgres (pgvector + PostGIS) for the
+  document index and spatial layers, the SQS work queue + dead-letter queue
+  driving the OCR/embed worker fleet, and the DB credential secret. Private
+  only: the database accepts connections solely from the worker/app security
+  group; no public endpoint.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+  DbInstanceClass:
+    Type: String
+    Default: db.m7g.large
+  DbStorageGb:
+    Type: Number
+    Default: 200
+
+Resources:
+  WorkerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: WS13 worker/app nodes (no ingress; egress only)
+      VpcId: !Ref VpcId
+      Tags: [{Key: Name, Value: ws13-workers}]
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: WS13 Postgres - ingress only from worker/app SG
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref WorkerSecurityGroup
+      Tags: [{Key: Name, Value: ws13-db}]
+
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: WS13 Postgres subnets
+      SubnetIds: !Ref SubnetIds
+
+  DbSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: ws13/postgres
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "nwmm"}'
+        GenerateStringKey: password
+        PasswordLength: 32
+        ExcludePunctuation: true
+
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: nwmm-ws13
+      Engine: postgres
+      EngineVersion: '16.14'
+      DBInstanceClass: !Ref DbInstanceClass
+      AllocatedStorage: !Ref DbStorageGb
+      StorageType: gp3
+      StorageEncrypted: true
+      DBName: nwmm
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DbSecret}:SecretString:username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DbSecret}:SecretString:password}}'
+      DBSubnetGroupName: !Ref DbSubnetGroup
+      VPCSecurityGroups: [!Ref DbSecurityGroup]
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      MultiAZ: false
+      Tags: [{Key: project, Value: nw-mineral-monitor}]
+
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ws13-ocr-dlq
+      MessageRetentionPeriod: 1209600
+
+  WorkQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ws13-ocr-work
+      VisibilityTimeout: 3600
+      MessageRetentionPeriod: 1209600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+Outputs:
+  DbEndpoint:
+    Value: !GetAtt Database.Endpoint.Address
+  DbSecretArn:
+    Value: !Ref DbSecret
+  WorkQueueUrl:
+    Value: !Ref WorkQueue
+  DeadLetterQueueUrl:
+    Value: !Ref DeadLetterQueue
+  WorkerSecurityGroupId:
+    Value: !Ref WorkerSecurityGroup

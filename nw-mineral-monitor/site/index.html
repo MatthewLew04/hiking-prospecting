@@ -373,6 +373,10 @@ footer .right{margin-left:auto}
       <div class="sec"><h3>3D TERRAIN</h3><div id="layers3D"></div>
         <div id="t3dSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="t3dExag" min="10" max="30" value="15" style="width:100%"><div class="subnote" style="padding-left:0" id="t3dExagLbl">vertical exaggeration ×1.5 — drag with right mouse (or ctrl-drag / two fingers) to tilt & orbit</div></div>
         <div class="subnote" id="t3dNote" style="padding-left:0"></div></div>
+      <div class="sec"><h3>LEAPFROG EXPORT</h3>
+        <div id="lfxBtns"><button class="dosbtn" id="lfxGo">⬇ EXPORT CURRENT VIEW FOR LEAPFROG</button></div>
+        <label class="lrow"><input type="checkbox" id="lfxDem" checked> <span>INCLUDE TERRAIN GRID (.asc DEM)</span></label>
+        <div class="subnote" id="lfxNote" style="padding-left:0">frame your area (zoom ≥ 8), turn on the layers you want, and export — you get a zip of Leapfrog-ready files: UTM point CSVs with grades, AOI geology/fault/section shapefiles, a real DEM, and an .omf bundle, plus import instructions</div></div>
       <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
         <div class="subnote" id="ctyNote" style="padding-left:0"></div>
         <div id="ctyBtns"></div></div>
@@ -454,7 +458,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-18-3d';
+const BUILD = '2026-08-19-lfx';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // BLM's current public-domain claim-state set. Non-claim states use land
@@ -998,6 +1002,7 @@ function initMap(){
       task('mapGeology',()=>loadMsGeo()),
       task('geophys',loadGeophys),
       task('terrain3d',()=>loadTerrain3D()),
+      task('leapfrog',()=>loadLeapfrogExport()),
       task('userLayers',loadUserLayers),
       task('countyAlerts',async()=>{await loadCounty();await loadAlerts();}),
       task('docs',loadDocs),
@@ -4666,6 +4671,552 @@ function loadTerrain3D(){
       map.setTerrain({source:'t3d-dem', exaggeration:T3D.exag});
   };
 }
+
+/* ---------- LEAPFROG EXPORT (client-side kit builder) ----------
+   One click packages the CURRENT VIEW as files Leapfrog Geo imports natively:
+   UTM point CSVs (grades attached), AOI geology/fault/PLSS shapefiles, an
+   Arc/Info ASCII DEM sampled from the same terrarium tiles as 3D TERRAIN,
+   and an OMF v0.9 bundle — zipped in the browser (JSZip is already vendored
+   for the MY DATA ingester; OMF blobs use the native CompressionStream).
+   Same math and byte formats as pipelines/leapfrog_export.py, which stays
+   the tool for full-AOI kits and scripted refresh; see LEAPFROG.md.
+   HONESTY: tiled layers export what the browser has LOADED for the current
+   view and zoom — a viewport snapshot, never a statewide archive. */
+const LFX = {busy:false};
+(()=>{ // WGS84 <-> UTM (same Snyder series as the pipeline, checked to <1 mm)
+  const A=6378137, F=1/298.257223563, E2=F*(2-F), EP2=E2/(1-E2), K0=0.9996;
+  const md = p => A*((1-E2/4-3*E2*E2/64-5*E2**3/256)*p
+      -(3*E2/8+3*E2*E2/32+45*E2**3/1024)*Math.sin(2*p)
+      +(15*E2*E2/256+45*E2**3/1024)*Math.sin(4*p)-(35*E2**3/3072)*Math.sin(6*p));
+  LFX.zone = (lon,lat)=>({zone:Math.max(1,Math.min(60,Math.floor((lon+180)/6)+1)), north:lat>=0});
+  LFX.fwd = (lon,lat,zone,north)=>{
+    const lon0=(zone*6-183)*Math.PI/180, phi=lat*Math.PI/180, lam=lon*Math.PI/180;
+    const sp=Math.sin(phi), cp=Math.cos(phi), tp=Math.tan(phi);
+    const n=A/Math.sqrt(1-E2*sp*sp), t=tp*tp, c=EP2*cp*cp, a=(lam-lon0)*cp;
+    const e=K0*n*(a+(1-t+c)*a**3/6+(5-18*t+t*t+72*c-58*EP2)*a**5/120)+500000;
+    let nn=K0*(md(phi)+n*tp*(a*a/2+(5-t+9*c+4*c*c)*a**4/24
+      +(61-58*t+t*t+600*c-330*EP2)*a**6/720));
+    if(!north)nn+=1e7;
+    return [e,nn];
+  };
+  LFX.inv = (e,nn,zone,north)=>{
+    const lon0=(zone*6-183)*Math.PI/180, x=e-500000, y=nn-(north?0:1e7);
+    const mu=(y/K0)/(A*(1-E2/4-3*E2*E2/64-5*E2**3/256));
+    const e1=(1-Math.sqrt(1-E2))/(1+Math.sqrt(1-E2));
+    const p1=mu+(3*e1/2-27*e1**3/32)*Math.sin(2*mu)+(21*e1*e1/16-55*e1**4/32)*Math.sin(4*mu)
+      +(151*e1**3/96)*Math.sin(6*mu)+(1097*e1**4/512)*Math.sin(8*mu);
+    const sp=Math.sin(p1), cp=Math.cos(p1), tp=Math.tan(p1);
+    const c1=EP2*cp*cp, t1=tp*tp, n1=A/Math.sqrt(1-E2*sp*sp);
+    const r1=A*(1-E2)/Math.pow(1-E2*sp*sp,1.5), d=x/(n1*K0);
+    const phi=p1-(n1*tp/r1)*(d*d/2-(5+3*t1+10*c1-4*c1*c1-9*EP2)*d**4/24
+      +(61+90*t1+298*c1+45*t1*t1-252*EP2-3*c1*c1)*d**6/720);
+    const lam=lon0+(d-(1+2*t1+c1)*d**3/6
+      +(5-2*c1+28*t1-3*c1*c1+8*EP2+24*t1*t1)*d**5/120)/cp;
+    return [lam*180/Math.PI, phi*180/Math.PI];
+  };
+  LFX.wkt = (zone,north)=>`PROJCS["WGS_1984_UTM_Zone_${zone}${north?'N':'S'}",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",${north?'0':'10000000'}.0],PARAMETER["Central_Meridian",${zone*6-183}.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0]]`;
+})();
+
+/* terrarium mosaic: fetch tiles once, sample bilinear from canvas pixels */
+function lfxTerrain(zoom){
+  const n=2**zoom, tiles=new Map();
+  const cvs=document.createElement('canvas'); cvs.width=cvs.height=256;
+  const ctx=cvs.getContext('2d',{willReadFrequently:true});
+  async function fetchTile(tx,ty){
+    const key=tx+'_'+ty;
+    if(tiles.has(key))return;
+    if(tx<0||ty<0||tx>=n||ty>=n){tiles.set(key,null);return;}
+    try{
+      // hard 20 s timeout: a stalled CDN must degrade to elev-0, never hang the button
+      const opts={mode:'cors'};
+      if(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)opts.signal=AbortSignal.timeout(20000);
+      const r=await fetch(T3D_TILES.replace('{z}',zoom).replace('{x}',tx).replace('{y}',ty),opts);
+      if(!r.ok)throw 0;
+      const bm=await createImageBitmap(await r.blob());
+      ctx.clearRect(0,0,256,256); ctx.drawImage(bm,0,0);
+      tiles.set(key,ctx.getImageData(0,0,256,256).data);
+    }catch(_){tiles.set(key,null);}
+  }
+  function px(gx,gy){
+    const tx=Math.floor(gx/256), ty=Math.floor(gy/256), t=tiles.get(tx+'_'+ty);
+    if(!t)return null;
+    const o=((Math.floor(gy)-ty*256)*256+(Math.floor(gx)-tx*256))*4;
+    return t[o]*256+t[o+1]+t[o+2]/256-32768;
+  }
+  return {
+    zoom, n, tiles, fetchTile,
+    async prefetch(w,s,e,nrt,onprog){          // lon/lat box (+margin), limited parallel
+      const g=(lon,lat)=>{const sy=Math.sin(Math.max(-85,Math.min(85,lat))*Math.PI/180);
+        return [ (lon+180)/360*n, (0.5-Math.log((1+sy)/(1-sy))/(4*Math.PI))*n ]; };
+      const [x0,y0]=g(w,nrt), [x1,y1]=g(e,s);
+      const jobs=[];
+      for(let ty=Math.floor(y0)-1;ty<=Math.floor(y1)+1;ty++)
+        for(let tx=Math.floor(x0)-1;tx<=Math.floor(x1)+1;tx++) jobs.push([tx,ty]);
+      let done=0;
+      for(let i=0;i<jobs.length;i+=8){
+        await Promise.all(jobs.slice(i,i+8).map(([tx,ty])=>fetchTile(tx,ty)));
+        done=Math.min(jobs.length,i+8);
+        if(onprog)onprog(done,jobs.length);
+      }
+      return [...tiles.values()].some(v=>v!==null);
+    },
+    sample(lon,lat){
+      const sy=Math.sin(Math.max(-85.051,Math.min(85.051,lat))*Math.PI/180);
+      const gx=(lon+180)/360*n*256-.5,
+            gy=(0.5-Math.log((1+sy)/(1-sy))/(4*Math.PI))*n*256-.5;
+      const x0=Math.floor(gx), y0=Math.floor(gy), fx=gx-x0, fy=gy-y0;
+      const v=[px(x0,y0),px(x0+1,y0),px(x0,y0+1),px(x0+1,y0+1)];
+      if(v.some(x=>x==null)){const g=v.filter(x=>x!=null);return g.length?g[0]:null;}
+      return v[0]*(1-fx)*(1-fy)+v[1]*fx*(1-fy)+v[2]*(1-fx)*fy+v[3]*fx*fy;
+    },
+    async ensure(lon,lat){                       // fetch the 2x2 pixel-neighborhood
+      const sy=Math.sin(Math.max(-85.051,Math.min(85.051,lat))*Math.PI/180); // tiles for one sample point —
+      const gx=(lon+180)/360*n*256-.5,           // features extending past the view
+            gy=(0.5-Math.log((1+sy)/(1-sy))/(4*Math.PI))*n*256-.5; // bbox drape correctly too
+      const xs=[Math.floor(Math.floor(gx)/256),Math.floor((Math.floor(gx)+1)/256)];
+      const ys=[Math.floor(Math.floor(gy)/256),Math.floor((Math.floor(gy)+1)/256)];
+      for(const tx of new Set(xs))for(const ty of new Set(ys))await fetchTile(tx,ty);
+    }
+  };
+}
+
+/* minimal ESRI shapefile writer (same layout the pipeline emits) */
+function lfxShp(zip, base, shptype, records, fields, wkt){
+  if(!records.length)return 0;
+  const ringArea=r=>{let s=0;for(let i=0;i<r.length-1;i++)s+=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1];return s/2;};
+  const contents=[]; let minx=1/0,miny=1/0,maxx=-1/0,maxy=-1/0;
+  for(const rec of records){
+    let buf;
+    if(shptype===1){
+      const [x,y]=rec.geom;
+      buf=new DataView(new ArrayBuffer(20));
+      buf.setInt32(0,1,true); buf.setFloat64(4,x,true); buf.setFloat64(12,y,true);
+      minx=Math.min(minx,x);miny=Math.min(miny,y);maxx=Math.max(maxx,x);maxy=Math.max(maxy,y);
+    }else{
+      const parts=rec.geom.map(p=>{
+        let pts=shptype===5?p[0].slice():p.slice();
+        if(shptype===5){
+          if(pts[0][0]!==pts[pts.length-1][0]||pts[0][1]!==pts[pts.length-1][1])pts.push(pts[0]);
+          const cw=!p[1], a=ringArea(pts);
+          if((a<0)!==cw)pts.reverse();
+        }
+        return pts;
+      });
+      const all=parts.flat();
+      const bx=all.map(p=>p[0]), by=all.map(p=>p[1]);
+      const bxn=Math.min(...bx),bxx=Math.max(...bx),byn=Math.min(...by),byx=Math.max(...by);
+      minx=Math.min(minx,bxn);miny=Math.min(miny,byn);maxx=Math.max(maxx,bxx);maxy=Math.max(maxy,byx);
+      buf=new DataView(new ArrayBuffer(44+4*parts.length+16*all.length));
+      buf.setInt32(0,shptype,true);
+      buf.setFloat64(4,bxn,true);buf.setFloat64(12,byn,true);buf.setFloat64(20,bxx,true);buf.setFloat64(28,byx,true);
+      buf.setInt32(36,parts.length,true); buf.setInt32(40,all.length,true);
+      let off=0, pos=44;
+      for(const p of parts){buf.setInt32(pos,off,true);pos+=4;off+=p.length;}
+      for(const p of all){buf.setFloat64(pos,p[0],true);buf.setFloat64(pos+8,p[1],true);pos+=16;}
+    }
+    contents.push(new Uint8Array(buf.buffer));
+  }
+  const totWords=50+contents.reduce((s,c)=>s+4+c.length/2,0);
+  const shp=new DataView(new ArrayBuffer(totWords*2));
+  const shx=new DataView(new ArrayBuffer(100+8*contents.length));
+  for(const dv of [shp,shx]){
+    dv.setInt32(0,9994,false);
+    dv.setInt32(24,dv===shp?totWords:50+4*contents.length,false);
+    dv.setInt32(28,1000,true); dv.setInt32(32,shptype,true);
+    dv.setFloat64(36,minx,true);dv.setFloat64(44,miny,true);dv.setFloat64(52,maxx,true);dv.setFloat64(60,maxy,true);
+  }
+  let pos=100, word=50, i=0;
+  for(const c of contents){
+    shx.setInt32(100+8*i,word,false); shx.setInt32(104+8*i,c.length/2,false);
+    shp.setInt32(pos,i+1,false); shp.setInt32(pos+4,c.length/2,false);
+    new Uint8Array(shp.buffer).set(c,pos+8);
+    pos+=8+c.length; word+=4+c.length/2; i++;
+  }
+  // DBF
+  const fdef=fields.map(([nm,ty,wd,dc])=>[nm.slice(0,10),ty,Math.min(wd,254),dc]);
+  const reclen=1+fdef.reduce((s,f)=>s+f[2],0);
+  const dbf=new Uint8Array(32+32*fdef.length+1+reclen*records.length+1);
+  const dv=new DataView(dbf.buffer); const now=new Date();
+  dv.setUint8(0,3);dv.setUint8(1,now.getFullYear()-1900);dv.setUint8(2,now.getMonth()+1);dv.setUint8(3,now.getDate());
+  dv.setUint32(4,records.length,true);dv.setUint16(8,32+32*fdef.length+1,true);dv.setUint16(10,reclen,true);
+  const latin=s=>[...String(s)].map(ch=>{const c=ch.charCodeAt(0);return c<256?c:63;});
+  fdef.forEach((f,j)=>{const o=32+32*j;
+    latin(f[0]).slice(0,10).forEach((c,k)=>dbf[o+k]=c);
+    dbf[o+11]=f[1].charCodeAt(0); dbf[o+16]=f[2]; dbf[o+17]=f[3];});
+  dbf[32+32*fdef.length]=0x0d;
+  let ro=32+32*fdef.length+1;
+  for(const rec of records){
+    dbf[ro]=32; let fo=ro+1;
+    for(const [nm,ty,wd,dc] of fdef){
+      let s;
+      if(ty==='N'){
+        const v=rec.attrs[nm];
+        if(v==null||v===''||!isFinite(+v))s=' '.repeat(wd);
+        else{s=(+v).toFixed(dc); s=s.length>wd?'*'.repeat(wd):s.padStart(wd);}
+      }else s=String(rec.attrs[nm]==null?'':rec.attrs[nm]).slice(0,wd).padEnd(wd);
+      latin(s).forEach((c,k)=>{if(k<wd)dbf[fo+k]=c;}); fo+=wd;
+    }
+    ro+=reclen;
+  }
+  dbf[dbf.length-1]=0x1a;
+  zip.file(base+'.shp',shp.buffer); zip.file(base+'.shx',shx.buffer);
+  zip.file(base+'.dbf',dbf); zip.file(base+'.prj',wkt);
+  return records.length;
+}
+
+/* OMF v0.9 writer — byte-compatible with the pipeline's (zlib via native
+   CompressionStream; blobs <f8/<i8; JSON registry keyed by uid) */
+function lfxOmf(name,desc){
+  const blobs=[]; let blobLen=0; const reg={};
+  const now=new Date().toISOString().replace(/\.\d+Z$/,'Z');
+  const uid=()=>{const b=crypto.getRandomValues(new Uint8Array(16));
+    b[6]=(b[6]&15)|64; b[8]=(b[8]&63)|128;
+    const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+    return {s:`${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`, b};};
+  const deflate=async u8=>new Uint8Array(await new Response(
+    new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer());
+  const add=(cls,props)=>{const u=uid().s;
+    reg[u]=Object.assign({date_created:now,date_modified:now,__class__:cls},props);return u;};
+  async function blob(vals,int){
+    const buf=new ArrayBuffer(vals.length*8), dv=new DataView(buf);
+    for(let i=0;i<vals.length;i++)
+      int?dv.setBigInt64(i*8,BigInt(Math.round(vals[i])),true)
+         :dv.setFloat64(i*8,vals[i]==null||!isFinite(vals[i])?NaN:vals[i],true);
+    const z=await deflate(new Uint8Array(buf));
+    const idx={start:60+blobLen,dtype:int?'<i8':'<f8',length:z.length};
+    blobs.push(z); blobLen+=z.length; return idx;
+  }
+  const api={
+    async scalar(nm,vals){return add('ScalarData',{name:nm,description:'',location:'vertices',
+      array:add('ScalarArray',{array:await blob(vals.map(v=>v==null?NaN:+v),false)})});},
+    string(nm,vals){return add('StringData',{name:nm,description:'',location:'vertices',
+      array:add('StringArray',{array:vals.map(v=>v==null?'':String(v))})});},
+    async pointset(nm,desc2,xyz,color,data){
+      const verts=add('Vector3Array',{array:await blob(xyz.flat(),false)});
+      api.elements.push(add('PointSetElement',{name:nm,description:desc2,data:data||[],
+        color,textures:[],subtype:'point',
+        geometry:add('PointSetGeometry',{origin:[0,0,0],vertices:verts})}));},
+    async lineset(nm,desc2,xyz,segs,color){
+      const verts=add('Vector3Array',{array:await blob(xyz.flat(),false)});
+      const sg=add('Int2Array',{array:await blob(segs.flat(),true)});
+      api.elements.push(add('LineSetElement',{name:nm,description:desc2,data:[],color,
+        subtype:'line',geometry:add('LineSetGeometry',{origin:[0,0,0],vertices:verts,segments:sg})}));},
+    async surface(nm,desc2,xyz,tris,color){
+      const verts=add('Vector3Array',{array:await blob(xyz.flat(),false)});
+      const tr=add('Int3Array',{array:await blob(tris.flat(),true)});
+      api.elements.push(add('SurfaceElement',{name:nm,description:desc2,data:[],color,
+        textures:[],subtype:'surface',
+        geometry:add('SurfaceGeometry',{origin:[0,0,0],vertices:verts,triangles:tr})}));},
+    elements:[],
+    build(){
+      const pu=uid();
+      reg[pu.s]=Object.assign({date_created:now,date_modified:now,__class__:'Project'},
+        {name,description:desc,author:'nw-mineral-monitor in-map export',revision:BUILD,
+         units:'m',elements:api.elements,origin:[0,0,0]});
+      const js=new TextEncoder().encode(JSON.stringify(reg));
+      const out=new Uint8Array(60+blobLen+js.length), dv=new DataView(out.buffer);
+      out.set([0x84,0x83,0x82,0x81],0);
+      new TextEncoder().encode('OMF-v0.9.0').forEach((c,k)=>out[4+k]=c);
+      out.set(pu.b,36);
+      dv.setBigUint64(52,BigInt(60+blobLen),true);
+      let o=60; for(const z of blobs){out.set(z,o);o+=z.length;}
+      out.set(js,60+blobLen);
+      return out;
+    }
+  };
+  return api;
+}
+
+const lfxCsv=rows=>rows.map(r=>r.map(v=>{
+  const s=v==null?'':String(v);
+  return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}).join(',')).join('\n');
+
+async function lfxExport(){
+  if(LFX.busy)return;
+  const note=t=>{$('lfxNote').textContent=t;};
+  if(map.getZoom()<8){note('zoom in to your area first (zoom ≥ 8) — this exports the CURRENT VIEW, not the planet');return;}
+  LFX.busy=true; $('lfxGo').disabled=true;
+  try{
+    const b=map.getBounds();
+    const w=Math.max(-180,b.getWest()), e=Math.min(180,b.getEast()),
+          s=Math.max(-85,b.getSouth()), nrt=Math.min(85,b.getNorth());
+    const clon=(w+e)/2, clat=(s+nrt)/2;
+    const {zone,north}=LFX.zone(clon,clat), epsg=(north?32600:32700)+zone;
+    const wkt=LFX.wkt(zone,north);
+    const fwd=(lon,lat)=>LFX.fwd(lon,lat,zone,north);
+    const inb=(x,y)=>x>=w&&x<=e&&y>=s&&y<=nrt;
+    const zip=new JSZip(); const manifest=[];
+
+    // terrain mosaic (elevations for every point; DEM grid if requested)
+    let z=13; for(const cand of [13,12,11,10,9,8]){
+      const tx=Math.ceil((e-w)/(360/2**cand))+2;
+      const ty=Math.ceil(Math.abs(nrt-s)/(360/2**cand)/Math.cos(clat*Math.PI/180))+2;
+      if(tx*ty<=150){z=cand;break;} z=cand;
+    }
+    note('fetching terrain tiles…');
+    const terr=lfxTerrain(z);
+    const haveElev=await terr.prefetch(w,s,e,nrt,(d,t)=>note(`fetching terrain tiles… ${d}/${t}`));
+    const elev=(lon,lat)=>{if(!haveElev)return 0;const v=terr.sample(lon,lat);return v==null?0:v;};
+
+    // graded mines (full columnar table, bbox-filtered — not tile-dependent)
+    let mines=[];
+    if(S.layers.grades&&GR){
+      for(let i=0;i<GR.n;i++){
+        if(GR.x[i]==null||!inb(GR.x[i],GR.y[i]))continue;
+        mines.push(i);
+      }
+      if(mines.length){
+        const g=k=>GR[k]||[];
+        const rows=[['east','north','elev_m','name','state','county','district','au_ozt','ag_ozt','pb_pct','zn_pct','cu_pct','sb_pct','wo3_units','hg_flasks','usd_per_ton','tons','usd_per_yd3','placer','workings_open_m','commodities','source','url']];
+        for(const i of mines){
+          const [E,N]=fwd(GR.x[i],GR.y[i]);
+          rows.push([E.toFixed(2),N.toFixed(2),elev(GR.x[i],GR.y[i]).toFixed(1),
+            GR.name[i],GR.st[i],g('cnty')[i],g('dist')[i],g('au')[i],g('ag')[i],g('pb')[i],g('zn')[i],
+            g('cu')[i],g('sb')[i],g('wo3')[i],g('hgf')[i],g('usd')[i],g('ton')[i],g('yd3')[i],
+            g('plc')[i],(g('open')[i]>0?g('open')[i]:''),g('com')[i],g('src')[i],g('url')[i]]);
+        }
+        zip.file('mines_grades.csv',lfxCsv(rows));
+        manifest.push(`mines_grades.csv — ${mines.length} graded mines (full table, bbox-filtered; units preserved per column)`);
+      }
+    }
+
+    // viewport snapshots of the toggled-on tiled point layers
+    const SNAP=[
+      {flag:'mrds',src:'national-mrds',sl:'mrds',file:'mrds_sites',label:'USGS MRDS occurrences',
+       head:['east','north','elev_m','name','status','commodities','state','dep_id'],
+       row:p=>[p.nm,p.status,p.commodities,p.st,p.id]},
+      {flag:'usmin',src:'national-usmin',sl:'usmin',file:'usmin_features',label:'USGS USMIN map features',
+       head:['east','north','elev_m','feature_type','quad','topo_year','state'],
+       row:p=>[p.typ,p.quad,p.yr,p.st]},
+      {flag:'stategeo',src:'national-stategeo',sl:'stategeo',file:'statesurvey_sites',label:'state-survey mine records',
+       head:['east','north','elev_m','name','status','commodities','type','state'],
+       row:p=>[p.nm,p.status,p.commodities,p.typ,p.st]},
+      {flag:'ardf',src:'national-ardf',sl:'ardf',file:'ardf_sites',label:'Alaska ARDF occurrences',
+       head:['east','north','elev_m','name','commodities','status','ardf_id'],
+       row:p=>[p.nm,p.g,p.status,p.id]},
+      {flag:'claimsA',src:'national-claims',sl:'active',file:'claims_active',label:'active federal claim centroids',
+       head:['east','north','elev_m','name','serial','type','disposition','acres','state','partial_snapshot'],
+       row:p=>[p.nm,p.serial,p.type,p.disp,p.acres,p.st,p.partial?1:'']},
+      {flag:'claimsC',src:'national-claims',sl:'closed',file:'claims_closed',label:'closed federal claim centroids',
+       head:['east','north','elev_m','name','serial','type','disposition','acres','state','partial_snapshot'],
+       row:p=>[p.nm,p.serial,p.type,p.disp,p.acres,p.st,p.partial?1:'']},
+    ];
+    const omfPts=[];
+    for(const spec of SNAP){
+      if(!S.layers[spec.flag]||!map.getSource(spec.src))continue;
+      const seen=new Set(), pts=[];
+      for(const f of map.querySourceFeatures(spec.src,{sourceLayer:spec.sl})){
+        if(!f.geometry||f.geometry.type!=='Point')continue;
+        const [x,y]=f.geometry.coordinates;
+        if(!inb(x,y))continue;
+        const p=f.properties||{};
+        const key=p.id!=null?p.id:(p.serial!=null?p.serial:(p.nm||'')+'|'+x.toFixed(5)+'|'+y.toFixed(5));
+        if(seen.has(key))continue; seen.add(key);
+        pts.push({x,y,p});
+      }
+      if(!pts.length)continue;
+      const rows=[spec.head];
+      for(const q of pts){
+        const [E,N]=fwd(q.x,q.y);
+        rows.push([E.toFixed(2),N.toFixed(2),elev(q.x,q.y).toFixed(1),...spec.row(q.p)]);
+      }
+      zip.file(spec.file+'.csv',lfxCsv(rows));
+      manifest.push(`${spec.file}.csv — ${pts.length} ${spec.label} (VIEWPORT SNAPSHOT at current zoom, not a statewide archive)`);
+      omfPts.push({spec,pts});
+    }
+
+    // AOI vector bundles that intersect the view (manifest-driven)
+    const aois=Object.keys(MAN.ws56||{}).filter(k=>k.startsWith('geology_')).map(k=>k.slice(8));
+    const rectHit=(bx)=>bx[0]<=e&&bx[2]>=w&&bx[1]<=nrt&&bx[3]>=s;
+    const ringBox=r=>{let a=1/0,b2=1/0,c=-1/0,d=-1/0;
+      for(const [x,y] of r){a=Math.min(a,x);b2=Math.min(b2,y);c=Math.max(c,x);d=Math.max(d,y);}
+      return [a,b2,c,d];};
+    let faultVerts=[],faultSegs=[];
+    for(const aoi of aois){
+      let geo=null;
+      try{geo=await jget(`data/geology/${aoi}.json`);}catch(_){continue;}
+      const units=(geo.units||[]).filter(u=>u.g&&u.g.some(poly=>poly.some(r=>rectHit(ringBox(r)))));
+      const faults=(geo.faults||[]).filter(f=>f.path&&rectHit(ringBox(f.path)));
+      if(units.length){
+        const recs=units.map(u=>({geom:u.g.flatMap(poly=>poly.map((r,ri)=>[r.map(([x,y])=>fwd(x,y)),ri>0])),
+          attrs:{id:u.id,name:(u.nm||'').slice(0,120),age:u.age,lith:(u.li||'').slice(0,200),
+                 desc:(u.de||'').slice(0,254),src:u.src,t0_ma:u.t0,t1_ma:u.t1}}));
+        lfxShp(zip,`${aoi}_geology_units`,5,recs,
+          [['id','C',12,0],['name','C',120,0],['age','C',40,0],['lith','C',200,0],
+           ['desc','C',254,0],['src','C',12,0],['t0_ma','N',10,2],['t1_ma','N',10,2]],wkt);
+        manifest.push(`${aoi}_geology_units.shp — ${units.length} harmonized map polygons (AOI bundle)`);
+      }
+      if(faults.length){
+        const recs=faults.map(f=>({geom:[f.path.map(([x,y])=>fwd(x,y))],
+          attrs:{name:f.nm,type:f.ty,src:f.src}}));
+        lfxShp(zip,`${aoi}_faults`,3,recs,
+          [['name','C',80,0],['type','C',24,0],['src','C',24,0]],wkt);
+        manifest.push(`${aoi}_faults.shp — ${faults.length} mapped structures (AOI bundle)`);
+        for(const f of faults){
+          const base=faultVerts.length;
+          for(const [x,y] of f.path){
+            if(haveElev&&!inb(x,y))await terr.ensure(x,y);   // vertices beyond the view bbox
+            faultVerts.push([...fwd(x,y),elev(x,y)+2]);
+          }
+          for(let i2=0;i2<f.path.length-1;i2++)faultSegs.push([base+i2,base+i2+1]);
+        }
+      }
+      try{
+        const tj=await jget(`data/targets/${aoi}.json`);
+        const tg=(tj.targets||[]).filter(t=>t.cx!=null&&inb(t.cx,t.cy));
+        if(tg.length){
+          const rows=[['east','north','elev_m','tier','score','unit','age','area_km2','money','tier_name']];
+          for(const t of tg){const [E,N]=fwd(t.cx,t.cy);
+            rows.push([E.toFixed(2),N.toFixed(2),elev(t.cx,t.cy).toFixed(1),t.tier,t.score,t.nm,t.age,t.area_km2,t.money?1:0,t.tierName]);}
+          zip.file(`${aoi}_targets.csv`,lfxCsv(rows));
+          manifest.push(`${aoi}_targets.csv — ${tg.length} scored geology targets (unit centroids)`);
+          omfPts.push({spec:{file:aoi+'_targets',label:'targets',omfName:`Targets (${aoi})`,
+            color:[45,212,191],string:['unit'],scalar:['score','tier']},
+            pts:tg.map(t=>({x:t.cx,y:t.cy,p:{unit:t.nm,score:t.score,tier:t.tier}}))});
+        }
+      }catch(_){/* no targets bundle */}
+      try{
+        const [plss,og]=await Promise.all([jget(`data/plss/${aoi}.json`),jget(`data/openground/${aoi}.json`)]);
+        const stat={}; for(const sec of og.sections||[])stat[sec.id]=sec;
+        const feats=(plss.features||[]).filter(f2=>{
+          const gm=f2.geometry; if(!gm)return false;
+          const polys=gm.type==='Polygon'?[gm.coordinates]:gm.type==='MultiPolygon'?gm.coordinates:[];
+          return polys.some(poly=>poly.some(r=>rectHit(ringBox(r))));
+        });
+        if(feats.length){
+          const recs=feats.map(f2=>{
+            const gm=f2.geometry, p=f2.properties||{}, st2=stat[p.id]||{};
+            const polys=gm.type==='Polygon'?[gm.coordinates]:gm.coordinates;
+            return {geom:polys.flatMap(poly=>poly.map((r,ri)=>[r.map(([x,y])=>fwd(x,y)),ri>0])),
+              attrs:{id:p.id,label:p.lab||st2.lab,status:st2.st,agency:st2.ag,
+                     n_active:st2.nA,n_closed:st2.nC}};});
+          lfxShp(zip,`${aoi}_plss_sections`,5,recs,
+            [['id','C',24,0],['label','C',24,0],['status','C',12,0],['agency','C',8,0],
+             ['n_active','N',8,0],['n_closed','N',8,0]],wkt);
+          manifest.push(`${aoi}_plss_sections.shp — ${feats.length} sections w/ open-ground status (research lead, not title)`);
+        }
+      }catch(_){/* no PLSS/open-ground bundle for this AOI */}
+    }
+
+    // DEM grid
+    let grid=null, ge=null, cell=0;
+    if(haveElev){
+      const cs=[fwd(w,s),fwd(e,s),fwd(w,nrt),fwd(e,nrt),fwd(clon,s),fwd(clon,nrt),fwd(w,clat),fwd(e,clat)];
+      ge=[Math.min(...cs.map(c=>c[0])),Math.min(...cs.map(c=>c[1])),
+          Math.max(...cs.map(c=>c[0])),Math.max(...cs.map(c=>c[1]))];
+      const nativePx=156543.03*Math.cos(clat*Math.PI/180)/2**z;
+      cell=Math.max(Math.round(nativePx),Math.round(Math.sqrt((ge[2]-ge[0])*(ge[3]-ge[1])/1.5e6)));
+      const ncols=Math.ceil((ge[2]-ge[0])/cell), nrows=Math.ceil((ge[3]-ge[1])/cell);
+      grid={ncols,nrows,rows:[]};
+      for(let r=0;r<nrows;r++){
+        const yy=ge[3]-(r+.5)*cell, row=new Array(ncols);
+        for(let c2=0;c2<ncols;c2++){
+          const [lon,lat]=LFX.inv(ge[0]+(c2+.5)*cell,yy,zone,north);
+          row[c2]=terr.sample(lon,lat);
+        }
+        grid.rows.push(row);
+        if(r%50===0){note(`sampling DEM… ${r}/${nrows} rows`);await new Promise(r2=>setTimeout(r2));}
+      }
+      if($('lfxDem').checked){
+        const lines=[`ncols ${ncols}`,`nrows ${nrows}`,`xllcorner ${ge[0].toFixed(3)}`,
+          `yllcorner ${(ge[3]-nrows*cell).toFixed(3)}`,`cellsize ${cell}`,'NODATA_value -9999'];
+        for(const row of grid.rows)lines.push(row.map(v=>v==null?'-9999':v.toFixed(1)).join(' '));
+        zip.file('topo_dem.asc',lines.join('\n')+'\n'); zip.file('topo_dem.prj',wkt);
+        manifest.push(`topo_dem.asc — ${ncols} x ${nrows} Arc/Info ASCII grid @ ${cell} m (terrarium z${z})`);
+      }
+    }
+
+    // OMF bundle
+    if(typeof CompressionStream!=='undefined'){
+      note('building OMF…');
+      const o=lfxOmf('view export — NW Mineral Monitor',
+        `Current-view export ${new Date().toISOString().slice(0,10)}. CRS: WGS84 / UTM zone ${zone}${north?'N':'S'} (EPSG:${epsg}), meters. `+
+        `Tiled layers are viewport snapshots at export zoom. Elevations: ${haveElev?'AWS Terrain Tiles (terrarium z'+z+')':'UNAVAILABLE (all 0)'}.`);
+      if(mines.length&&GR){
+        const xyz=mines.map(i=>[...fwd(GR.x[i],GR.y[i]),elev(GR.x[i],GR.y[i])]);
+        const data=[o.string('name',mines.map(i=>GR.name[i])),
+                    o.string('district',mines.map(i=>(GR.dist||[])[i])),
+                    o.string('source',mines.map(i=>GR.src[i]))];
+        for(const [k,lbl] of [['au','Au oz/ton'],['ag','Ag oz/ton'],['pb','Pb %'],['zn','Zn %'],['cu','Cu %'],['sb','Sb %'],['usd','USD/ton (historic)'],['ton','tons']]){
+          const vals=mines.map(i=>{const v=(GR[k]||[])[i];const n2=+v;return v==null||!isFinite(n2)?null:n2;});
+          if(vals.some(v=>v!=null))data.push(await o.scalar(lbl,vals));
+        }
+        await o.pointset('Mines (graded)','best cited grade per mine — see mines_grades.csv for provenance',xyz,[201,133,0],data);
+      }
+      for(const {spec,pts} of omfPts){
+        const xyz=pts.map(q=>[...fwd(q.x,q.y),elev(q.x,q.y)]);
+        const data=[];
+        if(spec.string)for(const k of spec.string)data.push(o.string(k,pts.map(q=>q.p[k])));
+        else data.push(o.string('name',pts.map(q=>q.p.nm||q.p.serial||q.p.typ||'')));
+        if(spec.scalar)for(const k of spec.scalar)data.push(await o.scalar(k,pts.map(q=>q.p[k])));
+        await o.pointset(spec.omfName||spec.label,'viewport snapshot at export zoom',xyz,
+          spec.color||[110,140,190],data);
+      }
+      if(faultSegs.length)await o.lineset('Faults (draped)','AOI mapped structures at DEM elevation +2 m',faultVerts,faultSegs,[212,165,63]);
+      if(grid){
+        const stride=Math.max(1,Math.ceil(Math.sqrt(grid.ncols*grid.nrows/1.2e5)));
+        const xyz=[],idx={};let nr=0;
+        for(let r=0;r<grid.nrows;r+=stride){let nc=0;
+          for(let c2=0;c2<grid.ncols;c2+=stride){
+            idx[r+'_'+c2]=xyz.length;
+            const v=grid.rows[r][c2];
+            xyz.push([ge[0]+(c2+.5)*cell,ge[3]-(r+.5)*cell,v==null?0:v]); nc++;}
+          nr++;}
+        const tris=[];
+        for(let r=0;r+stride<grid.nrows;r+=stride)for(let c2=0;c2+stride<grid.ncols;c2+=stride){
+          const a=idx[r+'_'+c2],b2=idx[r+'_'+(c2+stride)],c3=idx[(r+stride)+'_'+c2],d=idx[(r+stride)+'_'+(c2+stride)];
+          if(a==null||b2==null||c3==null||d==null)continue;
+          tris.push([a,c3,b2],[b2,c3,d]);
+        }
+        await o.surface(`Topography (context, ~${cell*stride} m)`,'decimated terrarium mesh — topo_dem.asc carries the fine grid',xyz,tris,[120,120,120]);
+      }
+      zip.file('view.omf',o.build());
+      manifest.push('view.omf — OMF v0.9 bundle (Leapfrog Geo menu > OMF > Import; one-shot, cannot be reloaded)');
+    }else manifest.push('view.omf SKIPPED — this browser lacks CompressionStream; use pipelines/leapfrog_export.py');
+
+    if(!manifest.length){note('nothing to export here — turn on some layers (or zoom to data) and try again');LFX.busy=false;$('lfxGo').disabled=false;return;}
+
+    zip.file('README-LEAPFROG.md',
+`# Leapfrog Geo kit — current-view export
+
+Exported ${new Date().toISOString().slice(0,10)} from the NW Mineral Monitor map (build ${BUILD}).
+Everything is in **WGS84 / UTM zone ${zone}${north?'N':'S'} (EPSG:${epsg}), meters** — set exactly that CRS when Leapfrog asks.
+View bbox (lon/lat): ${w.toFixed(4)} ${s.toFixed(4)} ${e.toFixed(4)} ${nrt.toFixed(4)} · export zoom ${map.getZoom().toFixed(1)}
+Elevations: ${haveElev?`AWS Terrain Tiles / Mapzen terrarium, z${z} (3DEP/SRTM composite, ~10 m vertical noise)`:'UNAVAILABLE at export time — every elevation is 0'}
+
+## Files
+
+${manifest.map(m2=>'- '+m2).join('\n')}
+
+## Import order in Leapfrog Geo
+
+1. Topography: right-click **Topographies > New Topography > Import Elevation Grid** → topo_dem.asc
+2. GIS vectors: right-click **GIS Data, Maps and Photos > Import Vector Data** → the .shp files, choose *Drape on topography*
+3. Points: right-click **Points > Import Points** → each CSV (East/North/Elev are the first three columns; keep grade columns numeric)
+4. Or one-shot: **Leapfrog Geo menu > OMF > Import** → view.omf (OMF objects cannot be reloaded afterwards — prefer CSV/SHP for layers you will refresh)
+
+## Honesty notes
+
+- Tiled layers (MRDS, USMIN, state survey, ARDF, claims) export **what the browser had loaded for this view at this zoom** — a viewport snapshot, never a statewide archive. Commodity/status filters are NOT applied; the snapshot is the raw loaded features.
+- Claim locations are BLM MLRS **centroids**, not staked corners; verify serials at mlrs.blm.gov. Section status is a research lead, not a title opinion. Grades are cited historic figures (units differ per column and are never converted).
+- For full-AOI kits, scripted refresh, or finer DEMs: \`python3 pipelines/leapfrog_export.py --aoi <aoi>\` (see LEAPFROG.md in the repo).
+`);
+    note('zipping…');
+    const blob2=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob2);
+    a.download=`leapfrog-view-${new Date().toISOString().slice(0,10)}-${clat.toFixed(3)}_${clon.toFixed(3)}-z${Math.round(map.getZoom())}.zip`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),30000);
+    note(`exported ${manifest.length} artifacts (UTM ${zone}${north?'N':'S'} / EPSG:${epsg}) — unzip, then follow README-LEAPFROG.md inside${haveElev?'':' · WARNING: terrain unreachable, elevations are 0'}`);
+  }catch(err){
+    console.warn('[nwmm leapfrog export]',err);
+    note('export failed: '+(err&&err.message||err)+' — try a smaller view, or use pipelines/leapfrog_export.py');
+  }
+  LFX.busy=false; $('lfxGo').disabled=false;
+}
+function loadLeapfrogExport(){ $('lfxGo').onclick=()=>{lfxExport();}; }
 
 /* ---------- county gold-signal ranking ---------- */
 let CG = null, CGIDX = {};

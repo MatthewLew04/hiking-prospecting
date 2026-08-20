@@ -252,9 +252,15 @@ placers hug drainage. Flat maps hide that; a tilted view over SAT with
 **HILLSHADE** on reads like standing on the ridge. Hillshade also works
 alone in 2D as a cheap way to see range fronts and scarps.
 
-This is the fly-around. The modeling-grade 3-D lives in Leapfrog Geo:
-`pipelines/leapfrog_export.py` packages any AOI (points with grades, GIS
-layers, a real DEM, one `.omf` bundle) for it — see `LEAPFROG.md`.
+This is the fly-around. The modeling-grade 3-D lives in Leapfrog Geo, and
+the map exports straight into it: the **LEAPFROG EXPORT** section right
+below has one button — frame your area (zoom ≥ 8), turn on the layers you
+want, click, and the browser downloads a zip of Leapfrog-ready files (UTM
+point CSVs with grades, AOI geology/fault/section shapefiles, a real DEM,
+an `.omf` bundle, and a README with the exact import clicks). Tiled layers
+export what's loaded for the current view — a snapshot, not a statewide
+archive. For full-AOI kits or scripted refresh use
+`pipelines/leapfrog_export.py` — see `LEAPFROG.md`.
 
 ## Part 7 — The paper trail: records, dossiers, alerts
 

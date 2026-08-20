@@ -283,11 +283,52 @@ class SpatialContractTests(unittest.TestCase):
         self.assertIsNone(result["count"])
 
     def test_geoparquet_adapter_has_actionable_optional_dependency(self):
-        if importlib.util.find_spec("pyarrow") is not None:
-            self.skipTest("pyarrow is installed; integration export is environment-specific")
         from spatial_geoparquet import export_geoparquet
-        with self.assertRaisesRegex(RuntimeError, "requires pyarrow"):
-            export_geoparquet("missing.sqlite", tempfile.mkdtemp())
+        if importlib.util.find_spec("pyarrow") is None:
+            with self.assertRaisesRegex(RuntimeError, "requires pyarrow"):
+                export_geoparquet("missing.sqlite", tempfile.mkdtemp())
+            return
+        # pyarrow present: exercise the real export path on a minimal store
+        # instead of skipping (the strict CI runner forbids unreviewed skips).
+        with tempfile.TemporaryDirectory() as directory:
+            db = os.path.join(directory, "mini.sqlite")
+            with SpatialStore(db) as store:
+                store.initialize()
+                store.register_layer(
+                    "mini", "geology", "Mini map", scale="1:24,000",
+                    citation="Mini citation", source_url="https://example.gov/mini")
+                store.add_feature(
+                    "mini", "unit-1",
+                    {"type": "Polygon", "coordinates": SQUARE},
+                    {"unit_symbol": "Xg"})
+            manifest = export_geoparquet(db, os.path.join(directory, "out"))
+            self.assertEqual(manifest["schema"], "nwmm.ws12.geoparquet.v1")
+            self.assertIn("geology", manifest["layers"])
+
+    def test_validate_store_accepts_freshly_initialized_schema(self):
+        # Regression: the runtime validator once required table names
+        # (geology/faults/claims/mines) the schema never creates, so every
+        # S3-materialized store was rejected while local paths skipped
+        # validation entirely.
+        with tempfile.TemporaryDirectory() as directory:
+            db = os.path.join(directory, "fresh.sqlite")
+            with SpatialStore(db) as store:
+                store.initialize()
+            spatial_tools._validate_store(db)
+
+    def test_validate_store_rejects_foreign_schema(self):
+        import sqlite3
+        with tempfile.TemporaryDirectory() as directory:
+            db = os.path.join(directory, "foreign.sqlite")
+            connection = sqlite3.connect(db)
+            connection.execute(
+                "CREATE TABLE store_metadata (key TEXT PRIMARY KEY, value TEXT)")
+            connection.execute(
+                "INSERT INTO store_metadata VALUES ('schema_version', '1')")
+            connection.commit()
+            connection.close()
+            with self.assertRaisesRegex(RuntimeError, "missing required tables"):
+                spatial_tools._validate_store(db)
 
 
 if __name__ == "__main__":

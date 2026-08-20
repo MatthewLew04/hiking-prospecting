@@ -17,6 +17,7 @@ from html.parser import HTMLParser
 import io
 import json
 import os
+import random
 import re
 import shutil
 import sqlite3
@@ -43,7 +44,20 @@ MANIFEST_FIELDS = (
     'mine_name', 'state', 'county', 'trs', 'document_title', 'doc_date',
     'doc_type', 'sha256', 'bytes', 'retrieval_date', 'content_type', 's3_uri',
     'etag', 'last_modified', 'public_domain', 'rights_basis', 'paywalled',
+    'admission_class',
 )
+# 'public_domain' rows carry an affirmative federal/state public-domain basis
+# and are the only rows eligible for the public-domain corpus, index, and
+# viewer.  'state_archive_research_copy' rows are files a state survey serves
+# publicly (e.g. IGS MineDocs property files) retained as private research
+# copies WITHOUT any public-domain assertion.  'cc_by_nc_sa_licensed' rows are
+# files the issuing survey explicitly licences CC BY-NC-SA 4.0 (e.g. AZGS
+# ADMMR collections); they are stored under the licence's terms with the
+# licence and attribution recorded on every row.  Both non-PD classes live
+# under their own S3 prefixes, always manifest public_domain=false, and are
+# excluded from the public-domain document store and citation index.
+ADMISSION_CLASSES = frozenset((
+    'public_domain', 'state_archive_research_copy', 'cc_by_nc_sa_licensed'))
 
 
 class HarvestError(RuntimeError):
@@ -51,7 +65,46 @@ class HarvestError(RuntimeError):
 
 
 class TransientHarvestError(HarvestError):
-    """A task may succeed on a later attempt."""
+    """A task may succeed on a later attempt.
+
+    ``retry_after`` carries a server-directed backoff (parsed Retry-After
+    header, in seconds) that the queue must honor over its own schedule.
+    """
+
+    def __init__(self, message, retry_after=None):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+# Server-directed waits are honored but bounded: a hostile or broken header
+# cannot park a task for more than an hour per attempt.
+MAX_RETRY_AFTER_SECONDS = 3600.0
+
+
+def parse_retry_after(value):
+    """Parse a Retry-After header: delta-seconds or an HTTP-date.
+
+    Returns bounded non-negative seconds, or None when absent/unparseable
+    (the generic backoff schedule then applies).
+    """
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        seconds = float(text)
+    except ValueError:
+        try:
+            stamp = email.utils.parsedate_to_datetime(text)
+        except (TypeError, ValueError):
+            return None
+        if stamp is None:
+            return None
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=dt.timezone.utc)
+        seconds = (stamp - dt.datetime.now(dt.timezone.utc)).total_seconds()
+    return max(0.0, min(MAX_RETRY_AFTER_SECONDS, seconds))
 
 
 class PermanentSkip(HarvestError):
@@ -97,10 +150,15 @@ def _atomic_text(path, writer):
 class QueueDB:
     """Durable frontier, candidate log, hash index, and manifest source."""
 
-    def __init__(self, path):
+    def __init__(self, path, claim_order='asc'):
+        if claim_order not in ('asc', 'desc'):
+            raise ValueError('claim_order must be asc or desc')
         directory = os.path.dirname(os.path.abspath(path))
         os.makedirs(directory, exist_ok=True)
         self.path = path
+        # Two cooperating nodes split one batch by walking the frontier from
+        # opposite ends; peer sync makes them meet without re-fetching.
+        self.claim_order = claim_order
         self.conn = sqlite3.connect(path, timeout=60)
         self.conn.row_factory = sqlite3.Row
         self.conn.execute('PRAGMA journal_mode=WAL')
@@ -142,6 +200,11 @@ class QueueDB:
                 s3_uri TEXT NOT NULL,
                 content_type TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS url_objects (
+                source_url TEXT PRIMARY KEY,
+                sha256 TEXT NOT NULL REFERENCES hash_objects(sha256),
+                fetched_at TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS documents (
                 portal_id TEXT NOT NULL,
                 portal_source TEXT NOT NULL,
@@ -161,7 +224,14 @@ class QueueDB:
                 s3_uri TEXT NOT NULL,
                 etag TEXT,
                 last_modified TEXT,
-                public_domain INTEGER NOT NULL CHECK(public_domain = 1),
+                admission_class TEXT NOT NULL DEFAULT 'public_domain'
+                    CHECK(admission_class IN
+                          ('public_domain','state_archive_research_copy',
+                           'cc_by_nc_sa_licensed')),
+                public_domain INTEGER NOT NULL CHECK(
+                    (admission_class = 'public_domain' AND public_domain = 1)
+                    OR (admission_class <> 'public_domain'
+                        AND public_domain = 0)),
                 rights_basis TEXT NOT NULL,
                 paywalled INTEGER NOT NULL CHECK(paywalled = 0),
                 PRIMARY KEY(portal_id, portal_source, source_url, mine_id)
@@ -201,6 +271,70 @@ class QueueDB:
             self.conn.execute(
                 'ALTER TABLE portal_runs ADD COLUMN cursor_exhausted INTEGER '
                 'NOT NULL DEFAULT 0')
+        document_columns = {row['name'] for row in self.conn.execute(
+            'PRAGMA table_info(documents)')}
+        documents_ddl = self.conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' "
+            "AND name='documents'").fetchone()
+        needs_rebuild = document_columns and (
+            'admission_class' not in document_columns or
+            'cc_by_nc_sa_licensed' not in (documents_ddl['sql'] or ''))
+        if needs_rebuild:
+            # Older queues carried narrower CHECK constraints (public_domain
+            # only, or admission classes without the licensed class), which
+            # cannot be widened in place; rebuild the table preserving every
+            # row and its truthful class.
+            has_class = 'admission_class' in document_columns
+            with self.conn:
+                self.conn.execute(
+                    'ALTER TABLE documents RENAME TO documents_pre_admission')
+                self.conn.execute('''
+                    CREATE TABLE documents (
+                        portal_id TEXT NOT NULL,
+                        portal_source TEXT NOT NULL,
+                        source_url TEXT NOT NULL,
+                        mine_id TEXT NOT NULL,
+                        mine_name TEXT NOT NULL,
+                        state TEXT NOT NULL,
+                        county TEXT,
+                        trs TEXT,
+                        document_title TEXT NOT NULL,
+                        doc_date TEXT,
+                        doc_type TEXT,
+                        sha256 TEXT NOT NULL REFERENCES hash_objects(sha256),
+                        bytes INTEGER NOT NULL,
+                        retrieval_date TEXT NOT NULL,
+                        content_type TEXT NOT NULL,
+                        s3_uri TEXT NOT NULL,
+                        etag TEXT,
+                        last_modified TEXT,
+                        admission_class TEXT NOT NULL DEFAULT 'public_domain'
+                            CHECK(admission_class IN
+                                  ('public_domain',
+                                   'state_archive_research_copy',
+                                   'cc_by_nc_sa_licensed')),
+                        public_domain INTEGER NOT NULL CHECK(
+                            (admission_class = 'public_domain'
+                             AND public_domain = 1)
+                            OR (admission_class <> 'public_domain'
+                                AND public_domain = 0)),
+                        rights_basis TEXT NOT NULL,
+                        paywalled INTEGER NOT NULL CHECK(paywalled = 0),
+                        PRIMARY KEY(portal_id, portal_source, source_url,
+                                    mine_id)
+                    )''')
+                class_expr = ('admission_class' if has_class
+                              else "'public_domain'")
+                self.conn.execute(f'''
+                    INSERT INTO documents
+                    SELECT portal_id, portal_source, source_url, mine_id,
+                           mine_name, state, county, trs, document_title,
+                           doc_date, doc_type, sha256, bytes, retrieval_date,
+                           content_type, s3_uri, etag, last_modified,
+                           {class_expr}, public_domain, rights_basis,
+                           paywalled
+                    FROM documents_pre_admission''')
+                self.conn.execute('DROP TABLE documents_pre_admission')
         # An interrupted process never owns an active task after reopening.
         now = dt.datetime.now(dt.timezone.utc).isoformat()
         self.conn.execute(
@@ -283,11 +417,12 @@ class QueueDB:
         if portal_ids:
             clauses.append('portal_id IN (' + ','.join('?' for _ in portal_ids) + ')')
             params.extend(portal_ids)
+        direction = 'DESC' if self.claim_order == 'desc' else 'ASC'
         self.conn.execute('BEGIN IMMEDIATE')
         try:
             row = self.conn.execute(
                 'SELECT * FROM tasks WHERE ' + ' AND '.join(clauses) +
-                ' ORDER BY rowid LIMIT 1', params).fetchone()
+                f' ORDER BY rowid {direction} LIMIT 1', params).fetchone()
             if row is None:
                 self.conn.commit()
                 return None
@@ -313,11 +448,17 @@ class QueueDB:
             (status, message, dt.datetime.now(dt.timezone.utc).isoformat(), task_key))
         self.conn.commit()
 
-    def retry(self, task, message, max_attempts=6):
+    def retry(self, task, message, max_attempts=6, retry_after=None):
         if task['attempts'] >= max_attempts:
             self.finish(task['task_key'], 'error', message)
             return False
-        wait_seconds = min(300, 2 ** max(0, task['attempts'] - 1))
+        backoff = min(300, 2 ** max(0, task['attempts'] - 1))
+        # Bounded jitter decorrelates parallel batch restarts; a server's
+        # Retry-After always wins when it asks for a longer wait.
+        wait_seconds = backoff + random.uniform(0, 0.25 * backoff)
+        if retry_after is not None:
+            wait_seconds = max(wait_seconds, min(
+                MAX_RETRY_AFTER_SECONDS, float(retry_after)))
         self.conn.execute(
             "UPDATE tasks SET status='pending', last_error=?, not_before=?, "
             "updated_at=? WHERE task_key=?",
@@ -354,12 +495,25 @@ class QueueDB:
         return self.conn.execute(
             'SELECT * FROM hash_objects WHERE sha256=?', (sha256,)).fetchone()
 
+    def url_object(self, source_url):
+        """Return the verified object a URL already resolved to, if any."""
+        return self.conn.execute(
+            '''SELECT h.* FROM url_objects u JOIN hash_objects h USING(sha256)
+               WHERE u.source_url=?''', (source_url,)).fetchone()
+
+    def record_url_object(self, source_url, sha256):
+        self.conn.execute(
+            '''INSERT OR IGNORE INTO url_objects (source_url, sha256, fetched_at)
+               VALUES (?, ?, ?)''', (source_url, sha256, utc_date()))
+        self.conn.commit()
+
     def record_document(self, payload, result):
-        if payload.get('rights_status') != 'public_domain':
+        admission = payload.get('rights_status')
+        if admission not in ADMISSION_CLASSES:
             raise HarvestError('refusing to manifest a rights-unverified document')
         rights_basis = payload.get('rights_basis')
         if not isinstance(rights_basis, str) or len(rights_basis.strip()) < 12:
-            raise HarvestError('public-domain manifest row lacks rights basis')
+            raise HarvestError('manifest row lacks an explicit rights basis')
         with self.conn:
             self.conn.execute(
                 '''INSERT OR IGNORE INTO hash_objects
@@ -371,9 +525,10 @@ class QueueDB:
                    (portal_id, portal_source, source_url, mine_id, mine_name,
                     state, county, trs, document_title, doc_date, doc_type,
                     sha256, bytes, retrieval_date, content_type, s3_uri, etag,
-                    last_modified, public_domain, rights_basis, paywalled)
+                    last_modified, admission_class, public_domain,
+                    rights_basis, paywalled)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                           ?, 1, ?, 0)''',
+                           ?, ?, ?, ?, 0)''',
                 (payload['portal_id'], payload['portal_source'],
                  payload['source_url'], payload.get('mine_id') or '',
                  payload.get('mine_name') or '', payload['state'],
@@ -383,7 +538,8 @@ class QueueDB:
                  payload.get('doc_date'), payload.get('doc_type'),
                  result['sha256'], result['bytes'], utc_date(),
                  result['content_type'], result['s3_uri'], result.get('etag'),
-                 result.get('last_modified'), rights_basis))
+                 result.get('last_modified'), admission,
+                 1 if admission == 'public_domain' else 0, rights_basis))
         self.candidate(payload, 'downloaded')
 
     def source_record(self, portal_id, portal_source, mine_id, mine_name,
@@ -682,7 +838,10 @@ class HttpClient:
                 if exc.code in (404, 410):
                     raise PermanentSkip(f'not_found_http_{exc.code}') from exc
                 if exc.code in TRANSIENT_HTTP:
-                    raise TransientHarvestError(f'transient HTTP {exc.code}') from exc
+                    raise TransientHarvestError(
+                        f'transient HTTP {exc.code}',
+                        retry_after=parse_retry_after(
+                            exc.headers.get('Retry-After'))) from exc
                 raise PermanentSkip(f'unsupported_http_{exc.code}') from exc
             except (error.URLError, TimeoutError, OSError) as exc:
                 raise TransientHarvestError(str(exc)) from exc
@@ -713,6 +872,156 @@ class HttpClient:
                 raise PermanentSkip(f'ArcGIS access error: {value["error"]}')
             raise TransientHarvestError(f'API error: {value["error"]}')
         return value, headers, final_url
+
+
+class PeerSync:
+    """Cross-node URL-to-object exchange through a shared prefix.
+
+    Two cooperating crawl nodes walk one queue from opposite ends
+    (``claim_order`` asc/desc).  Each node periodically publishes its verified
+    ``url_objects`` join as JSONL and imports every peer map it finds, so a
+    URL fetched anywhere becomes a zero-network cache hit everywhere.  Only
+    verified hashes, byte counts, and store URIs are exchanged - never
+    document bytes.  Sync is best-effort: a failed exchange only means the
+    nodes briefly overlap, never lost or corrupted work.
+
+    ``prefix`` is ``s3://bucket/key-prefix`` in production or a local
+    directory path in tests.
+    """
+
+    def __init__(self, prefix, node_name, db, interval_seconds=300):
+        if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,32}', node_name):
+            raise ValueError('node_name must be a short lowercase slug')
+        self.prefix = prefix.rstrip('/')
+        self.node_name = node_name
+        self.db = db
+        self.interval_seconds = interval_seconds
+        self._last = 0.0
+        self._s3 = None
+        if self.prefix.startswith('s3://'):
+            without = self.prefix[len('s3://'):]
+            bucket, _, key_prefix = without.partition('/')
+            if not bucket or not key_prefix:
+                raise ValueError('peer-sync prefix needs s3://bucket/prefix')
+            self._s3 = (bucket, key_prefix)
+            try:
+                import boto3  # type: ignore
+                self._client = boto3.client('s3')
+            except ImportError as exc:
+                if not shutil.which('aws'):
+                    raise RuntimeError(
+                        'peer sync requires boto3 or the AWS CLI') from exc
+                self._client = None
+
+    def _own_name(self):
+        return f'urlmap-{self.node_name}.jsonl'
+
+    def maybe_sync(self, now=None):
+        now = time.time() if now is None else now
+        if now - self._last < self.interval_seconds:
+            return False
+        self._last = now
+        try:
+            self.export_map()
+            imported = self.import_peer_maps()
+        except Exception as exc:  # best-effort by design
+            print(f'peer-sync warning: {exc}', file=sys.stderr)
+            return False
+        if imported:
+            print(f'peer-sync imported {imported} url mappings', file=sys.stderr)
+        return True
+
+    def export_map(self):
+        rows = self.db.conn.execute(
+            '''SELECT u.source_url, u.sha256, h.bytes, h.s3_uri, h.content_type
+               FROM url_objects u JOIN hash_objects h USING(sha256)''')
+        payload = ''.join(
+            canonical_json({'source_url': row['source_url'],
+                            'sha256': row['sha256'], 'bytes': row['bytes'],
+                            's3_uri': row['s3_uri'],
+                            'content_type': row['content_type']}) + '\n'
+            for row in rows).encode('utf-8')
+        self._put(self._own_name(), payload)
+
+    def import_peer_maps(self):
+        imported = 0
+        for name in self._list():
+            if name == self._own_name() or not re.fullmatch(
+                    r'urlmap-[a-z0-9-]+\.jsonl', name):
+                continue
+            for line in self._get(name).decode('utf-8', 'replace').splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                if not (isinstance(row.get('sha256'), str) and
+                        re.fullmatch(r'[0-9a-f]{64}', row['sha256']) and
+                        isinstance(row.get('bytes'), int) and row['bytes'] > 0):
+                    continue
+                with self.db.conn:
+                    self.db.conn.execute(
+                        '''INSERT OR IGNORE INTO hash_objects
+                           (sha256, bytes, s3_uri, content_type)
+                           VALUES (?, ?, ?, ?)''',
+                        (row['sha256'], row['bytes'], row['s3_uri'],
+                         row['content_type']))
+                    cursor = self.db.conn.execute(
+                        '''INSERT OR IGNORE INTO url_objects
+                           (source_url, sha256, fetched_at) VALUES (?, ?, ?)''',
+                        (row['source_url'], row['sha256'], utc_date()))
+                    imported += cursor.rowcount
+        return imported
+
+    def _put(self, name, payload):
+        if self._s3 is None:
+            os.makedirs(self.prefix, exist_ok=True)
+            target = os.path.join(self.prefix, name)
+            handle, temp = tempfile.mkstemp(dir=self.prefix)
+            with os.fdopen(handle, 'wb') as sink:
+                sink.write(payload)
+            os.replace(temp, target)
+            return
+        bucket, key_prefix = self._s3
+        key = f'{key_prefix}/{name}'
+        if self._client is not None:
+            self._client.put_object(Bucket=bucket, Key=key, Body=payload,
+                                    ContentType='application/x-ndjson')
+        else:
+            subprocess.run(
+                ['aws', 's3', 'cp', '-', f's3://{bucket}/{key}',
+                 '--content-type', 'application/x-ndjson'],
+                input=payload, check=True, capture_output=True)
+
+    def _list(self):
+        if self._s3 is None:
+            return (sorted(os.listdir(self.prefix))
+                    if os.path.isdir(self.prefix) else [])
+        bucket, key_prefix = self._s3
+        if self._client is not None:
+            result = self._client.list_objects_v2(
+                Bucket=bucket, Prefix=key_prefix + '/')
+            return [os.path.basename(item['Key'])
+                    for item in result.get('Contents', [])]
+        listing = subprocess.run(
+            ['aws', 's3api', 'list-objects-v2', '--bucket', bucket,
+             '--prefix', key_prefix + '/', '--query', 'Contents[].Key',
+             '--output', 'json'], check=True, capture_output=True)
+        keys = json.loads(listing.stdout or 'null') or []
+        return [os.path.basename(key) for key in keys]
+
+    def _get(self, name):
+        if self._s3 is None:
+            with open(os.path.join(self.prefix, name), 'rb') as source:
+                return source.read()
+        bucket, key_prefix = self._s3
+        key = f'{key_prefix}/{name}'
+        if self._client is not None:
+            return self._client.get_object(
+                Bucket=bucket, Key=key)['Body'].read()
+        fetch = subprocess.run(
+            ['aws', 's3', 'cp', f's3://{bucket}/{key}', '-'],
+            check=True, capture_output=True)
+        return fetch.stdout
 
 
 class S3OriginalSink:
@@ -871,6 +1180,29 @@ def _query_url(base, parameters):
     return base + separator + parse.urlencode(parameters)
 
 
+def canonical_candidate_url(url, portal=None):
+    """Normalize a discovered candidate URL to its fetch identity.
+
+    Some IGS detail pages wrap the real PDF target inside the fragment of a
+    detail-page link (``...Mines.aspx?...#https://.../ISMIR/1923_ISMIR.pdf#``);
+    the fragment is the candidate.  Fragments are never sent to servers, so
+    identity always excludes them, and a ``www.`` host alias collapses to the
+    bare host when the portal allowlists both — otherwise the same bytes would
+    be queued and fetched once per alias.
+    """
+    parts = parse.urlsplit(url)
+    fragment = (parts.fragment or '').strip().rstrip('#').strip()
+    if fragment.startswith(('http://', 'https://')):
+        return canonical_candidate_url(fragment, portal)
+    netloc = parts.netloc
+    if portal is not None and netloc.startswith('www.'):
+        bare = netloc[4:]
+        hosts = _portal_https_hosts(portal)
+        if bare in hosts and netloc in hosts:
+            netloc = bare
+    return parse.urlunsplit((parts.scheme, netloc, parts.path, parts.query, ''))
+
+
 def _pdf_candidate_payload(portal, portal_source, source_url, mine_id,
                            mine_name, **metadata):
     rights_status = metadata.pop('rights_status', None)
@@ -915,13 +1247,30 @@ def _portal_https_hosts(portal):
 
 class Harvester:
     def __init__(self, registry, db, sink, client_factory=None,
-                 max_pdf_bytes=DEFAULT_MAX_PDF_BYTES):
+                 max_pdf_bytes=DEFAULT_MAX_PDF_BYTES,
+                 admit_research_copies=False, research_sink=None,
+                 admit_licensed_copies=False, licensed_sink=None,
+                 peer_sync=None):
         self.registry = registry
         self.db = db
         self.sink = sink
         self.max_pdf_bytes = max_pdf_bytes
         self.client_factory = client_factory
         self._clients = {}
+        self.peer_sync = peer_sync
+        # Non-public-domain classes are explicit opt-ins; when enabled they
+        # MUST land in distinct sinks/prefixes so the public-domain corpus
+        # prefix stays exclusively public-domain.
+        self.admit_research_copies = admit_research_copies
+        self.research_sink = research_sink
+        if admit_research_copies and research_sink is None:
+            raise ValueError(
+                'research-copy admission requires a dedicated research sink')
+        self.admit_licensed_copies = admit_licensed_copies
+        self.licensed_sink = licensed_sink
+        if admit_licensed_copies and licensed_sink is None:
+            raise ValueError(
+                'licensed-copy admission requires a dedicated licensed sink')
 
     def client(self, portal):
         portal_id = portal['id']
@@ -1021,6 +1370,8 @@ class Harvester:
     def run(self, portal_ids, max_tasks=None, full_scope=True):
         processed = 0
         while max_tasks is None or processed < max_tasks:
+            if self.peer_sync is not None:
+                self.peer_sync.maybe_sync()
             task = self.db.claim(portal_ids)
             if task is None:
                 break
@@ -1033,12 +1384,18 @@ class Harvester:
                     self.db.candidate(task['payload'], 'skipped', str(exc))
                 self.db.finish(task['task_key'], 'skipped', str(exc))
             except TransientHarvestError as exc:
-                self.db.retry(task, str(exc))
+                self.db.retry(task, str(exc), retry_after=exc.retry_after)
             except Exception as exc:
                 # Parser/schema changes are deterministic and should be visible,
                 # not retried forever as if they were network noise.
                 self.db.finish(task['task_key'], 'error', str(exc))
             processed += 1
+        if self.peer_sync is not None:
+            # Publish the final fetch map so the peer clears its stragglers.
+            try:
+                self.peer_sync.export_map()
+            except Exception as exc:
+                print(f'peer-sync final export warning: {exc}', file=sys.stderr)
         self.db.maybe_complete(portal_ids, full_scope=full_scope)
         return processed
 
@@ -1269,7 +1626,8 @@ class Harvester:
             mine_name, {'county': county, 'trs': trs, 'detail_url': final_url})
         seen = set()
         for href, anchor in page.links:
-            source_url = parse.urljoin(final_url, href)
+            source_url = canonical_candidate_url(
+                parse.urljoin(final_url, href), portal)
             if source_url in seen or not re.search(
                     portal['pdf_link_pattern'], source_url, re.I):
                 continue
@@ -1296,7 +1654,7 @@ class Harvester:
         crawler = portal['crawler']
         depth = task['payload'].get('depth', 0)
         for href, anchor in page.links:
-            url = parse.urljoin(final_url, href)
+            url = canonical_candidate_url(parse.urljoin(final_url, href), portal)
             if re.search(portal['pdf_link_pattern'], url, re.I):
                 payload = _pdf_candidate_payload(
                     portal, 'catalog', url, '', anchor or os.path.basename(
@@ -1345,21 +1703,38 @@ class Harvester:
                 source_url = (crawler['collection_file_base'].rstrip('/') + '/' +
                               parse.quote(collection_id, safe='') + '/' +
                               parse.quote(filename, safe=''))
-                # AZGS metadata licenses vary by collection.  Only an explicit
-                # public-domain declaration is executable under this scope.
+                # AZGS metadata licenses vary by collection.  An explicit
+                # public-domain declaration joins the PD corpus; an explicit
+                # CC BY-NC-SA licence is admissible only as an attributed,
+                # opt-in licensed copy; anything else stays unverified.
                 license_info = metadata.get('license') or {}
                 license_text = ' '.join(str(license_info.get(key) or '')
                                         for key in ('type', 'url'))
-                public_domain = bool(re.search(
-                    r'public\s+domain|creativecommons\.org/publicdomain/',
-                    license_text, re.I))
+                if re.search(
+                        r'public\s+domain|creativecommons\.org/publicdomain/',
+                        license_text, re.I):
+                    rights_status = 'public_domain'
+                    rights_basis = license_text
+                elif re.search(
+                        r'creativecommons\.org/licenses/by-nc-sa/|'
+                        r'\bCC\s+BY-NC-SA\b', license_text, re.I):
+                    rights_status = 'cc_by_nc_sa_licensed'
+                    rights_basis = (
+                        f'{license_text} - explicit CC BY-NC-SA 4.0 licence '
+                        f'from the Arizona Geological Survey for collection '
+                        f'{collection_id} ("{title}"). Stored as a private '
+                        f'attributed research copy under the licence terms '
+                        f'(attribution, non-commercial, share-alike); never '
+                        f'asserted public domain.')
+                else:
+                    rights_status = 'unverified'
+                    rights_basis = None
                 payload = _pdf_candidate_payload(
                     portal, 'current', source_url, collection_id, title,
                     county=county, trs=trs, document_title=filename,
                     doc_date=str(metadata.get('year') or '') or None,
                     doc_type=str(file_info.get('type') or 'document'),
-                    rights_status='public_domain' if public_domain else 'unverified',
-                    rights_basis=(license_text if public_domain else None))
+                    rights_status=rights_status, rights_basis=rights_basis)
                 self._enqueue_document(portal, payload)
         offset = int(task['payload']['offset'])
         total = int(result.get('collectionCount') or 0)
@@ -1380,13 +1755,44 @@ class Harvester:
         match = re.search(r'\bmddata\s*=\s*', text)
         if not match:
             raise HarvestError('NBMG page no longer embeds mddata inventory')
-        try:
-            rows, _ = json.JSONDecoder().raw_decode(text[match.end():])
-        except json.JSONDecodeError as exc:
-            raise HarvestError(f'cannot decode NBMG mddata: {exc}') from exc
+        candidate = text[match.end():]
+        # The retired page's embedded inventory is JavaScript with sloppy
+        # source data: a few records carry raw backslashes (e.g. a literal
+        # "VEN\EIN" typo) that strict JSON rejects.  Escape any backslash
+        # that does not begin a valid JSON escape; every other byte is
+        # decoded unchanged.
+        candidate = re.sub(r'(?<!\\)\\(?!["\\/bfnrtu])', r'\\\\', candidate)
+        decoder = json.JSONDecoder()
+        rows = None
+        for _ in range(4):
+            try:
+                rows, _ = decoder.raw_decode(candidate)
+                break
+            except json.JSONDecodeError as exc:
+                # JS tolerates a trailing comma before the closing bracket;
+                # strict JSON does not.  Remove exactly the comma the decoder
+                # tripped on rather than rewriting string contents.
+                position = exc.pos
+                if (exc.msg.startswith('Expecting value') and
+                        candidate[position:position + 1] == ']'):
+                    before = candidate[:position].rstrip()
+                    if before.endswith(','):
+                        candidate = before[:-1] + candidate[len(before):]
+                        continue
+                raise HarvestError(
+                    f'cannot decode NBMG mddata: {exc}') from exc
         if not isinstance(rows, list):
             raise HarvestError('NBMG mddata inventory is not an array')
-        queued = []
+        if re.search(r'//\s*this is only a portion of the records', text, re.I):
+            # The page's own source comment disclaims completeness, so this
+            # inventory can never establish an exhausted cursor.
+            self.db.observe(portal['id'], 'crawl_completion_blocker', {
+                'source': 'embedded_legacy_inventory',
+                'reason': 'source_declares_partial_inventory',
+                'effect': ('the retired page comments that the embedded '
+                           'array is only a portion of the MDDB records; '
+                           'harvest results are a lower bound, never an '
+                           'exhausted district-file corpus')})
         for row in rows:
             if not isinstance(row, list) or len(row) < 10:
                 continue
@@ -1399,20 +1805,13 @@ class Harvester:
                 portal, 'legacy_static_inventory', source_url, document_id,
                 district, county=county, document_title=title or document_id,
                 doc_date=str(row[5] or '') or None, doc_type='mining_district_file')
-            self.db.candidate(
-                payload, 'queued' if payload['rights_status'] == 'public_domain'
-                else 'skipped', None if payload['rights_status'] == 'public_domain'
-                else 'rights_unverified')
-            if payload['rights_status'] != 'public_domain':
-                continue
-            queued.append({
-                'portal_id': portal['id'],
-                'task_key': self._document_key(payload), 'kind': 'document',
-                'url': source_url, 'payload': payload})
             self.db.source_record(
                 portal['id'], 'legacy_static_inventory', document_id, district,
                 {'county': county, 'title': title})
-        self.db.enqueue_many(queued)
+            # Route through the standard admission gate so rights_rules
+            # classes (public_domain AND research-copy opt-in) apply here
+            # exactly as they do on every other adapter.
+            self._enqueue_document(portal, payload)
         self.db.observe(portal['id'], 'nbmg_embedded_rows', len(rows))
 
     @staticmethod
@@ -1423,7 +1822,18 @@ class Harvester:
         return f'{payload["portal_id"]}:document:{identity}'
 
     def _enqueue_document(self, portal, payload):
-        if payload['rights_status'] != 'public_domain':
+        rights_status = payload['rights_status']
+        if rights_status == 'state_archive_research_copy' and \
+                not self.admit_research_copies:
+            self.db.candidate(payload, 'skipped',
+                              'research_copy_admission_disabled')
+            return False
+        if rights_status == 'cc_by_nc_sa_licensed' and \
+                not self.admit_licensed_copies:
+            self.db.candidate(payload, 'skipped',
+                              'licensed_copy_admission_disabled')
+            return False
+        if rights_status not in ADMISSION_CLASSES:
             self.db.candidate(payload, 'skipped', 'rights_unverified')
             return False
         if not payload.get('rights_basis'):
@@ -1439,8 +1849,24 @@ class Harvester:
 
     def _document(self, task, portal):
         payload = task['payload']
-        if payload.get('rights_status') != 'public_domain':
+        rights_status = payload.get('rights_status')
+        if rights_status not in ADMISSION_CLASSES or (
+                rights_status == 'state_archive_research_copy'
+                and not self.admit_research_copies) or (
+                rights_status == 'cc_by_nc_sa_licensed'
+                and not self.admit_licensed_copies):
             raise PermanentSkip('rights_unverified')
+        # Shared district files are linked from dozens of mine pages; a URL
+        # fetched and byte-verified once serves every later mine linkage
+        # without another request to the source host.
+        cached = self.db.url_object(task['url'])
+        if cached:
+            self.db.record_document(payload, {
+                'sha256': cached['sha256'], 'bytes': cached['bytes'],
+                's3_uri': cached['s3_uri'],
+                'content_type': cached['content_type'],
+                'etag': None, 'last_modified': None})
+            return
         client = self.client(portal)
         with client.open(task['url'], accept='application/pdf') as response:
             length = response.headers.get('Content-Length')
@@ -1476,7 +1902,13 @@ class Harvester:
                         raise HarvestError('SHA-256 object byte count conflict')
                     s3_uri = known['s3_uri']
                 else:
-                    s3_uri = self.sink.put(
+                    if rights_status == 'state_archive_research_copy':
+                        sink = self.research_sink
+                    elif rights_status == 'cc_by_nc_sa_licensed':
+                        sink = self.licensed_sink
+                    else:
+                        sink = self.sink
+                    s3_uri = sink.put(
                         stream, sha256, count, 'application/pdf', portal['id'])
                 result = {
                     'sha256': sha256, 'bytes': count, 's3_uri': s3_uri,
@@ -1485,6 +1917,7 @@ class Harvester:
                     'last_modified': response.headers.get('Last-Modified'),
                 }
                 self.db.record_document(payload, result)
+                self.db.record_url_object(task['url'], sha256)
 
 
 def _select_portals(registry, values):
@@ -1513,6 +1946,30 @@ def build_parser():
     crawl.add_argument('--s3-prefix', default='originals')
     crawl.add_argument('--max-tasks', type=int)
     crawl.add_argument('--refresh', action='store_true')
+    crawl.add_argument(
+        '--admit-research-copies', action='store_true',
+        help='admit portal-rule state_archive_research_copy candidates as '
+             'truthfully labeled non-public-domain private research copies')
+    crawl.add_argument(
+        '--s3-research-prefix', default='research-copies',
+        help='separate prefix for research copies; never the PD corpus prefix')
+    crawl.add_argument(
+        '--admit-licensed-copies', action='store_true',
+        help='admit explicitly CC BY-NC-SA-licensed candidates as attributed '
+             'private licensed copies (never public domain)')
+    crawl.add_argument(
+        '--s3-licensed-prefix', default='licensed-copies',
+        help='separate prefix for licensed copies; never the PD corpus prefix')
+    crawl.add_argument(
+        '--claim-order', choices=('asc', 'desc'), default='asc',
+        help='queue walk direction; cooperating nodes take opposite ends')
+    crawl.add_argument(
+        '--peer-sync-prefix', default=None,
+        help='shared s3://bucket/prefix (or directory) for cross-node '
+             'url-map exchange')
+    crawl.add_argument(
+        '--node-name', default=None,
+        help='short lowercase slug identifying this node in peer sync')
     export = subparsers.add_parser('export')
     export.add_argument('--queue', required=True)
     export.add_argument('--manifest', required=True)
@@ -1525,13 +1982,42 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
     try:
         registry = load_registry(args.portals_dir)
-        db = QueueDB(args.queue)
+        db = QueueDB(args.queue, claim_order=getattr(args, 'claim_order', 'asc'))
         if args.command == 'crawl':
             portal_ids = _select_portals(registry, args.portal)
             if args.refresh:
                 db.refresh(portal_ids)
             sink = S3OriginalSink(args.s3_bucket, args.s3_prefix)
-            harvester = Harvester(registry, db, sink)
+            research_sink = None
+            if args.admit_research_copies:
+                if args.s3_research_prefix.rstrip('/') == \
+                        args.s3_prefix.rstrip('/'):
+                    raise ValueError(
+                        'research-copy prefix must differ from the '
+                        'public-domain corpus prefix')
+                research_sink = S3OriginalSink(
+                    args.s3_bucket, args.s3_research_prefix)
+            licensed_sink = None
+            if args.admit_licensed_copies:
+                prefixes = {args.s3_prefix.rstrip('/'),
+                            args.s3_research_prefix.rstrip('/')}
+                if args.s3_licensed_prefix.rstrip('/') in prefixes:
+                    raise ValueError(
+                        'licensed-copy prefix must differ from every other '
+                        'corpus prefix')
+                licensed_sink = S3OriginalSink(
+                    args.s3_bucket, args.s3_licensed_prefix)
+            peer_sync = None
+            if args.peer_sync_prefix:
+                if not args.node_name:
+                    raise ValueError('--peer-sync-prefix requires --node-name')
+                peer_sync = PeerSync(args.peer_sync_prefix, args.node_name, db)
+            harvester = Harvester(
+                registry, db, sink,
+                admit_research_copies=args.admit_research_copies,
+                research_sink=research_sink,
+                admit_licensed_copies=args.admit_licensed_copies,
+                licensed_sink=licensed_sink, peer_sync=peer_sync)
             harvester.seed(portal_ids, mine_ids=args.mine_id)
             processed = harvester.run(
                 portal_ids, max_tasks=args.max_tasks,

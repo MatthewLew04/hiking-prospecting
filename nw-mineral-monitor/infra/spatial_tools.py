@@ -59,7 +59,10 @@ def _validate_store(path: str) -> None:
             "SELECT value FROM store_metadata WHERE key='schema_version'").fetchone()
         if not version or version[0] != "1":
             raise RuntimeError("unsupported WS12 spatial database schema")
-        required = {"store_metadata", "geology", "faults", "claims", "mines"}
+        # Must match the schema SpatialStore.initialize() actually creates
+        # (and deploy.sh upload_spatial_store's own pre-upload check).
+        required = {"store_metadata", "layers", "features", "feature_index",
+                    "rasters", "documents", "document_aliases"}
         present = {row[0] for row in connection.execute(
             "SELECT name FROM sqlite_master WHERE type='table'")}
         if not required.issubset(present):

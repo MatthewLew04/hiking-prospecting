@@ -1,5 +1,13 @@
 # Leapfrog Geo integration
 
+> **2026-08-21:** the map now has its own Leapfrog-style 3-D modeller —
+> `site/model3d.html`, opened from any mine card's **OPEN 3D MODEL** button
+> (see [`GEOMODEL.md`](GEOMODEL.md)). It reads and writes Leapfrog's files
+> directly: **OMF v2.0 for Leapfrog Geo 2025.1+** (the version that replaced
+> v0.9 in 2025.1) and **OMF v0.9 for 5.x–2024.1**, plus DXF/OBJ/GOCAD meshes,
+> Surfer / Geosoft / GXF / Arc ASCII grids, CSV points, structural, drillhole and
+> block-model tables. The exporter below remains the scripted AOI-kit route.
+
 Two directions, both shipped:
 
 1. **Monitor → Leapfrog** — two ways:

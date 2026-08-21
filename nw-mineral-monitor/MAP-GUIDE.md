@@ -342,3 +342,40 @@ mapping scale. **GIS vs. GeoTIFF** — data vs. picture: GIS layers are shapes
 the computer can read and score; a GeoTIFF is a scanned map pinned to
 coordinates, for human eyes. This map scores only the first kind, and shows
 you both.
+
+## Part 7 — the 3-D model (OPEN 3D MODEL)
+
+Every mine, claim and occurrence card ends with **⛰ OPEN 3D MODEL**; the sidebar's
+**3D MODEL** section does the same for the view centre (zoom ≥ 9, radius 1.5–6 km).
+A new tab opens `model3d.html` with the site's terrain (same terrarium tiles as
+3D TERRAIN), draped imagery (VIEW ▾ Drape: satellite / USGS topo / Macrostrat
+geology / elevation colours), the AOI's geology and faults on the ground, graded
+mines, targets and claim centroids, plus whatever tiled points the map had
+loaded in the viewport.
+
+* **Navigate** — left-drag orbit, right-drag pan, wheel zoom, double-click
+  re-centres, `f` fit, `t` top, `n` look north, VE slider for exaggeration.
+* **Layers** — tick to show/hide, swatch to recolour, ⋯ for zoom / export /
+  delete; click a layer or pick in the scene for properties (colour by an
+  attribute, cut-offs, labels, tubes).
+* **TOOLS ▾ Section & slice** — draw a section line or use W–E / S–N; the
+  plane clips the model and cuts every surface; the 2-D panel shows the section
+  the way you would draw it; export DXF / PNG.
+* **TOOLS ▾ Workings from maps** — georeference a scanned level plan at its
+  level elevation (or a longitudinal section between two surface points), trace
+  drifts on it, add adits from portals (bearing + length), shafts from collars
+  (depth, dip), raises and stopes; feet convert to metres; **SEND FOOTPRINT TO
+  MAP** brings the plan view back to MY DATA.
+* **TOOLS ▾ Stratigraphy** — the pancake model (units youngest-first from
+  contact points / surfaces / constants, deposit vs erosion rules), volumes,
+  virtual drillhole.
+* **TOOLS ▾ Block model & kriging** — block grid, samples + value column,
+  experimental variogram and fit, ordinary kriging / IDW, domain by unit,
+  cut-offs, grade–tonnage.
+* **IMPORT / EXPORT** — drop OMF, DXF, OBJ, GOCAD, Surfer/Geosoft grids, GXF,
+  ZMAP+, CSV, Geosoft XYZ, SEG-Y, LAS, GeoJSON, images or PDF pages; export the
+  whole project for Leapfrog (OMF v2.0 for 2025.1+, v0.9 for older), a per-format
+  kit zip with a README of click-paths, or single layers in any format.
+
+Models autosave in the browser (PROJECTS ▾ lists them); nothing is uploaded.
+

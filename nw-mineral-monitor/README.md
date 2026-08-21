@@ -61,6 +61,7 @@ content-addressed release evidence and every other gate item are accepted.
 | `pipelines/spatial_store.py` · `infra/spatial_tools.py` | Private RTree spatial evidence store and ASK tools for geology, claims, mines, faults, magnetic grids, and mine documents |
 | `outbox/` · `site/data/outbox/` | Draft-only correspondence and its UI-safe metadata; an outbox file is never authorization to send it |
 | `pipelines/` | AOI research pipelines (PLSS, claims w/ legals, land status, open-ground compute, web scrub, dossiers, inbox ingest) — config-driven via `config/aoi.json`, cached, idempotent |
+| `site/model3d.html` · `site/assets/geomodel/` · `pipelines/geomodel/` | **3-D geological modeller** (Leapfrog-style alternate view): every mine card's **OPEN 3D MODEL** builds a model around the site — terrain + draped imagery/geology, workings digitised from historic maps (georeferenced level plans / sections → adits, drifts, shafts, stopes), pancake stratigraphy, kriged block models, slicing; imports/exports OMF v0.9 + v2.0, DXF/OBJ/GOCAD, Surfer/Geosoft/GXF/ZMAP/Irap grids, UBC, CSV, SEG-Y, LAS — see [`GEOMODEL.md`](GEOMODEL.md) |
 | `pipelines/leapfrog_export.py` · `exports/leapfrog/` | Leapfrog Geo starter kits: the map's **LEAPFROG EXPORT** button packages the current view client-side (UTM CSVs w/ grades, AOI shapefiles, Arc/Info ASCII DEM, round-trip-validated OMF v0.9, README) and the pipeline builds full-AOI kits — see [`LEAPFROG.md`](LEAPFROG.md); 3D TERRAIN is the in-browser counterpart |
 | `MLRS-PUBLICATION.md` | Operator contract for building immutable 19-state federal active/closed PMTiles from checksum-pinned private staging |
 | `OPEN-GROUND-PUBLICATION.md` | Conservative PLSS-section open-ground derivation and immutable PMTiles publication contract for the exact 19 claim states |
@@ -195,6 +196,25 @@ Final prepublish QA combines each layer's local checksum/tile validation and
 remote-object verification before eviction with a metadata/UI validation of
 the final 18-ready/zero-blocked set, the DWM-193 native-vector rescan,
 outbox guardrails, and the no-raster-in-git policy.
+
+## 3-D model (2026-08-21)
+
+`site/model3d.html` is the Leapfrog-style alternate view. A mine card's **⛰ OPEN
+3D MODEL** opens it around that site with the terrarium terrain, draped
+satellite / USGS topo / Macrostrat imagery, the AOI's mapped units and faults
+on the ground, graded mines, targets and claim centroids. Tools: georeference a
+scanned level plan or section and trace adits / drifts / shafts / raises /
+stopes into 3-D (feet converted at the door, every feature keeps its source and
+confidence); a pancake stratigraphy builder (RBF / kriging contact surfaces with
+deposit / erosion rules, unit volumes, virtual drillholes); block models with
+variogram fitting and ordinary kriging; RBF implicit surfaces; sections that
+clip, intersect, fill and slice everything with a 2-D section panel. File I/O
+covers what Leapfrog (OMF v2.0 for 2025.1+, v0.9 for older, DXF, OBJ, GOCAD,
+CSV, grids), Surfer, Geosoft (GRD, GXF, XYZ, UBC) and Kingdom (ZMAP+, Irap,
+SEG-Y, LAS) read and write. The Python twin `pipelines/geomodel/` builds the
+same kits in batch (`pipelines/geomodel_kit.py site --grade-index 157`) and
+converts between any supported formats. Details, format matrix, honesty notes
+and the mine-files → underground-maps roadmap: [`GEOMODEL.md`](GEOMODEL.md).
 
 ## WS12 — mine files, cited documents, and GIS tools (2026-08-14)
 

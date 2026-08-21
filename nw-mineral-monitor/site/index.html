@@ -377,6 +377,10 @@ footer .right{margin-left:auto}
         <div id="lfxBtns"><button class="dosbtn" id="lfxGo">⬇ EXPORT CURRENT VIEW FOR LEAPFROG</button></div>
         <label class="lrow"><input type="checkbox" id="lfxDem" checked> <span>INCLUDE TERRAIN GRID (.asc DEM)</span></label>
         <div class="subnote" id="lfxNote" style="padding-left:0">frame your area (zoom ≥ 8), turn on the layers you want, and export — you get a zip of Leapfrog-ready files: UTM point CSVs with grades, AOI geology/fault/section shapefiles, a real DEM, and an .omf bundle, plus import instructions</div></div>
+      <div class="sec"><h3>3D MODEL</h3>
+        <div id="g3dBtns"><button class="dosbtn" id="g3dGo">⛰ OPEN 3D MODEL AT VIEW CENTER</button></div>
+        <label class="lrow"><span>radius</span> <select id="g3dRadius" style="margin-left:6px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px"><option value="1500">1.5 km</option><option value="2500" selected>2.5 km</option><option value="4000">4 km</option><option value="6000">6 km</option></select></label>
+        <div class="subnote" id="g3dNote" style="padding-left:0">every mine card also has OPEN 3D MODEL: a Leapfrog-style modeller opens with the real terrain, draped imagery, map geology/faults, graded mines and claims around the site — georeference old level plans, trace adits/drifts/shafts into 3-D, build pancake stratigraphy, krige grades into a block model, slice it, and import/export Leapfrog (OMF), Surfer, Geosoft, Kingdom files</div></div>
       <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
         <div class="subnote" id="ctyNote" style="padding-left:0"></div>
         <div id="ctyBtns"></div></div>
@@ -458,7 +462,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-19-lfx';
+const BUILD = '2026-08-21-gm1';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // BLM's current public-domain claim-state set. Non-claim states use land
@@ -891,7 +895,7 @@ async function guardStorage(){
     if ('caches' in window) for (const k of await caches.keys())
       if (/^nwmm/i.test(k)) await caches.delete(k);
     if (indexedDB.databases) for (const db of await indexedDB.databases())
-      if (db.name && /^nwmm/i.test(db.name) && db.name!=='nwmm-userlayers')
+      if (db.name && /^nwmm/i.test(db.name) && db.name!=='nwmm-userlayers' && db.name!=='nwmm-geomodel')   // nwmm-geomodel = the 3-D modeller's saved projects + map hand-off
         indexedDB.deleteDatabase(db.name);
     // size-audit the one legitimate DB; evict biggest-first over budget
     const recs = await idbAll().catch(()=>[]);
@@ -1003,6 +1007,7 @@ function initMap(){
       task('geophys',loadGeophys),
       task('terrain3d',()=>loadTerrain3D()),
       task('leapfrog',()=>loadLeapfrogExport()),
+      task('geomodel3d',()=>loadGeomodel3D()),
       task('userLayers',loadUserLayers),
       task('countyAlerts',async()=>{await loadCounty();await loadAlerts();}),
       task('docs',loadDocs),
@@ -1995,6 +2000,7 @@ function showGrade(i){
     <div class="links">${GR.url[i]?`<a href="${esc(GR.url[i])}" target="_blank">Source ↗</a>`:''}
       ${GR.x[i]!=null?`<a href="${gmaps(GR.y[i],GR.x[i])}" target="_blank">Google Maps ↗</a>`:''}</div>
     <button class="dosbtn" onclick="showDossier('mine','${i}')">📋 DOSSIER — SOURCES, HISTORY, CONTACTS</button>
+    ${g3dButton(GR.x[i], GR.y[i], GR.name[i], {gi:i})}
     ${quadGradeBlock(i)}
     <div class="src">${esc(GR.src[i])}. Bonanza assay-text numbers are hand-picked specimens, not mine averages — the quote is the evidence. Open-ground uses the claims snapshot only: famous old districts are often PATENTED (private land carries no BLM claims — Goldfield is the classic trap), so "no claims" ≠ "open to staking". Verify ownership & withdrawals on the ground.</div>`);
 }
@@ -2491,6 +2497,7 @@ function showFeature(f){
       <div class="badges">${badge(p.status==='P'?'active':'abandoned',(SMAP[p.status]||'UNKNOWN').toUpperCase())} ${gbadge(Number(p.g)||0)} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Commodities',esc(p.commodities)||'—'],['County',esc(p.county)],['Deposit type',esc(p.deposit)],['Record quality',esc(p.quality)]])}
       <div class="links"><a href="https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=${encodeURIComponent(p.id)}" target="_blank">MRDS record ↗</a>${nationalResearchAnchors(p.nm,'',p.st)}</div>
+      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm):'';})()}
       <div class="src">USGS Mineral Resources Data System, streamed from the 49-state PMTiles baseline. MRDS is a legacy lead, not current land status.</div>`);
     return;
   }
@@ -2499,6 +2506,7 @@ function showFeature(f){
       <div class="badges">${badge('abandoned','TOPO-MAP FEATURE')} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Feature',esc(p.typ)],['County',esc(p.co)],['Source quad',esc(p.quad)],['Map year',p.yr],['Map scale',p.scale?`1:${Number(p.scale).toLocaleString()}`:null],['GDA ID',p.gda]])}
       ${p.nm?`<div class="links">${nationalResearchAnchors(p.nm,'',p.st)}</div>`:''}
+      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.typ||'mine feature'):'';})()}
       <div class="src">USGS USMIN mine symbols, streamed from the 49-state PMTiles baseline. Historical map evidence is not permission to enter a site. <b>Never enter adits or shafts.</b></div>`);
     return;
   }
@@ -2509,6 +2517,7 @@ function showFeature(f){
       ${kv([['ARDF ID',esc(p.id),1],['Main commodities',esc(p.g)],['Other commodities',esc(p.other)],['Occurrence type',esc(p.typ)],['Production',esc(p.production)],['District',esc(p.district)],['Quadrangle',esc(p.quad)],['Deposit model',esc(p.model)],['Host rock',esc(p.host)],['Ore minerals',esc(p.ore)]])}
       ${p.geo?`<div class="desc">${esc(p.geo)}</div>`:''}${p.work?`<div class="desc"><b>Workings:</b> ${esc(p.work)}</div>`:''}
       <div class="links"><a href="https://mrdata.usgs.gov/ardf/" target="_blank">USGS ARDF ↗</a>${xy.length===2?`<a href="${gmaps(xy[1],xy[0])}" target="_blank">Google Maps ↗</a>`:''}${nationalResearchAnchors(p.nm,'','AK')}</div>
+      ${xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.id):''}
       <div class="src">Primary reference: ${esc(p.ref||'not supplied in this record')}. ARDF is Alaska's occurrence backbone; it is historical geologic evidence, not land status or access permission.</div>`);
     return;
   }
@@ -2554,6 +2563,7 @@ function showFeature(f){
       <div class="badges">${p.ex?badge('active',esc(String(p.status||'existing').toUpperCase())):badge('abandoned',esc(String(p.status||p.typ||'site').toUpperCase()))} ${gbadge(Number(p.g)||0)} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Commodities',esc(p.commodities)||'—'],['Site type',esc(p.typ)],['Record',esc(p.id),1]])}
       <div class="links">${xy.length===2?`<a href="${gmaps(xy[1],xy[0])}" target="_blank">Google Maps ↗</a>`:''}${nationalResearchAnchors(p.nm,'',p.st)}</div>
+      ${xy.length===2? g3dButton(xy[0],xy[1],p.nm):''}
       <div class="src">State geological-survey occurrence, streamed from the national state-survey PMTiles archive. Source-level provenance is recorded in the manifest.</div>`);
     return;
   }
@@ -2564,6 +2574,7 @@ function showFeature(f){
       <div class="badges">${closed?badge('closed','CLOSED CLAIM'):(String(p.disp||'').toUpperCase()==='FILED'?badge('exploration','FILED / PENDING'):badge('active',esc(String(p.disp||'ACTIVE').toUpperCase())))} <span class="badge abandoned">${esc(claimType.toUpperCase())}</span> <span class="badge abandoned">${esc(p.st)}</span>${p.partial?' <span class="badge exploration">PARTIAL SNAPSHOT</span>':''}</div>
       ${kv([['Serial',esc(p.serial),1],['Acres',p.acres]])}
       <button class="dosbtn" onclick="showDossier('claim','${esc(p.serial)}')">📋 DOSSIER — CLAIMANTS, RECORDS, HISTORY</button>
+      ${xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.serial):''}
       <div class="links"><a href="https://mlrs.blm.gov/s/" target="_blank">Look up serial in MLRS ↗</a>${xy.length===2?`<a href="${gmaps(xy[1],xy[0])}" target="_blank">Google Maps ↗</a>`:''}${nationalResearchAnchors(p.nm,p.serial,p.st)}</div>
       <div class="src">BLM MLRS centroid streamed from the national claims PMTiles snapshot (${esc(((MAN.national_baselines||{}).claims||{}).retrieved||'date unavailable')}). ${p.partial?'This state/mode came from a capped legacy snapshot and is explicitly incomplete pending a fresh pull. ':''}${closed?'This historic claim record is closed; that alone does not establish present mineral-entry availability. Verify later claims, withdrawals, and surface/mineral ownership.':'An active claim is private mineral property — get permission before prospecting.'}</div>`);
     return;
@@ -5217,6 +5228,73 @@ ${manifest.map(m2=>'- '+m2).join('\n')}
   LFX.busy=false; $('lfxGo').disabled=false;
 }
 function loadLeapfrogExport(){ $('lfxGo').onclick=()=>{lfxExport();}; }
+
+/* ---------- 3D MODEL (site/model3d.html) ----------
+   One click on a mine card opens the Leapfrog-style modeller around that site.
+   The map hands over what it has LOADED for the area (tiled point layers in
+   the viewport: viewport snapshot, never an archive) through IndexedDB
+   'nwmm-geomodel' (whitelisted in guardStorage) so the 3-D page does not have
+   to decode PMTiles itself; everything else (terrain, imagery, AOI bundles,
+   grades) the page fetches on its own. */
+const G3D = {db:null};
+function g3dSlug(s){ return String(s||'site').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'site'; }
+function g3dDb(){
+  if (G3D.db) return G3D.db;
+  G3D.db = new Promise((res,rej)=>{
+    const rq = indexedDB.open('nwmm-geomodel', 1);
+    rq.onupgradeneeded = ()=>{ const db=rq.result; if(!db.objectStoreNames.contains('projects'))db.createObjectStore('projects',{keyPath:'id'}); if(!db.objectStoreNames.contains('handoff'))db.createObjectStore('handoff',{keyPath:'key'}); };
+    rq.onsuccess = ()=>res(rq.result); rq.onerror = ()=>rej(rq.error);
+  });
+  return G3D.db;
+}
+function g3dHandoff(lon, lat, radiusM){
+  // viewport snapshot of the toggled-on tiled point layers within ~1.3x the radius
+  const dLat = radiusM*1.3/110540, dLon = radiusM*1.3/(111320*Math.cos(lat*Math.PI/180));
+  const inb = (x,y)=> Math.abs(x-lon)<=dLon && Math.abs(y-lat)<=dLat;
+  const SNAP=[{flag:'mrds',src:'national-mrds',sl:'mrds'},{flag:'usmin',src:'national-usmin',sl:'usmin'},{flag:'stategeo',src:'national-stategeo',sl:'stategeo'},
+              {flag:'ardf',src:'national-ardf',sl:'ardf'},{flag:'claimsA',src:'national-claims',sl:'active'},{flag:'claimsC',src:'national-claims',sl:'closed'}];
+  const layers={}; let total=0;
+  for(const spec of SNAP){
+    if(!S.layers[spec.flag]||!map.getSource(spec.src))continue;
+    const seen=new Set(), out=[];
+    let feats=[]; try{ feats=map.querySourceFeatures(spec.src,{sourceLayer:spec.sl}); }catch(_){ continue; }
+    for(const f of feats){
+      if(!f.geometry||f.geometry.type!=='Point')continue;
+      const [x,y]=f.geometry.coordinates; if(!inb(x,y))continue;
+      const p=f.properties||{}; const key=p.id!=null?p.id:(p.serial!=null?p.serial:(p.nm||'')+'|'+x.toFixed(5)+'|'+y.toFixed(5));
+      if(seen.has(key))continue; seen.add(key);
+      out.push({x,y,p}); if(out.length>=5000)break;
+    }
+    if(out.length){ layers[spec.flag]=out; total+=out.length; }
+  }
+  return {layers, total, at:new Date().toISOString(), note:'viewport snapshot of loaded tiles, not an archive'};
+}
+async function open3D(lon, lat, name, opts={}){
+  lon=+lon; lat=+lat; if(!isFinite(lon)||!isFinite(lat)) return;
+  const radius = opts.radius || +($('g3dRadius')&&$('g3dRadius').value) || 2500;
+  const key = g3dSlug(name||'site')+'-'+lat.toFixed(3)+'_'+lon.toFixed(3);
+  try{
+    const h = g3dHandoff(lon, lat, radius);
+    if (h.total){ const db=await g3dDb(); await new Promise((res,rej)=>{ const tx=db.transaction('handoff','readwrite'); tx.objectStore('handoff').put({key:'site:'+key, data:h, at:h.at}); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+  }catch(e){ console.warn('[nwmm 3d handoff]', e); }
+  const aoi = opts.aoi || (typeof aoiAtPoint==='function' ? aoiAtPoint(lon,lat) : null) || 'auto';
+  const q = new URLSearchParams({lat:lat.toFixed(6), lon:lon.toFixed(6), name:name||'', r:String(radius), aoi});
+  if (opts.gi!=null) q.set('gi', String(opts.gi));
+  window.open('model3d.html?'+q.toString(), '_blank');
+}
+function aoiAtPoint(lon,lat){
+  const aois=Object.keys((MAN&&MAN.ws56)||{}).filter(k=>k.startsWith('geology_')).map(k=>k.slice(8));
+  for (const a of aois){ const b=(MAN.ws56['geology_'+a]||{}).bbox; if (b && b.length===4 && lon>=b[0]&&lon<=b[2]&&lat>=b[1]&&lat<=b[3]) return a; }
+  return null;
+}
+function g3dButton(lon, lat, name, opts={}){
+  if (lon==null||lat==null||!isFinite(+lon)||!isFinite(+lat)) return '';
+  const o=JSON.stringify(opts).replace(/"/g,'&quot;');
+  return `<button class="dosbtn" onclick="open3D(${(+lon).toFixed(6)},${(+lat).toFixed(6)},'${esc(String(name||'')).replace(/'/g,"\\'")}',${o})" title="open a 3-D geological model around this site (new tab)">⛰ OPEN 3D MODEL</button>`;
+}
+function loadGeomodel3D(){
+  $('g3dGo').onclick=()=>{ const c=map.getCenter(); if(map.getZoom()<9){ $('g3dNote').textContent='zoom in to a site first (zoom ≥ 9) — the 3-D model is built around the view centre'; return; } open3D(c.lng, c.lat, `site ${c.lat.toFixed(4)} ${c.lng.toFixed(4)}`); };
+}
 
 /* ---------- county gold-signal ranking ---------- */
 let CG = null, CGIDX = {};

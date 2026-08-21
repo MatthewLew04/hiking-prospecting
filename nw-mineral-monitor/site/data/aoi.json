@@ -1,0 +1,38 @@
+{
+ "default": "cassia",
+ "aois": {
+  "delamar24k": {
+   "name": "De Lamar\u2013Swisher Mountain 24k map area, Idaho",
+   "state": "ID",
+   "bbox": [
+    -117.0011,
+    42.9973,
+    -116.7508,
+    43.1275
+   ],
+   "utm_zone": 11
+  },
+  "clearlake": {
+   "name": "Clear Lake\u2013Knoxville district, California",
+   "state": "CA",
+   "bbox": [
+    -122.95,
+    38.7,
+    -122.1,
+    39.15
+   ],
+   "utm_zone": 10
+  },
+  "cassia": {
+   "name": "Cassia County, Idaho",
+   "state": "ID",
+   "bbox": [
+    -114.2867,
+    41.9882,
+    -113.0,
+    42.6878
+   ],
+   "utm_zone": 12
+  }
+ }
+}

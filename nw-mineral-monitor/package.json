@@ -8,13 +8,17 @@
     "vendor:pdfjs": "mkdir -p site/assets/pdfjs/standard_fonts site/assets/pdfjs/wasm && cp node_modules/pdfjs-dist/legacy/build/pdf.min.mjs node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs site/assets/pdfjs/ && cp node_modules/pdfjs-dist/LICENSE site/assets/pdfjs/LICENSE && cp node_modules/pdfjs-dist/standard_fonts/* site/assets/pdfjs/standard_fonts/ && cp node_modules/pdfjs-dist/wasm/* site/assets/pdfjs/wasm/",
     "test:python": "python3 -m unittest discover -s tests -v",
     "test:browser": "node tools/measure.js",
-    "test:doc-viewer": "node tools/test_doc_viewer.js"
+    "test:doc-viewer": "node tools/test_doc_viewer.js",
+    "vendor:three": "mkdir -p site/assets/three && cp node_modules/three/build/three.module.min.js node_modules/three/build/three.core.min.js site/assets/three/ && cp node_modules/three/examples/jsm/controls/OrbitControls.js site/assets/three/ && cp node_modules/three/LICENSE site/assets/three/LICENSE",
+    "test:geomodel": "python3 -m unittest discover -s tests -p 'test_geomodel_*.py' && node tools/test_gm_formats.mjs && node tools/test_gm_engine.mjs",
+    "test:model3d": "node tools/test_model3d.mjs"
   },
   "dependencies": {
     "pdfjs-dist": "6.2.108",
     "pmtiles": "4.5.0"
   },
   "devDependencies": {
-    "playwright": "^1.62.1"
+    "playwright": "^1.62.1",
+    "three": "0.185.1"
   }
 }

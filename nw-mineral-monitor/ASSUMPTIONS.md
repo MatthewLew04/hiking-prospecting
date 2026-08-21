@@ -146,3 +146,19 @@
     reader as "not located on this page" rather than highlighted
     somewhere plausible. This does not assert that OCR is accurate, and
     an unlocated quote is not evidence the source is wrong.
+
+48. **A 3-D model is a digitising bridge, not new evidence.** The modeller
+    (`site/model3d.html`, `pipelines/geomodel/`) builds everything from
+    sources the map already shows — public terrain, map-scale geology,
+    cited grades, BLM centroids — and from what a user traces off a
+    georeferenced scan. Workings therefore carry the scan's accuracy, and
+    every feature records its source document/page and a confidence
+    (`surveyed` / `sketched` / `inferred` / `described`); a traced line is
+    never presented as a survey. Interpolated surfaces, kriged blocks and
+    implicit shells are deterministic research estimates of those inputs
+    with their parameters written into the object's metadata, not
+    resource estimates. Files are exchanged only in published formats
+    (OMF v0.9/v2.0, DXF, OBJ, GOCAD, Surfer/Geosoft/GXF/ZMAP/Irap grids, UBC,
+    CSV, SEG-Y, LAS); proprietary project databases (.aproj, .gdb, .tks)
+    are out of scope rather than approximated. Leapfrog's `.msh` layout
+    is community-documented and flagged as such on every read.

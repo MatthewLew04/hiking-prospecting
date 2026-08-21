@@ -546,6 +546,7 @@ sync_public_site_without_pointers() {
     --exclude "*.pmtiles" --exclude "*.tif" --exclude "*.tiff"
     --exclude "ckpt/*" --exclude "watch/*" --exclude "$DOC_STORE_PREFIX/*"
     --exclude "private/*" --exclude "ws12/*" --exclude "originals/*"
+    --exclude "ws13/*"
     --exclude "staging/*")
   if [ "${ENABLE_LEGACY_DOC_STORE:-true}" != "true" ]; then
     sync_args+=(--exclude "viewer.html" --exclude "assets/pdfjs/*")

@@ -32,12 +32,16 @@ from geomodel.formats import (surfer, geosoft, arcascii, zmap, irap, ubc, cps3, 
 from geomodel.formats.omf1 import read_omf1, write_omf1  # noqa: E402
 from geomodel.formats.omf2 import read_omf2, write_omf2  # noqa: E402
 
-REF = '/home/claude/ref'
-SAMPLE_V2 = os.path.join(REF, 'omf-rust-git', 'tests', 'one_of_everything.omf')
-if not os.path.exists(SAMPLE_V2):
-    SAMPLE_V2 = os.path.join(REF, 'omfrust', 'one_of_everything.omf')
-SAMPLE_V09 = os.path.join(REF, 'test_v09.omf')
 TESTS = os.path.join(ROOT, 'tests')
+sys.path.insert(0, TESTS)
+
+from gm_ref import REF as _REF, SAMPLE_V2 as _V2, SAMPLE_V09 as _V09  # noqa: E402
+
+# The JS harness compares against the same reference corpus the Python
+# cross-checks use; tools/fetch_gm_refs.py installs it.
+REF = str(_REF)
+SAMPLE_V2 = str(_V2)
+SAMPLE_V09 = str(_V09)
 
 
 # ------------------------------------------------------------------ summaries
@@ -574,7 +578,7 @@ END
 
     # ---- reference samples (absolute paths)
     refs = {SAMPLE_V2: 'omf2', SAMPLE_V09: 'omf1', os.path.join(REF, 'dxf', 'min_r12.dxf'): 'dxf',
-            os.path.join(REF, 'omfrust', 'omf-python', 'tests', 'data', 'one_of_everything.omf'): 'omf2'}
+            os.path.join(REF, 'omf-rust-git', 'omf-python', 'tests', 'data', 'one_of_everything.omf'): 'omf2'}
     for nm in ('cfm.ts', 'input_3tri_all_props.ts', 'input_3tri_node_props.ts', 'input_small_TFACE.ts', 'pynoddy.pl'):
         refs[os.path.join(REF, 'gocad', nm)] = 'gocad_ts'
     sh = '/tmp/gm_silverhills'

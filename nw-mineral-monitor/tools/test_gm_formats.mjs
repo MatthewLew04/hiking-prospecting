@@ -21,6 +21,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import * as GM from '../site/assets/geomodel/gm-core.js';
 import * as F from '../site/assets/geomodel/gm-formats.js';
 
@@ -31,7 +32,14 @@ const OUT = '/tmp/gm_fixtures';
 const JSOUT = path.join(OUT, 'js');
 const NO_GEN = process.argv.includes('--no-gen');
 const FILTER = (process.argv.find(a => a.startsWith('--filter=')) || '').slice(9);
-const OMF1_PYTHON = '/tmp/omfenv/bin/python';
+const REF_DIR = process.env.GM_REF_DIR
+  ? process.env.GM_REF_DIR.replace(/^~(?=$|\/)/, os.homedir())
+  : path.join(os.homedir(), '.cache', 'nw-mineral-monitor', 'gm-ref');
+// tools/fetch_gm_refs.py installs the reference omf 1.0.1 interpreter here.
+const OMF1_PYTHON = process.env.GM_OMF1_PYTHON
+  || (fs.existsSync(path.join(REF_DIR, 'omfenv', 'bin', 'python'))
+      ? path.join(REF_DIR, 'omfenv', 'bin', 'python')
+      : '/tmp/omfenv/bin/python');
 
 /* ------------------------------------------------------------------ python */
 function pyRun(args, input) {

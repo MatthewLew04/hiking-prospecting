@@ -186,7 +186,7 @@ class TestSEGY(TempDirMixin, unittest.TestCase):
             import segyio
             import numpy as np
         except ImportError:
-            self.skipTest('segyio not installed')
+            self.skipTest('optional cross-validator unavailable: segyio not installed')
         tr, xy = traces(), coords()
         for fmt in (5, 1):
             p = segy.write_segy(tr, self.path('ours_%d.sgy' % fmt), 2000, coords=xy, format_code=fmt,
@@ -218,7 +218,7 @@ class TestSEGY(TempDirMixin, unittest.TestCase):
             import segyio
             import numpy as np
         except ImportError:
-            self.skipTest('segyio not installed')
+            self.skipTest('optional cross-validator unavailable: segyio not installed')
         data = np.array(traces(6, 40), dtype=np.float32)
         # from_array2D: IBM float (segyio default) and IEEE
         for fmt in (segyio.SegySampleFormat.IBM_FLOAT_4_BYTE, segyio.SegySampleFormat.IEEE_FLOAT_4_BYTE):
@@ -405,7 +405,7 @@ class TestLAS(TempDirMixin, unittest.TestCase):
             import lasio
             import numpy as np
         except ImportError:
-            self.skipTest('lasio not installed')
+            self.skipTest('optional cross-validator unavailable: lasio not installed')
         # lasio writes -> ours
         l = lasio.LASFile()
         l.well.WELL = 'TEST-1'

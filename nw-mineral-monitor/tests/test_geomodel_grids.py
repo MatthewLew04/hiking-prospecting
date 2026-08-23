@@ -320,7 +320,7 @@ class GdalCrossCheck(GridAssertions):
     def setUp(self):
         self.rio = _rasterio()
         if self.rio is None:
-            self.skipTest('rasterio not installed')
+            self.skipTest('optional cross-validator unavailable: rasterio not installed')
         import numpy as np
         self.np = np
         self.tmp = tempfile.TemporaryDirectory()
@@ -520,7 +520,7 @@ class GeosoftGrd(GridAssertions):
     def test_against_harmonica(self):
         oasis = _harmonica()
         if oasis is None:
-            self.skipTest('harmonica reference reader (numpy + xarray) not available')
+            self.skipTest('optional cross-validator unavailable: harmonica reference reader (numpy + xarray) not available')
         import numpy as np
         g = make_grid(rotation=30.0)
         with tempfile.TemporaryDirectory() as d:

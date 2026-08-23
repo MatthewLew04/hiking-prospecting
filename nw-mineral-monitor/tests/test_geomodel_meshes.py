@@ -121,7 +121,7 @@ class TestOBJ(TempDirMixin, unittest.TestCase):
             import trimesh
             import numpy as np
         except ImportError:
-            self.skipTest('trimesh / numpy not installed')
+            self.skipTest('optional cross-validator unavailable: trimesh / numpy not installed')
         m = pyramid('tm')
         p = objfmt.write_obj(m, self.path('tm.obj'))
         tm = trimesh.load(p, process=False, force='mesh')
@@ -190,7 +190,7 @@ class TestDXF(TempDirMixin, unittest.TestCase):
     def test_reference_min_r12_and_line_endings(self):
         path = REF_DXF / 'min_r12.dxf'
         if not path.exists():
-            self.skipTest('reference min_r12.dxf not available')
+            self.skipTest('optional cross-validator unavailable: reference min_r12.dxf not available')
         objs = dxffmt.read_dxf(str(path))
         kinds = {o.kind: o for o in objs}
         self.assertEqual(set(kinds), {'mesh', 'lineset', 'points'})
@@ -266,7 +266,7 @@ class TestDXF(TempDirMixin, unittest.TestCase):
         try:
             import ezdxf
         except ImportError:
-            self.skipTest('ezdxf not installed')
+            self.skipTest('optional cross-validator unavailable: ezdxf not installed')
         m, ls, ps = pyramid('surf'), sample_lines(), sample_points()
         p = dxffmt.write_dxf([m, ls, ps], self.path('ez.dxf'))
         doc = ezdxf.readfile(p)
@@ -291,7 +291,7 @@ class TestDXF(TempDirMixin, unittest.TestCase):
         try:
             import ezdxf
         except ImportError:
-            self.skipTest('ezdxf not installed')
+            self.skipTest('optional cross-validator unavailable: ezdxf not installed')
         for ver in ('R12', 'R2000', 'R2013'):
             doc = ezdxf.new(ver)
             msp = doc.modelspace()
@@ -340,7 +340,7 @@ class TestDXF(TempDirMixin, unittest.TestCase):
 class TestGOCAD(TempDirMixin, unittest.TestCase):
     def test_reference_samples(self):
         if not REF_GOCAD.exists():
-            self.skipTest('reference GOCAD samples not available')
+            self.skipTest('optional cross-validator unavailable: reference GOCAD samples not available')
         expect = {'cfm.ts': (23, 24), 'input_3tri_all_props.ts': (6, 3),
                   'input_3tri_node_props.ts': (6, 3), 'input_small_TFACE.ts': (12, 9)}
         for name, (nv, nt) in expect.items():

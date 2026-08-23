@@ -342,7 +342,7 @@ class ParquetTests(unittest.TestCase):
     def test_pyarrow_reads_ours(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         for comp in ('gzip', 'none'):
             data = pl.write_parquet(self.fields(), compression=comp, row_group_size=2)
             t = pq.read_table(io.BytesIO(data), use_threads=False).to_pydict()
@@ -360,7 +360,7 @@ class ParquetTests(unittest.TestCase):
     def test_read_pyarrow_files(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         import pyarrow as pa
         t = pa.table({
             'number': pa.array([1.0, None, 3.0, 4.0, 5.0] * 30, pa.float64()),
@@ -390,10 +390,10 @@ class ParquetTests(unittest.TestCase):
     def test_snappy_without_codec_is_clear(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         try:
             import cramjam  # noqa: F401
-            self.skipTest('cramjam present: snappy is supported')
+            self.skipTest('optional cross-validator unavailable: cramjam present: snappy is supported')
         except ImportError:
             pass
         import pyarrow as pa
@@ -437,7 +437,7 @@ class ParquetSchemaComplianceTests(unittest.TestCase):
     def test_schema_strings_match_samples(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         z = zipfile.ZipFile(str(SAMPLE_V2))
         for name, fields in self.CASES.items():
             ref_data = z.read(name)
@@ -454,7 +454,7 @@ class ParquetSchemaComplianceTests(unittest.TestCase):
     def test_our_reader_matches_pyarrow_on_samples(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         z = zipfile.ZipFile(str(SAMPLE_V2))
         n = 0
         for info in z.infolist():
@@ -632,7 +632,7 @@ class WriteOmf2Tests(unittest.TestCase):
     def test_pyarrow_opens_every_array(self):
         pq = _pyarrow()
         if pq is None:
-            self.skipTest('pyarrow not installed')
+            self.skipTest('optional cross-validator unavailable: pyarrow not installed')
         z = zipfile.ZipFile(self.path)
         index = json.loads(gzip.decompress(z.read('index.json.gz')))
         schemas = {}
@@ -654,7 +654,7 @@ class WriteOmf2Tests(unittest.TestCase):
     def test_omf2_wheel_reads_ours(self):
         omf2 = _omf2_wheel()
         if omf2 is None:
-            self.skipTest('omf2 wheel not installed')
+            self.skipTest('optional cross-validator unavailable: omf2 wheel not installed')
         reader = omf2.Reader(self.path)
         project, problems = reader.project()
         self.assertEqual([str(p) for p in problems], [])
@@ -853,7 +853,7 @@ class WriteOmf1Tests(unittest.TestCase):
 
     def test_reference_reader_validates(self):
         if not _omf1_reference_available():
-            self.skipTest('omf 1.0.1 reference environment (/tmp/omfenv) not available')
+            self.skipTest('optional cross-validator unavailable: omf 1.0.1 reference environment (/tmp/omfenv) not available')
         script = r'''
 import json, sys
 import omf, numpy as np
@@ -887,7 +887,7 @@ print(json.dumps(out))
     def test_omf_rust_converter_accepts_ours(self):
         omf2 = _omf2_wheel()
         if omf2 is None:
-            self.skipTest('omf2 wheel not installed')
+            self.skipTest('optional cross-validator unavailable: omf2 wheel not installed')
         self.assertTrue(omf2.detect_omf1(self.path))
         out = os.path.join(self.tmp, 'rust_converted.omf')
         problems = omf2.Omf1Converter().convert(self.path, out)

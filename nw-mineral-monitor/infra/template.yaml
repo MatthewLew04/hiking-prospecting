@@ -165,6 +165,7 @@ Resources:
             Resource:
               - !Sub '${SiteBucket.Arn}/index.html'
               - !Sub '${SiteBucket.Arn}/viewer.html'
+              - !Sub '${SiteBucket.Arn}/model3d.html'
               - !Sub '${SiteBucket.Arn}/auth.json'
               - !Sub '${SiteBucket.Arn}/assets/*'
               - !Sub '${SiteBucket.Arn}/data/*'

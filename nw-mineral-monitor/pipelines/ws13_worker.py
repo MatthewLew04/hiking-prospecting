@@ -31,6 +31,7 @@ import io
 import json
 import os
 import re
+import shutil
 import statistics
 import subprocess
 import sys
@@ -48,7 +49,7 @@ CHUNK_CHARS = 3000
 CHUNK_OVERLAP = 400
 CONF_THRESHOLD = 60.0
 ESCALATE_THRESHOLD = 45.0
-MAX_DOC_SECONDS = 3300
+MAX_DOC_SECONDS = int(os.environ.get('WS13_MAX_DOC_SECONDS', '3300'))
 
 BUCKET = os.environ['WS13_BUCKET']
 QUEUE_URL = os.environ['WS13_QUEUE_URL']
@@ -80,7 +81,10 @@ def docker(args, work, timeout, entrypoint=None):
 
 def ocr(work, in_name, out_name, sidecar_name, strong=False):
     args = ['--deskew', '--rotate-pages', '--clean', '--skip-text',
-            '--sidecar', f'/work/{sidecar_name}', '--jobs', '2']
+            '--sidecar', f'/work/{sidecar_name}',
+            '--jobs', os.environ.get('WS13_OCR_JOBS', '2')]
+    extra = os.environ.get('WS13_OCR_EXTRA_ARGS', '').split()
+    args += extra
     if strong:
         args += ['--oversample', '400', '--clean-final',
                  '--tesseract-timeout', '600']
@@ -90,21 +94,42 @@ def ocr(work, in_name, out_name, sidecar_name, strong=False):
     return time.time() - started, result.returncode, result.stderr[-1500:]
 
 
+def clean_text(text):
+    """Strip NUL bytes.
+
+    PostgreSQL text columns cannot store 0x00, and pypdf's extract_text() on
+    malformed PDFs emits them: eight born_digital documents failed the whole
+    transaction with `DataError: PostgreSQL text fields cannot contain NUL
+    (0x00) bytes`, taking their chunks down with them. A NUL carries no
+    information here, so drop it rather than lose the document."""
+    return text.replace('\x00', '') if text else text
+
+
 def page_texts_from_sidecar(path):
     if not os.path.exists(path):
         return []
     text = open(path, encoding='utf-8', errors='replace').read()
-    return text.split('\f')
+    return [clean_text(p) for p in text.split('\f')]
 
 
 def page_confidences(work, pdf_name, pages):
-    """Per-page mean tesseract word confidence on the OCR'd output."""
+    """Per-page mean tesseract word confidence on the OCR'd output.
+
+    Loud on failure: a render or TSV error logs once per document instead of
+    silently yielding an empty list (the defect that blanked confidence
+    metadata for the first bulk sweep).
+    """
     confs = []
+    logged_failure = False
     for index in range(1, pages + 1):
         base = f'pg{index:05d}'
-        docker(['-r', '150', '-png', '-f', str(index), '-l', str(index),
-                f'/work/{pdf_name}', f'/work/{base}'], work,
-               timeout=300, entrypoint='pdftoppm')
+        render = docker(['-r', '150', '-png', '-f', str(index), '-l', str(index),
+                         f'/work/{pdf_name}', f'/work/{base}'], work,
+                        timeout=300, entrypoint='pdftoppm')
+        if render.returncode != 0 and not logged_failure:
+            logged_failure = True
+            log(f'confidence render failed rc={render.returncode}: '
+                f'{render.stderr[-300:]}')
         pngs = sorted(n for n in os.listdir(work)
                       if n.startswith(base) and n.endswith('.png'))
         if not pngs:
@@ -188,7 +213,7 @@ def process(conn, msg):
     sha, key, cls = body['sha256'], body['key'], body['cls']
     meta = body.get('meta') or {}
     row = manifest_row(conn, sha)
-    if row and row[0] == 'done':
+    if row and row[0] == 'done' and not body.get('force'):
         return 'skip_done'
     set_status(conn, sha, 'running', s3_key=key, doc_class=cls)
     started = time.time()
@@ -238,11 +263,24 @@ def process(conn, msg):
                               Key=f'ws13/searchable/{sha[:2]}/{sha}/sidecar.txt',
                               Body=f, ContentType='text/plain')
         elif cls == 'born_digital':
-            r = docker(['/work/in.pdf', '-'], work, timeout=600, entrypoint='pdftotext')
-            pages = r.stdout.split('\f')
+            # pypdf in-process: the OCR container does not expose pdftotext,
+            # and a docker dependency is pointless for text-layer extraction.
+            from pypdf import PdfReader
+            reader = PdfReader(os.path.join(work, 'in.pdf'), strict=False)
+            pages = []
+            for pg in reader.pages:
+                try:
+                    pages.append(clean_text(pg.extract_text() or ''))
+                except Exception:
+                    pages.append('')
+            if not any(p.strip() for p in pages):
+                set_status(conn, sha, 'error',
+                           error='born_digital_no_extractable_text')
+                return 'error'
+            sidecar_text = '\f'.join(pages)
             s3.put_object(Bucket=BUCKET,
                           Key=f'ws13/searchable/{sha[:2]}/{sha}/sidecar.txt',
-                          Body=r.stdout.encode('utf-8', 'replace'),
+                          Body=sidecar_text.encode('utf-8', 'replace'),
                           ContentType='text/plain')
         else:
             set_status(conn, sha, 'error', error=f'unsupported_class:{cls}')
@@ -258,6 +296,21 @@ def process(conn, msg):
                 return 'error'
 
         with conn.transaction():
+            # Re-extraction rewrites this document's chunks. Carry any vectors
+            # already computed for identical text across the delete, keyed on
+            # the text itself: re-chunking can shift page/ordinal, but a chunk
+            # whose text is unchanged has an unchanged embedding. Without this
+            # a re-extraction silently resets every model's coverage for the
+            # document and the backfill pays to recompute it. CREATE TABLE AS
+            # inherits the source column types, so no cast is needed and this
+            # stays correct whether the columns are vector, jsonb, or text.
+            conn.execute(
+                '''CREATE TEMP TABLE ws13_prev_vecs ON COMMIT DROP AS
+                   SELECT DISTINCT ON (md5(text)) md5(text) AS h,
+                          embedding, titan_embedding, qwen_embedding
+                     FROM ws13_chunks
+                    WHERE sha256=%s AND text IS NOT NULL
+                    ORDER BY md5(text), id''', (sha,))
             conn.execute('DELETE FROM ws13_chunks WHERE sha256=%s', (sha,))
             conn.execute('DELETE FROM ws13_pages WHERE sha256=%s', (sha,))
             conn.execute(
@@ -287,6 +340,20 @@ def process(conn, msg):
                     (sha, c['page'], c['ordinal'], c['start'], c['end'],
                      c['text'], c['text'],
                      json.dumps(v) if v is not None else None))
+            # Restore the carried-over vectors. COALESCE so a freshly computed
+            # embedding always wins over the historical one.
+            restored = conn.execute(
+                '''UPDATE ws13_chunks c
+                      SET embedding       = COALESCE(c.embedding, p.embedding),
+                          titan_embedding = COALESCE(c.titan_embedding, p.titan_embedding),
+                          qwen_embedding  = COALESCE(c.qwen_embedding, p.qwen_embedding)
+                     FROM ws13_prev_vecs p
+                    WHERE c.sha256=%s AND md5(c.text) = p.h
+                      AND (c.embedding IS NULL OR c.titan_embedding IS NULL
+                           OR c.qwen_embedding IS NULL)''', (sha,)).rowcount
+            if restored:
+                log(f'{sha[:12]} carried vectors across re-extraction for '
+                    f'{restored}/{len(chunks)} chunks')
         set_status(conn, sha, 'done', embed_pending=(EMBED_MODE == 'defer'),
                    pages=len(pages), chunks=len(chunks),
                    low_conf_pages=low_pages, escalated_pages=escalated_pages,
@@ -296,9 +363,19 @@ def process(conn, msg):
 
 def main():
     os.makedirs(SCRATCH, exist_ok=True)
-    subprocess.run(['docker', 'pull', OCR_IMAGE], capture_output=True, timeout=1800)
+    # born_digital is pure pypdf and needs no container. Only ocr_queue does,
+    # so a node without docker is still a useful born_digital worker rather
+    # than a startup crash.
+    have_docker = shutil.which('docker') is not None
+    if have_docker:
+        subprocess.run(['docker', 'pull', OCR_IMAGE], capture_output=True,
+                       timeout=1800)
+    else:
+        log('docker unavailable: this worker handles born_digital only and '
+            'will release ocr_queue messages for a capable node')
     conn = psycopg.connect(DB_DSN, autocommit=False)
     idle = 0
+    released = 0
     while True:
         r = sqs.receive_message(QueueUrl=QUEUE_URL, MaxNumberOfMessages=1,
                                 WaitTimeSeconds=20, VisibilityTimeout=3600)
@@ -312,6 +389,18 @@ def main():
         idle = 0
         msg = msgs[0]
         sha = json.loads(msg['Body']).get('sha256', '?')
+        if not have_docker and json.loads(msg['Body']).get('cls') != 'born_digital':
+            # Not this node's work. Return it immediately rather than failing
+            # a perfectly good document for a local capability gap.
+            sqs.change_message_visibility(QueueUrl=QUEUE_URL,
+                                          ReceiptHandle=msg['ReceiptHandle'],
+                                          VisibilityTimeout=0)
+            released += 1
+            if released >= 25:
+                log(f'released {released} messages needing docker; nothing '
+                    f'here to do. Exiting.')
+                return 0
+            continue
         try:
             outcome = process(conn, msg)
             log(f'{sha[:12]} {outcome}')

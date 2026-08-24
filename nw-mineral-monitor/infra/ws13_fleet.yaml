@@ -81,7 +81,7 @@ Resources:
             export AWS_DEFAULT_REGION=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
             dnf install -y python3-pip python3-boto3 docker postgresql16 >> /var/log/ws13-setup.log 2>&1
             systemctl start docker
-            for a in 1 2 3 4 5; do python3 -m pip install --quiet "psycopg[binary]" && break; sleep 20; done
+            for a in 1 2 3 4 5; do python3 -m pip install --quiet "psycopg[binary]" pypdf && break; sleep 20; done
             mkdir -p /opt/ws13/scratch /opt/ws13/var/ws12 && cd /opt/ws13
             for a in 1 2 3 4 5; do aws s3 cp s3://${BucketName}/ws13/fleet/bundle.tar.gz . && break; sleep 15; done
             tar xzf bundle.tar.gz

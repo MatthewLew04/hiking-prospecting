@@ -232,7 +232,13 @@ def process(conn, msg):
         if cls == 'ocr_queue':
             secs, code, err = ocr(work, 'in.pdf', 'out.pdf', 'out.txt')
             if code != 0 or not os.path.exists(os.path.join(work, 'out.pdf')):
-                set_status(conn, sha, 'error', error=f'ocr_exit_{code}:{err[:400]}')
+                # err is already stderr[-1500:]; take its END, not its start.
+                # Slicing [:400] kept the head of the tail -- the middle of a
+                # traceback -- and discarded the exception line that actually
+                # names the failure, so every OCR error in the corpus was
+                # recorded as an unreadable source-code fragment.
+                set_status(conn, sha, 'error',
+                           error=f'ocr_exit_{code}:{err[-700:]}')
                 return 'error'
             pages = page_texts_from_sidecar(os.path.join(work, 'out.txt'))
             confs = page_confidences(work, 'out.pdf', len(pages))

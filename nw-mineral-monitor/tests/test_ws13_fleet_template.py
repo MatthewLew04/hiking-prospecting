@@ -1,9 +1,9 @@
-"""Contract tests for the shell inside infra/ws13_fleet.yaml.
+"""Contract tests for the WS13 fleet shell in infra/fleet/.
 
-The template carries four shell programs in its UserData -- claim_slot.sh,
-run_worker.sh, start_workers.sh and node_agent.sh -- and they had no tests at
-all, which is how three blockers survived in the `FleetMode: confidence`
-slot-claim protocol:
+Five scripts run a node: node_boot.sh (what UserData execs), claim_slot.sh,
+run_worker.sh, start_workers.sh and node_agent.sh. They had no tests at all,
+which is how three blockers survived in the `FleetMode: confidence` slot-claim
+protocol:
 
   1. A replacement for a hard-dead node arrived long before ClaimStaleSeconds,
      found no free slot, and retired WITH
@@ -16,9 +16,16 @@ slot-claim protocol:
      decremented to zero, "run finished" and "run finished with slots nobody
      ever claimed" were the same observable.
 
+...and a fourth that no amount of testing the shell would have caught, because
+it was about where the shell lived: as heredocs inside the LaunchTemplate's
+UserData, the rendered block reached ~30,000 bytes against EC2's 16,384-byte
+limit, so the stack could not be created and `FleetMode: confidence` had never
+been deployable. The scripts now ship in ws13/fleet/bundle.tar.gz, UserData is
+the ~40 lines that fetch it, and UserDataSizeTests holds that line.
+
 These are protocol properties, so they are tested by RUNNING the scripts, not
-by grepping them. The harness renders the UserData the way !Sub would, pulls
-each heredoc out to a relocated /opt/ws13, and puts stubs for `aws`, `date`,
+by grepping them. The harness copies the committed files to a relocated
+/opt/ws13, exports what UserData exports, and puts stubs for `aws`, `date`,
 `sleep`, `curl` and `python3` at the front of PATH:
 
   * `aws` is an S3 object store in a directory plus a call log, so a claim is
@@ -35,6 +42,12 @@ each heredoc out to a relocated /opt/ws13, and puts stubs for `aws`, `date`,
     seconds, and with it the loop takes the ~35 iterations it would really
     take and the wait itself becomes assertable. It is opt-in because the
     claim-age tests written before it depend on ages moving with real time.
+
+The values !Sub used to bake in now arrive as environment. FLEET_ENV is what
+UserData exports, derived from the same SUBS the rendered UserData uses, and
+test_every_name_the_scripts_read_is_exported_by_user_data checks the scripts
+against the TEMPLATE rather than against that list -- a name that stops being
+exported is the empty string on the node, not a deploy-time error any more.
 
 node_agent.sh's adopt step is exercised with start_workers.sh stubbed by a
 recorder -- it is a separate file with a defined contract, and it gets its own
@@ -80,8 +93,47 @@ SUBS = {
 }
 SLOTS = int(SUBS["ConfidenceNodeSlots"])
 STALE = int(SUBS["ClaimStaleSeconds"])
+# What SlotCompletionTests runs node_agent.sh with. See agent() for why it is
+# not STALE: the adopt wait is polled in virtual 60 s steps, and 1800 + 300 of
+# them is several hundred forked stubs per test.
+AGENT_STALE = 120
 
-HEREDOC = re.compile(r"cat > (/opt/ws13/[\w.]+) <<'(\w+)'\n(.*?)\n\2\n", re.S)
+FLEET_SHELL = ROOT / "infra" / "fleet"
+# The five scripts the bundle untars into /opt/ws13. node_boot.sh is what
+# UserData execs; the other four are what it and the agent then run.
+SCRIPT_NAMES = ("node_boot.sh", "claim_slot.sh", "run_worker.sh",
+                "start_workers.sh", "node_agent.sh")
+
+
+# The exports UserData performs, derived from the same SUBS the rendered
+# UserData uses. A name the scripts read and this does not carry is empty on
+# the node, which test_every_name_the_scripts_read_is_exported checks against
+# the template rather than against this list.
+FLEET_ENV = {
+    "WS13_BUCKET": SUBS["BucketName"],
+    "WS13_QUEUE_URL": SUBS["QueueUrl"],
+    "WS13_MODE": SUBS["FleetMode"],
+    "WS13_FLEET_NAME": SUBS["FleetName"],
+    "WS13_NODE_SLOTS": SUBS["ConfidenceNodeSlots"],
+    "WS13_CLAIM_STALE": SUBS["ClaimStaleSeconds"],
+    "WS13_WORKERS_PER_NODE": SUBS["WorkersPerNode"],
+    "WS13_SWEEP_DOCS": SUBS["ConfidenceSweepDocs"],
+    "WS13_SWEEP_MAX_SECONDS": SUBS["ConfidenceSweepMaxSeconds"],
+    "WS13_DB_DSN": "postgresql://nwmm:pw@db:5432/nwmm?sslmode=require",
+}
+
+
+def fleet_scripts():
+    """The committed scripts, read as files.
+
+    They used to be carved back out of the template's UserData heredocs,
+    because that is where they lived. Reading the real files instead is not
+    just tidier: the heredoc extraction could only ever test a copy, and the
+    copy is what stopped existing -- the UserData had grown to ~30,000 bytes
+    against EC2's 16,384-byte limit, so the template these tests were passing
+    over could not create a LaunchTemplate at all.
+    """
+    return {name: (FLEET_SHELL / name).read_text() for name in SCRIPT_NAMES}
 
 
 def render_user_data():
@@ -108,9 +160,14 @@ def render_user_data():
     return re.sub(r"\$\{([^}]+)\}", one, script)
 
 
-def embedded_scripts(user_data):
-    return {os.path.basename(path): body
-            for path, _marker, body in HEREDOC.findall(user_data)}
+def env_for(script):
+    """The WS13_* names a script reads but does not set.
+
+    !Sub used to interpolate these; now UserData exports them. A name a script
+    reads and UserData never exports is silently empty on the node, so the two
+    lists are checked against each other rather than assumed to agree.
+    """
+    return set(re.findall(r"\$\{?(WS13_[A-Z_]+)", script))
 
 
 FAKE_AWS = r'''#!PYTHON
@@ -346,6 +403,11 @@ class Sandbox:
     def env(self, **extra):
         env = dict(os.environ)
         env["PATH"] = f"{self.bin}:{env['PATH']}"
+        # What UserData exports. !Sub used to bake these values into the
+        # heredocs; now the scripts read them from the environment, so the
+        # sandbox has to be the environment. FLEET_ENV is derived from SUBS,
+        # not restated, so the harness and the template cannot drift.
+        env.update(FLEET_ENV)
         env.update({"FAKE_S3": str(self.state), "FAKE_CALLS": str(self.calls),
                     "FAKE_SLEEPS": str(self.sleeps),
                     "FAKE_CLOCK": str(self.clock),
@@ -398,7 +460,7 @@ class FleetTemplateTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.user_data = render_user_data()
-        cls.scripts = embedded_scripts(cls.user_data)
+        cls.scripts = fleet_scripts()
 
     def sandbox(self, stub=()):
         box = Sandbox(self.scripts, stub=stub)
@@ -407,11 +469,10 @@ class FleetTemplateTestCase(unittest.TestCase):
 
 
 class EmbeddedScriptTests(FleetTemplateTestCase):
-    """The heredocs are programs, and a template that does not parse as one
-    fails on a node hours after the stack says CREATE_COMPLETE."""
+    """These are programs, and one that does not parse fails on a node hours
+    after the stack says CREATE_COMPLETE."""
 
-    EXPECTED = ("claim_slot.sh", "run_worker.sh", "start_workers.sh",
-                "node_agent.sh")
+    EXPECTED = SCRIPT_NAMES
 
     def test_every_expected_script_is_written(self):
         self.assertEqual(tuple(sorted(self.scripts)), tuple(sorted(
@@ -517,9 +578,13 @@ class ClaimWaitTests(FleetTemplateTestCase):
     """
 
     def setUp(self):
-        self.branch = self.user_data[
-            self.user_data.index('if [ "$WS13_MODE" = confidence ]; then'):
-            self.user_data.index("export WS13_NODE_SLOT=$SLOT")]
+        # The branch lives in node_boot.sh now, not in UserData: the
+        # heredocs moved into the bundle when the rendered UserData turned
+        # out to be ~30,000 bytes against EC2's 16,384-byte limit.
+        boot = self.scripts["node_boot.sh"]
+        self.branch = boot[
+            boot.index('if [ "$WS13_MODE" = confidence ]; then'):
+            boot.index("export WS13_NODE_SLOT=$SLOT")]
 
     def test_the_claim_is_retried_in_a_loop_not_attempted_once(self):
         self.assertIn("/opt/ws13/claim_slot.sh claim", self.branch)
@@ -532,7 +597,8 @@ class ClaimWaitTests(FleetTemplateTestCase):
         # indistinguishable until ClaimStaleSeconds has passed; the extra 300 s
         # is one refresh interval, so anything still unfinished afterwards has
         # demonstrably been refreshed by a live node.
-        self.assertIn(f"CLAIM_WAIT=$(( {STALE} + 300 ))", self.branch)
+        self.assertIn("CLAIM_WAIT=$(( ${WS13_CLAIM_STALE} + 300 ))",
+                      self.branch)
         self.assertIn("CLAIM_DEADLINE=$(( $(date +%s) + CLAIM_WAIT ))",
                       self.branch)
 
@@ -736,7 +802,16 @@ class SlotCompletionTests(FleetTemplateTestCase):
             # the group for the node back leaves that hold on its first pass;
             # everything these tests assert is published before it is entered.
             box.lifecycle.write_text("Terminated")
-        env = {"WS13_MODE": mode, "FAKE_STARTS": str(starts)}
+        # A shorter staleness window than production's 1800 s, because the
+        # adopt wait polls WS13_CLAIM_STALE + 300 seconds of virtual clock at
+        # 60 s a step and every step forks claim_slot.sh twice: at the real
+        # default that is ~35 iterations and several hundred stub processes,
+        # which is fine alone and times out when the whole suite is running.
+        # The DURATION is what these tests assert, and it is asserted against
+        # this value -- which is only injectable at all because the parameter
+        # now arrives as environment rather than being baked in by !Sub.
+        env = {"WS13_MODE": mode, "FAKE_STARTS": str(starts),
+               "WS13_CLAIM_STALE": str(AGENT_STALE)}
         if mode == "confidence":
             env["WS13_NODE_SLOT"] = slot
             env["WS13_CLAIM_KEY"] = (
@@ -781,7 +856,7 @@ class SlotCompletionTests(FleetTemplateTestCase):
         # ...and it did not decrement until it had waited the window out,
         # which is the whole difference between this and the blocker.
         waited = sum(int(v) for v in box.sleeps.read_text().split())
-        self.assertGreaterEqual(waited, STALE + 300)
+        self.assertGreaterEqual(waited, AGENT_STALE + 300)
 
     def test_the_outstanding_slot_count_is_published_before_retiring(self):
         # This node's workers failed, so its own slot is released and stays
@@ -836,8 +911,8 @@ class VerificationPointerTests(FleetTemplateTestCase):
         # WS13_SHARD_COUNT is ConfidenceNodeSlots x WorkersPerNode; verifying
         # against any other denominator checks a different partition.
         agent = self.scripts["node_agent.sh"]
-        self.assertIn(f"--shards $(( {SLOTS} * {SUBS['WorkersPerNode']} ))",
-                      agent)
+        self.assertIn("--shards $(( ${WS13_NODE_SLOTS} * "
+                      "${WS13_WORKERS_PER_NODE} ))", agent)
 
 
 # EC2 refuses instance user data over this, and CreateLaunchTemplateVersion
@@ -846,64 +921,90 @@ EC2_USER_DATA_LIMIT = 16384
 
 
 class UserDataSizeTests(unittest.TestCase):
-    """The UserData has outgrown what EC2 will accept.
+    """The UserData has to fit in what EC2 will accept.
 
-    This is not a style limit. `aws cloudformation deploy` fails on the
-    LaunchTemplate resource with "User data is limited to 16384 bytes" and
-    rolls the stack back, before any node boots -- in BOTH modes, because
-    claim_slot.sh is written in both.
+    This is not a style limit. CreateLaunchTemplateVersion refuses anything
+    larger, so `aws cloudformation deploy` fails on the LaunchTemplate with
+    "User data is limited to 16384 bytes" and rolls the stack back before a
+    node boots -- in BOTH modes, because the claim script was written in both.
 
     Measured across the history of this file, with the declared defaults:
 
-        f335c8c   8,599 bytes   ok      <- the fleet that OCR'd the corpus
-        c1accaf  20,689 bytes   OVER    <- FleetMode: confidence arrives
-        19dea85  20,689 bytes   OVER
-        current  ~30,000 bytes  OVER
+        f335c8c   8,599 B   ok      <- the fleet that OCR'd the corpus
+        c1accaf  20,689 B   OVER    <- FleetMode: confidence arrives
+        19dea85  20,689 B   OVER
+        (before the shell moved out)  ~30,000 B   OVER
 
-    So `FleetMode: confidence` has never been deployable, from the commit
-    that introduced it. That is consistent with everything else known about
-    it -- the confidence pass has never run, and WS13-RETRIEVAL.md recommends
-    one c7g.16xlarge over the fleet -- but nothing in the repository said so,
-    and every other test here passes over shell that cannot reach a node.
-
-    The fix is structural: ship claim_slot.sh, run_worker.sh,
-    start_workers.sh and node_agent.sh inside the bundle.tar.gz the node
-    already downloads (tools/build_ws13_bundle.py exists to carry them), and
-    leave UserData as the ~40 lines that install packages, fetch the bundle,
-    export the environment and exec the agent. Doing that is a deliberate
-    change to what is versioned with the stack, so it is recorded here rather
-    than done as a side effect of a defect fix.
+    So `FleetMode: confidence` was never deployable, from the commit that
+    introduced it -- consistent with the pass never having run, but stated
+    nowhere, while every other test here passed over shell that could not
+    reach a node. The five scripts now ship in bundle.tar.gz and UserData is
+    the ~40 lines that fetch it.
     """
 
     def setUp(self):
         self.user_data = render_user_data()
 
-    @unittest.expectedFailure
     def test_the_user_data_fits_in_what_ec2_accepts(self):
-        # expectedFailure, not skip: this asserts the real requirement and it
-        # really does fail. When the shell moves into the bundle this test
-        # reports UNEXPECTED SUCCESS and the run goes red, which is the
-        # prompt to delete this decorator -- a skip would just go quiet.
-        self.assertLessEqual(len(self.user_data.encode()),
-                             EC2_USER_DATA_LIMIT)
-
-    def test_the_overage_is_pinned_so_it_cannot_quietly_grow(self):
-        """A ceiling on the known-bad size, so a diff that adds to it fails.
-
-        The number is deliberately not tight: it is the measured size plus
-        headroom for prose, because tightening it to the byte would make
-        every comment edit a test failure. What it catches is another
-        heredoc.
-        """
         size = len(self.user_data.encode())
-        self.assertGreater(size, EC2_USER_DATA_LIMIT,
-                           "the UserData now fits -- delete the "
-                           "expectedFailure above, and this test with it")
-        self.assertLess(size, 38000,
-                        f"UserData grew to {size:,} bytes, further past the "
-                        f"{EC2_USER_DATA_LIMIT:,}-byte EC2 limit it already "
-                        f"exceeds. Move the shell into bundle.tar.gz rather "
-                        f"than raising this number")
+        self.assertLessEqual(
+            size, EC2_USER_DATA_LIMIT,
+            f"UserData is {size:,} bytes against EC2's "
+            f"{EC2_USER_DATA_LIMIT:,}: the LaunchTemplate cannot be created. "
+            f"Anything this large belongs in bundle.tar.gz, not here")
+
+    def test_it_keeps_room_to_grow(self):
+        # Half the limit is the line: past it, one more paragraph of comment
+        # is a deploy failure, which is how this got to 30,000 bytes the
+        # first time.
+        size = len(self.user_data.encode())
+        self.assertLess(size, EC2_USER_DATA_LIMIT // 2,
+                        f"UserData is {size:,} bytes, over half the "
+                        f"{EC2_USER_DATA_LIMIT:,}-byte limit. Move shell into "
+                        f"infra/fleet/ and the bundle rather than growing it")
+
+    def test_every_name_the_scripts_read_is_exported_by_user_data(self):
+        """A parameter that stops reaching the node is silently empty.
+
+        !Sub used to interpolate these values into the shell, so a missing one
+        was a template error at deploy time. Now they travel as environment,
+        and a name the scripts read that UserData never exports is the empty
+        string on the node -- `[ "$WS13_NODE_SLOTS" -eq 0 ]` and friends, at
+        boot, in a script nobody is watching.
+        """
+        # Every NAME= on an `export` line, not just the first: UserData
+        # exports WS13_BUCKET and WS13_QUEUE_URL on one line.
+        exported = set()
+        for line in self.user_data.split("\n"):
+            if line.strip().startswith("export "):
+                exported |= set(re.findall(r"(WS13_[A-Z_]+)=", line))
+        read = set()
+        for name, body in fleet_scripts().items():
+            read |= env_for(body)
+        # Names the scripts set themselves, so UserData need not.
+        set_by_scripts = set()
+        for body in fleet_scripts().values():
+            set_by_scripts |= set(
+                re.findall(r"^\s*(?:export )?(WS13_[A-Z_]+)=", body, re.M))
+        missing = sorted(read - exported - set_by_scripts)
+        self.assertEqual(missing, [],
+                         f"the scripts read {missing}, which UserData never "
+                         f"exports: empty on the node")
+
+    def test_the_shell_it_no_longer_carries_is_in_the_bundle(self):
+        """UserData execs node_boot.sh, so the bundle has to contain it.
+
+        Slimming the template and forgetting to ship what was cut is the one
+        way this refactor fails silently: the stack creates, the node boots,
+        and it dies on a missing file with a claimed shard slot in hand.
+        """
+        sys.path.insert(0, str(ROOT / "tools"))
+        import build_ws13_bundle as bundle
+
+        shipped = {name for name, _relative, _why in bundle.MEMBERS}
+        for name in SCRIPT_NAMES:
+            self.assertIn(name, shipped)
+        self.assertIn("/opt/ws13/node_boot.sh", self.user_data)
 
 
 if __name__ == "__main__":

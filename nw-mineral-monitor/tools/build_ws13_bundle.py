@@ -19,10 +19,10 @@ happened here:
     any of them is missing from MEMBERS. The list is closed under import or
     there is no archive. Two more lists have to agree with it and are read
     rather than restated: ws13_seed.BUNDLE_FILES, whose absence aborts the
-    seeding node by name, and every `python3 ws13_*.py` in
-    infra/ws13_fleet.yaml's UserData -- an entry point added to the template
-    and not here is a node that boots into "can't open file", in confidence
-    mode while holding a claimed shard slot.
+    seeding node by name, and every `python3 ws13_*.py` the fleet invokes,
+    read out of infra/ws13_fleet.yaml and out of the bundled *.sh -- an entry
+    point added there and not here is a node that boots into "can't open
+    file", in confidence mode while holding a claimed shard slot.
   * NOBODY KNOWS WHAT A NODE IS RUNNING. The fleet downloads a FIXED key,
     ws13/fleet/bundle.tar.gz, at boot. That is correct -- unlike a Lambda's
     code, this is fetched per instance, so a stable key is what makes a
@@ -134,7 +134,29 @@ MEMBERS = (
      'the bounded Titan/Cohere experiment that replaces the open-ended fill'),
     ('ws13_embed_backfill.py', 'pipelines/ws13_embed_backfill.py',
      'the process Phase A pauses; carried so a node can restart it after'),
+    # --- the fleet's own shell ---------------------------------------------
+    # These used to be heredocs inside infra/ws13_fleet.yaml's UserData, which
+    # had grown to ~30,000 bytes against EC2's 16,384-byte limit -- so the
+    # LaunchTemplate could not be created and FleetMode: confidence had never
+    # been deployable. They ride here instead, which means the node's shell is
+    # versioned with THIS ARCHIVE and not with the CloudFormation stack: a
+    # stack update no longer changes what a node runs, and rebuilding and
+    # uploading this bundle does.
+    ('node_boot.sh', 'infra/fleet/node_boot.sh',
+     'what UserData execs: claims a slot, seeds, starts workers and agent'),
+    ('claim_slot.sh', 'infra/fleet/claim_slot.sh',
+     'the S3 slot-claim protocol, used at boot and again on adopt'),
+    ('run_worker.sh', 'infra/fleet/run_worker.sh',
+     'one worker process, and the confidence sweep loop around it'),
+    ('start_workers.sh', 'infra/fleet/start_workers.sh',
+     'launches a generation of workers; run again when a slot is adopted'),
+    ('node_agent.sh', 'infra/fleet/node_agent.sh',
+     'the node lifecycle: watch, drain, release or adopt, retire or hold'),
 )
+
+# A node execs node_boot.sh; nothing chmods it before that but the UserData,
+# so the archive has to carry the bit itself.
+EXECUTABLE_SUFFIX = '.sh'
 
 # A sibling import that resolves to something OUTSIDE this list is the defect
 # this builder exists to prevent, with one exception that is not a defect:
@@ -150,6 +172,7 @@ CLOSURE_EXEMPT: dict[str, str] = {}
 # arbitrary; that it never varies is the point.
 EPOCH = 0
 FILE_MODE = 0o644
+EXEC_MODE = 0o755
 
 
 def source_path(relative: str) -> Path:
@@ -276,6 +299,23 @@ INVOCATION_RE = re.compile(r'python3 (ws13_[a-z0-9_]+\.py)')
 FLEET_TEMPLATE = 'infra/ws13_fleet.yaml'
 
 
+def template_invocations() -> set:
+    """Every `python3 ws13_*.py` the fleet runs, from wherever it lives now.
+
+    The template and the bundled shell, both. The invocations moved out of
+    the UserData with the rest of the scripts, so a check that read only the
+    template would now be reading a file that invokes nothing -- and passing.
+    """
+    sources = [source_path(FLEET_TEMPLATE)]
+    sources += [source_path(relative) for name, relative, _why in MEMBERS
+                if name.endswith('.sh')]
+    found = set()
+    for source in sources:
+        if source.is_file():
+            found |= set(INVOCATION_RE.findall(source.read_text('utf-8')))
+    return found
+
+
 def template_problems(members: list[tuple[str, str, bytes]]) -> list[str]:
     """Entry points infra/ws13_fleet.yaml invokes that the archive lacks.
 
@@ -294,13 +334,13 @@ def template_problems(members: list[tuple[str, str, bytes]]) -> list[str]:
     if not path.is_file():
         return [f'{FLEET_TEMPLATE}: not found, so the launch template\'s '
                 f'entry points could not be checked against MEMBERS']
-    invoked = set(INVOCATION_RE.findall(path.read_text('utf-8')))
+    invoked = template_invocations()
     if not invoked:
-        return [f'{FLEET_TEMPLATE}: no `python3 ws13_*.py` invocation found '
-                f'at all, which means this check is no longer reading what '
-                f'the nodes run']
+        return [f'no `python3 ws13_*.py` invocation found in '
+                f'{FLEET_TEMPLATE} or in any bundled *.sh, which means this '
+                f'check is no longer reading what the nodes run']
     shipped = {name for name, _relative, _data in members}
-    return [f'{FLEET_TEMPLATE} runs `python3 {name}` from /opt/ws13, and it '
+    return [f'the fleet runs `python3 {name}` from /opt/ws13, and it '
             f'is not in MEMBERS: that node boots into '
             f'"can\'t open file \'/opt/ws13/{name}\'"'
             for name in sorted(invoked - shipped)]
@@ -340,7 +380,8 @@ def tar_bytes(members: list[tuple[str, str, bytes]],
             info = tarfile.TarInfo(name)
             info.size = len(data)
             info.mtime = EPOCH
-            info.mode = FILE_MODE
+            info.mode = (EXEC_MODE if name.endswith(EXECUTABLE_SUFFIX)
+                         else FILE_MODE)
             info.uid = info.gid = 0
             info.uname = info.gname = ''
             info.type = tarfile.REGTYPE
@@ -455,8 +496,8 @@ def main(argv=None) -> int:
     print(f'  verified: closed under its own ws13_* imports, carries every '
           f'name in')
     print(f'            ws13_seed.BUNDLE_FILES, and carries every '
-          f'`python3 ws13_*.py`')
-    print(f'            {FLEET_TEMPLATE} invokes')
+          f'`python3 ws13_*.py` the')
+    print(f'            template and the bundled *.sh invoke')
     print(f'  {MANIFEST_NAME} carries a sha256 per member and untars to '
           f'/opt/ws13/{MANIFEST_NAME}')
     del manifest

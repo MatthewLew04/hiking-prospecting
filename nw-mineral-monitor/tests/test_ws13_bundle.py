@@ -134,16 +134,30 @@ class FleetEntryPointTests(unittest.TestCase):
         members = bundle.read_members()
         self.assertEqual(bundle.template_problems(members), [])
 
-    def test_the_check_reads_the_template_the_nodes_actually_boot(self):
-        template = (ROOT / "infra" / "ws13_fleet.yaml").read_text("utf-8")
-        invoked = set(self.INVOCATION.findall(template))
-        self.assertTrue(invoked, "found no `python3 ws13_*.py` in the template")
-        self.assertEqual(invoked, set(bundle.INVOCATION_RE.findall(template)))
+    def test_the_check_reads_what_the_nodes_actually_run(self):
+        """The invocations moved out of the template with the shell.
+
+        node_boot.sh runs ws13_seed.py and run_worker.sh runs ws13_worker.py /
+        ws13_confidence_pass.py; the template invokes nothing any more. A check
+        that still read only the template would pass over an empty set, which
+        is why template_problems() treats "found nothing anywhere" as a
+        failure rather than as a clean result.
+        """
+        sources = [(ROOT / "infra" / "ws13_fleet.yaml").read_text("utf-8")]
+        sources += [(ROOT / relative).read_text("utf-8")
+                    for name, relative, _why in bundle.MEMBERS
+                    if name.endswith(".sh")]
+        invoked = set()
+        for text in sources:
+            invoked |= set(self.INVOCATION.findall(text))
+        self.assertTrue(invoked, "found no `python3 ws13_*.py` anywhere")
+        self.assertIn("ws13_worker.py", invoked)
+        self.assertIn("ws13_confidence_pass.py", invoked)
 
     def test_an_entry_point_missing_from_members_fails_the_build(self):
         # The teeth: drop a script the template runs and the BUILD must stop.
-        template = (ROOT / "infra" / "ws13_fleet.yaml").read_text("utf-8")
-        invoked = sorted(self.INVOCATION.findall(template))
+        invoked = sorted(bundle.template_invocations())
+        self.assertTrue(invoked)
         dropped = invoked[0]
         without = tuple(entry for entry in bundle.MEMBERS
                         if entry[0] != dropped)
@@ -192,7 +206,10 @@ class ArchiveTests(unittest.TestCase):
                 self.assertEqual(info.mtime, bundle.EPOCH, info.name)
                 self.assertEqual((info.uid, info.gid), (0, 0), info.name)
                 self.assertEqual((info.uname, info.gname), ("", ""), info.name)
-                self.assertEqual(info.mode, bundle.FILE_MODE, info.name)
+                expected = (bundle.EXEC_MODE
+                            if info.name.endswith(bundle.EXECUTABLE_SUFFIX)
+                            else bundle.FILE_MODE)
+                self.assertEqual(info.mode, expected, info.name)
 
     def test_the_archive_extracts_flat(self):
         for name in self.members_of(self.archive):

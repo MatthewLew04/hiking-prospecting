@@ -298,35 +298,39 @@ The node's own lifetime clock is kept separate from the generation clock, so ado
 make a partial failure in the new generation look like "everything died at boot" and park a
 proven node in the 6 h hold.
 
-### The blocker none of that fixes: this template cannot be deployed
+### The fourth blocker: the template could not be deployed at all
 
-**The rendered `UserData` is ~30,000 bytes. EC2's limit is 16,384.**
-`aws cloudformation deploy` fails on the `LaunchTemplate` resource with *User data is limited
-to 16384 bytes* and rolls the stack back, before a node boots, in **both** modes — the claim
-script is written in both. Measured across this file's history with its declared defaults:
+**The rendered `UserData` was ~30,000 bytes. EC2's limit is 16,384.**
+`aws cloudformation deploy` failed on the `LaunchTemplate` resource with *User data is limited
+to 16384 bytes* and rolled the stack back, before a node booted, in **both** modes — the claim
+script was written in both. Measured across this file's history with its declared defaults:
 
 | commit | UserData | |
 |---|---:|---|
 | `f335c8c` | 8,599 B | ok — the fleet that OCR'd the corpus |
 | `c1accaf` | 20,689 B | **over** — `FleetMode: confidence` arrives |
 | `19dea85` | 20,689 B | **over** |
-| current | ~30,000 B | **over** |
+| before this change | ~30,000 B | **over** |
+| now | **3,736 B** | ok |
 
-So `FleetMode: confidence` has never been deployable, from the commit that introduced it. That
-is consistent with everything else known about it — the confidence pass has never run, and the
-recommendation below has always been a single instance rather than the fleet — but nothing in
-the repository said so, and the shell tests all passed over a template that cannot reach a
-node. `tests/test_ws13_fleet_template.py::UserDataSizeTests` now asserts the real limit as an
-`expectedFailure`, so the run stays green while the defect is recorded, and reports *unexpected
-success* — turning the run red — the moment it is fixed.
+So `FleetMode: confidence` was never deployable, from the commit that introduced it —
+consistent with the pass never having run, but stated nowhere, while the shell tests all passed
+over a template that could not reach a node.
 
-The fix is structural: ship `claim_slot.sh`, `run_worker.sh`, `start_workers.sh` and
-`node_agent.sh` inside the `bundle.tar.gz` the node already downloads, and leave `UserData` as
-the ~40 lines that install packages, fetch the bundle, export the environment and exec the
-agent. `tools/build_ws13_bundle.py` exists to carry them, and the shell tests would then run
-the committed files instead of re-deriving them from the template. That is a deliberate change
-to what is versioned with the CloudFormation stack, so it is recorded here rather than done as
-a side effect of a defect fix.
+The five scripts now live in `infra/fleet/` and ship inside `ws13/fleet/bundle.tar.gz`, which
+the node already downloads. `UserData` is the ~40 lines that install packages, fetch the
+bundle, export the parameters as environment and run `node_boot.sh`.
+`tests/test_ws13_fleet_template.py` runs the **committed files** rather than re-deriving them
+from heredocs, and `UserDataSizeTests` fails if the block passes half the limit again.
+
+**What that changes, plainly: the node's shell is versioned with the bundle now, not with the
+stack.** A stack update no longer changes what a node runs — rebuilding and uploading the
+bundle does. That is why `tools/build_ws13_bundle.py` prints a sha256 per member and untars
+`bundle_manifest.json` beside the code: `cat /opt/ws13/bundle_manifest.json` on a node is how
+you tell which version it has. Two guards come with it: UserData refuses to continue if
+`node_boot.sh` is missing after unpacking, rather than leaving a node in service holding
+nothing, and a test asserts every `WS13_*` name the scripts read is exported by UserData —
+a parameter that stops reaching the node is now an empty string there, not a deploy-time error.
 
 Fixed or not, the recommendation is unchanged: the efficient shard count is 64–128 and a
 single `c7g.16xlarge` supplies 64 with no coordination at all, so this pass does not need a

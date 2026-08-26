@@ -5,8 +5,9 @@ Postgres while the ASK Lambda served a 3.2 MB SQLite file holding two documents.
 document records what is now in the repository, what has to be run against live AWS to
 activate it, and what is deliberately still open.
 
-Nothing here has been executed against production. Every live step below is a command for an
-operator to run deliberately; the code is written, tested offline, and shipped dark.
+Two steps HAVE been executed against production — the schema migrations and the provenance
+backfill, recorded below. Everything else is a command for an operator to run deliberately;
+the code is written, tested offline, and shipped dark.
 
 ## State verified against AWS on 2026-08-25 (read-only)
 
@@ -59,7 +60,9 @@ operator to run deliberately; the code is written, tested offline, and shipped d
   `doc_year_min`/`doc_year_max` are **also generated**, over `IMMUTABLE`
   `ws13_doc_year_min/max(text)`, so a document indexed after the migration cannot end up with
   a parseable `doc_date` and NULL year bounds. `ws13_county_key(text)` normalises the county
-  suffix on both sides (15,581 rows end in ` County`, 51,685 are bare).
+  suffix on both sides. Over the 56,282 indexed documents the split is 11,507 suffixed /
+  43,241 bare; the 15,581 / 51,685 quoted in the original handoff covers all 68,809
+  manifest rows.
 - Three columns the citation contract needs and `ws13_documents` did not have:
   `source_url`, `rights_basis`, `public_domain`. `pipelines/ws13_backfill_provenance.py`
   fills them for the existing 56,282 rows from the WS12 manifest, and refuses any document
@@ -95,7 +98,7 @@ human verification; `tools/ws13_live_known_items.py` is the live runner.
 
 ### AWS worker fleet updates
 
-- **Per-page confidence was NULL for all 760,043 pages.** `pdftoppm` is not on `$PATH` in the
+- **Per-page confidence was NULL for all 760,059 pages.** `pdftoppm` is not on `$PATH` in the
   ocrmypdf image, so every render exited 127 and tier-1 escalation had never fired once.
   `ws13_worker.py` now probes `pdftoppm` / `pdftocairo` / `gs` once per process (ghostscript
   is always present) and records an unmeasured page as **NULL, not `false`** — "we did not
@@ -150,7 +153,7 @@ else has.
 `ws13_pages.confidence` is NULL for all 760,059 rows because `pdftoppm` is not on `$PATH` in
 the ocrmypdf image and every render exited 127. Two corrections to how that gets fixed:
 
-**The scope is 323,059 pages, not 760,043.** The other 437,000 pages belong to born-digital
+**The scope is 323,059 pages, not 760,059.** The other 437,000 pages belong to born-digital
 documents carrying a publisher text layer; there is no OCR confidence to measure on them.
 
 **Measuring and re-OCRing are different operations.** Measuring writes `ws13_pages` and
@@ -166,6 +169,30 @@ TSV. Tesseract rather than a "better" engine on purpose: the number being produc
 tesseract word-confidence, and `CONF_THRESHOLD` 60 / `ESCALATE_THRESHOLD` 45 in
 `ws13_worker.py` are calibrated to that scale. A different engine would produce a
 differently-scaled score *and* replace the text, triggering the cascade above.
+
+**A page that cannot be measured leaves the work set, one way or the other.** A terminal
+reason (no image, no scored word, page absent, searchable PDF gone) leaves on its first
+attempt. Everything else — an S3 timeout, a container timeout — is transient and re-admitted
+on the next run, because a five-second network fault must not abandon a page for good, but
+`ws13_conf_skips.attempts` counts and `MAX_TRANSIENT_ATTEMPTS` (5) ends it. Without that
+counter a page that fails transiently on *every* sweep is deterministic in fact whatever it is
+in classification: the shard never reached zero remaining, so the pass never reported done, so
+the fleet wrapper swept the same unmeasurable pages for its whole 24 h ceiling. An exhausted
+page is never counted as measured — it is reported as its own number in the run summary and by
+`--verify-complete`, because "0 pages remaining" must not quietly absorb pages that were given
+up on.
+
+**The exit code is a contract**, and `1` is deliberately not part of it: `0` the shard is
+measured, `10` pages remain and this sweep measured some, `11` pages remain and this sweep
+measured nothing, `2` bad shard arithmetic, `3` no docker or no renderer, `12`
+`--verify-complete` found the corpus unfinished. `1` is what CPython returns for an uncaught
+exception, and the old "1 means work remains" made a dead process and an ordinary first sweep
+the same observable to the caller.
+
+**`--verify-complete --shards N` is the end-of-run assertion.** It names every shard that still
+owes pages and reports the exhausted set beside the remaining one. It reads `ws13_pages` rather
+than the fleet's S3 claim objects on purpose: a node that died before it ever claimed a slot
+leaves nothing behind in S3, and leaves every page it never measured in the database.
 
 Cost is dominated by `docker run`, not by OCR. The real work is ~1.2 s/page; container
 startup against the ocrmypdf image is 1.5–3 s. One container per **document** rather than two
@@ -215,28 +242,42 @@ Sized only after Phase 1. If it lands near the lexical proxy's 14%, that is ~45,
 Whatever is chosen, Phase 2 re-chunks and re-embeds what it touches. Plan that; do not
 stumble into it.
 
-### `FleetMode: confidence` — built, not recommended, three blockers open
+### `FleetMode: confidence` — the three blockers are closed
 
 `infra/ws13_fleet.yaml` gained a `FleetMode` parameter that lets the existing ASG run the
 confidence pass. It works by having each node claim one of `ConfidenceNodeSlots` slots through
 an S3 object, deriving its shard indices from the slot. Review found three blockers in that
-protocol, and they are inherent to inventing ordinals for an ASG rather than incidental:
+protocol. Each is now fixed, and `tests/test_ws13_fleet_template.py` runs the template's own
+shell against a stub `aws`/`date`/`sleep` to hold them fixed:
 
-1. A replacement for a hard-dead node arrives long before `ClaimStaleSeconds`, finds no free
-   slot, and retires **with** `--should-decrement-desired-capacity` — permanently removing the
-   only capacity that could ever reclaim the dead node's shard.
-2. Exit status 1 is overloaded: it is both the pass's deliberate "this shard has work left"
-   and CPython's status for any uncaught exception. The sweep loop treats both as "sweep
-   again", with no backoff, for the full 24 h ceiling.
-3. Nothing asserts every slot reached `complete`. Once the group decrements to zero, "run
-   finished" and "run finished with slots nobody ever claimed" are the same observable — which
-   is the same class of silent-hole defect as the rc=127 this whole pass exists to repair.
+1. **A replacement no longer decrements the group it was born to rescue.** A replacement for a
+   hard-dead node arrives long before `ClaimStaleSeconds`, so it used to find no free slot and
+   retire **with** `--should-decrement-desired-capacity` — permanently removing the only
+   capacity that could ever reclaim the dead node's shard. Claiming now waits
+   `ClaimStaleSeconds + 300` s, re-attempting, and only then gives capacity back: after that
+   window every unfinished claim has demonstrably been refreshed by a live node, so the
+   "this node is surplus" that a decrement asserts is actually true. A run in which every slot
+   is already `complete` breaks out at once rather than waiting.
+2. **Exit 1 is no longer overloaded.** `ws13_confidence_pass.main()` returns `10` for "pages
+   remain and this sweep measured some", `11` for "pages remain and this sweep measured
+   nothing", and leaves `1` to mean what CPython makes it mean. The sweep loop sweeps straight
+   on for 10, backs off geometrically (60 s → 900 s) for 11 and gives up after 6 consecutive
+   stalls, and retries an unhandled `1` three times before failing the worker to the node
+   agent. Nothing hot-loops to the 24 h ceiling any more.
+3. **A node asserts before it retires.** A node that finishes its shard cleanly now looks for a
+   slot that is unclaimed, or whose holder has stopped refreshing, and *adopts* it rather than
+   retiring — so the group cannot decrement to zero while a shard is unmeasured, because the
+   last node out has by then found nothing claimable. What is still outstanding is published
+   as `WS13/Fleet SlotsIncomplete`, and an **unclaimed** slot counts (it has no object in S3,
+   which is exactly the hole this counts). The authoritative check is against the database,
+   not the claims: `ws13_confidence_pass.py --verify-complete --shards N` names every shard
+   that still owes pages, and reports separately any pages that were given up on rather than
+   measured.
 
-Since the efficient shard count is 64–128 and a single `c7g.16xlarge` supplies 64 with no
-coordination at all, the simplest fix is not to use this path for this pass. Fix the three
-blockers before `FleetMode: confidence` is used, or drive the pass from SQS the way the OCR
-worker already is, which supplies at-least-once delivery and retry without a bespoke claim
-protocol.
+Fixed or not, the recommendation is unchanged: the efficient shard count is 64–128 and a
+single `c7g.16xlarge` supplies 64 with no coordination at all, so this pass does not need a
+fleet. Driving the pass from SQS the way the OCR worker already is remains the way to remove
+the bespoke claim protocol entirely.
 
 ## Failed documents (`pipelines/ws13_rescue.py`)
 
@@ -255,6 +296,26 @@ rescue tool classifies on the recorded exit code and escalates a remedy ladder, 
 `--dry-run`, ends a document that exhausts the ladder in a terminal state with a *classified*
 reason rather than a traceback fragment, and re-enters rescued documents through
 `ws13_enqueue.py` so there is one indexing path rather than two.
+
+Three things it will not do, each of which it used to:
+
+- **Retire a document over a node defect.** Exit 3 `MISSING_DEPENDENCY`, exit 5
+  `FILE_ACCESS_ERROR` and a `BAD_ARGS` from the fleet's own `WS13_OCR_EXTRA_ARGS` are
+  properties of the image, the disk and the environment. They are now *deferred*: reported,
+  and the manifest row left untouched at `error` so the next `--all-failed` sweep sees it again
+  once the real defect is fixed. Writing `unrescuable` on them retired an indexable document
+  permanently, because `SETTLED_STATUSES` excludes that status for good. A row that has never
+  been diagnosed at all (`stale_running_reaped`, `unclassified`) is deferred for the same
+  reason.
+- **End a whole run on one document.** Each ladder runs inside per-document containment, so an
+  S3 object that will not fetch costs that document and nothing else; the rest of the plan is
+  still attempted, and the faulted row is left selectable rather than classified from its
+  traceback.
+- **Count `[OCR skipped on page N]` as rescued text.** That line is ocrmypdf reporting a page
+  it did not read; at ~23 characters each, against `MIN_RESCUE_CHARS` 20, a handful of them
+  cleared the threshold on their own — and the rung most likely to produce them is
+  `--skip-big`, whose entire purpose is to abandon an unreadable page. `sidecar_chars()` now
+  strips them before counting and carries the skipped count into the attempt trail.
 
 ## Operator sequence
 
@@ -294,14 +355,27 @@ invoke it with `{"op":"ping"}`. Expect a response in under 3 s.
 
 ## Deliberately not done
 
-- **The viewer does not yet open a WS13 document.** `site/viewer.html` resolves through the
-  docs API manifest, which covers the legacy stored corpus only. A citation with no
-  `source_url` therefore renders as inert cited text carrying its rights badge, not a dead
-  link — `docChip` refuses to paint a button it cannot open. Extending the presigning path
-  over `ws13/searchable/` is the next piece of work and is outside Phases A–E.
+- **The viewer opens a WS13 document; the map does not yet offer one.** `site/viewer.html`
+  used to resolve every document through the WS12 manifest, so a WS13 citation was inert text.
+  It now speaks both corpora: `#corpus=ws13` carries the stored original's `s3_key` and its
+  `rights_basis` — the two facts the docs API needs because this corpus is indexed in a
+  Postgres that API cannot read — and the WS13 chrome prints the licence beside the page
+  rather than implying public domain by silence. Neither field grants anything: the request is
+  still gated on a live Cognito session, the key is re-validated against the document, and the
+  rights class is read off the key's `ws12/{class}/` prefix, not off the link. The viewer also
+  performs the end-of-document check `validate_ws13_request()` explicitly delegates to it,
+  since no page count is reachable from that function.
+
+  What is still open is the other end: `docChip` in `site/index.html` resolves a document
+  through `docFind()`, the WS12 manifest, and renders nothing for an id it does not carry — so
+  a WS13 citation still falls back to `docCiteStatic`, inert text with its rights badge. Making
+  those chips openable means carrying `s3_key`, `rights_basis` and `viewer_key_kind` from the
+  retrieval Lambda's citation into the chip's fragment, and there are no such citations to
+  carry until `WS13_RETRIEVAL_ENABLED=true`. That is a step in the cutover, not before it.
 - **24 of the 25 known-item fixtures are unwritten.** They need the live corpus and a human
   to verify each one; inventing them would make the gate meaningless.
-- **Per-page confidence still needs a re-OCR pass** over 760,043 pages to become real. The
+- **Per-page confidence still needs a re-OCR pass** over the 323,059 OCR pages to become
+  real (the other 437,000 are born-digital and have no OCR confidence to measure). The
   renderer fix stops the silent failure for everything processed from now on.
 - 12,519 map plates (75,698 pages, 176.7 GB) still have no consumer, ~3,058 OCR documents have
   zero-byte sidecars, and Cohere remains ~4 weeks out against a non-adjustable cap. None of

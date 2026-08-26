@@ -97,6 +97,58 @@ preflight() {
   # namespace explicitly so an unrelated site-packages ``tests`` package
   # cannot shadow shared fixtures during deployment preflight.
   python3 "$HERE/../ci/run_tests.py"
+  # WS13 retrieval gate. The contract check is offline — it only reads the SQL
+  # constants out of infra/ws13_query_lambda.py — so it runs on every deploy.
+  # Casting one side of <=> to halfvec, or naming the wrong opclass, still
+  # parses and still returns the right rows; it just abandons
+  # ws13_chunks_titan_hnsw and scans all 852,027 chunks. Nothing reports that,
+  # so the 30 s API Gateway deadline in front of the retrieval Lambda does.
+  python3 "$HERE/../pipelines/ws13_index_contract.py"
+  # The live half needs the private-VPC database and is OPT-IN, deliberately
+  # not inferred from WS13_DB_DSN being set. Policy blocks retrieving the DB
+  # secret to a laptop (tools/ws13_ssm.py) and deploy.sh runs from a
+  # workstation, so keying on that variable meant the live gate never ran at
+  # all — while tests/test_ws13_retrieval.py does
+  # os.environ.setdefault("WS13_DB_DSN", "postgresql://ws13_reader@test/nwmm"),
+  # so a developer who exported the placeholder got the opposite failure: a
+  # psycopg OperationalError against host 'test' aborting an unrelated deploy.
+  if [ "${WS13_LIVE_INDEX_GATE:-false}" = "true" ]; then
+    if [ -z "${WS13_DB_DSN:-}" ]; then
+      echo "ERROR: WS13_LIVE_INDEX_GATE=true but WS13_DB_DSN is not set."
+      echo "       The live gate only runs where the in-VPC database is reachable."
+      exit 1
+    fi
+    # The ANN gate runs FIRST because it is the only one of the two that
+    # separates "unreachable from here" (exit 6) from "the index is missing or
+    # the plan regressed" (exit 5). It checks pg_class before it plans
+    # anything and bounds the session with a statement_timeout, so the gate
+    # can never become the 852,027-row sequential scan it exists to prevent.
+    ws13_gate_rc=0
+    python3 "$HERE/../pipelines/ws13_build_ann_index.py" --verify || ws13_gate_rc=$?
+    if [ "$ws13_gate_rc" -eq 6 ]; then
+      echo "    WS13 live index gate NOT EVALUATED: no route to the database."
+      echo "    Run on the in-VPC host: python3 /opt/ws13/ws13_build_ann_index.py --verify"
+    elif [ "$ws13_gate_rc" -ne 0 ]; then
+      exit "$ws13_gate_rc"
+    else
+      # --require-provenance by default, not on request: it proves
+      # pipelines/ws13_backfill_provenance.py has run, and until it has,
+      # ws13_documents.source_url is NULL for rows the retrieval Lambda would
+      # then have to cite by stored copy alone. Waive it only while Phase A is
+      # still bringing the corpus up, and see it said out loud when you do.
+      ws13_check_args=(--check)
+      if [ "${WS13_SKIP_PROVENANCE_GATE:-false}" = "true" ]; then
+        echo "    WS13 provenance gate WAIVED by WS13_SKIP_PROVENANCE_GATE=true"
+      else
+        ws13_check_args+=(--require-provenance)
+      fi
+      python3 "$HERE/../pipelines/ws13_migrate.py" "${ws13_check_args[@]}"
+    fi
+  else
+    echo "    WS13 live index gate skipped: set WS13_LIVE_INDEX_GATE=true with a"
+    echo "    reachable WS13_DB_DSN (the in-VPC host has one) to run"
+    echo "    ws13_build_ann_index.py --verify and ws13_migrate.py --check here."
+  fi
   # The strict test runtime may be a pinned geospatial environment, while the
   # exhaustive pure-Python PMTiles decoder is materially faster in the system
   # interpreter. Keep the default unchanged but allow operators to select that

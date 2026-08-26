@@ -4,6 +4,18 @@ The Lambda downloads one exact, SHA-256-metadata-pinned S3 object into /tmp and
 reuses it while its ETag is unchanged.  Tool results expose short OCR excerpts
 and resolvable title/page/source-URL citations, never complete pages or stored
 originals.
+
+Ranking is Reciprocal Rank Fusion (k = 60) over a lexical and a vector arm.
+It replaces a 0.75*cosine + 0.25*lexical blend that assigned any chunk without
+a stored embedding a vector score of -1.0: one missing vector dropped a perfect
+keyword match below every embedded chunk, which is exactly the failure mode of
+a partially embedded corpus.  Under RRF a row missing from an arm contributes
+nothing from that arm instead of being actively penalised.
+
+The lexical arm exists only where the index carries FTS5 (schema_meta fts5='1')
+and the question carries terms.  The fts5='0' fallback index answers with an
+unranked LIKE filter in (document_id, page, ordinal) order, which is a page
+walk: admitting it to the fusion would give document order one full arm's vote.
 """
 from __future__ import annotations
 
@@ -22,6 +34,9 @@ from typing import Any, Mapping
 
 TOOL_NAMES = frozenset({"search_documents", "docs_for"})
 WORD_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9'/-]*")
+# Reciprocal Rank Fusion constant, shared with the WS13 retrieval Lambda so a
+# hit ranked here and a hit ranked there carry comparable scores.
+RRF_K = 60
 _CACHE: dict[str, str | int | None] = {"etag": None, "path": None, "bytes": None}
 
 
@@ -171,6 +186,11 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
     query = str(arguments.get("query") or "").strip()[:1000]
     mine_id = str(arguments.get("mine_id") or "").strip()[:256] or None
     portal = str(arguments.get("portal") or "").strip()[:128] or None
+    state = str(arguments.get("state") or "").strip()[:32].upper() or None
+    county = str(arguments.get("county") or "").strip()[:128] or None
+    sha256 = str(arguments.get("sha256") or "").strip()[:128].lower() or None
+    if sha256 and not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise ValueError("sha256 filter must be 64 lowercase hex characters")
     terms = _terms(query)
     if not terms and not mine_id:
         raise ValueError("query or mine_id is required")
@@ -184,6 +204,25 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
     if portal:
         filters.append("EXISTS(SELECT 1 FROM document_sources ds WHERE ds.document_id=c.document_id AND ds.portal_id=?)")
         params.append(portal)
+    if state:
+        filters.append("EXISTS(SELECT 1 FROM document_sources ds WHERE "
+                       "ds.document_id=c.document_id AND upper(trim(ds.state))=?)")
+        params.append(state)
+    if county:
+        # County is spelled both ways in the harvest (bare and '... County'),
+        # exactly as it is in ws13_documents, so normalise the argument and
+        # match it against both spellings rather than trusting either.
+        key = re.sub(r"\s+county$", "", county.lower()).strip()
+        filters.append("EXISTS(SELECT 1 FROM document_sources ds WHERE "
+                       "ds.document_id=c.document_id AND "
+                       "lower(trim(coalesce(ds.county,''))) IN (?,?))")
+        params.extend([key, key + " county"])
+    if sha256:
+        # documents.document_id IS the SHA-256 of the raw original —
+        # pipelines/document_index.py refuses a materialized copy whose digest
+        # differs — so WS13's sha256 filter lands on the same value here.
+        filters.append("c.document_id=?")
+        params.append(sha256)
     extra = " AND " + " AND ".join(filters) if filters else ""
     fts5 = connection.execute(
         "SELECT value FROM schema_meta WHERE key='fts5'").fetchone()[0] == "1"
@@ -203,19 +242,38 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
             " ORDER BY c.document_id,c.page,c.ordinal LIMIT ?",
             [*likes, *params, candidate_limit]).fetchall()
     candidate_rows = {row["chunk_id"]: dict(row) for row in rows}
+    # The lexical arm is exactly the ranked output of the query above, captured
+    # before the mine-scope backfill: 1-based, best first. It exists only when
+    # that query actually ranked something, which means BOTH terms and FTS5.
+    # With no terms the SELECT degenerates to `1=1 ORDER BY document_id,page,
+    # ordinal`; on an index built without FTS5 (pipelines/document_index.py
+    # writes schema_meta fts5='0' and a plain table when the building SQLite
+    # lacks the module) the LIKE branch orders by the same three columns with
+    # rank literally 0. Both are page walks rather than relevance rankings, so
+    # neither forms an arm — feeding one to RRF would hand document order the
+    # same 1/61 vote as the embedding model's top hit.
+    lexical_ranks = ({row["chunk_id"]: index + 1 for index, row in enumerate(rows)}
+                     if (terms and fts5) else {})
     # A mine-scoped question can use every bounded chunk for that mine, so a
-    # synonym absent from FTS can still be recovered by the vector model.
+    # synonym absent from FTS can still be recovered by the vector model. It
+    # reuses `extra` — every document-level filter, mine included — so a
+    # state/county/portal bound the caller asked for is not quietly widened
+    # back out by the backfill.
     if mine_id:
         for row in connection.execute(
-                "SELECT c.*,0 AS rank FROM chunks c WHERE EXISTS(SELECT 1 FROM "
-                "document_sources ds WHERE ds.document_id=c.document_id AND ds.mine_id=?) "
-                "ORDER BY c.document_id,c.page,c.ordinal LIMIT ?",
-                (mine_id, candidate_limit)):
+                "SELECT c.*,0 AS rank FROM chunks c WHERE 1=1" + extra +
+                " ORDER BY c.document_id,c.page,c.ordinal LIMIT ?",
+                [*params, candidate_limit]):
             candidate_rows.setdefault(row["chunk_id"], dict(row))
     ranked_rows = list(candidate_rows.values())
-    retrieval_mode = "fts" if terms else "metadata_filter"
+    # Name the arm that actually ran. An fts5='0' index answers keyword queries
+    # with an unranked LIKE filter, so reporting "fts" there would tell the
+    # model the excerpts were relevance-ordered when they are in page order.
+    retrieval_mode = ("fts" if (terms and fts5)
+                      else "like_filter" if terms else "metadata_filter")
     embedding_model = None
     embedding_error = None
+    vector_ranks = {}
     if query and ranked_rows:
         placeholders = ",".join("?" for _ in ranked_rows)
         model_row = connection.execute(
@@ -233,17 +291,34 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
                     "chunk_id IN (" + placeholders + ")",
                     [embedding_model, *[row["chunk_id"] for row in ranked_rows]]).fetchall()
                 vectors = {row["chunk_id"]: row["vector"] for row in vector_rows}
-                lexical_order = {row["chunk_id"]: index for index, row in enumerate(ranked_rows)}
-                for row in ranked_rows:
-                    blob = vectors.get(row["chunk_id"])
-                    vector_score = _cosine(query_vector, blob, dimensions) if blob else -1.0
-                    lexical_score = 1.0 / (1.0 + lexical_order[row["chunk_id"]])
-                    row["_hybrid_score"] = 0.75 * vector_score + 0.25 * lexical_score
-                ranked_rows.sort(key=lambda row: (-row["_hybrid_score"], row["document_id"],
-                                                   row["page"], row["ordinal"]))
-                retrieval_mode = "hybrid_fts_vector" if terms else "vector_mine_scope"
+                # Only rows that actually carry a vector enter the vector arm.
+                # The rest are absent from it, which under RRF costs them that
+                # arm's contribution and nothing more.
+                scored = [
+                    (row, _cosine(query_vector, vectors[row["chunk_id"]], dimensions))
+                    for row in ranked_rows if vectors.get(row["chunk_id"])]
+                scored.sort(key=lambda item: (-item[1], item[0]["document_id"],
+                                              item[0]["page"], item[0]["ordinal"]))
+                vector_ranks = {row["chunk_id"]: index + 1
+                                for index, (row, _score) in enumerate(scored)}
+                retrieval_mode = ("hybrid_fts_vector" if (terms and fts5)
+                                  else "like_filter_vector" if terms
+                                  else "vector_mine_scope")
             except Exception as exc:  # lexical results remain safe and available
                 embedding_error = str(exc)[:300]
+    # Reciprocal Rank Fusion, k = 60: score = sum over arms of 1/(60 + rank).
+    # The blend this replaces scored a vector-less row at -1.0, so a single
+    # missing embedding sank a perfect keyword match beneath every embedded
+    # chunk. Ties keep the original (document_id, page, ordinal) order, so a
+    # lexical-only result set comes out in exactly the order it went in.
+    for row in ranked_rows:
+        lexical_rank = lexical_ranks.get(row["chunk_id"])
+        vector_rank = vector_ranks.get(row["chunk_id"])
+        row["_ranks"] = {"lexical": lexical_rank, "vector": vector_rank}
+        row["_rrf_score"] = ((1.0 / (RRF_K + lexical_rank) if lexical_rank else 0.0) +
+                             (1.0 / (RRF_K + vector_rank) if vector_rank else 0.0))
+    ranked_rows.sort(key=lambda row: (-row["_rrf_score"], row["document_id"],
+                                      row["page"], row["ordinal"]))
     rows = ranked_rows[:limit]
     hits = []
     for row in rows:
@@ -252,6 +327,9 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
         hits.append({
             "chunk_id": row["chunk_id"], "document_id": row["document_id"],
             "page": page, "excerpt": _excerpt(row["text"], terms, maximum),
+            # Both arms' ranks travel with the hit so a fusion regression is
+            # visible in the tool result instead of only in the final order.
+            "ranks": row["_ranks"], "rrf_score": round(row["_rrf_score"], 6),
             "citation": _citation(metadata, page),
             "metadata": {key: metadata.get(key) for key in
                          ("portals", "portal_sources", "mine_ids", "mine_names",
@@ -259,10 +337,22 @@ def _search(connection: sqlite3.Connection, arguments: Mapping[str, Any]) -> dic
         })
     result = {"status": "loaded", "query": query, "mine_id": mine_id,
               "portal": portal, "count": len(hits), "hits": hits,
+              "filters_applied": {"mine_id": mine_id, "portal": portal,
+                                  "state": state, "county": county,
+                                  "sha256": sha256},
               "retrieval_mode": retrieval_mode, "embedding_model": embedding_model,
               "citation_rule": ("Use only these excerpts for document claims; cite each "
                                 "claim with the returned title, exact page, and source URL."),
               "bounded": {"max_hits": limit, "max_excerpt_chars": maximum}}
+    # search_documents advertises the full WS13 filter set. This bounded slice
+    # has no column for any of these three — admission_class is a WS13 rights
+    # class and the year bounds need WS13's parsed doc_year_min/doc_year_max,
+    # since doc_date here is free text — so answering a 1930s-only question
+    # with an unbounded sweep and saying nothing would read as evidence.
+    unapplied = [key for key in ("admission_class", "year_min", "year_max")
+                 if arguments.get(key) not in (None, "", [])]
+    if unapplied:
+        result["filters_not_applied"] = unapplied
     if embedding_error:
         result["embedding_error"] = embedding_error
     _validate_result(result)

@@ -2,25 +2,62 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
   WS13 OCR/embed worker fleet: an Auto Scaling Group of c7g.4xlarge nodes
   (8 worker processes each) consuming the SQS work queue, writing to the
-  data-plane Postgres and ws13/ S3 prefix. Scales on queue depth; each node
-  exits its workers when the queue drains and the ASG is then scaled to zero
-  by the operator (or the schedule). Private nodes, SSM-managed only.
+  data-plane Postgres and ws13/ S3 prefix. A target-tracking policy holds
+  the SQS backlog (visible AND in-flight) per in-service node at a target,
+  which scales the group both out and in down to MinSize 0. A per-node agent
+  owns the rest of the lifecycle: it drains through a termination lifecycle
+  hook so a scale-in never kills a document mid-OCR, retires the node out of
+  the group when the queue drains, and holds (rather than silently replaces)
+  a node whose workers died. Three CloudWatch alarms (idle fleet, worker exit
+  failures, non-empty dead-letter queue) are optional-SNS.
+  Private nodes, SSM-managed only.
 
 Parameters:
   BucketName: {Type: String}
   QueueUrl: {Type: String}
   QueueName: {Type: String, Default: ws13-ocr-work}
+  DeadLetterQueueName: {Type: String, Default: ws13-ocr-dlq}
   DbSecretArn: {Type: String}
   DbEndpoint: {Type: String}
   WorkerSecurityGroupId: {Type: AWS::EC2::SecurityGroup::Id}
   SubnetIds: {Type: List<AWS::EC2::Subnet::Id>}
   DesiredCapacity: {Type: Number, Default: 0}
   MaxSize: {Type: Number, Default: 40}
+  FleetName:
+    Type: String
+    Default: ws13-workers
+    Description: >-
+      Auto Scaling group name. Named rather than generated because the node
+      agent and the WorkerRole policy both have to refer to this group: the
+      agent completes its own lifecycle action and terminates itself out of
+      the group, and the policy scopes those calls to this group's ARN.
   InstanceType: {Type: String, Default: c7g.4xlarge}
   WorkersPerNode: {Type: Number, Default: 8}
+  BacklogPerInstanceTarget:
+    Type: Number
+    Default: 120
+    Description: >-
+      Target SQS messages (visible plus in flight) per in-service node. One
+      node runs WorkersPerNode worker processes and a document averages
+      minutes, so a backlog of ~15 documents per worker process is roughly an
+      hour of queued work per node: enough to keep a node busy without
+      holding capacity that the remaining backlog no longer justifies. The
+      in-flight term adds at most WorkersPerNode per node, so it shifts the
+      ratio by ~7% at this target and only matters at the tail, where it is
+      the difference between "nothing left to do" and "every node is busy".
+  AlarmTopicArn:
+    Type: String
+    Default: ''
+    Description: >-
+      Optional SNS topic for the three alarms. Empty by default so the stack
+      deploys in an account with no topic: the alarms still exist and still
+      change state, they simply notify nobody.
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+Conditions:
+  HasAlarmTopic: !Not [!Equals [!Ref AlarmTopicArn, '']]
 
 Resources:
   WorkerRole:
@@ -45,8 +82,29 @@ Resources:
                 Action: [sqs:ReceiveMessage, sqs:DeleteMessage, sqs:ChangeMessageVisibility, sqs:GetQueueAttributes, sqs:SendMessage]
                 Resource:
                   - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${QueueName}
-                  - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:ws13-ocr-dlq
+                  - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${DeadLetterQueueName}
               - {Effect: Allow, Action: secretsmanager:GetSecretValue, Resource: !Ref DbSecretArn}
+              # The node retires itself: it completes the drain lifecycle
+              # action the group started, or terminates itself out of the
+              # group WITH --should-decrement-desired-capacity. Without these
+              # the only exit is `shutdown`, which the group reads as an
+              # unhealthy instance and replaces, forever. The group ARN
+              # carries a generated UUID that CloudFormation does not expose,
+              # so the resource wildcards that segment only.
+              - Effect: Allow
+                Action:
+                  - autoscaling:CompleteLifecycleAction
+                  - autoscaling:RecordLifecycleActionHeartbeat
+                  - autoscaling:TerminateInstanceInAutoScalingGroup
+                Resource: !Sub
+                  - 'arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${Name}'
+                  - {Name: !Ref FleetName}
+              # One metric, one namespace: whether this node's workers exited
+              # cleanly or died. A bad bundle used to be invisible.
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition: {StringEquals: {'cloudwatch:namespace': WS13/Fleet}}
               - Effect: Allow
                 Action: bedrock:InvokeModel
                 Resource:
@@ -65,6 +123,15 @@ Resources:
       LaunchTemplateData:
         ImageId: !Ref AmiId
         InstanceType: !Ref InstanceType
+        # The node's last resort when the autoscaling API is unavailable is
+        # `shutdown -h now`. Without this the EC2 default applies, the
+        # instance goes to `stopped` rather than `terminated`, the 200 GB gp3
+        # volume below keeps billing (DeleteOnTermination does not fire on a
+        # stop), and the group's EC2 health check replaces the node because
+        # DesiredCapacity never changed -- a boot/stop/replace loop that
+        # costs money silently. infra/ws13_runner.yaml and
+        # infra/harvest_runner.yaml already set this; this template did not.
+        InstanceInitiatedShutdownBehavior: terminate
         IamInstanceProfile: {Arn: !GetAtt WorkerProfile.Arn}
         SecurityGroupIds: [!Ref WorkerSecurityGroupId]
         BlockDeviceMappings:
@@ -98,23 +165,363 @@ Resources:
               # wait for the seeder to finish schema init before workers start
               until aws s3 ls s3://${BucketName}/ws13/fleet/seed.log >/dev/null 2>&1; do sleep 15; done
             fi
+            # Each worker runs under a wrapper that records its EXIT STATUS.
+            # "all workers gone" is not one condition but two -- the queue
+            # drained (exit 0) or the process died at startup (non-zero, e.g.
+            # the pip install above exhausted its retries, bundle.tar.gz is
+            # stale, or WS13_BUCKET/WS13_QUEUE_URL/WS13_DB_DSN are unset) --
+            # and the node must not treat the second as the first.
+            cat > /opt/ws13/run_worker.sh <<'RUNEOF'
+            #!/bin/bash
+            cd /opt/ws13
+            WS13_WORKER_ID="$(hostname)-$1" python3 ws13_worker.py >> /var/log/ws13-worker-"$1".log 2>&1
+            echo $? > /opt/ws13/status/"$1"
+            RUNEOF
+            chmod +x /opt/ws13/run_worker.sh
+            mkdir -p /opt/ws13/status
+            WORKER_PIDS=""
             for i in $(seq 1 ${WorkersPerNode}); do
-              WS13_WORKER_ID="$(hostname)-$i" nohup python3 ws13_worker.py >> /var/log/ws13-worker-$i.log 2>&1 &
+              nohup /opt/ws13/run_worker.sh $i >/dev/null 2>&1 &
+              WORKER_PIDS="$WORKER_PIDS $!"
             done
-            # when every worker exits (queue drained), upload logs and shut down
-            nohup bash -c 'while pgrep -f ws13_worker.py >/dev/null; do sleep 60; done; aws s3 cp /var/log/ s3://${BucketName}/ws13/fleet/logs/$(hostname)/ --recursive --exclude "*" --include "ws13-*" ; shutdown -h now' >/dev/null 2>&1 &
+            echo "$WORKER_PIDS" > /opt/ws13/worker.pids
+            cat > /opt/ws13/node_agent.sh <<'AGENTEOF'
+            #!/bin/bash
+            # One loop that owns this node's whole life: wait for the workers,
+            # keep the queue's CloudWatch series alive, honour a scale-in
+            # drain, then classify the exit and either retire the node or hold
+            # it for diagnosis. usage: node_agent.sh <worker count> <pid>...
+            #
+            # The watcher this replaces looped on 'pgrep -f ws13_worker.py',
+            # which also matched its own command line, so the condition was
+            # never false: no node ever uploaded a log or scaled itself in.
+            COUNT=$1; shift
+            STATUS=/opt/ws13/status
+            exec >> /var/log/ws13-node-agent.log 2>&1
+            say() { echo "$(date -u +%FT%TZ) $*"; }
+            imds() {
+              tok=$(curl -sX PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 60')
+              curl -s -H "X-aws-ec2-metadata-token: $tok" http://169.254.169.254/latest/meta-data/"$1"
+            }
+            IID=$(imds instance-id)
+            BOOT=$(date +%s)
+            say "agent up: $COUNT workers, pids$* instance $IID"
+            drain=0
+            tick=0
+            while :; do
+              live=0
+              for p in "$@"; do
+                if kill -0 "$p" 2>/dev/null; then live=$((live + 1)); fi
+              done
+              finished=$(ls -1 $STATUS 2>/dev/null | wc -l | tr -d ' ')
+              # Two independent proofs, so a recycled PID cannot hang the node
+              # and a SIGKILLed worker cannot hide: every worker wrote a
+              # status, or nothing is alive any more.
+              if [ "$finished" -ge "$COUNT" ] || [ "$live" -eq 0 ]; then break; fi
+              # One cheap call a minute keeps the work queue "active" so
+              # CloudWatch keeps publishing AWS/SQS metrics. Those series stop
+              # after six hours with no messages AND no API calls -- exactly
+              # the state ws13-fleet-idle exists to detect, which is why that
+              # alarm sat in INSUFFICIENT_DATA (TreatMissingData notBreaching,
+              # so: silent) through 53.78 h of four idle c7g.2xlarge nodes.
+              if [ $((tick % 3)) -eq 0 ]; then
+                aws sqs get-queue-attributes --queue-url ${QueueUrl} --attribute-names ApproximateNumberOfMessages > /dev/null 2>&1
+              fi
+              if [ "$drain" -eq 0 ] && [ "$(imds autoscaling/target-lifecycle-state)" = Terminated ]; then
+                drain=1
+                touch /opt/ws13/drain
+                say "scale-in requested: workers will finish the document in hand and exit"
+              fi
+              # Each heartbeat resets the hook's timeout, so a node draining a
+              # long document is not cut off at HeartbeatTimeout.
+              if [ "$drain" -eq 1 ] && [ $((tick % 30)) -eq 0 ]; then
+                aws autoscaling record-lifecycle-action-heartbeat --auto-scaling-group-name ${FleetName} --lifecycle-hook-name ws13-drain --instance-id "$IID" || true
+              fi
+              tick=$((tick + 1))
+              sleep 20
+            done
+            failures=0
+            for f in $STATUS/*; do
+              [ -f "$f" ] || continue
+              if [ "$(cat "$f")" != 0 ]; then failures=$((failures + 1)); fi
+              echo "worker $(basename "$f") exit=$(cat "$f")" >> /var/log/ws13-worker-exit-status.txt
+            done
+            finished=$(ls -1 $STATUS 2>/dev/null | wc -l | tr -d ' ')
+            bad=$((failures + COUNT - finished))
+            say "workers done: $finished/$COUNT reported, $bad bad, drain=$drain"
+            upload_logs() { aws s3 cp /var/log/ s3://${BucketName}/ws13/fleet/logs/"$(hostname)"/ --recursive --exclude "*" --include "ws13-*"; }
+            upload_logs
+            aws cloudwatch put-metric-data --namespace WS13/Fleet --metric-name WorkerExitFailures --unit Count --value $bad --dimensions AutoScalingGroupName=${FleetName}
+            if [ "$drain" -eq 1 ]; then
+              aws autoscaling complete-lifecycle-action --auto-scaling-group-name ${FleetName} --lifecycle-hook-name ws13-drain --instance-id "$IID" --lifecycle-action-result CONTINUE
+              exit 0
+            fi
+            ran=$(( $(date +%s) - BOOT ))
+            # Nothing survived, or everything died immediately: that is a bad
+            # bundle / bad environment, not a drained queue. Retiring here
+            # would let the still-full backlog request capacity again at once
+            # and 40 nodes would boot, die and retire in a loop with nothing
+            # indexed. Hold the node instead -- republishing the failure
+            # metric so the alarm STAYS in ALARM rather than blinking once --
+            # and give up after 21600 s (6 h), so a failure nobody looks at
+            # costs a node-day at most, not a c7g.4xlarge forever. A PARTIAL
+            # failure after real work is different: the metric is published,
+            # the exit statuses go to S3, and the node still retires.
+            if [ "$bad" -ge "$COUNT" ] || { [ "$bad" -gt 0 ] && [ "$ran" -lt 300 ]; }; then
+              say "HELD after ${!ran}s: $bad of $COUNT workers exited non-zero; see /var/log/ws13-worker-*.log"
+              held=0
+              while [ "$held" -lt 21600 ]; do
+                sleep 300
+                held=$((held + 300))
+                aws cloudwatch put-metric-data --namespace WS13/Fleet --metric-name WorkerExitFailures --unit Count --value $bad --dimensions AutoScalingGroupName=${FleetName}
+                # A held node is still in service and still idle, so keep the
+                # queue series alive for ws13-fleet-idle, and leave at once if
+                # the group asks for the node back -- there is nothing left to
+                # drain.
+                aws sqs get-queue-attributes --queue-url ${QueueUrl} --attribute-names ApproximateNumberOfMessages > /dev/null 2>&1
+                if [ "$(imds autoscaling/target-lifecycle-state)" = Terminated ]; then
+                  upload_logs
+                  aws autoscaling complete-lifecycle-action --auto-scaling-group-name ${FleetName} --lifecycle-hook-name ws13-drain --instance-id "$IID" --lifecycle-action-result CONTINUE
+                  exit 0
+                fi
+              done
+              say "hold expired; retiring the node"
+              upload_logs
+            fi
+            # Queue drained. Leave the group properly: terminate AND decrement
+            # DesiredCapacity, or the group just launches a replacement.
+            aws autoscaling terminate-instance-in-auto-scaling-group --instance-id "$IID" --should-decrement-desired-capacity || shutdown -h now
+            AGENTEOF
+            chmod +x /opt/ws13/node_agent.sh
+            nohup /opt/ws13/node_agent.sh ${WorkersPerNode} $WORKER_PIDS >/dev/null 2>&1 &
 
   Fleet:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: ws13-workers
+      AutoScalingGroupName: !Ref FleetName
       LaunchTemplate: {LaunchTemplateId: !Ref LaunchTemplate, Version: !GetAtt LaunchTemplate.LatestVersionNumber}
       MinSize: 0
       MaxSize: !Ref MaxSize
       DesiredCapacity: !Ref DesiredCapacity
       VPCZoneIdentifier: !Ref SubnetIds
+      # Not scale-in protection: the DrainHook below drains instead, which
+      # lets the policy still scale in while never killing a node mid
+      # document. Protection would have blocked policy scale-in outright.
       NewInstancesProtectedFromScaleIn: false
+      # Group metrics are off unless asked for. Without GroupInServiceInstances
+      # the scaling expression below has no denominator series and the policy
+      # sits in INSUFFICIENT_DATA forever -- the same silent-no-op class of
+      # defect as the pgrep watcher.
+      MetricsCollection:
+        - Granularity: 1Minute
+          Metrics: [GroupInServiceInstances, GroupDesiredCapacity, GroupTotalInstances]
       Tags: [{Key: Name, Value: ws13-worker, PropagateAtLaunch: true}]
+
+  # A scale-in used to terminate a node the instant the policy asked for it,
+  # while up to WorkersPerNode documents were half-OCR'd on it. Each of those
+  # messages went back to SQS with ReceiveCount incremented and three rounds
+  # of that dead-lettered a document nothing polls. The hook holds the
+  # termination while the node agent sets /opt/ws13/drain, each worker
+  # finishes the document in hand and exits, and the agent then completes the
+  # action. HeartbeatTimeout matches WS13_DOC_BUDGET_SECONDS (7200 s), the
+  # worker's hard per-document budget, and the agent re-records the heartbeat
+  # every ~10 minutes while draining. DefaultResult CONTINUE: if the agent is
+  # dead, terminate rather than wedge the group.
+  DrainHook:
+    Type: AWS::AutoScaling::LifecycleHook
+    Properties:
+      AutoScalingGroupName: !Ref Fleet
+      LifecycleHookName: ws13-drain
+      LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
+      HeartbeatTimeout: 7200
+      DefaultResult: CONTINUE
+
+  # Target tracking, not step scaling. A step policy needs a hand-tuned ladder
+  # of absolute queue depths, has to be re-tuned whenever MaxSize or the
+  # per-document cost changes, and needs a second, separately-tuned policy for
+  # the way down -- which is why there has never been one and the group has
+  # only ever been scaled in manually. One ratio (messages per in-service node)
+  # is scale-invariant and drives both directions from a single policy.
+  BacklogScaling:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref Fleet
+      PolicyType: TargetTrackingScaling
+      # Boot installs packages and pulls the ocrmypdf image before a worker
+      # takes its first message; counting a node before then would stack up
+      # capacity that is not yet working.
+      EstimatedInstanceWarmup: 600
+      TargetTrackingConfiguration:
+        # Explicit: scale-in is the whole point of adding this.
+        DisableScaleIn: false
+        TargetValue: !Ref BacklogPerInstanceTarget
+        CustomizedMetricSpecification:
+          Metrics:
+            - Id: visible
+              ReturnData: false
+              MetricStat:
+                Stat: Sum
+                Period: 60
+                Metric:
+                  Namespace: AWS/SQS
+                  MetricName: ApproximateNumberOfMessagesVisible
+                  Dimensions: [{Name: QueueName, Value: !Ref QueueName}]
+            # In-flight work is work. At the tail of a run the queue reaches
+            # 0 visible while WorkersPerNode x N documents are still being
+            # OCR'd; on visible alone the ratio hit 0, the policy drove
+            # DesiredCapacity to 0, and every node holding a document was
+            # terminated. Those messages reappeared with ReceiveCount
+            # incremented, the backlog jumped, the group scaled back out --
+            # and three cycles put a document nothing polls into
+            # ws13-ocr-dlq. The IdleFleetAlarm below already counted both
+            # series for exactly this reason; the scaling policy contradicted
+            # it. This stops the policy from reading in-flight work as no
+            # work; it does not by itself make a scale-in safe (8 in-flight
+            # documents against a target of 120 is still a small ratio) --
+            # DrainHook above is what keeps the documents.
+            - Id: inflight
+              ReturnData: false
+              MetricStat:
+                Stat: Sum
+                Period: 60
+                Metric:
+                  Namespace: AWS/SQS
+                  MetricName: ApproximateNumberOfMessagesNotVisible
+                  Dimensions: [{Name: QueueName, Value: !Ref QueueName}]
+            - Id: capacity
+              ReturnData: false
+              MetricStat:
+                Stat: Average
+                Period: 60
+                Metric:
+                  Namespace: AWS/AutoScaling
+                  MetricName: GroupInServiceInstances
+                  Dimensions: [{Name: AutoScalingGroupName, Value: !Ref Fleet}]
+            # The IF guard is what lets MinSize stay 0: at zero in-service
+            # instances the ratio would divide by zero and the policy would
+            # never scale out again, stranding the queue.
+            - Id: backlog_per_instance
+              Label: SQS backlog per in-service worker node
+              ReturnData: true
+              Expression: >-
+                (FILL(visible, 0) + FILL(inflight, 0)) /
+                IF(capacity > 0, capacity, 1)
+
+  # An idle fleet costs c7g.4xlarge-hours and says nothing; this account has
+  # had zero CloudWatch alarms. Both message counts are used because in-flight
+  # work is not visible work: a node processing a 900-page scan holds its
+  # message, and calling that idle would page on healthy behaviour.
+  IdleFleetAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ws13-fleet-idle
+      AlarmDescription: >-
+        WS13 worker nodes are in service while the work queue has been empty
+        (nothing visible, nothing in flight) for 30 minutes. Scale-in should
+        have handled this; if the alarm holds, the target-tracking policy or
+        the node self-shutdown is not working.
+        CloudWatch stops publishing AWS/SQS metrics for a queue with no
+        messages and no API calls for six hours -- which is this exact
+        failure -- so the node agent polls GetQueueAttributes once a minute
+        to keep the series alive, and the expression FILLs the queue series
+        so a sparse gap cannot resolve the alarm to OK either.
+      Metrics:
+        - Id: visible
+          ReturnData: false
+          MetricStat:
+            Stat: Maximum
+            Period: 300
+            Metric:
+              Namespace: AWS/SQS
+              MetricName: ApproximateNumberOfMessagesVisible
+              Dimensions: [{Name: QueueName, Value: !Ref QueueName}]
+        - Id: inflight
+          ReturnData: false
+          MetricStat:
+            Stat: Maximum
+            Period: 300
+            Metric:
+              Namespace: AWS/SQS
+              MetricName: ApproximateNumberOfMessagesNotVisible
+              Dimensions: [{Name: QueueName, Value: !Ref QueueName}]
+        - Id: capacity
+          ReturnData: false
+          MetricStat:
+            Stat: Average
+            Period: 300
+            Metric:
+              Namespace: AWS/AutoScaling
+              MetricName: GroupInServiceInstances
+              Dimensions: [{Name: AutoScalingGroupName, Value: !Ref Fleet}]
+        - Id: idle_instances
+          Label: In-service nodes with nothing queued
+          ReturnData: true
+          Expression: IF(FILL(visible, 0) + FILL(inflight, 0) < 1, capacity, 0)
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: 0
+      EvaluationPeriods: 6
+      DatapointsToAlarm: 6
+      # Missing data means no fleet and no queue traffic, which is the normal
+      # resting state, not a problem.
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlarmTopic, [!Ref AlarmTopicArn], !Ref 'AWS::NoValue']
+
+  # A node whose workers all died at startup used to be indistinguishable
+  # from a node whose queue drained: both ended in the same self-shutdown.
+  # With a bad bundle that meant every node stopping seconds after boot while
+  # the still-full queue drove BacklogScaling to MaxSize 40 -- a boot/die
+  # loop that indexes nothing. The node agent now publishes what actually
+  # happened, and holds a failed node instead of retiring it, republishing
+  # this metric every 5 minutes so the alarm stays up rather than blinking.
+  WorkerFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ws13-worker-exit-failures
+      AlarmDescription: >-
+        WS13 worker processes exited non-zero (or vanished without writing an
+        exit status). The node that reported it is held in service, not
+        retired: read s3://<bucket>/ws13/fleet/logs/<host>/ (ws13-node-agent,
+        ws13-worker-exit-status, ws13-worker-N) for the reason. A bad
+        bundle.tar.gz, an exhausted pip retry loop and unset
+        WS13_BUCKET/WS13_QUEUE_URL/WS13_DB_DSN all land here.
+      Namespace: WS13/Fleet
+      MetricName: WorkerExitFailures
+      Dimensions: [{Name: AutoScalingGroupName, Value: !Ref FleetName}]
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      # Nodes publish 0 on a clean drain, so missing data means no node has
+      # finished lately, which is not a failure.
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlarmTopic, [!Ref AlarmTopicArn], !Ref 'AWS::NoValue']
+
+  # A dead-lettered document is a document that will never be indexed unless
+  # someone requeues it (pipelines/ws13_enqueue.py). Silence here is exactly
+  # how a corpus loses documents without anyone noticing.
+  DeadLetterAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ws13-dlq-not-empty
+      AlarmDescription: >-
+        Documents are sitting in the WS13 dead-letter queue. No worker polls
+        it; requeue them with pipelines/ws13_enqueue.py against the work
+        queue once the underlying failure is understood.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions: [{Name: QueueName, Value: !Ref DeadLetterQueueName}]
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlarmTopic, [!Ref AlarmTopicArn], !Ref 'AWS::NoValue']
 
 Outputs:
   AsgName: {Value: !Ref Fleet}
+  BacklogScalingPolicyArn: {Value: !Ref BacklogScaling}
+  IdleFleetAlarmName: {Value: !Ref IdleFleetAlarm}
+  WorkerFailureAlarmName: {Value: !Ref WorkerFailureAlarm}
+  DeadLetterAlarmName: {Value: !Ref DeadLetterAlarm}

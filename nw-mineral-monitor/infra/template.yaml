@@ -42,8 +42,41 @@ Parameters:
       evidence the canonical WS12 harvester/document index requires. Set
       false to withhold the viewer and its corpus from a deployment.
 
+  Ws13RetrievalFunction:
+    Type: String
+    Default: ''
+    AllowedPattern: '[a-zA-Z0-9_-]{0,64}'
+    ConstraintDescription: >-
+      A bare Lambda FUNCTION NAME, not an ARN. The retrieval stack outputs
+      both; pasting the ARN renders AskRole's InvokeFunction resource as
+      arn:aws:lambda:...:function:arn:aws:lambda:...:function:..., which no
+      policy ever matches, so every invoke returns AccessDenied and the
+      deployment runs permanently on the fallback while looking configured.
+    Description: >-
+      Name of the WS13 retrieval Lambda that queries the full 852,027-chunk
+      corpus. Empty (the default) leaves ASK on the bounded SQLite index.
+  Ws13RetrievalEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: [ 'true', 'false' ]
+    Description: >-
+      Route search_documents at Ws13RetrievalFunction. Shipped disabled so the
+      query path deploys dark: the ANN index becomes a quality upgrade rather
+      than something a release waits on.
+  Ws13VectorArm:
+    Type: String
+    Default: ''
+    AllowedValues: [ '', 'true', 'false' ]
+    Description: >-
+      Mirror of the retrieval stack's VectorArmEnabled. Set it to false while
+      that stack ships the vector arm off and ASK stops paying for a Titan
+      embedding it knows will be discarded. Empty (the default) makes ASK learn
+      the arm state from each WS13 response instead, so a mismatched mirror
+      costs at most one wasted embedding per container per recheck window.
+
 Conditions:
   LegacyDocumentStoreEnabled: !Equals [ !Ref EnableLegacyDocumentStore, 'true' ]
+  Ws13RetrievalConfigured: !Not [ !Equals [ !Ref Ws13RetrievalFunction, '' ] ]
 
 Resources:
 
@@ -222,6 +255,10 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-claims-updater'
       Runtime: python3.12
+      # Every function here has always run x86_64 by CloudFormation default.
+      # Declaring it keeps a later arm64 edit from silently breaking a
+      # manylinux wheel in an uploaded deployment package.
+      Architectures: [ x86_64 ]
       Handler: index.handler
       # 512 OOM-killed the NV pull (275k geometries in flight) and starved the
       # CPU — memory scales CPU/network on Lambda, so 2048 also parses ~4× faster
@@ -526,6 +563,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-expiration-watch'
       Runtime: python3.12
+      Architectures: [ x86_64 ]
       Handler: index.handler
       # National snapshots include NV's large active population. Memory also
       # scales Lambda CPU/network and matches the claims-updater hotfix.
@@ -664,6 +702,9 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+              # foundation-model/* already covers amazon.titan-embed-text-v2:0,
+              # which ASK invokes to embed a WS13 query (WS13 itself has no
+              # egress), so that model needs no statement of its own.
               - Effect: Allow
                 Action: [ bedrock:InvokeModel ]
                 Resource:
@@ -674,12 +715,23 @@ Resources:
                 Resource:
                   - !Sub '${SiteBucket.Arn}/private/ws12/document-index.sqlite3'
                   - !Sub '${SiteBucket.Arn}/private/ws12/spatial.sqlite3'
+              # One named retrieval function, never a wildcard. The parameter
+              # is empty until that stack exists and an ARN ending in an empty
+              # function name is malformed, so an unconfigured deploy grants
+              # the derived default name — inert until something answers to it.
+              - Effect: Allow
+                Action: [ lambda:InvokeFunction ]
+                Resource: !If
+                  - Ws13RetrievalConfigured
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Ws13RetrievalFunction}'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProjectName}-ws13-query'
 
   AskFunction:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub '${ProjectName}-ask'
       Runtime: python3.12
+      Architectures: [ x86_64 ]
       Handler: index.handler
       # The first GIS request downloads and SHA-verifies the national spatial
       # store before API Gateway's 30-second integration timeout.
@@ -702,6 +754,15 @@ Resources:
           SPATIAL_DB_KEY: 'private/ws12/spatial.sqlite3'
           SPATIAL_DB_MAX_BYTES: '8000000000'
           ENABLE_LEGACY_DOC_STORE: !Ref EnableLegacyDocumentStore
+          # Dark by default: search_documents keeps reading the bounded SQLite
+          # index until an operator flips this deployment onto WS13.
+          WS13_RETRIEVAL_FUNCTION: !Ref Ws13RetrievalFunction
+          WS13_RETRIEVAL_ENABLED: !Ref Ws13RetrievalEnabled
+          WS13_VECTOR_ARM: !Ref Ws13VectorArm
+          # API Gateway cuts this request off at 30 s (AskIntegration below),
+          # so the WS13 invoke gets a client deadline well inside that budget:
+          # the SQLite fallback is only real if it still has time to run.
+          WS13_INVOKE_TIMEOUT_S: '12'
       Code:
         ZipFile: |
           def handler(event, context):
@@ -795,6 +856,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-docs'
       Runtime: python3.12
+      Architectures: [ x86_64 ]
       Handler: index.handler
       # Signing is arithmetic; the only real work is holding the validated
       # manifest across warm invocations.

@@ -308,6 +308,10 @@ footer .right{margin-left:auto}
   border:1px solid rgba(201,133,0,.45);border-radius:4px;color:var(--gold);padding:4px 8px;
   font:11px var(--sans);text-align:left;cursor:pointer;overflow-wrap:anywhere}
 .docchip:hover{background:rgba(201,133,0,.22)}
+.docstatic{color:var(--ink2)}
+.docrights{display:inline-block;margin-left:6px;padding:1px 5px;border-radius:3px;
+  border:1px solid rgba(201,133,0,.5);background:rgba(0,0,0,.25);
+  font:9.5px var(--mono);letter-spacing:.06em;vertical-align:1px;white-space:nowrap}
 .docref{border-left:2px solid rgba(201,133,0,.45);padding:0 0 0 9px;margin:8px 0}
 .docref .t{font-size:11.5px;color:var(--ink)}
 .docref .q{font-size:11.5px;color:var(--ink2);font-style:italic;margin:2px 0;overflow-wrap:anywhere}
@@ -543,6 +547,12 @@ let MAN = null, COVERAGE = null, DOC_COVERAGE = null, curated = [], cassia = [],
 let DOCS = null;          // WS12 stored source documents + resolved citations
 const DOC_OPEN_QUOTES = Object.create(null); // doc/page -> exact quote from this ASK turn
 const DOC_SEARCH_CITATIONS = Object.create(null); // normalized source/page -> raw sha256
+// sha256 -> the rights a WS13 citation carried with it. The owner decided to
+// retrieve over and cite all 56,282 indexed documents, including 13,013
+// CC BY-NC-SA licensed copies and 32,312 state-archive research copies. That is
+// defensible only because access is Cognito-authenticated AND the attribution
+// travels with the citation, so the chip has to be able to show it.
+const DOC_RIGHTS = Object.create(null);
 let map, tipEl, liveAbort = null;
 const WS11_LAYER_STATE = {}, WS11_LAYER_SPEC = {}, WS11_CLAIM_LAYER = {}, WS11_HOVER_LAYERS = [];
 const WS11_RASTER_SPECS = {}, WS11_VECTOR_GROUPS = {};
@@ -3544,7 +3554,7 @@ function mdToHtml(t){
     .replace(/\[([^\]]+)\]\(doc:([0-9a-f]{16,64})(?:#(\d{1,5}))?(?:\?q=([A-Za-z0-9_-]+))?\)/g,
       (whole, label, id, page, quoteToken)=>docChip(id, page||1, label,
         docDecodeQuote(quoteToken)||docQuoteFor(id, page||1)) ||
-        `<span class="mdli">${label}</span>`)
+        docCiteStatic(id, label))
     // The canonical document-search tool returns a stable title/page/source
     // URL citation. If that source is in our stored corpus, turn it into the
     // same S3-backed chip even when the model omitted an explicit open_doc
@@ -3640,12 +3650,45 @@ function rememberDocQuote(docId,page,quote){
   if (clean) DOC_OPEN_QUOTES[docPageKey(docId,page)] = clean;
 }
 function rememberSearchDocumentHit(hit){
-  if (!hit || !/^[0-9a-f]{64}$/i.test(String(hit.document_id||''))) return;
+  if (!hit) return;
+  // The legacy SQLite index calls it document_id; the WS13 corpus calls the same
+  // value sha256. Accept either so one capture path serves both retrieval arms.
+  const docId=String(hit.document_id||hit.sha256||'');
+  if (!/^[0-9a-f]{64}$/i.test(docId)) return;
   const citation=hit.citation||{},page=Number(hit.page||citation.page)||1;
   if (citation.source_url)
-    DOC_SEARCH_CITATIONS[docSearchKey(citation.source_url,page)] =
-      String(hit.document_id).toLowerCase();
-  rememberDocQuote(hit.document_id,page,hit.excerpt);
+    DOC_SEARCH_CITATIONS[docSearchKey(citation.source_url,page)] = docId.toLowerCase();
+  rememberDocRights(docId,citation);
+  rememberDocQuote(docId,page,hit.excerpt);
+}
+/* A licensed or research-copy citation that arrives without its rights is a
+   licence problem, not a cosmetic gap, so this stores whatever the retrieval
+   layer sent and the chip refuses to imply "public domain" by silence. */
+function rememberDocRights(docId,citation){
+  const cls=String(citation&&citation.admission_class||'').trim();
+  if (!cls) return;
+  DOC_RIGHTS[String(docId).toLowerCase()] = {
+    admission_class:cls,
+    rights_basis:String(citation.rights_basis||'').slice(0,400),
+    rights_terms:String(citation.rights_terms||'').slice(0,400),
+    non_commercial:!!citation.non_commercial,
+    share_alike:!!citation.share_alike,
+    attribution_required:!!citation.attribution_required};
+}
+/* Badge text is deliberately short: the ASK panel is ~340 px wide. The full
+   licence and attribution ride in the chip's title attribute. */
+function docRightsBadge(docId){
+  const r=DOC_RIGHTS[String(docId||'').toLowerCase()];
+  if (!r) return {html:'', tip:''};
+  const label = r.admission_class==='licensed-copies' ? 'CC BY-NC-SA'
+              : r.admission_class==='research-copies' ? 'RESEARCH COPY'
+              : '';
+  const terms=[r.attribution_required?'attribution required':'',
+               r.non_commercial?'non-commercial use only':'',
+               r.share_alike?'share-alike':''].filter(Boolean).join(' · ');
+  const tip=[r.rights_terms||terms, r.rights_basis].filter(Boolean).join(' — ');
+  if (!label) return {html:'', tip};
+  return {html:`<span class="docrights">${esc(label)}</span>`, tip};
 }
 function docQuoteFor(docId,page){
   const key=docPageKey(docId,page);
@@ -3719,11 +3762,27 @@ function execOpenDoc(a){
    answer path hands us text that mdToHtml has escaped once already. */
 function docChip(docId, page, labelHtml, quote){
   if (!/^[0-9a-f]{16,64}$/.test(String(docId||''))) return '';
+  // openDoc() resolves through docFind(); an id the manifest does not carry would
+  // paint a chip that does nothing when clicked. The WS13 corpus is indexed far
+  // ahead of the stored-copy manifest, so that case is now the common one, not a
+  // corner: render nothing and let the caller fall back to inert cited text.
+  if (!docFind(docId)) return '';
   const n = Math.max(1, parseInt(page,10)||1);
   const q=quote || docQuoteFor(docId,n) || '';
+  const rights=docRightsBadge(docId);
+  const tip='Opens our stored copy at this page — not the portal' +
+    (rights.tip? ' · '+rights.tip : '');
   return `<button class="docchip" data-doc="${docId}" data-page="${n}" data-quote="${esc(q)}" `+
     `onclick="openDoc(this.dataset.doc,Number(this.dataset.page),this.dataset.quote)" `+
-    `title="Opens our stored copy at this page — not the portal">📄 ${labelHtml}</button>`;
+    `title="${esc(tip)}">📄 ${labelHtml}${rights.html}</button>`;
+}
+/* A citation we can prove but cannot yet open. It still has to carry the rights,
+   because the licence terms travel with the citation, not with the viewer. */
+function docCiteStatic(docId, labelHtml){
+  const rights=docRightsBadge(docId);
+  const tip=rights.tip ? rights.tip
+    : 'Indexed source; the stored copy is not available in this deployment';
+  return `<span class="mdli docstatic" title="${esc(tip)}">${labelHtml}${rights.html}</span>`;
 }
 function docChipForQuote(quote, label){
   const hit = docFind(quote);

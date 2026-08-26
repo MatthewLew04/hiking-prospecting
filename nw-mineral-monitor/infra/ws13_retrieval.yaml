@@ -1,0 +1,270 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  WS13 retrieval Lambda: the ONLY VPC-attached function in this account. It
+  runs hybrid lexical + halfvec retrieval against the private nwmm-ws13
+  Postgres over the local VPC route and needs no egress at all. The account
+  has zero NAT gateways and zero VPC endpoints, so a VPC ENI reaches nothing
+  but the VPC itself; attaching the ASK function instead would strand its
+  Bedrock, Cognito and 795 MB spatial-SQLite egress and fail as a 30-second
+  hang that reads like a security-group problem. Keeping the two split costs
+  $0, against $32.85/mo for a NAT gateway or $65.70/mo for interface
+  endpoints. The consequence is that this function cannot call Bedrock: the
+  caller embeds the query and passes 1024 floats in as query_vector.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: nw-mineral-monitor
+    AllowedPattern: '[a-z0-9-]+'
+    Description: Lowercase name used to derive the function name.
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: >-
+      VPC that owns the DB subnets and the app security group. Recorded on the
+      stack so a mis-targeted subnet list is visible in the parameters; the
+      function's network identity comes from the subnets plus the SG below.
+
+  DbSubnetIdA:
+    Type: AWS::EC2::Subnet::Id
+    Description: First of the three nwmm-ws13 DB subnets.
+  DbSubnetIdB:
+    Type: AWS::EC2::Subnet::Id
+    Description: Second of the three nwmm-ws13 DB subnets.
+  DbSubnetIdC:
+    Type: AWS::EC2::Subnet::Id
+    Description: Third of the three nwmm-ws13 DB subnets.
+
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-0a0594b37a7d3087d
+    Description: >-
+      The worker/app security group. No security-group change is needed or
+      permitted: the data-plane SG already allows tcp/5432 from exactly this
+      SG, so joining it is what grants the function database reachability.
+
+  DbEndpoint:
+    Type: String
+    Description: nwmm-ws13 writer endpoint address (DbEndpoint output of ws13_dataplane.yaml).
+  DbName:
+    Type: String
+    Default: nwmm
+  DbPort:
+    Type: Number
+    Default: 5432
+
+  DbSecretArn:
+    Type: String
+    Description: >-
+      ARN (or name) of the ws13/postgres secret. Read at DEPLOY time by a
+      CloudFormation dynamic reference, never at runtime.
+  DbReaderUser:
+    Type: String
+    Default: ws13_reader
+    Description: SELECT-only login role on the ws13_* tables.
+  DbReaderSecretKey:
+    Type: String
+    Default: ws13_reader_password
+    Description: JSON key inside the secret holding the ws13_reader password.
+
+  VectorArmEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: >-
+      Vector arm flag. Default off: tsv is 100% populated and GIN-indexed, so
+      the lexical arm covers the whole corpus today, while there is no ANN
+      index on any vector column yet. Flip to 'true' only after
+      ws13_chunks_titan_hnsw exists and has been ANALYZEd. This template
+      always writes WS13_VECTOR_ARM, so the deployed function never falls back
+      to the module's own default - the shipped state is this parameter.
+
+  RequireIndex:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: >-
+      Refuse the vector arm when ws13_chunks_titan_hnsw is absent or INVALID.
+      Without a valid index the ORDER BY is a silent sequential scan over
+      852,027 rows, which is not an error - just a query that blows the 30 s
+      deadline. AllowedValues keeps this to true/false, and the function parses
+      it fail-CLOSED: an unrecognised value leaves the guard ON and logs, so a
+      typo here cannot be what removes it.
+
+  AssertPlan:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: >-
+      EXPLAIN the probe once per FILTER SHAPE and report a Seq Scan in
+      arms.vector.plan_warning as well as the log. It is a plain EXPLAIN, so it
+      costs the plan and does not run the query: EXPLAIN (ANALYZE) would
+      perform the 852,027-row scan it is checking for, inside the request it
+      protects.
+
+  StatementTimeoutMs:
+    Type: Number
+    Default: 20000
+    MinValue: 1000
+    MaxValue: 20000
+    Description: >-
+      Ceiling for ONE statement, not for one request. A hybrid search issues up
+      to five statements on the same session (lexical arm, filter resolution,
+      ANN probe, exact re-rank, hydrate) and each would otherwise get a fresh
+      full budget while the function has Timeout: 25 for all of them together;
+      the code re-issues the REMAINING budget before each statement, derived
+      from the Lambda deadline. MaxValue is bounded below that Timeout so this
+      parameter can never be raised to the point where the function times out
+      before the database does.
+
+  MaxConcurrency:
+    Type: Number
+    Default: 20
+    Description: >-
+      Reserved concurrency, which is also the hard ceiling on backend
+      connections this function can hold: each warm container keeps one
+      psycopg session open, and the OCR/embed fleet shares the same instance.
+
+  CodeS3Bucket:
+    Type: String
+    Default: ''
+    Description: >-
+      Bucket holding the deployment zip built by tools/build_ws13_lambda_package.sh.
+      Leave empty to create the function with a 501 placeholder and publish the
+      code afterwards with `aws lambda update-function-code`.
+  CodeS3Key:
+    Type: String
+    Default: ''
+    Description: >-
+      Key of the deployment zip (must contain index.py plus psycopg).
+      CloudFormation compares only the literal S3Bucket/S3Key/S3ObjectVersion
+      property values, so re-uploading a NEW zip to the SAME key is not a
+      property change and the stack update silently keeps running the old
+      code. Either pass CodeS3ObjectVersion as well (bucket versioning on), or
+      use the content-addressed key tools/build_ws13_lambda_package.sh prints
+      when --upload names a prefix; both make a new build a new value.
+  CodeS3ObjectVersion:
+    Type: String
+    Default: ''
+    Description: >-
+      S3 version id of the deployment zip. Empty means the current version,
+      which is only safe when the key itself changes per build - see
+      CodeS3Key.
+
+  PsycopgLayerArn:
+    Type: String
+    Default: ''
+    Description: >-
+      Optional layer ARN providing psycopg 3 with its manylinux x86_64 binary.
+      Leave empty when the deployment zip already vendors it.
+
+Conditions:
+  HasPackage: !Not [!Equals [!Ref CodeS3Key, '']]
+  HasCodeVersion: !Not [!Equals [!Ref CodeS3ObjectVersion, '']]
+  HasLayer: !Not [!Equals [!Ref PsycopgLayerArn, '']]
+
+Resources:
+
+  # AWSLambdaVPCAccessExecutionRole and nothing else. In particular NO
+  # secretsmanager:GetSecretValue: there is no interface endpoint to reach
+  # Secrets Manager through from a VPC ENI, so a runtime fetch would hang for
+  # the whole timeout. The DSN arrives as an environment variable resolved at
+  # deploy time instead.
+  RetrievalRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Tags:
+        - { Key: project, Value: nw-mineral-monitor }
+
+  RetrievalLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ProjectName}-ws13-query'
+      RetentionInDays: 30
+
+  RetrievalFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: RetrievalLogGroup
+    Properties:
+      FunctionName: !Sub '${ProjectName}-ws13-query'
+      Runtime: python3.12
+      Handler: index.handler
+      # Declared EXPLICITLY, as the four functions in infra/template.yaml now
+      # are too. All of them were x86_64 only by CloudFormation default until
+      # this change; naming it stops a later arm64 switch from silently
+      # breaking the manylinux x86_64 psycopg wheel that
+      # tools/build_ws13_lambda_package.sh verifies.
+      Architectures: [x86_64]
+      MemorySize: 1024
+      # Under the 30 s API Gateway integration timeout, and above the 20 s
+      # statement timeout, so the database is what gives up first.
+      Timeout: 25
+      ReservedConcurrentExecutions: !Ref MaxConcurrency
+      Role: !GetAtt RetrievalRole.Arn
+      Layers: !If [HasLayer, [!Ref PsycopgLayerArn], !Ref 'AWS::NoValue']
+      # This is the only function in the account with a VpcConfig, and it must
+      # stay that way. A Lambda VPC ENI never gets a public IP, and there are
+      # no NAT gateways or VPC endpoints here, so anything attached loses all
+      # internet and AWS-API egress. This function only ever talks to Postgres.
+      VpcConfig:
+        SubnetIds: [!Ref DbSubnetIdA, !Ref DbSubnetIdB, !Ref DbSubnetIdC]
+        SecurityGroupIds: [!Ref SecurityGroupId]
+      Environment:
+        Variables:
+          # Resolved by CloudFormation at deploy time, so the secret never
+          # touches a laptop. It does land in the function configuration, which
+          # is why the DSN uses ws13_reader: the credential is SELECT-only on
+          # the ws13_* tables, so the blast radius of reading it is read-only.
+          # The generated password is alphanumeric (ExcludePunctuation), so it
+          # needs no percent-encoding inside the URI.
+          WS13_DB_DSN: !Sub
+            - 'postgresql://${DbReaderUser}:${ReaderPassword}@${DbEndpoint}:${DbPort}/${DbName}?sslmode=require&connect_timeout=5'
+            - ReaderPassword: !Sub '{{resolve:secretsmanager:${DbSecretArn}:SecretString:${DbReaderSecretKey}}}'
+          WS13_VECTOR_ARM: !Ref VectorArmEnabled
+          WS13_REQUIRE_INDEX: !Ref RequireIndex
+          WS13_ASSERT_PLAN: !Ref AssertPlan
+          WS13_STATEMENT_TIMEOUT_MS: !Ref StatementTimeoutMs
+      # S3ObjectVersion is what makes a redeploy of the same key actually
+      # publish: CloudFormation diffs property VALUES, so uploading a fixed zip
+      # over s3://bucket/ws13/lambda/query.zip and running `aws cloudformation
+      # deploy` succeeds while UpdateFunctionCode is never called and the old
+      # code - or the 501 placeholder - keeps serving, with no error anywhere.
+      Code: !If
+        - HasPackage
+        - S3Bucket: !Ref CodeS3Bucket
+          S3Key: !Ref CodeS3Key
+          S3ObjectVersion: !If
+            - HasCodeVersion
+            - !Ref CodeS3ObjectVersion
+            - !Ref 'AWS::NoValue'
+        - ZipFile: |
+            def handler(event, context):
+                return {"statusCode": 501,
+                        "body": "placeholder - build and upload "
+                                "infra/ws13_query_lambda.py with "
+                                "tools/build_ws13_lambda_package.sh"}
+      Tags:
+        - { Key: project, Value: nw-mineral-monitor }
+
+Outputs:
+  RetrievalFunctionName:
+    Description: >-
+      Grant the ASK function lambda:InvokeFunction on this name. ASK embeds the
+      query with amazon.titan-embed-text-v2:0 (dimensions=1024,
+      normalize=true) and passes the floats in as query_vector.
+    Value: !Ref RetrievalFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-RetrievalFunctionName'
+  RetrievalFunctionArn:
+    Description: ARN for the ASK function's lambda:InvokeFunction policy statement.
+    Value: !GetAtt RetrievalFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RetrievalFunctionArn'

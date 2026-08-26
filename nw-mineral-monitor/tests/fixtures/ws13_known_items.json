@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "dataset": "ws13-known-items",
+  "target_count": 25,
+  "complete": false,
+  "generated": "2026-08-25",
+  "purpose": "Phase E known-item retrieval gate. Each item is a question whose answer is a specific sentence on a specific page of a specific document. tools/ws13_live_known_items.py asks the deployed retrieval function each question and requires the right (sha256, page) inside the top 5, the quote inside that hit's excerpt, and at least one top-5 hit whose sources include 'vector'. That last assertion is the only thing in the system that catches a silently dead vector arm: with no ANN index the ORDER BY still returns rows, just from a sequential scan, and every other check would still pass.",
+  "provenance": "Item 1 is the single human-verified sha256/page/quote triple this repository already carried: the reviewed IGS IF0126 Lava Creek citation asserted by tools/test_doc_viewer.js (loadFixture, lines 45-57) against var/ws12/document-store-manifest.json, citation_id 'igs-if0126-mrds-district', quote_located true. The sha256, page and quote below are copied verbatim from that record; nothing here is invented. Items 2-25 are still to be generated from the live corpus by tools/ws13_gen_known_items.py, which runs in-VPC over ws13_documents/ws13_chunks and emits candidates with verified=false. A human confirms each candidate against the source page before its verified flag is set and before 'complete' becomes true. Item 1 declares admission_class null for the same reason nothing else here is invented: the WS12 manifest record carries rights.public_domain true, not a WS13 admission_class, so the value was not read and is not guessed.",
+  "notes": [
+    "Quotes are whitespace-normalised: runs of whitespace collapse to one space, so a quote spanning a line break in the OCR sidecar still matches. The IF0126 sidecar carries 'LAVA CREEK DISTRICT' and 'County: BUTTE' on separate lines; the manifest quote joins them, which is the form the retrieval excerpt also produces.",
+    "'complete' is false and stays false until all 25 items exist and every one is verified. tests/test_ws13_known_items.py asserts fixture integrity at any size and never skips; require_complete() is the separate gate the deploy preflight calls before cutover.",
+    "A quote must be shorter than the excerpt budget it will be checked inside. The retrieval contract's default max_excerpt_chars is 760 and a term-centred window only guarantees roughly the leading third before the match, so quotes are capped well below that.",
+    "Never fabricate an item. A made-up sha256 or a quote that is not on the page turns the whole gate into a test of the fixture rather than a test of retrieval, and it would pass forever without proving anything.",
+    "expect_vector_source is not decoration. tools/ws13_live_known_items.py only asserts the vector arm for items that carry it, so a set with the flag cleared everywhere passes on lexical hits alone and certifies a dead ANN index. require_complete() therefore demands it on at least 80% of the items, and refuses a run whose measured vector_arm_rate is zero.",
+    "A question built out of the quote's own words only proves the lexical arm works. An item may not be marked verified while its question still shares more than five of the quote's words in order; that is the generator's template, and rewriting it is what puts the vector arm under test.",
+    "admission_class spans the three rights prefixes. Item 1 declares null: the WS12 manifest it was copied from records public-domain rights (17 U.S.C. 105) but not the WS13 admission_class, and this fixture never guesses a value it has not read."
+  ],
+  "item_schema": {
+    "id": "stable slug, unique across the set; used in the pass/fail report",
+    "question": "the natural-language query handed to the retrieval function",
+    "sha256": "64 lowercase hex characters; the WS12 doc_id, which is the WS13 ws13_documents.sha256",
+    "page": "1-based page number the quote appears on, preserved by the OCR pagination guarantee",
+    "quote": "verbatim, whitespace-normalised phrase that must appear in the returned excerpt",
+    "expect_vector_source": "true when this item is also expected to be reachable through the vector arm",
+    "admission_class": "WS13 ws13_documents.admission_class -- 'originals', 'licensed-copies' or 'research-copies' -- or null when the corpus row was not read. A complete set must span all three, so one rights prefix cannot go untested.",
+    "sidecar_sha256": "sha256 of the checked-in page sidecar when one exists locally, else null",
+    "verified": "true only after a human has read the page and confirmed the quote",
+    "provenance": "where the triple came from, specific enough to re-check"
+  },
+  "sidecar": {
+    "env_override": "WS13_SIDECAR_DIR",
+    "directories": [
+      "tests/fixtures/ws13_sidecars"
+    ],
+    "filenames": [
+      "{sha256}.p{page:04d}.txt",
+      "{sha256}/page-{page:04d}.txt"
+    ],
+    "rule": "When a sidecar for an item's (sha256, page) exists locally, tests/test_ws13_known_items.py requires the quote to be a substring of it after whitespace normalisation, so a fixture cannot drift away from the corpus without the suite going red. An item that declares a sidecar_sha256 but has no sidecar file is a hard failure, not a skip."
+  },
+  "items": [
+    {
+      "id": "if0126-lava-creek-district",
+      "question": "Which mining district and county is the St. Louis Mine in, per the Idaho Geological Survey IF0126 MRDS record?",
+      "sha256": "3c3fc7e970db5286640b83c35e886fc07a6db4c415e92782674aa94a3058a9a1",
+      "page": 1,
+      "quote": "Mining District Name: LAVA CREEK DISTRICT County: BUTTE",
+      "expect_vector_source": true,
+      "admission_class": null,
+      "sidecar_sha256": null,
+      "verified": true,
+      "provenance": "var/ws12/document-store-manifest.json citation 'igs-if0126-mrds-district' (mine_id stategeo-igs-dd-1-if0126, source_id igs-mrds-w015681, quote_located true), reviewed for WS12 and asserted by tools/test_doc_viewer.js. The document is MRDS-W015681 'ST. LOUIS MINE', 1 page, pagination_preserved true, text_layer status 'native' (born digital), so its WS13 citation is expected to resolve through s3_key with viewer_key_kind 'born_digital_original'. sidecar_sha256 is null because no WS13 page sidecar for this document is checked into the repository; the local WS12 text extract at pipelines/cache/ws12/manual-if0126/text/MRDS-W015681.pdf.txt is gitignored and is not a WS13 artifact."
+    }
+  ]
+}

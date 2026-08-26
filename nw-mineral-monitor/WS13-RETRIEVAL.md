@@ -122,9 +122,32 @@ human verification; `tools/ws13_live_known_items.py` is the live runner.
   `5c991bfa4e90`, is in that state now) into `error`, where `ws13_enqueue.py --status error`
   can pick them up.
 
+## Applied to production on 2026-08-25
+
+Steps 1 and 2 have been run against `nwmm-ws13` via SSM on `i-0818521a8b3ff7c90`. Nothing
+else has.
+
+- **Migrations** — 20 statements in one transaction, all 27 `--check` assertions green.
+  `admission_class`, `doc_year_min`, `doc_year_max` are STORED generated columns;
+  `ws13_county_key` / `ws13_doc_year_min` / `ws13_doc_year_max` are IMMUTABLE;
+  `ws13_reader` exists with SELECT on the four WS13 tables and **no** write privileges.
+- **Provenance backfill** — the manifest streamed to 106,396 rows over 68,809 distinct
+  sha256 with 0 malformed rows and **0 rights-class conflicts**; all 56,282 indexed
+  documents matched and were updated. `source_url` coverage went 0% → **100%**, and
+  licensed/research copies lacking a `rights_basis` went 45,325 → **0**.
+- Measured after the fact: `research-copies` 32,312 / `licensed-copies` 13,013 /
+  `originals` 10,957, matching the harvest record exactly. 20,918 documents now carry
+  parseable year bounds (range 1808–2017); the other 35,364 have no parseable `doc_date`
+  and are excluded from a year filter rather than silently treated as in range.
+- `ws13_reader` is still **NOLOGIN**. It needs
+  `ws13_migrate.py --apply --reader-secret-arn ...` on the in-VPC host before the retrieval
+  Lambda can connect — deliberately deferred until that stack is deployed.
+- The embedding backfill was left **running** (pid 255517 at the time). Phase A pauses it;
+  that has not happened.
+
 ## Operator sequence
 
-Everything below is opt-in. Run it in this order.
+Everything below is opt-in. Run it in this order. Steps 1 and 2 are done.
 
 **0. Rebuild and upload the worker bundle.** The S3 bundle currently matches the *old*
 committed source, so none of the worker changes take effect until it is rebuilt — and it must

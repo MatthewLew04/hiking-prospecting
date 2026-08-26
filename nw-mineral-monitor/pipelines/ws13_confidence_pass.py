@@ -159,9 +159,13 @@ PLAN_NODES = (1, 8, MAX_NODES)
 # ws13_worker's per-page shape pays that twice a page, which is the 5-8 s it
 # measures; the batched path pays it once a DOCUMENT, so startup amortises
 # over the 11.1 pages an average document has and the rate approaches the
-# work itself. BOTH are seeds only: --plan and the heartbeat replace them
-# with a rate this fleet actually measured, and no fleet size should be
-# chosen off the seed.
+# work itself. BOTH are SEEDS, and nothing in this program replaces them on
+# its own: --plan projects from --rate, which defaults to the seed. To size a
+# fleet on a measured number, run one shard against a --limit of a few dozen
+# documents, read pages_per_second out of the heartbeat it writes to
+# ws13/confidence/status-<shard>.json, and pass that back in as --rate. A
+# fleet sized off the seed is sized off an estimate, and the estimate is
+# wrong by ~4x between the two container shapes.
 PER_PAGE_SECONDS = float(os.environ.get('WS13_CONF_SECONDS_PER_PAGE', '6.5'))
 BATCHED_SECONDS = float(os.environ.get('WS13_CONF_BATCH_SECONDS', '1.6'))
 SECONDS_PER_PAGE = (BATCHED_SECONDS
@@ -954,7 +958,10 @@ def parse_args(argv=None):
     parser.add_argument('--doc-seconds', type=int, default=DOC_SECONDS,
                         help=f'per-document deadline (default {DOC_SECONDS})')
     parser.add_argument('--rate', type=float, default=DEFAULT_RATE,
-                        help='pages/second/core used for the projections')
+                        help='pages/second/core used for the projections. '
+                             'Defaults to a SEED, not a measurement: run a '
+                             'short --limit sweep and pass back the '
+                             'pages_per_second its heartbeat reports')
     parser.add_argument('--dry-run', action='store_true',
                         help='report the work set and projected wall clock, '
                              'render nothing')

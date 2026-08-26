@@ -169,9 +169,13 @@ differently-scaled score *and* replace the text, triggering the cascade above.
 
 Cost is dominated by `docker run`, not by OCR. The real work is ~1.2 s/page; container
 startup against the ocrmypdf image is 1.5–3 s. One container per **document** rather than two
-per **page** takes launches from ~646,000 to ~28,988. At a ~1.6 s/page seed — which `--plan`
-replaces with a rate the fleet actually measures, and no fleet size should be chosen off the
-seed — that is ~144 core-hours.
+per **page** takes launches from ~646,000 to ~28,988. At a ~1.6 s/page **seed** that is ~144 core-hours.
+The seed is an estimate, not a measurement, and nothing in the pass replaces it on its own:
+`--plan` projects from `--rate`, which defaults to the seed. Before committing a fleet size,
+run one shard over a few dozen documents with `--limit`, read `pages_per_second` from the
+heartbeat it writes to `ws13/confidence/status-<shard>.json`, and pass that back as `--rate`.
+The two container shapes differ by ~4×, so a fleet sized off the wrong seed is wrong by that
+much.
 
 **A shard cannot be split below one document, and that governs the sizing.** Measured skew of
 the worst shard against the mean, over the real page distribution:

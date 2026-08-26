@@ -13,7 +13,9 @@ one feature and ``features[k]`` holds its attributes:
     mine      mine name
     width_m / height_m   typical opening size (for tubes / stope prisms)
     source    {'doc': title, 'page': n, 'url': ..., 'figure': 'Plate 3'}
-    confidence  'surveyed' | 'sketched' | 'inferred' | 'described'
+    confidence  'surveyed' | 'sketched' | 'inferred' | 'described' | 'assumed'
+              ('assumed' is a value an operator or an agent supplied in answer
+              to a question the source text left open — see geomodel.narrative)
     units_in    'ft' | 'm'   (what the map used; geometry is always metres)
     notes     free text
 
@@ -54,7 +56,7 @@ TYPES = {
     'unknown':   {'color': [180, 180, 180], 'width_m': 1.8, 'height_m': 2.0, 'desc': 'unclassified working'},
 }
 
-CONFIDENCE = ('surveyed', 'sketched', 'inferred', 'described')
+CONFIDENCE = ('surveyed', 'sketched', 'inferred', 'described', 'assumed')
 
 
 def new_workings(name='workings', mine=''):

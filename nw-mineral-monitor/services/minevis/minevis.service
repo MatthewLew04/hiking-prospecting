@@ -1,0 +1,52 @@
+# minevis — mine-description-to-3-D-model service for the agent on this box.
+#
+#   sudo install -o minevis -g minevis -d /var/lib/minevis
+#   sudo cp services/minevis/minevis.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now minevis
+#
+# Installing this unit and provisioning the instance profile belong to the AWS
+# side of the work; the service itself needs nothing but Python 3 and a
+# writable state directory.
+
+[Unit]
+Description=minevis — mine description to 3-D model
+Documentation=file:///opt/nw-mineral-monitor/services/minevis/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=minevis
+Group=minevis
+WorkingDirectory=/opt/nw-mineral-monitor
+ExecStart=/usr/bin/python3 services/minevis/server.py \
+          --host 127.0.0.1 --port 8787 \
+          --state-dir /var/lib/minevis \
+          --workers 2
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+# Where models go.  With no bucket set the service publishes to
+# /var/lib/minevis/models and serves them itself, which is a working
+# configuration — just not a shared one.
+#Environment=NWMM_MODELS_BUCKET=<bucket>
+#Environment=NWMM_SITE_URL=https://<distribution>.cloudfront.net
+# Only needed when the agent runs in a different container on this host:
+#Environment=MINEVIS_TOKEN=<shared secret>
+
+# The instance role supplies the S3 credentials; nothing here holds a secret.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/minevis /opt/nw-mineral-monitor/pipelines/cache
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+
+[Install]
+WantedBy=multi-user.target

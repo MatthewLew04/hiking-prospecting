@@ -88,9 +88,11 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
 
 pipelines/geomodel/          Python twin (stdlib only; numpy used when present)
    model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  kit.py
+   narrative.py  resolve.py  agentbuild.py  render2d.py  publish.py   <- prose -> model
    formats/{omf1,omf2,parquet_lite,thrift_compact,surfer,geosoft,arcascii,zmap,irap,cps3,
             ubc,obj,dxf,gocad,lfmsh,tables,segy,las}.py
-pipelines/geomodel_kit.py    CLI: site | export | convert | info | list
+pipelines/geomodel_kit.py    CLI: site | export | convert | info | list | mines | narrate
+services/minevis/            HTTP service: /tools /call /jobs/<id> (see its README)
 ```
 
 ### Object model (`nwmm-geomodel/1`)
@@ -189,6 +191,36 @@ The architecture was laid out so the next steps are data, not plumbing:
 5. **Shared models** — the project JSON is small and self-contained; putting
    it behind the existing Docs API would make models citable from ASK.
 
+### From a written description (`services/minevis`)
+
+An agent on the EC2 box hands in **prose** and gets back a **3-D model URL**.
+No front-end change was needed: `model3d.html` already accepts `?project=<url>`.
+
+```
+narrative.py   USGS/USBM prose -> typed elements + the questions it leaves open
+resolve.py     mine name -> located, cited CANDIDATES out of grades.json
+agentbuild.py  spec + mine -> Project, using only workings.py primitives
+render2d.py    plan / longitudinal section / isometric as stdlib SVG
+publish.py     content-addressed models/<slug>-<hash8>/ + manifest.json
+```
+
+Three rules run through all of it, and they are enforced by tests:
+
+1. **Nothing is invented.** A missing bearing is a question, never a default.
+   The only exceptions are *definitional* (an unqualified "shaft" is vertical
+   by definition of the word) and they are listed per element in `defaults`.
+2. **Every element carries the sentence it came from** and that sentence's
+   character span in the input text.
+3. **Confidence is per field** — `surveyed` (traced off a georeferenced plan),
+   `described` (read off the text), `assumed` (supplied in answer to a
+   question) — and it is visible everywhere: solid, dashed and dotted in the
+   drawings, counted in every legend, itemised in `manifest.json`. The failure
+   mode this is designed against is a hand-drawn-from-text adit being read as
+   a survey.
+
+`AGENT-VISUALS.md` has the plan and phasing; `services/minevis/README.md` has
+the tool schemas and the agent wiring.
+
 ## 6. Running and testing
 
 ```bash
@@ -197,7 +229,14 @@ python3 pipelines/geomodel_kit.py site --grade-index 157 --radius 2500   # batch
 python3 pipelines/geomodel_kit.py convert in.omf out.dxf                # any supported pair
 python3 pipelines/geomodel_kit.py info survey.sgy
 
-python3 -m unittest discover -s tests -p 'test_geomodel_*.py'   # 143 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio)
+python3 pipelines/geomodel_kit.py mines "White Caps" --state NV                  # name -> candidates
+python3 pipelines/geomodel_kit.py narrate --text "An adit driven N45E for 900 feet."
+python3 pipelines/geomodel_kit.py narrate --file desc.txt --mine-id grades:17 --out build/
+python3 services/minevis/server.py --state-dir /var/lib/minevis                 # the agent's HTTP service
+
+python3 ci/run_tests.py                                        # everything, with the strict-skip check
+python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 297 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
+python3 tests/test_minevis_service.py                          # 46 service tests (in-process, no network)
 node tools/test_gm_formats.mjs      # JS readers/writers vs the Python fixtures (171 checks)
 node tools/test_gm_engine.mjs       # JS numerics vs Python (166 checks)
 node tools/test_model3d.mjs         # headless browser acceptance of the page (28 checks)

@@ -23,6 +23,23 @@ It is organised as:
                 stope) + 2-D-map-to-3-D georeferencing helpers
   kit           builds a model project for a mine or AOI from the repo bundles
 
+and, on top of those, the path from a *written description* to a published
+model — what services/minevis exposes to an agent as tool calls:
+
+  narrative     USGS/USBM-style prose -> a typed WorkingsSpec plus the
+                questions the prose does not answer.  Deterministic, offline,
+                and it never invents: a missing bearing is a gap, not a default
+  resolve       mine name -> located, cited candidates out of the 3,369-mine
+                grades bundle.  Returns candidates, never a pick
+  agentbuild    spec + resolved mine -> a Project, using only the primitives in
+                `workings`; this module decides *placement* and refuses to place
+                what the text does not locate
+  render2d      plan / longitudinal section / isometric as plain SVG, with the
+                line style carrying the confidence: surveyed solid, described
+                dashed, assumed dotted
+  publish       content-addressed model + manifest.json audit trail, written
+                through a Target (S3, or a directory)
+
 Design rules (same as the rest of pipelines/): stdlib only — numpy is used
 when present to speed the solvers but every path has a pure-Python fallback;
 remote fetches are cached and degrade honestly; nothing is invented — every

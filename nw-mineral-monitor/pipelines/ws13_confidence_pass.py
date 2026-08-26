@@ -76,12 +76,32 @@ Resumable, bounded, observable
   NULL", so an interrupted run resumes exactly where it stopped and a
   measured page is never rendered twice.
 * A page that cannot be measured is recorded in ws13_conf_skips
-  (sha256, page, reason) so it is not retried forever. TERMINAL_REASONS --
-  the renderer produced no image, the page is not in the PDF, the searchable
-  PDF is gone, the page has no scored word at all -- are excluded from the
-  work set permanently. Everything else (an S3 timeout, a container timeout)
-  is transient and is re-admitted on the next run, because a five-second
-  network fault must not abandon a page for good.
+  (sha256, page, reason, attempts) so it is not retried forever.
+  TERMINAL_REASONS -- the renderer produced no image, the page is not in the
+  PDF, the searchable PDF is gone, the page has no scored word at all -- are
+  excluded from the work set permanently. Everything else (an S3 timeout, a
+  container timeout) is transient and is re-admitted on the next run, because
+  a five-second network fault must not abandon a page for good -- but only
+  MAX_TRANSIENT_ATTEMPTS times. A page that fails transiently on every sweep
+  is deterministic in fact whatever it is in classification, and without that
+  counter the shard never reached zero remaining, main() never returned
+  "done", and the fleet wrapper swept the same unmeasurable pages for its
+  full 24 h ceiling. An exhausted page is reported as its own number in the
+  summary and by --verify-complete; it is never counted as measured. One
+  attempt is charged per page per SWEEP, not per recorded row: run_shard()
+  re-reaches a page several times within one sweep, and charging each of
+  those spent the whole budget before the sweep returned.
+* Exit codes are a contract, not a boolean. 0 the shard is measured, 10 pages
+  remain and this sweep measured some, 11 pages remain and this sweep
+  measured NOTHING (so a caller should back off, not sweep again), 2 bad
+  shard arithmetic, 3 no docker or no renderer, 12 --verify-complete found
+  the corpus unfinished. 1 is deliberately absent: it is what CPython returns
+  for an uncaught exception, and the old "1 means work remains" made a dead
+  process and an ordinary first sweep the same observable.
+* --verify-complete answers "is the whole pass actually done", per shard,
+  from ws13_pages rather than from any fleet bookkeeping -- a shard whose
+  node died before claiming a slot leaves nothing behind in S3 but leaves
+  every page it never measured in the database.
 * Bounded: DOC_SECONDS per document and RENDER_SECONDS / TESSERACT_SECONDS
   per page. A document that exceeds its deadline is left PARTIALLY measured
   and no skip row is written for the pages it did not reach: those pages
@@ -97,6 +117,7 @@ Write set -- this is the whole of it
 UPDATE ws13_pages SET confidence, low_confidence   (store_confidence)
 INSERT INTO ws13_conf_skips                        (record_skip)
 CREATE TABLE IF NOT EXISTS ws13_conf_skips         (ensure_skips_table)
+ALTER TABLE ws13_conf_skips ADD COLUMN attempts    (ensure_skips_table)
 
 Nothing here writes ws13_chunks, ws13_documents, ws13_manifest, or any
 embedding column, and tests/test_ws13_confidence_pass.py asserts that over
@@ -162,10 +183,16 @@ PLAN_NODES = (1, 8, MAX_NODES)
 # work itself. BOTH are SEEDS, and nothing in this program replaces them on
 # its own: --plan projects from --rate, which defaults to the seed. To size a
 # fleet on a measured number, run one shard against a --limit of a few dozen
-# documents, read pages_per_second out of the heartbeat it writes to
-# ws13/confidence/status-<shard>.json, and pass that back in as --rate. A
-# fleet sized off the seed is sized off an estimate, and the estimate is
-# wrong by ~4x between the two container shapes.
+# documents, read pages_per_second out of the heartbeat it writes, and pass
+# that back in as --rate. A fleet sized off the seed is sized off an
+# estimate, and the estimate is wrong by ~4x between the two container
+# shapes. The heartbeat key is whatever status_key() returns and there is no
+# third form: ws13/confidence/status.json for an unsharded run -- which the
+# sizing run above IS, since --shards defaults to 1 -- and
+# ws13/confidence/status-<shard:04d>-of-<shards:04d>.json once sharded.
+# Written out here because 'status-<shard>.json' is neither of them, and an
+# operator following that gets NoSuchKey for the one number this whole
+# sizing argument rests on.
 PER_PAGE_SECONDS = float(os.environ.get('WS13_CONF_SECONDS_PER_PAGE', '6.5'))
 BATCHED_SECONDS = float(os.environ.get('WS13_CONF_BATCH_SECONDS', '1.6'))
 SECONDS_PER_PAGE = (BATCHED_SECONDS
@@ -189,11 +216,50 @@ HEARTBEAT_SECONDS = int(os.environ.get('WS13_CONF_HEARTBEAT', '300'))
 REMAINING_SECONDS = int(os.environ.get('WS13_CONF_REMAINING', '1800'))
 PDF_NAME = 'doc.pdf'
 
+# Exit codes, and the reason 1 is not among them.
+#
+# main() used to return 1 for "this shard still has pages", which is the most
+# ordinary outcome a first sweep has -- and 1 is also what CPython returns for
+# any uncaught exception. The fleet wrapper could not tell the two apart, so a
+# process that died on an unhandled error was swept again immediately, with no
+# backoff, until the 24 h ceiling. Distinct codes make the ordinary case
+# distinguishable from the broken one, and leave 1 to mean what the
+# interpreter already makes it mean.
+EXIT_SHARD_DONE = 0        # this shard has 0 pages left
+EXIT_BAD_SHARD = 2         # --shard/--shards arithmetic is not a partition
+EXIT_NO_RENDERER = 3       # no docker, or no renderer in the OCR image
+EXIT_WORK_REMAINS = 10     # pages left AND this sweep measured some: sweep on
+EXIT_NO_PROGRESS = 11      # pages left and this sweep measured NOTHING
+EXIT_INCOMPLETE = 12       # --verify-complete: the corpus is not measured
+
 # Reasons that permanently disqualify a page. A container or network timeout
 # is NOT one of them: those rows are re-admitted by the next run, the same
 # distinction ws13_embed_backfill.TERMINAL_REASONS draws for chunks.
 TERMINAL_REASONS = ('no_image', 'no_words', 'page_absent',
                     'searchable_missing')
+# ...but "transient" cannot mean "forever". A transient reason is re-admitted
+# on the next run, which is right for a five-second network fault and wrong
+# for a page that fails the same way every sweep: a render that always times
+# out, or a tesseract that always dies on the same raster, is transient by
+# CLASSIFICATION and deterministic in FACT. Those pages kept `confidence IS
+# NULL`, so the shard never reached zero remaining, so main() never returned
+# 0, so the fleet wrapper swept again -- with no backoff, for the full 24 h
+# ceiling -- over pages that could not be measured on any of them.
+#
+# So a transient skip counts. After MAX_TRANSIENT_ATTEMPTS sweeps have each
+# recorded a transient reason for the same page, that page leaves the work
+# set exactly the way a terminal one does. What it does NOT do is masquerade
+# as measured: the row keeps the last reason and the attempt count, the run
+# summary and --verify-complete report exhausted pages as their own number,
+# and nothing writes ws13_pages.confidence. Giving up is allowed to be a
+# conclusion; it is not allowed to be silent.
+#
+# SWEEPS, not rows -- and the difference is not pedantry. run_shard() rewinds
+# whenever a pass made progress, so one sweep reaches the same unmeasurable
+# page repeatedly, and a counter charged per recorded row burned all five
+# attempts inside a single sweep. See _counted_this_sweep, which is what
+# holds the unit to a sweep.
+MAX_TRANSIENT_ATTEMPTS = int(os.environ.get('WS13_CONF_MAX_ATTEMPTS', '5'))
 # docker's OWN exit codes: 125 the daemon failed, 126 the command could not
 # be invoked, 127 the command was not found. They describe this node and
 # this image, never the page, and treating one of them as a property of the
@@ -214,8 +280,47 @@ SHARD_SQL = f'AND mod({SHARD_EXPR}, %s) = %s '
 s3 = boto3.client('s3', region_name=REGION)
 lock = threading.Lock()
 stats = {'documents': 0, 'pages_measured': 0, 'terminal_skips': 0,
-         'transient_skips': 0, 'deadline_documents': 0,
+         'transient_skips': 0, 'exhausted_skips': 0, 'deadline_documents': 0,
          'below_conf_threshold': 0, 'below_escalate_threshold': 0}
+# How this sweep has already classified each page it could not measure, and
+# the reason MAX_TRANSIENT_ATTEMPTS means what it says.
+#
+# A sweep is not one pass over the shard. run_shard() rewinds whenever a pass
+# made progress, because a document cut short by DOC_SECONDS leaves pages
+# behind the cursor -- the 1,407-page document needs several. So one sweep
+# reaches the same unmeasurable page several times, and an attempt counter
+# that charged every recorded row spent the whole five-attempt budget inside
+# a single sweep: two charges in the ordinary two-document case, all five
+# where a deadline-cut document keeps supplying the progress that triggers
+# the rewind. A page whose S3 fetch was throttled for a few minutes was then
+# retired permanently with confidence IS NULL, though nothing about it was
+# unmeasurable -- the precise failure the counter was added to prevent,
+# inverted.
+#
+# So a page is charged at most ONE attempt per sweep, and this is what
+# remembers that it has been charged. Process-local because a sweep IS a
+# process: infra/ws13_fleet.yaml runs `python3 ws13_confidence_pass.py` per
+# sweep. Two processes sharing a shard across a reclaim each charge once,
+# which is right -- those are two sweeps that both happened.
+#
+# It holds the stats bucket rather than a bare marker so the summary counts
+# PAGES and not rows, and so a page that fails transiently and then
+# terminally inside one sweep moves between buckets instead of being counted
+# in both. None means claimed-but-not-yet-classified.
+_counted_this_sweep = {}
+
+
+def begin_sweep():
+    """Start a sweep: no page carries a charge in from the previous one.
+
+    run_shard() calls this, because run_shard() IS the sweep -- that is the
+    scope MAX_TRANSIENT_ATTEMPTS is denominated in, and putting the reset
+    anywhere else would let a caller do two sweeps that counted as one. It
+    does NOT reset `stats`: those accumulate over whatever the caller chose
+    to run, and main() reports them once at the end of its single sweep.
+    """
+    with lock:
+        _counted_this_sweep.clear()
 
 
 def log(msg):
@@ -256,21 +361,53 @@ def mean_word_confidence(tsv_text):
 
 
 def skips_clause(alias):
-    """Exclude only the pages this pass has terminally given up on."""
+    """Exclude the pages this pass has given up on, by reason or by count.
+
+    Two ways out of the work set and no third: a terminal reason, which says
+    there is nothing here to measure, or MAX_TRANSIENT_ATTEMPTS sweeps that
+    each failed transiently, which says this page does not improve by being
+    tried again. Both are inlined constants rather than parameters because
+    this fragment is concatenated into four different statements.
+    """
     reasons = ', '.join(f"'{r}'" for r in TERMINAL_REASONS)
     return (f'AND NOT EXISTS (SELECT 1 FROM ws13_conf_skips s '
             f'WHERE s.sha256 = {alias}.sha256 AND s.page = {alias}.page '
-            f'AND s.reason IN ({reasons})) ')
+            f'AND (s.reason IN ({reasons}) '
+            f'OR s.attempts >= {MAX_TRANSIENT_ATTEMPTS})) ')
+
+
+def exhausted_clause(alias):
+    """The complement: pages excluded for having run out of attempts.
+
+    Their own count, never folded into "remaining 0". A run that ends with
+    pages here has not measured the corpus; it has stopped trying, and the
+    difference has to survive into the summary an operator reads.
+    """
+    reasons = ', '.join(f"'{r}'" for r in TERMINAL_REASONS)
+    return (f'AND EXISTS (SELECT 1 FROM ws13_conf_skips s '
+            f'WHERE s.sha256 = {alias}.sha256 AND s.page = {alias}.page '
+            f'AND s.reason NOT IN ({reasons}) '
+            f'AND s.attempts >= {MAX_TRANSIENT_ATTEMPTS}) ')
 
 
 def ensure_skips_table(conn):
     """Bookkeeping only, and bounded by the corpus: one row per page that
     could not be measured, at most 323,059. Read by this pass and by an
-    operator; no query path joins it."""
+    operator; no query path joins it.
+
+    The ALTER is for a table created by the version of this pass that had no
+    attempt counter. It is a no-op on a fresh table and on a second run, and
+    it is here rather than in ws13_migrations.sql because this table is this
+    program's own bookkeeping and no query path joins it.
+    """
     conn.execute(
         """CREATE TABLE IF NOT EXISTS ws13_conf_skips (
              sha256 TEXT NOT NULL, page INT NOT NULL, reason TEXT,
-             noted_at TIMESTAMPTZ, PRIMARY KEY (sha256, page))""")
+             noted_at TIMESTAMPTZ,
+             attempts INT NOT NULL DEFAULT 0,
+             PRIMARY KEY (sha256, page))""")
+    conn.execute('ALTER TABLE ws13_conf_skips '
+                 'ADD COLUMN IF NOT EXISTS attempts INT NOT NULL DEFAULT 0')
 
 
 def pending_documents(conn, shard, shards, cursor, limit=DOC_BATCH):
@@ -314,6 +451,23 @@ def remaining(conn, shard, shards):
     return conn.execute(sql).fetchone()
 
 
+def exhausted(conn, shard, shards):
+    """(pages, documents) this shard has stopped retrying but never measured.
+
+    The number that keeps "0 pages remaining" honest. remaining() counts what
+    is still owed a measurement; this counts what was quietly removed from
+    that debt, and a run that reports the first as zero while the second is
+    not zero has stopped, not finished.
+    """
+    sql = ('SELECT COUNT(*), COUNT(DISTINCT p.sha256) FROM ws13_pages p '
+           'JOIN ws13_documents d ON d.sha256 = p.sha256 '
+           "WHERE p.confidence IS NULL AND d.doc_class = 'ocr_queue' "
+           'AND d.searchable_key IS NOT NULL ' + exhausted_clause('p'))
+    if shards > 1:
+        return conn.execute(sql + SHARD_SQL, (shards, shard)).fetchone()
+    return conn.execute(sql).fetchone()
+
+
 def pending_by_document(conn):
     """[(sha256, unmeasured_pages)] over the whole corpus, for planning.
 
@@ -331,21 +485,61 @@ def pending_by_document(conn):
 
 
 def record_skip(conn, sha, page, reason):
-    """Record why a page could not be measured. Idempotent per page: a
-    transient reason is overwritten by whatever the next attempt finds, so a
-    page that later succeeds leaves a stale row that the work predicate no
-    longer reaches (confidence IS NOT NULL) and that costs nothing."""
-    conn.execute(
-        """INSERT INTO ws13_conf_skips (sha256, page, reason, noted_at)
-           VALUES (%s, %s, %s, now())
+    """Record why a page could not be measured, and count the attempt.
+
+    Idempotent per page: a transient reason is overwritten by whatever the
+    next attempt finds, so a page that later succeeds leaves a stale row that
+    the work predicate no longer reaches (confidence IS NOT NULL) and that
+    costs nothing.
+
+    `attempts` is what stops a deterministically-unmeasurable page from being
+    re-admitted for ever. It counts SWEEPS, not rows: run_shard() rewinds and
+    re-reaches the same page several times inside one sweep, so charging
+    every recorded row spent the whole budget in one or two sweeps and
+    retired pages that a later sweep would have measured. _counted_this_sweep
+    is what makes the unit a sweep; the increment itself is still done in SQL
+    rather than read-modify-written here, because 64 processes on one node
+    share this table and two of them can hold the same document across a
+    reclaimed shard.
+    """
+    key = (sha, page)
+    with lock:
+        # Claimed before the statement runs, so two threads that reach one
+        # page cannot both charge it. None means "claimed, not yet
+        # classified" -- the bucket is only known after the RETURNING.
+        charge = 1 if key not in _counted_this_sweep else 0
+        if charge:
+            _counted_this_sweep[key] = None
+    row = conn.execute(
+        """INSERT INTO ws13_conf_skips (sha256, page, reason, noted_at,
+                                        attempts)
+           VALUES (%s, %s, %s, now(), %s)
            ON CONFLICT (sha256, page)
            DO UPDATE SET reason = EXCLUDED.reason,
-                         noted_at = EXCLUDED.noted_at""",
-        (sha, page, reason))
+                         noted_at = EXCLUDED.noted_at,
+                         attempts = ws13_conf_skips.attempts + %s
+           RETURNING attempts""",
+        (sha, page, reason, charge, charge)).fetchone()
+    attempts = row[0] if row else charge
+    if reason in TERMINAL_REASONS:
+        bucket = 'terminal_skips'
+    elif attempts >= MAX_TRANSIENT_ATTEMPTS:
+        # Still not measured and no longer retried. Counted apart from both,
+        # because it is neither "nothing to measure here" nor "we will get it
+        # next time".
+        bucket = 'exhausted_skips'
+    else:
+        bucket = 'transient_skips'
     with lock:
-        key = ('terminal_skips' if reason in TERMINAL_REASONS
-               else 'transient_skips')
-        stats[key] += 1
+        previous = _counted_this_sweep.get(key)
+        if previous != bucket:
+            # A page that failed transiently and then terminally in the same
+            # sweep is one page, in the second bucket -- not one in each.
+            if previous is not None:
+                stats[previous] -= 1
+            stats[bucket] += 1
+            _counted_this_sweep[key] = bucket
+    return attempts
 
 
 def store_confidence(conn, sha, page, conf):
@@ -741,6 +935,12 @@ def run_shard(conn, shard, shards, renderer, limit=None,
     progress rewinds and sweeps again, because a document cut short by
     its deadline still has pages behind the cursor.
     """
+    # This call is the sweep, and the attempt counter is denominated in
+    # sweeps -- so the charge ledger is cleared HERE and not in main(). The
+    # rewind below is precisely why that distinction exists: it reaches the
+    # same unmeasurable page again, and charging each of those visits spent
+    # the entire five-attempt budget before this function returned.
+    begin_sweep()
     cursor, rewound, progress, documents = '', True, 0, 0
     while True:
         rows = pending_documents(conn, shard, shards, cursor)
@@ -945,6 +1145,62 @@ def print_dry_run(report):
     print_plan(report)
 
 
+def verify_complete(conn, shards):
+    """Is the whole pass actually finished? -> report dict.
+
+    The third blocker in FleetMode: confidence was that nothing asserted
+    every slot reached 'complete' -- once the group decremented to zero,
+    "finished" and "finished with shards nobody ever claimed" were the same
+    observable. This answers that question from the database rather than from
+    the claim objects, which is the stronger place to ask it: a shard whose
+    node died before it ever claimed a slot leaves no trace in S3 at all, and
+    leaves exactly the pages it did not measure in ws13_pages.
+
+    Two numbers per shard, because they mean different things. `pages` is
+    still owed a measurement. `exhausted` was given up on after
+    MAX_TRANSIENT_ATTEMPTS and is no longer in that debt -- which is a
+    legitimate end state, and one an operator has to be told about rather
+    than shown as a clean zero.
+    """
+    doc_rows = pending_by_document(conn)
+    per_shard = {}
+    for sha, pages in doc_rows:
+        index = shard_of(sha, shards)
+        per_shard[index] = per_shard.get(index, 0) + pages
+    gave_up, gave_up_docs = exhausted(conn, 0, 1)
+    return {'shards': shards,
+            'pages_remaining': sum(p for _, p in doc_rows),
+            'documents_remaining': len(doc_rows),
+            'exhausted_pages': gave_up, 'exhausted_documents': gave_up_docs,
+            'incomplete_shards': sorted(per_shard),
+            'shard_pages': per_shard}
+
+
+def print_verify(report):
+    """The assertion, spelled out. Never a bare 'complete'."""
+    log(f'VERIFY over {report["shards"]} shards')
+    if report['pages_remaining']:
+        log(f'INCOMPLETE: {report["pages_remaining"]:,} pages across '
+            f'{report["documents_remaining"]:,} documents are still '
+            f'unmeasured')
+        log(f'{len(report["incomplete_shards"])} shard(s) still owe pages: '
+            + ', '.join(str(i) for i in report['incomplete_shards'][:40])
+            + (' ...' if len(report['incomplete_shards']) > 40 else ''))
+        log('a shard here was never claimed, or its node died holding it. '
+            'Re-run the pass for those shard indices; nothing else recovers '
+            'them, and no claim object, metric or alarm reports them.')
+    else:
+        log('every shard is measured: 0 pages remain in the work set')
+    if report['exhausted_pages']:
+        # Reported whether or not anything remains, because this is the
+        # number that "0 remaining" would otherwise absorb.
+        log(f'NOT MEASURED, NOT RETRIED: {report["exhausted_pages"]:,} pages '
+            f'across {report["exhausted_documents"]:,} documents used all '
+            f'{MAX_TRANSIENT_ATTEMPTS} attempts and left the work set. Read '
+            f'their reasons: SELECT reason, count(*) FROM ws13_conf_skips '
+            f'WHERE attempts >= {MAX_TRANSIENT_ATTEMPTS} GROUP BY 1')
+
+
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -967,6 +1223,11 @@ def parse_args(argv=None):
                              'render nothing')
     parser.add_argument('--plan', action='store_true',
                         help='print the capacity arithmetic at 1/8/40 nodes')
+    parser.add_argument('--verify-complete', action='store_true',
+                        help='assert every shard of --shards is measured '
+                             'and name the ones that are not. Renders no '
+                             'page and writes no measurement; exits non-zero '
+                             'unless the whole work set is accounted for')
     return parser.parse_args(argv)
 
 
@@ -974,29 +1235,34 @@ def main(argv=None):
     args = parse_args(argv)
     if args.shards < 1 or not 0 <= args.shard < args.shards:
         log(f'ABORT: shard {args.shard} is not in 0..{args.shards - 1}')
-        return 2
+        return EXIT_BAD_SHARD
     if args.rate <= 0:
         # Every projection divides by it; a zero here would be reported as an
         # infinite fleet rather than as the bad input it is.
         log(f'ABORT: --rate must be positive, got {args.rate}')
-        return 2
+        return EXIT_BAD_SHARD
     conn = psycopg.connect(DSN, autocommit=True)
     try:
         # Created in every mode: the work predicate anti-joins this table, so
         # it has to exist even to COUNT the work set.
         ensure_skips_table(conn)
+        if args.verify_complete:
+            report = verify_complete(conn, args.shards)
+            print_verify(report)
+            return (EXIT_INCOMPLETE if report['pages_remaining']
+                    else EXIT_SHARD_DONE)
         if args.plan:
             print_plan(plan(pending_by_document(conn), args.rate))
-            return 0
+            return EXIT_SHARD_DONE
         if args.dry_run:
             print_dry_run(dry_run(conn, args.shard, args.shards, args.rate))
-            return 0
+            return EXIT_SHARD_DONE
 
         os.makedirs(SCRATCH, exist_ok=True)
         if not shutil.which('docker'):
             log('ABORT: docker is not on PATH; this pass renders pages '
                 'inside the ocrmypdf image')
-            return 3
+            return EXIT_NO_RENDERER
         try:
             subprocess.run(['docker', 'pull', worker.OCR_IMAGE],
                            capture_output=True, timeout=1800)
@@ -1012,7 +1278,7 @@ def main(argv=None):
             # of 'renderer_unavailable' would bury the real reasons.
             log(f'ABORT: no page renderer in {worker.OCR_IMAGE} ({reason}). '
                 f'Nothing measurable here; not writing unmeasured pages.')
-            return 3
+            return EXIT_NO_RENDERER
         log(f'renderer {renderer}; measuring shard {args.shard} of '
             f'{args.shards}')
 
@@ -1038,17 +1304,36 @@ def main(argv=None):
         log(f'measured {stats["pages_measured"]} pages over {documents} '
             f'documents in {elapsed:.0f}s ({rate:.3f} pages/s, '
             f'{(1 / rate) if rate else float("inf"):.2f} s/page)')
-        log(f'skips: {stats["terminal_skips"]} terminal, '
-            f'{stats["transient_skips"]} transient (retried next run); '
-            f'{stats["deadline_documents"]} documents hit the deadline')
+        # Pages, not rows. A page this sweep reached three times over its
+        # rewinds is one page nobody could measure, and counting the rows
+        # would inflate every number here by the rewind depth.
+        log(f'skip pages: {stats["terminal_skips"]} terminal, '
+            f'{stats["transient_skips"]} transient (retried next sweep), '
+            f'{stats["exhausted_skips"]} out of attempts (NOT retried '
+            f'again); {stats["deadline_documents"]} documents hit the '
+            f'deadline')
         # The size of phase 2's work set, which nothing could know before
         # this pass ran.
         log(f'below CONF_THRESHOLD {CONF_THRESHOLD}: '
             f'{stats["below_conf_threshold"]} pages; below '
             f'ESCALATE_THRESHOLD {ESCALATE_THRESHOLD}: '
             f'{stats["below_escalate_threshold"]} pages')
+        gave_up, gave_up_docs = exhausted(conn, args.shard, args.shards)
         log(f'shard remaining: {pages_left} pages / {docs_left} documents')
-        return 0 if pages_left == 0 else 1
+        if gave_up:
+            # Said every run, not only the last one: this is the population
+            # that "remaining 0" would otherwise absorb without a word.
+            log(f'shard gave up on {gave_up} pages / {gave_up_docs} '
+                f'documents after {MAX_TRANSIENT_ATTEMPTS} attempts each; '
+                f'they are excluded from the work set and were never '
+                f'measured')
+        if pages_left == 0:
+            return EXIT_SHARD_DONE
+        # Which of the two "not finished" answers this is decides whether the
+        # caller should sweep again at once or back off: a sweep that measured
+        # nothing will measure nothing again a second later.
+        return (EXIT_WORK_REMAINS if stats['pages_measured']
+                else EXIT_NO_PROGRESS)
     finally:
         conn.close()
 

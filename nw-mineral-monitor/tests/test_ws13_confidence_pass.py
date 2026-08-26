@@ -20,6 +20,7 @@ what actually got executed rather than over what the source looks like.
 each of pdftoppm / pdftocairo / gs.
 """
 import hashlib
+import io
 import json
 import os
 import re
@@ -29,6 +30,7 @@ import tempfile
 import threading
 import types
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -99,6 +101,9 @@ class FakeDB:
         self.docs = {}
         self.pages = {}
         self.skips = {}
+        # ws13_conf_skips.attempts, kept beside the reason rather than inside
+        # it so every assertion written against `skips` still reads a reason.
+        self.attempt_counts = {}
         self.statements = []
         for sha, pages in docs.items():
             self.docs[sha] = {
@@ -111,11 +116,25 @@ class FakeDB:
     def terminally_skipped(self, sha, page):
         return self.skips.get((sha, page)) in cp.TERMINAL_REASONS
 
+    def out_of_attempts(self, sha, page):
+        """The second way out of the work set: MAX_TRANSIENT_ATTEMPTS."""
+        return (self.attempt_counts.get((sha, page), 0)
+                >= cp.MAX_TRANSIENT_ATTEMPTS)
+
+    def excluded(self, sha, page):
+        return (self.terminally_skipped(sha, page)
+                or self.out_of_attempts(sha, page))
+
+    def gave_up_on(self, sha, page):
+        """Excluded for attempts alone -- unmeasured and no longer retried."""
+        return (self.out_of_attempts(sha, page)
+                and not self.terminally_skipped(sha, page))
+
     def pending(self, sha):
         return sorted(
             page for (s, page) in self.pages
             if s == sha and self.pages[(s, page)]["confidence"] is None
-            and not self.terminally_skipped(s, page))
+            and not self.excluded(s, page))
 
     def measured(self):
         return {k: v["confidence"] for k, v in self.pages.items()
@@ -138,8 +157,21 @@ class FakeConn:
         self.rowcount = 0
         if s.startswith("CREATE TABLE IF NOT EXISTS ws13_conf_skips"):
             return self
+        if s.startswith("ALTER TABLE ws13_conf_skips"):
+            return self
         if s.startswith("INSERT INTO ws13_conf_skips"):
-            self.db.skips[(params[0], params[1])] = params[2]
+            key = (params[0], params[1])
+            self.db.skips[key] = params[2]
+            # The increment is a PARAMETER, not a literal 1: record_skip
+            # charges an attempt at most once per page per sweep, and passes
+            # 0 for a page this sweep has already charged. Honouring that here
+            # is what makes test_a_rewound_sweep_charges_one_attempt able to
+            # fail -- a fake that always added 1 would reproduce the defect
+            # and call it correct.
+            charge = params[3]
+            self.db.attempt_counts[key] = (
+                self.db.attempt_counts.get(key, 0) + charge)
+            self._result = [(self.db.attempt_counts[key],)]
             self.rowcount = 1
             return self
         if s.startswith("UPDATE ws13_pages SET confidence"):
@@ -194,8 +226,18 @@ class FakeConn:
         shards, shard = (params if "mod(" in sql else (1, 0))
         keep = self._shard_filter(sql, shards, shard)
         shas = [sha for sha in self.db.docs if keep(sha)]
-        pages = sum(len(self.db.pending(sha)) for sha in shas)
-        docs = sum(1 for sha in shas if self.db.pending(sha))
+        # exhausted() and remaining() share a SELECT list and differ by the
+        # EXISTS/NOT EXISTS anti-join, exactly as they do in the module.
+        if "AND EXISTS (SELECT 1 FROM ws13_conf_skips" in sql:
+            counted = {sha: [page for (s, page) in self.db.pages
+                             if s == sha
+                             and self.db.pages[(s, page)]["confidence"] is None
+                             and self.db.gave_up_on(s, page)]
+                       for sha in shas}
+        else:
+            counted = {sha: self.db.pending(sha) for sha in shas}
+        pages = sum(len(v) for v in counted.values())
+        docs = sum(1 for v in counted.values() if v)
         self._result = [(pages, docs)]
         return self
 
@@ -628,6 +670,323 @@ def _client_error(code):
     return exc
 
 
+class TransientAttemptTest(ConfidenceTestCase):
+    """A transient reason may not mean "retry for ever".
+
+    The sweep loop in infra/ws13_fleet.yaml re-runs the pass while it reports
+    work remaining. A page that fails transiently on EVERY sweep -- a render
+    that always times out, a tesseract that always dies on the same raster --
+    is transient by classification and deterministic in fact, so the shard
+    never reached zero, the pass never reported done, and the wrapper swept
+    for its full 24 h ceiling with no backoff, measuring nothing.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.sha = sha_for(2)
+        self.db = FakeDB({self.sha: 2})
+
+    def sweep(self, times, docker_kwargs):
+        for _ in range(times):
+            self.run_shard(self.db, FakeDocker(**docker_kwargs))
+
+    def test_a_page_that_always_fails_transiently_leaves_the_work_set(self):
+        self.sweep(cp.MAX_TRANSIENT_ATTEMPTS, {"render_timeout": [1, 2]})
+        self.assertEqual(self.db.skips[(self.sha, 1)], "render_timeout")
+        self.assertNotIn("render_timeout", cp.TERMINAL_REASONS)
+        self.assertEqual(self.db.pending(self.sha), [],
+                         "the shard has to be able to reach zero remaining")
+
+    def test_it_is_retried_right_up_to_the_last_attempt(self):
+        # The counter must not truncate the retries the transient
+        # classification exists to allow.
+        self.sweep(cp.MAX_TRANSIENT_ATTEMPTS - 1, {"render_timeout": [1, 2]})
+        self.assertEqual(self.db.pending(self.sha), [1, 2])
+        after = FakeDocker(render_timeout=[1, 2])
+        self.run_shard(self.db, after)
+        self.assertTrue(after.renders, "the last attempt still renders")
+        self.assertEqual(self.db.pending(self.sha), [])
+
+    def test_a_page_that_recovers_is_measured_and_never_exhausted(self):
+        self.sweep(cp.MAX_TRANSIENT_ATTEMPTS - 1, {"render_timeout": [1, 2]})
+        self.run_shard(self.db, FakeDocker(confidences=(72,)))
+        self.assertEqual(self.db.pages[(self.sha, 1)]["confidence"], 72)
+        self.assertEqual(self.db.pages[(self.sha, 2)]["confidence"], 72)
+
+    def test_an_exhausted_page_is_never_recorded_as_measured(self):
+        self.sweep(cp.MAX_TRANSIENT_ATTEMPTS + 2, {"render_timeout": [1, 2]})
+        self.assertEqual(self.db.measured(), {},
+                         "giving up is not a measurement")
+        for page in (1, 2):
+            self.assertIsNone(self.db.pages[(self.sha, page)]["confidence"])
+
+    def test_exhaustion_is_counted_apart_from_both_other_skips(self):
+        # "terminal" says there is nothing here to measure and "transient"
+        # says we will get it next time. This is neither, and folding it into
+        # either one is how a give-up reads as a finish.
+        self.sweep(cp.MAX_TRANSIENT_ATTEMPTS - 1, {"render_timeout": [1, 2]})
+        self.assertEqual(cp.stats["exhausted_skips"], 0)
+        self.assertEqual(cp.stats["transient_skips"],
+                         2 * (cp.MAX_TRANSIENT_ATTEMPTS - 1))
+        for key in cp.stats:            # isolate the final sweep
+            cp.stats[key] = 0
+        self.run_shard(self.db, FakeDocker(render_timeout=[1, 2]))
+        self.assertEqual(cp.stats["exhausted_skips"], 2)
+        self.assertEqual(cp.stats["transient_skips"], 0)
+        self.assertEqual(cp.stats["terminal_skips"], 0)
+
+    def test_a_terminal_reason_still_leaves_on_its_first_attempt(self):
+        # The counter is a second way out, never a delay on the first one.
+        self.run_shard(self.db, FakeDocker(no_image=[1]))
+        self.assertEqual(self.db.attempt_counts[(self.sha, 1)], 1)
+        self.assertNotIn(1, self.db.pending(self.sha))
+        self.assertIsNone(self.db.pages[(self.sha, 1)]["confidence"])
+
+    def test_the_attempt_count_comes_back_from_the_insert(self):
+        # Incremented in SQL and returned, not read-modify-written here: 64
+        # processes share this table and two can hold one document across a
+        # reclaimed shard. Each iteration is a fresh sweep, which is the unit
+        # the counter is denominated in.
+        conn = FakeConn(self.db)
+        for expected in (1, 2, 3):
+            cp.begin_sweep()
+            self.assertEqual(
+                cp.record_skip(conn, self.sha, 1, "render_timeout"), expected)
+        sql = [s for s, _ in self.db.statements
+               if s.startswith("INSERT INTO ws13_conf_skips")][0]
+        self.assertIn("attempts = ws13_conf_skips.attempts + %s", sql)
+        self.assertIn("RETURNING attempts", sql)
+
+    def test_one_sweep_charges_one_attempt_however_often_it_recurs(self):
+        """The budget is spent per sweep, not per recorded row.
+
+        run_shard() rewinds whenever a pass made progress, so it reaches the
+        same unmeasurable page again inside the SAME sweep. Charging each of
+        those rows spent all five attempts before the sweep returned, and
+        retired -- permanently, with confidence IS NULL -- pages whose only
+        problem was a few minutes of S3 throttling.
+        """
+        conn = FakeConn(self.db)
+        cp.begin_sweep()
+        for _ in range(7):
+            cp.record_skip(conn, self.sha, 1, "render_timeout")
+        self.assertEqual(self.db.attempt_counts[(self.sha, 1)], 1)
+        # ...and the page is still in the work set, which is the consequence
+        # that actually matters.
+        self.assertIn(1, self.db.pending(self.sha))
+        # The summary counts pages, so seven rows are still one page.
+        self.assertEqual(cp.stats["transient_skips"], 1)
+
+    def test_a_page_that_turns_terminal_mid_sweep_is_counted_once(self):
+        # Transient then terminal inside one sweep is one page, in the second
+        # bucket -- not one page in each.
+        conn = FakeConn(self.db)
+        cp.begin_sweep()
+        cp.record_skip(conn, self.sha, 1, "render_timeout")
+        cp.record_skip(conn, self.sha, 1, "no_words")
+        self.assertEqual(cp.stats["transient_skips"], 0)
+        self.assertEqual(cp.stats["terminal_skips"], 1)
+        self.assertEqual(self.db.attempt_counts[(self.sha, 1)], 1)
+
+    def test_a_rewinding_sweep_does_not_exhaust_a_measurable_page(self):
+        """The reproduction that found this, as a test.
+
+        Two documents, so a pass that measures one still counts as progress
+        and run_shard() rewinds to pick up what it left behind -- and on that
+        rewind it reaches the always-failing page a second time. One sweep,
+        two charges, and with a deadline-cut document supplying progress on
+        every pass it reached all five and retired the page for good.
+        """
+        first, second = sha_for(4), sha_for(5)
+        db = FakeDB({first: 4, second: 4})
+        # Page 1 of each document times out; pages 2-4 measure, which is the
+        # progress that triggers the rewind.
+        self.run_shard(db, FakeDocker(render_timeout=[1]))
+        for sha in (first, second):
+            self.assertEqual(db.attempt_counts[(sha, 1)], 1,
+                             "one sweep charged more than one attempt")
+            self.assertFalse(db.gave_up_on(sha, 1))
+            self.assertEqual(db.pending(sha), [1],
+                             "the page must still be there for the next "
+                             "sweep to measure")
+        # Four more sweeps, and only then is it out of attempts -- five
+        # sweeps, which is what MAX_TRANSIENT_ATTEMPTS says.
+        for _ in range(cp.MAX_TRANSIENT_ATTEMPTS - 1):
+            self.run_shard(db, FakeDocker(render_timeout=[1]))
+        for sha in (first, second):
+            self.assertEqual(db.attempt_counts[(sha, 1)],
+                             cp.MAX_TRANSIENT_ATTEMPTS)
+            self.assertTrue(db.gave_up_on(sha, 1))
+
+    def test_the_work_predicate_names_both_ways_out(self):
+        clause = cp.skips_clause("p")
+        self.assertIn("s.reason IN (", clause)
+        self.assertIn(f"s.attempts >= {cp.MAX_TRANSIENT_ATTEMPTS}", clause)
+        # ...and the complement counts only the give-ups, not the terminals.
+        gave_up = cp.exhausted_clause("p")
+        self.assertIn("s.reason NOT IN (", gave_up)
+        self.assertTrue(gave_up.lstrip().startswith("AND EXISTS"))
+
+
+class ExitCodeContractTest(ConfidenceTestCase):
+    """The exit code is a contract with infra/ws13_fleet.yaml's sweep loop.
+
+    It used to return 1 for "this shard still has pages" -- the most ordinary
+    outcome a first sweep has -- and 1 is also CPython's status for an
+    uncaught exception. The wrapper could not tell them apart, so a process
+    that died on an unhandled error was swept again immediately, with no
+    backoff, until the 24 h ceiling.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.sha = sha_for(2)
+        self.db = FakeDB({self.sha: 4})
+
+    def main(self, db, docker, argv):
+        conn = FakeConn(db)
+        with mock.patch.object(cp.psycopg, "connect", return_value=conn), \
+                mock.patch.object(worker, "_try_docker", docker), \
+                mock.patch.object(cp.shutil, "which", return_value="/docker"),\
+                mock.patch.object(cp.subprocess, "run", mock.MagicMock()), \
+                mock.patch.object(worker, "page_renderer",
+                                  return_value=("pdftoppm", "ok")):
+            return cp.main(argv)
+
+    def test_one_is_never_returned_because_the_interpreter_owns_it(self):
+        self.assertNotIn(1, (cp.EXIT_SHARD_DONE, cp.EXIT_BAD_SHARD,
+                             cp.EXIT_NO_RENDERER, cp.EXIT_WORK_REMAINS,
+                             cp.EXIT_NO_PROGRESS, cp.EXIT_INCOMPLETE))
+
+    def test_a_measured_shard_reports_done(self):
+        code = self.main(self.db, FakeDocker(confidences=(80,)), [])
+        self.assertEqual(code, cp.EXIT_SHARD_DONE)
+
+    def test_pages_left_after_progress_asks_for_another_sweep(self):
+        # Two documents, one sweep: measured something, still owes pages.
+        db = FakeDB({sha_for(2): 4, sha_for(3): 4})
+        code = self.main(db, FakeDocker(confidences=(80,)), ["--limit", "1"])
+        self.assertEqual(code, cp.EXIT_WORK_REMAINS)
+        self.assertTrue(db.measured())
+
+    def test_a_sweep_that_measured_nothing_says_so_distinctly(self):
+        # The caller has to be able to back off: sweeping again a second
+        # later measures nothing again.
+        code = self.main(self.db, FakeDocker(render_timeout=[1, 2, 3, 4]), [])
+        self.assertEqual(code, cp.EXIT_NO_PROGRESS)
+
+    def test_bad_shard_arithmetic_is_its_own_code(self):
+        self.assertEqual(self.main(self.db, FakeDocker(), ["--shard", "9",
+                                                          "--shards", "4"]),
+                         cp.EXIT_BAD_SHARD)
+
+    def test_no_docker_is_its_own_code_and_writes_no_page(self):
+        conn = FakeConn(self.db)
+        with mock.patch.object(cp.psycopg, "connect", return_value=conn), \
+                mock.patch.object(cp.shutil, "which", return_value=None):
+            self.assertEqual(cp.main([]), cp.EXIT_NO_RENDERER)
+        self.assertEqual(self.db.skips, {})
+        self.assertEqual(self.db.measured(), {})
+
+    def test_a_shard_that_only_gave_up_still_reports_done_and_says_it(self):
+        # Zero remaining, nothing measured: the exit code cannot distinguish
+        # those, so the log has to.
+        for _ in range(cp.MAX_TRANSIENT_ATTEMPTS - 1):
+            self.run_shard(self.db, FakeDocker(render_timeout=[1, 2, 3, 4]))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            code = self.main(self.db,
+                             FakeDocker(render_timeout=[1, 2, 3, 4]), [])
+        self.assertEqual(code, cp.EXIT_SHARD_DONE)
+        self.assertIn("gave up on 4 pages", out.getvalue())
+        self.assertIn("never measured", out.getvalue())
+
+
+class VerifyCompleteTest(ConfidenceTestCase):
+    """Nothing asserted that every shard finished.
+
+    The third open blocker in FleetMode: confidence. Once the group decrements
+    to zero, "run finished" and "run finished with shards nobody ever claimed"
+    are the same observable -- the same class of silent hole as the rc=127
+    this whole pass exists to repair. The assertion is made against ws13_pages
+    rather than the S3 claim objects on purpose: a node that died before
+    claiming a slot leaves nothing in S3 and leaves every page it never
+    measured in the database.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.db = FakeDB({sha_for(i): 3 for i in range(8)})
+
+    def verify(self, shards):
+        conn = FakeConn(self.db)
+        out = io.StringIO()
+        with redirect_stdout(out):
+            report = cp.verify_complete(conn, shards)
+            cp.print_verify(report)
+        return report, out.getvalue()
+
+    def measure_shard(self, shard, shards):
+        self.run_shard(self.db, FakeDocker(confidences=(77,)), shard=shard,
+                       shards=shards)
+
+    def test_an_unmeasured_shard_is_named_not_averaged_away(self):
+        shards = 4
+        # Chosen from the data rather than hard-coded: with 8 documents over
+        # 4 shards not every shard owns one, and skipping an empty shard
+        # would assert nothing.
+        skipped = cp.shard_of(sha_for(0), shards)
+        for shard in range(shards):
+            if shard != skipped:
+                self.measure_shard(shard, shards)
+        report, out = self.verify(shards)
+        self.assertEqual(report["incomplete_shards"], [skipped])
+        self.assertIn("INCOMPLETE", out)
+        self.assertIn("never claimed", out)
+
+    def test_a_fully_measured_corpus_verifies(self):
+        for shard in range(4):
+            self.measure_shard(shard, 4)
+        report, out = self.verify(4)
+        self.assertEqual(report["pages_remaining"], 0)
+        self.assertEqual(report["incomplete_shards"], [])
+        self.assertIn("every shard is measured", out)
+
+    def test_pages_given_up_on_are_reported_beside_the_zero(self):
+        # The failure this exists to prevent: "0 remaining" absorbing pages
+        # that were never measured, only abandoned.
+        for _ in range(cp.MAX_TRANSIENT_ATTEMPTS):
+            self.run_shard(self.db, FakeDocker(render_timeout=[1, 2, 3]))
+        report, out = self.verify(4)
+        self.assertEqual(report["pages_remaining"], 0)
+        self.assertEqual(report["exhausted_pages"], 24)
+        self.assertIn("NOT MEASURED, NOT RETRIED", out)
+        self.assertIn("ws13_conf_skips", out)
+
+    def test_the_exit_code_refuses_to_call_an_unfinished_run_finished(self):
+        conn = FakeConn(self.db)
+        with mock.patch.object(cp.psycopg, "connect", return_value=conn), \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(cp.main(["--verify-complete", "--shards", "4"]),
+                             cp.EXIT_INCOMPLETE)
+        for shard in range(4):
+            self.measure_shard(shard, 4)
+        with mock.patch.object(cp.psycopg, "connect",
+                               return_value=FakeConn(self.db)), \
+                redirect_stdout(io.StringIO()):
+            self.assertEqual(cp.main(["--verify-complete", "--shards", "4"]),
+                             cp.EXIT_SHARD_DONE)
+
+    def test_verify_renders_nothing_and_writes_no_page(self):
+        conn = FakeConn(self.db)
+        with mock.patch.object(cp.psycopg, "connect", return_value=conn), \
+                mock.patch.object(cp.shutil, "which", return_value=None), \
+                redirect_stdout(io.StringIO()):
+            cp.main(["--verify-complete", "--shards", "4"])
+        self.assertEqual(self.db.measured(), {})
+        self.assertEqual(self.db.skips, {})
+
+
 class DeadlineTest(ConfidenceTestCase):
     """The largest document is 1,407 pages. Without a per-document deadline
     it pins a whole shard for the length of the run."""
@@ -716,7 +1075,8 @@ class WriteScopeTest(ConfidenceTestCase):
             self.assertRegex(
                 sql,
                 r"^(UPDATE ws13_pages|INSERT INTO ws13_conf_skips|"
-                r"CREATE TABLE IF NOT EXISTS ws13_conf_skips)\b",
+                r"CREATE TABLE IF NOT EXISTS ws13_conf_skips|"
+                r"ALTER TABLE ws13_conf_skips ADD COLUMN)\b",
                 f"unexpected write target: {sql[:120]}")
             for table in self.FORBIDDEN:
                 self.assertNotIn(table, sql,

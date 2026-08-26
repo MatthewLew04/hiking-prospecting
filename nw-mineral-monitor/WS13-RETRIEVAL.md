@@ -182,6 +182,17 @@ page is never counted as measured — it is reported as its own number in the ru
 `--verify-complete`, because "0 pages remaining" must not quietly absorb pages that were given
 up on.
 
+**The unit is a sweep, not a recorded row**, and that distinction is the counter's whole
+value. `run_shard()` rewinds whenever a pass made progress, because a document cut short by
+`DOC_SECONDS` leaves pages behind the cursor — the 1,407-page document needs several passes.
+So one sweep reaches the same unmeasurable page repeatedly, and charging every row it wrote
+spent all five attempts *inside a single sweep*: two in the ordinary two-document case, all
+five whenever a deadline-cut document kept supplying the progress that triggers the rewind. A
+page whose S3 fetch was throttled for a few minutes was then retired permanently with
+`confidence IS NULL` — which is the precise failure the counter exists to prevent, inverted.
+`_counted_this_sweep` charges each page at most once per process, and the same map keeps the
+run summary counting *pages* rather than rows.
+
 **The exit code is a contract**, and `1` is deliberately not part of it: `0` the shard is
 measured, `10` pages remain and this sweep measured some, `11` pages remain and this sweep
 measured nothing, `2` bad shard arithmetic, `3` no docker or no renderer, `12`
@@ -200,9 +211,15 @@ per **page** takes launches from ~646,000 to ~28,988. At a ~1.6 s/page **seed** 
 The seed is an estimate, not a measurement, and nothing in the pass replaces it on its own:
 `--plan` projects from `--rate`, which defaults to the seed. Before committing a fleet size,
 run one shard over a few dozen documents with `--limit`, read `pages_per_second` from the
-heartbeat it writes to `ws13/confidence/status-<shard>.json`, and pass that back as `--rate`.
-The two container shapes differ by ~4×, so a fleet sized off the wrong seed is wrong by that
-much.
+heartbeat it writes, and pass that back as `--rate`. The two container shapes differ by ~4×, so
+a fleet sized off the wrong seed is wrong by that much.
+
+The heartbeat key is whatever `status_key()` returns, and there are only two forms:
+`ws13/confidence/status.json` for an unsharded run — which the sizing run above *is*, since
+`--shards` defaults to 1 — and `ws13/confidence/status-<shard:04d>-of-<shards:04d>.json` once
+sharded, e.g. `status-0007-of-0640.json`. This used to be documented as
+`status-<shard>.json`, which is neither: an operator substituting a shard index into it got
+`NoSuchKey` for the one number the whole sizing argument rests on.
 
 **A shard cannot be split below one document, and that governs the sizing.** Measured skew of
 the worst shard against the mean, over the real page distribution:
@@ -274,10 +291,47 @@ shell against a stub `aws`/`date`/`sleep` to hold them fixed:
    that still owes pages, and reports separately any pages that were given up on rather than
    measured.
 
+The adopt step waits the same `ClaimStaleSeconds + 300` s the boot-time claim does, for the
+same reason: one attempt, then a decrement, would have re-created blocker 1 at the other end of
+the node's life — and there worse, because that node has already proved it can measure a shard.
+The node's own lifetime clock is kept separate from the generation clock, so adopting does not
+make a partial failure in the new generation look like "everything died at boot" and park a
+proven node in the 6 h hold.
+
+### The blocker none of that fixes: this template cannot be deployed
+
+**The rendered `UserData` is ~30,000 bytes. EC2's limit is 16,384.**
+`aws cloudformation deploy` fails on the `LaunchTemplate` resource with *User data is limited
+to 16384 bytes* and rolls the stack back, before a node boots, in **both** modes — the claim
+script is written in both. Measured across this file's history with its declared defaults:
+
+| commit | UserData | |
+|---|---:|---|
+| `f335c8c` | 8,599 B | ok — the fleet that OCR'd the corpus |
+| `c1accaf` | 20,689 B | **over** — `FleetMode: confidence` arrives |
+| `19dea85` | 20,689 B | **over** |
+| current | ~30,000 B | **over** |
+
+So `FleetMode: confidence` has never been deployable, from the commit that introduced it. That
+is consistent with everything else known about it — the confidence pass has never run, and the
+recommendation below has always been a single instance rather than the fleet — but nothing in
+the repository said so, and the shell tests all passed over a template that cannot reach a
+node. `tests/test_ws13_fleet_template.py::UserDataSizeTests` now asserts the real limit as an
+`expectedFailure`, so the run stays green while the defect is recorded, and reports *unexpected
+success* — turning the run red — the moment it is fixed.
+
+The fix is structural: ship `claim_slot.sh`, `run_worker.sh`, `start_workers.sh` and
+`node_agent.sh` inside the `bundle.tar.gz` the node already downloads, and leave `UserData` as
+the ~40 lines that install packages, fetch the bundle, export the environment and exec the
+agent. `tools/build_ws13_bundle.py` exists to carry them, and the shell tests would then run
+the committed files instead of re-deriving them from the template. That is a deliberate change
+to what is versioned with the CloudFormation stack, so it is recorded here rather than done as
+a side effect of a defect fix.
+
 Fixed or not, the recommendation is unchanged: the efficient shard count is 64–128 and a
 single `c7g.16xlarge` supplies 64 with no coordination at all, so this pass does not need a
 fleet. Driving the pass from SQS the way the OCR worker already is remains the way to remove
-the bespoke claim protocol entirely.
+the bespoke claim protocol entirely — and it would remove this size blocker with it.
 
 ## Failed documents (`pipelines/ws13_rescue.py`)
 
@@ -325,6 +379,29 @@ Everything below is opt-in. Run it in this order. Steps 1 and 2 are done.
 committed source, so none of the worker changes take effect until it is rebuilt — and it must
 now also contain `ws13_migrate.py` and `ws13_migrations.sql`, which `ws13_seed.py` imports.
 
+```bash
+tools/build_ws13_bundle.py
+```
+
+There was no builder until now; the bundle was assembled by hand, which is how it came to be
+missing `ws13_migrate.py` once already and how it came to be four days behind the source. The
+builder will not write an archive that is not **closed under its own imports**: it parses each
+member with `ast`, and a `ws13_*` sibling that any member imports and the list does not carry
+fails the build by name rather than becoming a `ModuleNotFoundError` on the seeding node. It
+also cross-checks its list against `ws13_seed.BUNDLE_FILES` and against every
+`python3 ws13_*.py` the launch template invokes.
+
+The archive is **byte-reproducible** — pinned mtimes, cleared uid/gid, no gzip timestamp — so
+`--verify` answers the question a fixed S3 key cannot: is the object up there the bundle these
+sources build? And it carries `bundle_manifest.json`, a sha256 per member, which untars beside
+the code: `cat /opt/ws13/bundle_manifest.json` on a node says which bundle that node is
+running, instead of inferring it from a `LaunchTime`.
+
+The **upload is a human step**. The builder has no S3 write path at all — no `boto3`, no
+`subprocess`, asserted by test — because the local permission classifier refuses writes to this
+bucket, and a builder that retried around that refusal would be defeating the control rather
+than reporting it. It prints the `aws s3 cp` line; run that yourself.
+
 **1. Migrations, on the in-VPC host** (`i-0818521a8b3ff7c90`):
 
 ```bash
@@ -361,10 +438,24 @@ invoke it with `{"op":"ping"}`. Expect a response in under 3 s.
   `rights_basis` — the two facts the docs API needs because this corpus is indexed in a
   Postgres that API cannot read — and the WS13 chrome prints the licence beside the page
   rather than implying public domain by silence. Neither field grants anything: the request is
-  still gated on a live Cognito session, the key is re-validated against the document, and the
-  rights class is read off the key's `ws12/{class}/` prefix, not off the link. The viewer also
-  performs the end-of-document check `validate_ws13_request()` explicitly delegates to it,
-  since no page count is reachable from that function.
+  still gated on a live Cognito session, and the rights class is read off the key's
+  `ws12/{class}/` prefix, not off the link, so a link cannot assert its own rights class. The
+  viewer also performs the end-of-document check `validate_ws13_request()` explicitly delegates
+  to it, since no page count is reachable from that function.
+
+  **What the key check is and is not.** `validate_ws13_request()` anchors the key's *shape* to
+  the two servable prefixes and cross-checks its *digest* against the document id only when the
+  key names one. The flat archive shape (`ws12/research-copies/IF0131_001.pdf`) names no digest
+  and cannot be checked that way — the function says so, and
+  `tests/test_ws13_doc_resolver.py::test_a_flat_archive_key_names_no_digest_and_is_still_accepted`
+  pins the 200. `rights_basis` is checked for presence, not against the document; it is the
+  attribution text the licence line is built from. So a hand-crafted fragment pairing document
+  A's id with document B's flat key renders B's pages under A's sha256 and a caller-supplied
+  licence string. That is a false provenance label *inside* the session gate, not a way through
+  it, and closing it needs an authoritative lookup this API cannot reach — the same reason the
+  link carries the key in the first place. Earlier drafts of this section and of
+  `viewer.html`'s header said the key was "re-validated against the document" without
+  qualification, which claimed a check the resolver does not perform.
 
   What is still open is the other end: `docChip` in `site/index.html` resolves a document
   through `docFind()`, the WS12 manifest, and renders nothing for an id it does not carry — so

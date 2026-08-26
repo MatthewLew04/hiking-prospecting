@@ -73,6 +73,25 @@ stderr. Commit e9c662a exists because ws13_manifest.error used to hold the
 middle of a truncated traceback and was unreadable corpus-wide; safe() and
 token() below are what keep that from coming back.
 
+Three things this tool will not do, each of which it used to:
+
+  * classify a NODE defect as a document defect. Exit 3 MISSING_DEPENDENCY,
+    exit 5 FILE_ACCESS_ERROR and a BAD_ARGS from the fleet's own
+    WS13_OCR_EXTRA_ARGS are properties of the image, the disk and the
+    environment. They are deferred: reported, and the row left untouched at
+    'error' so the next sweep sees it again once the real defect is fixed.
+    Writing 'unrescuable' on them retired an indexable document permanently,
+    because SETTLED_STATUSES excludes that status from --all-failed for good.
+  * end a whole run on one document. Every ladder runs inside per-document
+    containment, so an S3 object that will not fetch costs that document and
+    nothing else; the rest of the plan is still attempted and the faulted row
+    is left selectable rather than classified from a traceback.
+  * count ocrmypdf's '[OCR skipped on page N]' placeholders as rescued text.
+    They are ocrmypdf reporting a page it did not read, they are ~23
+    characters each, and MIN_RESCUE_CHARS is 20 -- so the --skip-big rung,
+    which exists to abandon an unreadable page, could report a document with
+    no recovered text at all as rescued.
+
     # the plan, and the exact commands for it (--exec emit is the default)
     ws13_rescue.py --dsn "$WS13_DB_DSN" --all-failed
     # the same plan without the commands, on a node that could run it
@@ -151,6 +170,12 @@ ARG_CONFLICTS = {
 #     path that can undo a terminal classification, and it is a seed-side
 #     decision, not one to make by writing 'done' on a document that has no
 #     text.
+#
+# A fourth outcome writes NOTHING: a cause carrying defer=True (see Cause
+# below) leaves the manifest row exactly where it was found. 'unrescuable' is
+# for a document that cannot be made to yield text; it is not for a node
+# missing a binary, and using it for one retired a perfectly indexable
+# document over somebody else's broken image.
 RESCUED_STATUS = 'rescued'
 READMIT_STATUS = 'needs_readmit'
 TERMINAL_STATUS = 'unrescuable'
@@ -184,6 +209,17 @@ REPAIR_SECONDS = int(os.environ.get('WS13_RESCUE_REPAIR_SECONDS', '900'))
 # 3,091 documents are already recorded 'done' with zero extracted characters
 # and contribute nothing to retrieval. Do not grow that population.
 MIN_RESCUE_CHARS = int(os.environ.get('WS13_RESCUE_MIN_CHARS', '20'))
+# ...which is why the count that MIN_RESCUE_CHARS gates has to exclude this.
+# ocrmypdf writes one '[OCR skipped on page N]' line into the sidecar for
+# every page it did not OCR -- its own note to the reader, not recovered
+# text. At ~23 characters a line, four skipped pages clear the threshold on
+# placeholders alone, and --skip-big (the last rung of the tesseract ladder,
+# whose entire purpose is to lose an unreadable page) is the rung most likely
+# to produce them: the ladder would record 'rescued' for a document whose
+# sidecar holds nothing but ocrmypdf saying it skipped every page, and
+# ws13_enqueue.py would then requeue it to add another zero-text document to
+# the 3,091 already there.
+SIDECAR_SKIP_RE = re.compile(r'\[OCR skipped on page\s*\d+\]', re.I)
 RESCUER_ID = f'rescue:{os.uname().nodename}'
 # Named here rather than read from ws13_worker, which cannot be imported
 # without the worker's environment: the emit path has to print the same
@@ -191,11 +227,24 @@ RESCUER_ID = f'rescue:{os.uname().nodename}'
 OCR_IMAGE = 'docker.io/jbarlow83/ocrmypdf:latest'
 
 Remedy = namedtuple('Remedy', 'name repair ocr_args why')
-Cause = namedtuple('Cause', 'name terminal ladder note')
+# `defer` is what keeps a fixable environment out of a terminal status. A
+# cause with no ladder used to be written 'unrescuable' whatever it was, and
+# SETTLED_STATUSES then excluded it from --all-failed for good -- so exit 3
+# MISSING_DEPENDENCY, which says the OCR image lacks a tool and says nothing
+# at all about the document, permanently retired a document that would index
+# on the next attempt once the image was fixed. A deferred cause is reported
+# and the manifest row is LEFT WHERE IT IS, still at 'error', still carrying
+# the recorded ocr_exit_<n> the classification is derived from, so the same
+# sweep picks it up once the thing that is actually broken is fixed.
+Cause = namedtuple('Cause', 'name terminal ladder note defer',
+                   defaults=(False,))
 Classification = namedtuple(
     'Classification', 'sha status exit_code exit_name cause hints ladder')
 Attempt = namedtuple('Attempt', 'remedy ok detail')
 Row = namedtuple('Row', 'sha256 status s3_key doc_class pages error')
+# What one rung's ocrmypdf sidecar actually contains: real characters, and
+# how many pages ocrmypdf recorded itself as having skipped.
+Sidecar = namedtuple('Sidecar', 'chars skipped')
 
 R_PDF_OUTPUT = Remedy(
     'output_type_pdf', None, ('--output-type', 'pdf'),
@@ -345,16 +394,20 @@ CAUSES = {
         'the container died on SIGSEGV (128 + 11)'),
     # Everything below has NO ladder on purpose: retrying the document is
     # not the fix, and pretending otherwise burns a worker slot per rung.
+    # The three that follow carry defer=True as well: what is broken is the
+    # node, the image or the fleet environment, so a terminal status would
+    # retire a document over a defect the document does not have.
     'missing_dependency': Cause(
         'missing_dependency', 'missing_dependency_not_a_document_defect', (),
-        'a tool is absent from the OCR image; ' + _NODE_NOTE),
+        'a tool is absent from the OCR image; ' + _NODE_NOTE, defer=True),
     'file_access_error': Cause(
         'file_access_error', 'file_access_error_not_a_document_defect', (),
-        'the worker could not read or write its scratch path; ' + _NODE_NOTE),
+        'the worker could not read or write its scratch path; ' + _NODE_NOTE,
+        defer=True),
     'worker_args_invalid': Cause(
         'worker_args_invalid', 'worker_args_invalid_not_a_document_defect',
         (), 'ocrmypdf rejected its own arguments, which come from the '
-            'fleet WS13_OCR_EXTRA_ARGS; ' + _NODE_NOTE),
+            'fleet WS13_OCR_EXTRA_ARGS; ' + _NODE_NOTE, defer=True),
     'already_has_text_layer': Cause(
         'already_has_text_layer', 'already_has_text_layer_reclassify', (),
         'ocrmypdf found an existing text layer; this document belongs in '
@@ -367,14 +420,18 @@ CAUSES = {
         'born_digital_no_text', 'born_digital_no_text_reclassify', (),
         'a born_digital document with no extractable text belongs in '
         'ocr_queue; the class change is WS12 admission work'),
+    # Also deferred, for the same reason in a different shape: neither has
+    # been diagnosed at all yet, so retiring it is retiring a question.
     'stale_running_reaped': Cause(
         'stale_running_reaped', 'stale_running_not_diagnosed', (),
         'the row was reaped from a dead worker and was never diagnosed: '
-        'requeue it unchanged with ws13_enqueue.py --status error'),
+        'requeue it unchanged with ws13_enqueue.py --status error',
+        defer=True),
     'unclassified': Cause(
         'unclassified', 'unclassified_error_not_an_ocr_exit', (),
         'the recorded error carries no ocr_exit_<n>, so there is nothing to '
-        'classify; read it by hand before spending a worker on it'),
+        'classify; read it by hand before spending a worker on it',
+        defer=True),
 }
 # Exit code -> cause name. Codes absent here get a dynamic unknown_exit_<n>.
 EXIT_CAUSES = {
@@ -590,11 +647,28 @@ def docker_command(work, argv, entrypoint=None):
 
 
 def sidecar_chars(path):
-    """Non-whitespace characters in an ocrmypdf sidecar, 0 if absent."""
+    """Recovered text in an ocrmypdf sidecar. -> Sidecar(chars, skipped).
+
+    `chars` counts non-whitespace characters AFTER ocrmypdf's own
+    '[OCR skipped on page N]' placeholders are removed, because those are
+    ocrmypdf reporting a page it declined to read, not text it read. Counting
+    them let a --skip-big rung -- which exists precisely to abandon a page --
+    report a document as rescued on the strength of the notes about the pages
+    it gave up on.
+
+    `skipped` is kept rather than discarded: it travels into the attempt
+    detail, so the trail records that a rung produced text for some pages by
+    skipping others instead of silently rounding that to 'rescued'.
+    """
     if not os.path.exists(path):
-        return 0
+        return Sidecar(0, 0)
     with open(path, encoding='utf-8', errors='replace') as handle:
-        return len(''.join(handle.read().split()))
+        text = handle.read()
+    skipped = len(SIDECAR_SKIP_RE.findall(text))
+    # Substituted with a space, not '': two placeholders on one line must not
+    # fuse the words on either side of them into one.
+    real = SIDECAR_SKIP_RE.sub(' ', text)
+    return Sidecar(len(''.join(real.split())), skipped)
 
 
 class EmitExecutor:
@@ -706,10 +780,16 @@ class DockerExecutor:
             return Attempt(remedy, False, f'ocr_exit_{result.returncode}')
         if not os.path.exists(os.path.join(work, 'out.pdf')):
             return Attempt(remedy, False, 'no_output_pdf')
-        chars = sidecar_chars(os.path.join(work, 'out.txt'))
-        if chars < self.args.min_chars:
-            return Attempt(remedy, False, f'empty_text_{chars}_chars')
-        return Attempt(remedy, True, f'text_{chars}_chars')
+        text = sidecar_chars(os.path.join(work, 'out.txt'))
+        # The skipped-page count is part of the verdict, not decoration: a
+        # rung that reached the threshold while ocrmypdf skipped pages says
+        # so in the trail, and a rung whose whole sidecar was placeholders
+        # now falls below the threshold and the ladder escalates past it.
+        skipped = f'_{text.skipped}_pages_skipped' if text.skipped else ''
+        if text.chars < self.args.min_chars:
+            return Attempt(remedy, False,
+                           f'empty_text_{text.chars}_chars{skipped}')
+        return Attempt(remedy, True, f'text_{text.chars}_chars{skipped}')
 
 
 def run_ladder(executor, doc, ladder, echo=print):
@@ -721,6 +801,17 @@ def run_ladder(executor, doc, ladder, echo=print):
     'retried 4 times'.
     """
     attempts = []
+    if not ladder:
+        # Nothing to try, so nothing to fetch. Entering executor.document()
+        # here downloaded the whole original from S3 in order to attempt zero
+        # rungs -- and once main() wrapped the ladder in per-document
+        # containment, a throttle or an unwritable scratch path during that
+        # pointless fetch turned an ALREADY DECIDED classification
+        # (integrity_mismatch, already_has_text_layer, born_digital_no_text)
+        # into an unrecorded fault. The row then came back on every later
+        # sweep, and the run never exited 0. A verdict that needs no bytes
+        # must not be able to fail on bytes.
+        return attempts, None
     with executor.document(doc) as work:
         for position, remedy in enumerate(ladder, 1):
             echo(f'    rung {position}/{len(ladder)} {remedy.name}')
@@ -748,6 +839,17 @@ def readmit_reason(remedy, attempts):
     return safe(f'rescue_repaired:{remedy.name}: after {len(attempts)} '
                 f'attempt(s) ({trail(attempts)}); input rewritten, so the '
                 f'sha256 changes and WS12 must re-admit it')
+
+
+def deferred_reason(cause):
+    """What a deferred cause is waiting on. Printed, never written.
+
+    Written nowhere on purpose: ws13_manifest.error still holds the recorded
+    ocr_exit_<n> this classification was derived from, and overwriting it
+    with this sentence would leave the next run with nothing to classify --
+    the row would come back 'unclassified' and the cause would be lost.
+    """
+    return safe(f'rescue_deferred:{cause.terminal}: {cause.note}')
 
 
 def terminal_reason(cause, attempts):
@@ -871,11 +973,25 @@ def select(conn, args):
         selected = True
         # Bounded on BOTH axes. 'not settled' alone is not a population this
         # tool can classify -- see RESCUABLE_STATUSES above.
+        #
+        # The whitelist is the ONLY bound, and --include-settled widens it.
+        # It used to be a whitelist ANDed with a separate 'NOT settled'
+        # exclusion, which made the flag a silent no-op: the whitelist is
+        # ('error', 'running') and no settled status can satisfy it, so
+        # dropping the exclusion changed the result set by nothing at all
+        # while the help promised it would reselect rescued /
+        # needs_readmit / unrescuable rows. The same redundant exclusion also
+        # voided an explicit --rescuable-statuses unrescuable, which selected
+        # zero rows rather than the rows named. 'done' is never added: a
+        # document that produced text is not this tool's business, and
+        # reselecting 56,272 of them is not what anyone means by
+        # --include-settled.
+        statuses = list(args.rescuable_statuses)
+        if args.include_settled:
+            statuses += [s for s in SETTLED_STATUSES
+                         if s != 'done' and s not in statuses]
         where.append('m.status = ANY(%s)')
-        params.append(list(args.rescuable_statuses))
-        if not args.include_settled:
-            where.append('NOT (m.status = ANY(%s))')
-            params.append([s for s in SETTLED_STATUSES if s != 'done'])
+        params.append(statuses)
     if args.cls:
         where.append('m.doc_class = ANY(%s)')
         params.append(list(args.cls))
@@ -900,6 +1016,12 @@ def print_plan(cls_, doc, emitter=None):
     print(f'    {cls_.cause.note}')
     if cls_.hints:
         print(f'    stderr tail matched: {", ".join(cls_.hints)}')
+    if cls_.cause.defer:
+        print('    no remedy ladder, and nothing about this document is '
+              'what is broken')
+        print(f'    would be LEFT at status={cls_.status!r} unchanged: '
+              f'{deferred_reason(cls_.cause)}')
+        return
     if not cls_.ladder:
         print('    no remedy ladder: retrying this document is not the fix')
         print(f'    would be recorded {TERMINAL_STATUS}: '
@@ -1073,9 +1195,34 @@ def main(argv=None):
     executor = DockerExecutor(args)
 
     rescued, readmit, exhausted, missed = [], 0, 0, 0
+    deferred, faulted = 0, 0
     for doc, cls_ in plans:
         print(f'  {doc.sha256[:12]} {cls_.cause.name}')
-        attempts, winner = run_ladder(executor, doc, cls_.ladder)
+        if cls_.cause.defer:
+            # Left exactly as it was found. The row stays at 'error', which
+            # --all-failed still selects, so the document comes back the next
+            # time this runs -- which is the whole point, because what has to
+            # change before then is the node, the image or the fleet
+            # environment, not this document.
+            deferred += 1
+            print(f'    LEFT at status={doc.status!r}: '
+                  f'{deferred_reason(cls_.cause)}')
+            continue
+        try:
+            attempts, winner = run_ladder(executor, doc, cls_.ladder)
+        except Exception as exc:
+            # Containment, one document wide. Without it a single unfetchable
+            # S3 object took the whole run down from inside
+            # executor.document(), and every document after it in the plan --
+            # including ones whose ladder would have worked -- was left
+            # unattempted and unclassified. Nothing is written here for the
+            # same reason as the deferred path: an exception is not a verdict
+            # on the document, so the row stays selectable.
+            faulted += 1
+            print(f'    NOT attempted: {type(exc).__name__}: '
+                  f'{safe(str(exc))}')
+            print(f'    left at status={doc.status!r}; fix that and rerun')
+            continue
         if winner is None:
             status = TERMINAL_STATUS
             reason = terminal_reason(cls_.cause, attempts)
@@ -1102,7 +1249,8 @@ def main(argv=None):
             exhausted += 1
 
     print(f'rescued {len(rescued)}, needs_readmit {readmit}, '
-          f'unrescuable {exhausted}, not recorded {missed}')
+          f'unrescuable {exhausted}, deferred {deferred}, '
+          f'not attempted {faulted}, not recorded {missed}')
     requeue_code = 0
     if rescued and args.requeue:
         requeue_code = requeue(args, rescued)
@@ -1110,8 +1258,10 @@ def main(argv=None):
         print('requeue them with: ws13_rescue.py ... --requeue, or '
               'ws13_enqueue.py --status rescued --force')
     # An exhausted document is a documented dead end, not a crash, but the
-    # run must not read as clean.
-    return 1 if (exhausted or missed or requeue_code or reap_code) else 0
+    # run must not read as clean. A deferred or faulted one is open work
+    # somewhere else, which is even less clean.
+    return 1 if (exhausted or missed or deferred or faulted or requeue_code
+                 or reap_code) else 0
 
 
 if __name__ == '__main__':

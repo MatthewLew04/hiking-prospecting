@@ -94,7 +94,28 @@ footer a{overflow-wrap:anywhere}
    layer on the original pages, so page N of a citation is page N here, and the
    cited quote can be found and highlighted in that layer.
    Parameters ride in the fragment (#doc=…&page=…&q=…) so the document id and
-   the quote never appear in a request line, a proxy log, or a Referer. */
+   the quote never appear in a request line, a proxy log, or a Referer.
+   Two corpora resolve through the same docs API and the same session gate.
+   The default is the legacy WS12 stored corpus, looked up in its published
+   manifest. #corpus=ws13 opens one of the 56,282 WS13 documents, which are
+   indexed in a Postgres the docs API cannot read, so the link also carries
+   the stored original's s3_key and its rights_basis.
+   What the server actually does with those two, stated exactly, because a
+   comment that overstates a check is worse than no comment: neither grants
+   access — every request is gated on a live session either way. The key's
+   SHAPE is anchored to the two servable prefixes and its admission class is
+   read off the ws12/{class}/ prefix rather than off the link, so a link
+   cannot assert its own rights class. Its DIGEST is cross-checked against
+   the document id only when the key names one; the flat archive shape
+   (ws12/research-copies/IF0131_001.pdf) names no digest and cannot be
+   checked that way, which docs_lambda.validate_ws13_request() says outright
+   and tests/test_ws13_doc_resolver.py pins. rights_basis is checked for
+   PRESENCE, not against the document: it is attribution text the licence
+   line is built from. So a hand-made fragment pairing one document's id with
+   another's flat key gets the second document's bytes under the first
+   document's digest — a false provenance label inside the gate, not a way
+   through it. Fixing that needs an authoritative lookup this API cannot
+   reach, which is the same reason the link carries the key at all. */
 import * as pdfjs from './assets/pdfjs/pdf.min.mjs';
 
 pdfjs.GlobalWorkerOptions.workerSrc = './assets/pdfjs/pdf.worker.min.mjs';
@@ -109,15 +130,35 @@ const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
 
+const WS13 = 'ws13';
 const S = {doc:null, pdf:null, page:1, scale:null, quote:'', rendering:0, seq:0,
-  resignAttempts:0};
+  resignAttempts:0, corpus:'ws12', requestedPage:null, clamped:false};
 
 function params(){
   const raw = (location.hash || '').replace(/^#/, '') || location.search.replace(/^\?/, '');
   const q = new URLSearchParams(raw);
-  return {doc:(q.get('doc') || q.get('doc_id') || '').trim(),
+  // corpus selects which index the doc id is resolved in. The legacy WS12
+  // store has a published manifest the docs API looks a document up in; the
+  // 56,282-document WS13 corpus is indexed in Postgres, which this API cannot
+  // read, so a WS13 link carries the two facts the resolver needs instead:
+  // the stored original's key (whose ws12/{class}/ prefix IS the rights
+  // signal) and the rights_basis that names the licence. Neither grants
+  // anything: the request is still gated on a live session, the key's shape
+  // is anchored server-side, and the class is read off the key rather than
+  // off the link. The key is tied to THIS document only when its filename
+  // names a digest -- see the header comment for what that leaves open.
+  const corpus = (q.get('corpus') || 'ws12').trim();
+  return {corpus: corpus === WS13 ? WS13 : 'ws12',
+          doc:(q.get('doc') || q.get('doc_id') || '').trim(),
           page:parseInt(q.get('page') || '', 10) || null,
-          quote:(q.get('q') || q.get('quote') || '').trim()};
+          quote:(q.get('q') || q.get('quote') || '').trim(),
+          s3Key:(q.get('s3_key') || '').trim(),
+          rightsBasis:(q.get('rights_basis') || '').trim(),
+          kind:(q.get('viewer_key_kind') || '').trim(),
+          // Display only, and escaped like everything else out of the
+          // fragment. This corpus has no manifest for the viewer to look a
+          // title up in, so a link that omits it gets the digest.
+          title:(q.get('title') || '').trim()};
 }
 function accessToken(){
   try{ return JSON.parse(localStorage.getItem(AUTH_KEY) || '{}').access || null; }
@@ -150,6 +191,20 @@ async function resolve(){
   const url = new URL(endpoint, location.href);
   url.searchParams.set('doc_id', p.doc);
   if (p.page) url.searchParams.set('page', p.page);
+  S.corpus = p.corpus;
+  S.requestedPage = p.page;
+  S.clamped = false;
+  if (p.corpus === WS13){
+    if (!p.s3Key)
+      return fail('This WS13 citation is missing its <code>s3_key</code>. ' +
+        'That key names the stored original and carries the rights class the ' +
+        'document is served under, and this corpus has no manifest to ' +
+        'recover it from.');
+    url.searchParams.set('corpus', WS13);
+    url.searchParams.set('s3_key', p.s3Key);
+    if (p.rightsBasis) url.searchParams.set('rights_basis', p.rightsBasis);
+    if (p.kind) url.searchParams.set('viewer_key_kind', p.kind);
+  }
   // The quote stays in this page's fragment and is matched client-side. It
   // is not needed to authorize/sign the object and must not enter API Gateway
   // request lines or access logs.
@@ -168,20 +223,44 @@ async function resolve(){
 
 function paintChrome(){
   const d = S.doc;
-  document.title = `${d.title} — p. ${d.page}`;
-  $('title').textContent = d.title;
-  $('title').title = d.title;
-  $('meta').textContent = `${d.authority} · ${d.state}`;
-  $('pageOf').textContent = `/ ${d.pages}`;
-  $('pageNo').max = d.pages;
+  const ws13 = d.corpus === WS13;
+  // The WS13 corpus has no manifest here, so the response carries no title,
+  // authority, page count or catalog URL — only what can be proved from the
+  // key and the licence. Print what there is instead of empty labels that
+  // would read as missing metadata rather than as a different corpus.
+  const title = ws13
+    ? (params().title || `WS13 document ${String(d.doc_id).slice(0, 12)}…`)
+    : d.title;
+  document.title = `${title} — p. ${d.page}`;
+  $('title').textContent = title;
+  $('title').title = title;
+  $('meta').textContent = ws13
+    ? `${d.admission_class} · ${d.viewer_key_kind}`
+    : `${d.authority} · ${d.state}`;
+  // A WS13 page count is in the database the retrieval Lambda reads, not in
+  // this response, so it comes from the opened PDF -- see notePageCount().
+  $('pageOf').textContent = ws13 ? '' : `/ ${d.pages}`;
+  if (!ws13) $('pageNo').max = d.pages;
   if (S.quote){
     $('quotebar').hidden = false;
     $('quote').textContent = S.quote;
     $('quoteState').textContent = d.text_layer === 'absent'
       ? 'no text layer — page shown, not searched'
       : 'searching this stored page…';
+  } else {
+    // Following a second citation reuses this page. Without this, a
+    // quote-less document inherited whatever the previous one left in the
+    // bar -- its quote, or notePageCount()'s end-of-document banner naming a
+    // page count from a document that is no longer open.
+    $('quotebar').hidden = true;
+    $('quote').textContent = '';
+    $('quoteState').textContent = '';
   }
-  const parts = [
+  $('prov').innerHTML = (ws13 ? ws13Provenance(d) : storedProvenance(d)).join('');
+}
+
+function storedProvenance(d){
+  return [
     `<span class="badge">${esc(d.page_cite || ('p. ' + d.page))}</span>`,
     `<span>stored copy · sha256 ${esc(String(d.sha256).slice(0, 12))}… · ` +
       `text layer ${esc(d.text_layer)}</span>`,
@@ -190,7 +269,61 @@ function paintChrome(){
       `(<a href="${esc(d.source_url)}" target="_blank" rel="noreferrer">original URL</a>) — ` +
       `shown for provenance; this viewer reads our stored copy.</span>`,
   ];
-  $('prov').innerHTML = parts.join('');
+}
+
+/* WS13 provenance is the licence. 13,013 of these documents are CC BY-NC-SA
+   copies and 32,312 are state-archive research copies, so the terms are
+   printed beside the page rather than implied by silence — the same three
+   fields the retrieval Lambda puts on every citation. */
+function ws13Provenance(d){
+  const flags = [
+    d.attribution_required ? 'attribution required' : '',
+    d.non_commercial ? 'non-commercial use only' : '',
+    d.share_alike ? 'share-alike' : '',
+  ].filter(Boolean);
+  return [
+    `<span class="badge">p. ${esc(d.page)}</span>`,
+    `<span class="badge">${esc(d.admission_class)}</span>`,
+    `<span>stored copy · sha256 ${esc(String(d.sha256).slice(0, 12))}… · ` +
+      `text layer ${esc(d.text_layer)}</span>`,
+    `<span>${esc(d.rights_terms || 'rights unstated')}` +
+      `${flags.length ? ' — ' + esc(flags.join(' · ')) : ''}</span>`,
+  ];
+}
+
+/* The docs API cannot bound a WS13 page against a page count it has no way to
+   read, and says so: it validates the number and leaves the end-of-document
+   check here. Silently rendering the last page instead of the cited one would
+   put a reader on a page the citation never claimed. */
+function notePageCount(){
+  // WS12 keeps the manifest's page count: it is the number the citation was
+  // written against, and the docs API has already refused a page past it.
+  if (S.corpus !== WS13) return;
+  const total = S.pdf ? S.pdf.numPages : 0;
+  if (!total) return;
+  $('pageOf').textContent = `/ ${total}`;
+  $('pageNo').max = total;
+  if (S.page <= total) return;
+  S.clamped = true;
+  S.page = total;
+  $('quotebar').hidden = false;
+  $('quote').textContent = S.quote || '';
+  $('quoteState').textContent =
+    `page ${S.requestedPage} is past the end of this ${total}-page document ` +
+    `— showing page ${total}; the citation does not resolve here`;
+}
+
+/* Undo notePageCount()'s banner. With a quote the bar stays -- it is the
+   quote's own bar and render() owns its text from here -- and without one
+   there is nothing left for it to say, so it goes away entirely rather than
+   sitting empty. */
+function clearClamp(){
+  if (S.quote){
+    $('quoteState').textContent = 'searching this stored page…';
+    return;
+  }
+  $('quoteState').textContent = '';
+  $('quotebar').hidden = true;
 }
 
 async function open(fileUrl){
@@ -204,13 +337,17 @@ async function open(fileUrl){
   }
   // Scanned bulletins are large and decode page images in WebAssembly; say
   // what is being opened rather than showing a bare spinner-less blank.
-  $('stage').innerHTML = `<div class="note">Opening the stored copy — ` +
-    `${esc(S.doc.title)}, ${S.doc.pages} page${S.doc.pages===1?'':'s'}…</div>`;
+  const opening = S.doc.corpus === WS13
+    ? `WS13 document ${esc(String(S.doc.doc_id).slice(0, 12))}…`
+    : `${esc(S.doc.title)}, ${S.doc.pages} page${S.doc.pages===1?'':'s'}`;
+  $('stage').innerHTML =
+    `<div class="note">Opening the stored copy — ${opening}…</div>`;
   try{
     S.pdf = await pdfjs.getDocument({
       url: fileUrl, standardFontDataUrl: FONTS, wasmUrl: WASM,
       isEvalSupported: false,
     }).promise;
+    notePageCount();
     await render();
     S.resignAttempts = 0;
   }catch(e){
@@ -276,7 +413,9 @@ async function render(){
   await new pdfjs.TextLayer({textContentSource:text, container:layer, viewport}).render();
   if (seq !== S.seq) return;
   const highlighted = highlight(layer);
-  if (S.quote) $('quoteState').textContent = highlighted
+  // A clamped page already says why the citation does not resolve here, and
+  // that is the more important of the two messages.
+  if (S.quote && !S.clamped) $('quoteState').textContent = highlighted
     ? 'highlighted in the text layer'
     : (S.doc.text_layer === 'absent'
         ? 'no text layer — page shown, not searched'
@@ -330,6 +469,14 @@ function go(page){
   const target = Math.min(Math.max(1, page | 0), S.pdf ? S.pdf.numPages : 1);
   if (target === S.page) return;
   S.page = target;
+  // Leaving the clamped page has to take its message with it. render()
+  // rewrites #quoteState only `if (S.quote && !S.clamped)`, so a citation
+  // with no quote had no path back: the reader turned to page 9 and the
+  // banner still read "showing page 10; the citation does not resolve here",
+  // now describing a page they were not on. Cleared here, where the state it
+  // describes is what changes.
+  if (S.clamped) clearClamp();
+  S.clamped = false;
   const hash = new URLSearchParams(
     (location.hash || '').replace(/^#/, ''));
   hash.set('page', String(target));

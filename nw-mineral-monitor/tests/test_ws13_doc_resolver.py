@@ -35,6 +35,7 @@ import re
 import sys
 import types
 import unittest
+import urllib.parse
 from unittest import mock
 
 
@@ -44,6 +45,7 @@ sys.path.insert(0, os.path.join(ROOT, 'pipelines'))
 sys.path.insert(0, INFRA)
 
 TEMPLATE = os.path.join(INFRA, 'template.yaml')
+VIEWER = os.path.join(ROOT, 'site', 'viewer.html')
 
 # psycopg is a deployment dependency of the retrieval Lambda, not of this test
 # host. ws13_query_lambda degrades to psycopg = None when it is absent; bind a
@@ -587,6 +589,143 @@ class Ws13ResolverTests(unittest.TestCase):
         response = module.handler(event({'doc_id': OCR_SHA}), None)
         self.assertIn(response['statusCode'], (500, 503))
         self.assertEqual(s3.signed, [])
+
+
+class Ws13ViewerTests(unittest.TestCase):
+    """site/viewer.html is the client of this resolver, and was not one.
+
+    Until now the viewer resolved every document through the WS12 manifest, so
+    a WS13 citation rendered as inert cited text carrying its rights badge --
+    a provable citation with nothing to open. The viewer now speaks both
+    corpora; these tests hold the two halves of that contract together, which
+    is where it can silently come apart: the viewer sends the fields the
+    resolver requires, and it renders the fields the resolver returns.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        with open(VIEWER, encoding='utf-8') as handle:
+            cls.viewer = handle.read()
+        cls.resolve = cls.viewer.split('async function resolve()', 1)[1].split(
+            'function paintChrome', 1)[0]
+
+    def ws13_body(self, **overrides):
+        module, _s3, cognito = Ws13ResolverTests.endpoint(self)
+        response = module.handler(event(ws13_query(**overrides)), None)
+        self.assertEqual(response['statusCode'], 200, response['body'])
+        return json.loads(response['body'])
+
+    def test_the_viewer_asks_for_the_ws13_corpus_by_name(self):
+        self.assertIn("q.get('corpus')", self.viewer)
+        self.assertIn("url.searchParams.set('corpus', WS13)", self.resolve)
+
+    def test_it_sends_the_two_fields_this_resolver_cannot_do_without(self):
+        # s3_key names the stored original AND carries the rights class in its
+        # ws12/{class}/ prefix; rights_basis names the licence. A request
+        # missing the key is refused by validate_ws13_request().
+        self.assertIn("url.searchParams.set('s3_key', p.s3Key)", self.resolve)
+        self.assertIn("url.searchParams.set('rights_basis', p.rightsBasis)",
+                      self.resolve)
+        module, _s3, cognito = Ws13ResolverTests.endpoint(self)
+        response = module.handler(event(ws13_query(s3_key=None)), None)
+        self.assertEqual(response['statusCode'], 400)
+        self.assertIn('s3_key is required', json.loads(response['body'])['error'])
+
+    def test_a_link_without_the_key_fails_in_the_viewer_before_the_request(self):
+        # Sending the request anyway would spend a round trip to be told what
+        # the link already shows, and the message would be about a parameter
+        # the reader never typed.
+        self.assertIn('is missing its <code>s3_key</code>', self.viewer)
+        self.assertIn('if (!p.s3Key)', self.resolve)
+
+    def test_the_quote_still_never_enters_the_request_line(self):
+        # Same rule as the legacy corpus: the quote is matched client-side and
+        # must not reach API Gateway access logs.
+        self.assertNotIn("searchParams.set('quote'", self.resolve)
+        self.assertNotIn("searchParams.set('q'", self.resolve)
+
+    def test_every_rights_field_the_resolver_returns_is_rendered(self):
+        # Serving 13,013 CC BY-NC-SA copies and 32,312 archive research copies
+        # is defensible only if the terms are printed beside the page. A field
+        # this response carries and the viewer drops would imply public domain
+        # by silence.
+        body = self.ws13_body(s3_key=LICENSED_ORIGINAL, doc_id=LICENSED_SHA,
+                              rights_basis=LICENSED_BASIS,
+                              viewer_key_kind='born_digital_original')
+        chrome = self.viewer.split('function ws13Provenance', 1)[1].split(
+            '\n}', 1)[0]
+        for field in ('rights_terms', 'attribution_required', 'non_commercial',
+                      'share_alike'):
+            with self.subTest(field=field):
+                self.assertIn(field, body)
+                self.assertIn(f'd.{field}', chrome)
+        self.assertTrue(body['non_commercial'])
+        self.assertTrue(body['share_alike'])
+
+    def test_every_response_field_the_viewer_reads_is_one_this_api_returns(self):
+        # The failure this catches is a viewer printing 'undefined' where a
+        # licence should be. Every d.<field> the WS13 chrome reads has to exist
+        # in a real response from this handler.
+        body = self.ws13_body()
+        chrome = self.viewer.split('function ws13Provenance', 1)[1].split(
+            '\n}', 1)[0]
+        read = set(re.findall(r'\bd\.([a-z0-9_]+)', chrome))
+        self.assertTrue(read)
+        self.assertEqual(sorted(read - set(body)), [])
+
+    def test_it_does_not_expect_the_ws12_manifest_fields(self):
+        # This response carries no title, authority, page count or catalog URL
+        # -- the WS13 index is in a Postgres this API cannot read -- so the
+        # WS13 chrome must not reach for them.
+        body = self.ws13_body()
+        for field in ('title', 'authority', 'state', 'pages', 'catalog_url',
+                      'retrieved', 'page_cite'):
+            self.assertNotIn(field, body)
+        chrome = self.viewer.split('function ws13Provenance', 1)[1].split(
+            '\n}', 1)[0]
+        for field in ('d.title', 'd.authority', 'd.pages', 'd.catalog_url',
+                      'd.retrieved', 'd.page_cite'):
+            with self.subTest(field=field):
+                self.assertNotIn(field, chrome)
+
+    def test_the_end_of_document_check_this_api_delegates_is_implemented(self):
+        # validate_ws13_request() bounds the page to MAX_PAGE and says why it
+        # cannot do more: no page count is reachable from that function, so
+        # the real end-of-document check is the viewer's. Without it a citation
+        # past the end renders as a failed read and one wasted re-signature.
+        module, _s3, _cognito = Ws13ResolverTests.endpoint(self)
+        # Proof that the check cannot live here: a page far past any real
+        # document is signed, because nothing on this path knows the count.
+        response = module.handler(event(ws13_query(page='9000')), None)
+        self.assertEqual(response['statusCode'], 200)
+        self.assertEqual(json.loads(response['body'])['page'], 9000)
+        self.assertIn('function notePageCount', self.viewer)
+        self.assertIn('S.pdf.numPages', self.viewer)
+        self.assertIn('is past the end of this', self.viewer)
+        self.assertIn('the citation does not resolve here', self.viewer)
+
+    def test_a_page_past_the_bound_is_still_refused_by_the_api(self):
+        module, _s3, _cognito = Ws13ResolverTests.endpoint(self)
+        response = module.handler(
+            event(ws13_query(page=str(module.MAX_PAGE + 1))), None)
+        self.assertEqual(response['statusCode'], 400)
+
+    def test_the_legacy_corpus_remains_the_viewers_default(self):
+        # A link with no corpus must keep resolving through the WS12 manifest;
+        # 56,282 WS13 documents becoming the default would break every
+        # existing citation.
+        self.assertIn("const corpus = (q.get('corpus') || 'ws12').trim()",
+                      self.viewer)
+        self.assertIn("corpus === WS13 ? WS13 : 'ws12'", self.viewer)
+
+    def test_the_viewer_link_this_api_mints_is_one_the_viewer_can_read(self):
+        # ws13_viewer_url() and params() are the two ends of one fragment.
+        body = self.ws13_body(quote='assay returns')
+        fragment = body['viewer_url'].split('#', 1)[1]
+        sent = dict(urllib.parse.parse_qsl(fragment, keep_blank_values=True))
+        for key in sent:
+            with self.subTest(param=key):
+                self.assertIn(f"q.get('{key}')", self.viewer)
 
 
 class DocsRolePolicyTests(unittest.TestCase):

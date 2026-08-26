@@ -9,10 +9,27 @@ tokens for a 3,000-character chunk) finishing that column costs roughly 584M
 tokens -- about 36 more days of the entire daily allowance. Nothing reads the
 column: infra/ws13_query_lambda.py reads titan_embedding and only
 titan_embedding (HALFVEC_EXPR, EXACT_DISTANCE_SQL), which is the complete
-column (0 NULL over 852,027 chunks). qwen_embedding is worse -- 527,646 NULL
-and never written once, because it needs a GPU node and no GPU instance has
-ever run in this account (quota is 8 vCPU of On-Demand G/VT, 0 for P and 0 for
-all GPU spot, so exactly one g5.2xlarge is possible).
+column (0 NULL over 852,027 chunks). qwen_embedding is worse: it has never
+been written once, because it needs a GPU node and no GPU instance has ever
+run in this account (quota is 8 vCPU of On-Demand G/VT, 0 for P and 0 for all
+GPU spot, so exactly one g5.2xlarge is possible).
+
+No NULL count is quoted for qwen_embedding, and that is deliberate. This
+paragraph used to say "527,646 NULL and never written once", which cannot
+both be true: the only writer anywhere is pipelines/ws13_qwen_overlay.py, so
+a column it never ran against is NULL in all 852,027 rows, and 527,646 would
+mean 324,381 of them were filled by something. One of those two statements is
+wrong and nothing in this repository can say which -- so neither is asserted
+here. Settle it on the in-VPC host before either number is used to argue for
+a spend:
+
+    SELECT count(*) AS chunks,
+           count(*) FILTER (WHERE qwen_embedding IS NULL) AS qwen_null,
+           count(*) FILTER (WHERE titan_embedding IS NULL) AS titan_null
+      FROM ws13_chunks;
+
+The decision below does not turn on it either way: nothing reads the column,
+and a bake-off arm needs vectors this account cannot produce.
 
 That spend is committed to a hypothesis -- that Cohere or Qwen beats Titan on
 OCR-noisy mining documents -- which has never been measured. This harness

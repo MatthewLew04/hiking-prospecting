@@ -23,6 +23,7 @@ import io
 import os
 import re
 import sys
+import tempfile
 import types
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -569,25 +570,52 @@ class SelectorTests(unittest.TestCase):
         self.assertIn("no selector", str(caught.exception))
         self.assertIsNone(conn.select_sql)
 
-    def test_all_failed_excludes_rows_this_tool_already_settled(self):
+    def selected_statuses(self, conn):
+        """The one status list --all-failed binds. There is only ever one.
+
+        Asserted through the bound VALUES rather than through the shape of
+        the SQL on purpose: the previous pair of tests here asserted that a
+        'NOT (m.status = ANY(%s))' clause was present and then absent, which
+        is a fact about the statement and not about the rows. It was present,
+        it was also redundant -- no settled status can satisfy the whitelist
+        it was ANDed with -- so both tests passed while --include-settled
+        selected nothing extra at all.
+        """
+        lists = [p for p in conn.select_params if isinstance(p, list)]
+        return next(group for group in lists if 'error' in group)
+
+    def test_all_failed_selects_only_what_this_tool_can_classify(self):
         conn = FakeConn([doc()])
         run_main(conn, ["--dsn", "x", "--all-failed"])
-        self.assertIn("NOT (m.status = ANY(%s))", conn.select_sql)
-        # 'done' is now excluded by the status whitelist rather than by
-        # a NOT-list, so the remaining NOT-list is the settled statuses
-        # this tool itself writes.
-        self.assertIn([s for s in rescue.SETTLED_STATUSES if s != 'done'],
-                      conn.select_params)
-        self.assertIn(list(rescue.RESCUABLE_STATUSES), conn.select_params)
+        self.assertEqual(sorted(self.selected_statuses(conn)),
+                         sorted(rescue.RESCUABLE_STATUSES))
+        for settled in rescue.SETTLED_STATUSES:
+            self.assertNotIn(settled, self.selected_statuses(conn))
 
-    def test_include_settled_reopens_them(self):
+    def test_include_settled_actually_widens_the_selected_statuses(self):
         conn = FakeConn([doc()])
         run_main(conn, ["--dsn", "x", "--all-failed", "--include-settled"])
-        # --include-settled drops the NOT-list entirely; the status
-        # whitelist already keeps 'done' out.
-        self.assertNotIn([s for s in rescue.SETTLED_STATUSES if s != 'done'],
-                         conn.select_params)
-        self.assertIn(list(rescue.RESCUABLE_STATUSES), conn.select_params)
+        selected = self.selected_statuses(conn)
+        for status in (rescue.RESCUED_STATUS, rescue.READMIT_STATUS,
+                       rescue.TERMINAL_STATUS):
+            self.assertIn(status, selected,
+                          "--include-settled cannot reach a settled row")
+        for status in rescue.RESCUABLE_STATUSES:
+            self.assertIn(status, selected)
+        # 'done' is a document that produced text. Reselecting 56,272 of them
+        # is not what anyone means by --include-settled.
+        self.assertNotIn('done', selected)
+
+    def test_an_explicit_rescuable_status_is_not_voided(self):
+        # --rescuable-statuses unrescuable used to select ZERO rows: the
+        # redundant NOT-list cancelled exactly the status the operator asked
+        # for, and said nothing about having done so.
+        conn = FakeConn([doc()])
+        run_main(conn, ["--dsn", "x", "--all-failed",
+                        "--rescuable-statuses", rescue.TERMINAL_STATUS])
+        bound = [p for p in conn.select_params if isinstance(p, list)]
+        self.assertIn([rescue.TERMINAL_STATUS], bound)
+        self.assertNotIn("NOT (m.status = ANY(%s))", conn.select_sql)
 
     def test_sha_selector_binds_a_prefix_and_rejects_an_unset_variable(self):
         conn = FakeConn([doc()])
@@ -849,6 +877,273 @@ class ApplyTests(unittest.TestCase):
         status, reason, _sha, _prior = conn.updates[0]
         self.assertEqual(status, rescue.TERMINAL_STATUS)
         self.assertIn("integrity_mismatch_not_an_ocr_failure", reason)
+
+
+class NodeDefectDeferralTests(unittest.TestCase):
+    """A node defect is not a document defect, and must not retire a document.
+
+    'unrescuable' is in SETTLED_STATUSES, so --all-failed never selects it
+    again. Writing it for exit 3 MISSING_DEPENDENCY -- a binary missing from
+    the OCR image, which is the same class of defect as the pdftoppm rc=127
+    that left 760,059 pages unmeasured -- permanently retired a document that
+    would index on the next attempt once the image was fixed.
+    """
+
+    DEFERRED = ("missing_dependency", "file_access_error",
+                "worker_args_invalid", "stale_running_reaped",
+                "unclassified")
+
+    def test_exactly_the_environment_causes_defer(self):
+        for name, cause in rescue.CAUSES.items():
+            with self.subTest(cause=name):
+                self.assertEqual(cause.defer, name in self.DEFERRED)
+
+    def test_a_deferred_cause_never_carries_a_ladder(self):
+        # Deferring is not "try it later": there is nothing about the
+        # document to try, so a rung would spend a worker slot to learn
+        # nothing.
+        for name in self.DEFERRED:
+            with self.subTest(cause=name):
+                self.assertEqual(rescue.CAUSES[name].ladder, ())
+
+    def test_an_unknown_exit_code_is_never_deferred(self):
+        # An undocumented code is a document this tool has not seen, not a
+        # node it can diagnose; it gets the generic ladder and a real verdict.
+        self.assertFalse(classify("ocr_exit_42:mystery").cause.defer)
+
+    def test_apply_leaves_the_row_untouched_and_says_so(self):
+        conn = FakeConn([doc(error="ocr_exit_3:pdftoppm: not found")])
+        executor = FakeExecutor()
+        code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed",
+                                          "--exec", "docker", "--apply"],
+                                   executor=executor)
+        self.assertEqual(executor.calls, [])
+        # The whole point: no UPDATE at all, so the row stays at 'error' and
+        # the next --all-failed sweep sees it again.
+        self.assertEqual(conn.updates, [])
+        self.assertIn("LEFT at status='error'", out)
+        self.assertIn("missing_dependency_not_a_document_defect", out)
+        self.assertIn("deferred 1", out)
+        # Deferred is open work somewhere else, so the run is not clean.
+        self.assertEqual(code, 1)
+
+    def test_the_recorded_error_is_not_overwritten_by_the_deferral(self):
+        # Writing the deferral into ws13_manifest.error would destroy the
+        # ocr_exit_<n> the classification is derived from: the next run would
+        # read it back as 'unclassified' and the cause would be gone.
+        conn = FakeConn([doc(error="ocr_exit_5:cannot write /scratch")])
+        run_main(conn, ["--dsn", "x", "--all-failed", "--exec", "docker",
+                        "--apply"])
+        self.assertEqual(conn.updates, [])
+
+    def test_a_deferred_document_still_appears_in_the_plan(self):
+        conn = FakeConn([doc(error="ocr_exit_3:missing gs")])
+        _code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed"])
+        self.assertIn("missing_dependency", out)
+        self.assertIn("LEFT at status='error'", out)
+
+    def test_a_document_defect_with_no_ladder_is_still_retired(self):
+        # The deferral must not swallow the cases that ARE settled: an S3
+        # object that no longer hashes to its own key is a WS12 re-admission,
+        # not something a later run of this tool can pick up.
+        conn = FakeConn([doc(error="integrity_mismatch: sha256 differs")])
+        run_main(conn, ["--dsn", "x", "--all-failed", "--exec", "docker",
+                        "--apply"])
+        self.assertEqual(conn.updates[0][0], rescue.TERMINAL_STATUS)
+
+    def test_a_ladder_less_verdict_never_touches_the_object_store(self):
+        """A verdict that needs no bytes must not be able to fail on bytes.
+
+        run_ladder() entered `with executor.document(doc)` before looking at
+        the ladder, so integrity_mismatch -- decided entirely from the
+        recorded error -- downloaded the whole original to attempt zero
+        rungs. Harmless until main() gained per-document containment; after
+        that, one S3 throttle during that pointless fetch turned a settled
+        classification into an unrecorded fault, and the row came back on
+        every later sweep so the run never exited 0.
+        """
+        class Refusing(FakeExecutor):
+            @contextlib.contextmanager
+            def document(self, document):
+                raise AssertionError("fetched a document with no ladder")
+                yield  # pragma: no cover - unreachable, keeps this a cm
+
+        conn = FakeConn([doc(error="integrity_mismatch: sha256 differs")])
+        code, out, _err = run_main(
+            conn, ["--dsn", "x", "--all-failed", "--exec", "docker",
+                   "--apply"], executor=Refusing())
+        self.assertEqual(conn.updates[0][0], rescue.TERMINAL_STATUS)
+        self.assertNotIn("NOT attempted", out)
+        self.assertEqual(code, 1)
+
+
+class PerDocumentContainmentTests(unittest.TestCase):
+    """One unfetchable S3 object costs one document, not the whole run.
+
+    DockerExecutor.document() fetches the original before any rung runs, so
+    an exception there escaped run_ladder and unwound main(): every document
+    after it in the plan was left unattempted, and nothing recorded why.
+    """
+
+    class Exploding(FakeExecutor):
+        def __init__(self, bad, exc=None):
+            super().__init__(outcomes={"output_type_pdf": (True, "text_90")})
+            self.bad = bad
+            self.exc = exc or OSError("connection reset by peer")
+
+        @contextlib.contextmanager
+        def document(self, document):
+            if document.sha256.startswith(self.bad):
+                raise self.exc
+            yield "/scratch/work"
+
+    def test_the_rest_of_the_plan_is_still_attempted(self):
+        conn = FakeConn([doc(sha="aa" * 32), doc(sha="bb" * 32)])
+        executor = self.Exploding("aa")
+        code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed",
+                                          "--exec", "docker", "--apply"],
+                                   executor=executor)
+        self.assertIn("NOT attempted: OSError", out)
+        # The second document ran its ladder and was recorded.
+        self.assertEqual(executor.calls, ["output_type_pdf"])
+        self.assertEqual([u[2] for u in conn.updates], ["bb" * 32])
+        self.assertEqual(conn.updates[0][0], rescue.RESCUED_STATUS)
+        self.assertIn("not attempted 1", out)
+        self.assertEqual(code, 1)
+
+    def test_a_faulted_document_is_not_classified_from_its_exception(self):
+        # It is left at 'error' rather than recorded 'unrescuable': the
+        # ladder never ran, so nothing was learned about the document.
+        conn = FakeConn([doc(sha="aa" * 32)])
+        code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed",
+                                          "--exec", "docker", "--apply"],
+                                   executor=self.Exploding("aa"))
+        self.assertEqual(conn.updates, [])
+        self.assertIn("left at status='error'", out)
+        self.assertEqual(code, 1)
+
+    def test_the_exception_text_is_slugged_like_every_other_reason(self):
+        # It is only printed, never written, but e9c662a is why nothing in
+        # this tool prints a raw traceback fragment either.
+        boom = RuntimeError("Traceback (most recent call last):\n  File "
+                            '"/x.py", line 1')
+        conn = FakeConn([doc(sha="aa" * 32)])
+        _code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed",
+                                           "--exec", "docker", "--apply"],
+                                    executor=self.Exploding("aa", boom))
+        line = [ln for ln in out.splitlines() if "NOT attempted" in ln][0]
+        self.assertNotIn('File "', line)
+        self.assertIn("RuntimeError", line)
+
+    def test_every_document_faulting_still_terminates_the_run(self):
+        conn = FakeConn([doc(sha=c * 32) for c in ("aa", "ab", "ac")])
+        code, out, _err = run_main(conn, ["--dsn", "x", "--all-failed",
+                                          "--exec", "docker", "--apply"],
+                                   executor=self.Exploding("a"))
+        self.assertEqual(code, 1)
+        self.assertEqual(out.count("NOT attempted"), 3)
+        self.assertEqual(conn.updates, [])
+
+
+class SidecarTextTests(unittest.TestCase):
+    """'[OCR skipped on page N]' is ocrmypdf's note, not recovered text.
+
+    ocrmypdf writes one such line per page it did not OCR. At ~23 characters
+    a line they clear MIN_RESCUE_CHARS (20) on their own, and the rung most
+    likely to produce them is --skip-big, whose entire purpose is to abandon
+    an unreadable page -- so the ladder could record 'rescued', and
+    ws13_enqueue.py could requeue, a document with no recovered text at all.
+    """
+
+    def sidecar(self, text):
+        with tempfile.TemporaryDirectory() as work:
+            path = os.path.join(work, "out.txt")
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(text)
+            return rescue.sidecar_chars(path)
+
+    def test_a_sidecar_of_placeholders_alone_counts_as_no_text(self):
+        text = "\n".join(f"[OCR skipped on page {n}]" for n in range(1, 9))
+        got = self.sidecar(text)
+        self.assertEqual(got.chars, 0)
+        self.assertEqual(got.skipped, 8)
+        self.assertLess(got.chars, rescue.MIN_RESCUE_CHARS)
+
+    def test_real_text_is_counted_and_the_placeholders_are_not(self):
+        got = self.sidecar("[OCR skipped on page 1]\nLAVA CREEK DISTRICT\n"
+                           "[OCR skipped on page 2]\n")
+        self.assertEqual(got.chars, len("LAVACREEKDISTRICT"))
+        self.assertEqual(got.skipped, 2)
+
+    def test_a_placeholder_never_fuses_the_words_around_it(self):
+        got = self.sidecar("assay[OCR skipped on page 3]results")
+        self.assertEqual(got.chars, len("assayresults"))
+
+    def test_a_missing_sidecar_is_zero_characters_not_an_error(self):
+        with tempfile.TemporaryDirectory() as work:
+            got = rescue.sidecar_chars(os.path.join(work, "absent.txt"))
+        self.assertEqual((got.chars, got.skipped), (0, 0))
+
+    def test_the_pattern_matches_the_spacing_ocrmypdf_actually_writes(self):
+        for line in ("[OCR skipped on page 1]", "[OCR skipped on page  17]",
+                     "[ocr skipped on page 4]"):
+            with self.subTest(line=line):
+                self.assertEqual(self.sidecar(line).skipped, 1)
+
+
+class DockerAttemptVerdictTests(unittest.TestCase):
+    """The verdict DockerExecutor.attempt() reaches on one rung's output."""
+
+    def executor(self, sidecar_text, min_chars=rescue.MIN_RESCUE_CHARS):
+        # Built without __init__ so the real ws13_worker -- which needs the
+        # worker's whole environment and three boto3 clients at import time
+        # -- is not required to test the verdict. The stub writes the two
+        # files a successful ocrmypdf leaves behind, because attempt() clears
+        # them first: a stale sidecar from an earlier rung would otherwise be
+        # measured as this rung's text.
+        def fake_docker(argv, work, timeout=None, entrypoint=None):
+            with open(os.path.join(work, "out.pdf"), "wb") as handle:
+                handle.write(b"%PDF-1.7\n")
+            with open(os.path.join(work, "out.txt"), "w",
+                      encoding="utf-8") as handle:
+                handle.write(sidecar_text)
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        ex = rescue.DockerExecutor.__new__(rescue.DockerExecutor)
+        ex.args = types.SimpleNamespace(min_chars=min_chars,
+                                        work_dir="/scratch")
+        ex.worker = types.SimpleNamespace(docker=fake_docker)
+        return ex
+
+    def attempt_on(self, sidecar_text, remedy=None):
+        with tempfile.TemporaryDirectory() as work:
+            return self.executor(sidecar_text).attempt(
+                doc(), work, remedy or rescue.R_SKIP_BIG)
+
+    def test_a_skip_big_rung_that_skipped_everything_is_not_a_rescue(self):
+        text = "\n".join(f"[OCR skipped on page {n}]" for n in range(1, 13))
+        got = self.attempt_on(text)
+        self.assertFalse(got.ok)
+        self.assertIn("empty_text_0_chars", got.detail)
+        self.assertIn("12_pages_skipped", got.detail)
+
+    def test_a_rung_that_recovered_text_reports_what_it_skipped_too(self):
+        got = self.attempt_on("[OCR skipped on page 1]\n" + "ore " * 40)
+        self.assertTrue(got.ok)
+        self.assertIn("_1_pages_skipped", got.detail)
+        self.assertIn("text_120_chars", got.detail)
+
+    def test_a_clean_rung_says_nothing_about_skipped_pages(self):
+        got = self.attempt_on("ore " * 40)
+        self.assertTrue(got.ok)
+        self.assertEqual(got.detail, "text_120_chars")
+
+    def test_the_detail_survives_the_trail_as_one_token(self):
+        got = self.attempt_on(
+            "\n".join(f"[OCR skipped on page {n}]" for n in range(1, 4)))
+        trail = rescue.trail([got])
+        self.assertTrue(SLUG.fullmatch(trail.split("=")[1]))
+        self.assertIn("3_pages_skipped", trail)
 
 
 class SelectorBoundsTest(unittest.TestCase):

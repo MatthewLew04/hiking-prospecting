@@ -95,7 +95,8 @@ def main() -> int:
         print('\nUnreviewed unittest skips are forbidden:', file=sys.stderr)
         for test_id, reason in result.unreviewed_skips:
             print(f'  {test_id}: {reason}', file=sys.stderr)
-    reviewed = len(result.skipped) - len(result.optional_validator_skips)
+    reviewed = (len(result.skipped) - len(result.optional_validator_skips)
+                - len(result.unreviewed_skips))
     print(f'Reviewed source-cache skips: {reviewed}; '
           f'optional cross-validator skips: '
           f'{len(result.optional_validator_skips)}; '

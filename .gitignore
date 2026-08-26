@@ -23,6 +23,15 @@ nw-mineral-monitor/test-results/
 # WS12 durable crawl queues, private manifests/OCR indexes, and spatial stores.
 # Public metadata-only dashboard exports live under site/data/docs instead.
 nw-mineral-monitor/var/ws12/
+# var/ is where every build and status tool writes: the Lambda zip, the fleet
+# bundle (tools/build_ws13_bundle.py, which is byte-reproducible from the
+# sources, so the artifact is derivable and the checkout stays the record),
+# and tools/ws13_status.sh's dump, which is a DATED snapshot of live AWS. That
+# last one is the reason this is a directory rule rather than a list of
+# suffixes: a committed status file is a number with no provenance mark, and
+# this project has already shipped a stale "17 failed documents" from exactly
+# such a file when the live count was 6.
+nw-mineral-monitor/var/
 # Defense in depth: the complete document manifest contains private object
 # keys and citation excerpts and must never enter the public site/repository.
 nw-mineral-monitor/site/data/docs/manifest.json

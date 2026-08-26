@@ -145,6 +145,113 @@ else has.
 - The embedding backfill was left **running** (pid 255517 at the time). Phase A pauses it;
   that has not happened.
 
+## Per-page confidence: a two-phase pass
+
+`ws13_pages.confidence` is NULL for all 760,059 rows because `pdftoppm` is not on `$PATH` in
+the ocrmypdf image and every render exited 127. Two corrections to how that gets fixed:
+
+**The scope is 323,059 pages, not 760,043.** The other 437,000 pages belong to born-digital
+documents carrying a publisher text layer; there is no OCR confidence to measure on them.
+
+**Measuring and re-OCRing are different operations.** Measuring writes `ws13_pages` and
+nothing else. Replacing OCR text changes `ws13_chunks.text`, which forces re-chunking, which
+forces re-embedding through Titan, which invalidates those `ws13_chunks_titan_hnsw` entries.
+So: measure everything first, then re-OCR only what measures weak — and that set is
+unknowable until the measurement has run.
+
+### Phase 1 — measure (`pipelines/ws13_confidence_pass.py`)
+
+Renders each page of the stored `searchable.pdf` at 150 dpi and scores it with a tesseract
+TSV. Tesseract rather than a "better" engine on purpose: the number being produced *is* a
+tesseract word-confidence, and `CONF_THRESHOLD` 60 / `ESCALATE_THRESHOLD` 45 in
+`ws13_worker.py` are calibrated to that scale. A different engine would produce a
+differently-scaled score *and* replace the text, triggering the cascade above.
+
+Cost is dominated by `docker run`, not by OCR. The real work is ~1.2 s/page; container
+startup against the ocrmypdf image is 1.5–3 s. One container per **document** rather than two
+per **page** takes launches from ~646,000 to ~28,988. At a ~1.6 s/page seed — which `--plan`
+replaces with a rate the fleet actually measures, and no fleet size should be chosen off the
+seed — that is ~144 core-hours.
+
+**A shard cannot be split below one document, and that governs the sizing.** Measured skew of
+the worst shard against the mean, over the real page distribution:
+
+| Shards | Hash worst/mean | Size-ordered worst/mean | Wall clock | Efficiency |
+|---|---|---|---|---|
+| 64 | 1.44× | 1.23× | 2.76 h | 81% |
+| **128** | **1.56×** | **1.47×** | **1.65 h** | **68%** |
+| 320 | 2.93× | 2.23× | 1.00 h | 45% |
+| 640 | 4.01× | 3.53× | 0.79 h | 28% |
+
+Wall clock is set by the **worst** shard, not the mean, so cost is *not* flat in fleet size —
+an earlier draft of this document said it was, and that was wrong. At 640 shards a single
+1,407-page document is 2.8× the 505-page mean on its own, and no document-granular assignment
+can fix that; ordering by page count and dealing round robin (deterministic on every node, no
+coordination) recovers only 1.05–1.31×.
+
+So 40 nodes costs ~$18.41 to finish in 0.79 h at 28% efficiency, against ~$7.68 in 1.65 h at
+68% for 8 nodes. **Recommended: one `c7g.16xlarge`, 64 processes, ~2.76 h, ~$6.41 at 81%
+efficiency** — the cheapest option, and it needs no cross-node shard assignment at all because
+the shard index is just the local process index. `FleetMode: confidence` on the ASG exists but
+carries three unresolved blockers in its slot-claim protocol (see below); it is not the
+recommended path for this pass.
+
+Stop the Cohere backfill first either way — it contends on the same 2-vCPU `db.m7g.large`.
+
+### Phase 2 — re-OCR only the weak tail
+
+Sized only after Phase 1. If it lands near the lexical proxy's 14%, that is ~45,000 pages:
+
+- **Tesseract tier-1 escalation** (`--oversample 400 --clean-final`) — already coded, free
+- **AWS Textract `DetectDocumentText`** — native per-word confidence, no fleet, ~$68 for 45k
+- **PaddleOCR PP-OCRv5 on CPU** — better on degraded scans, 3–5× slower
+- GPU engines are effectively out: the G/VT quota is 8 vCPU (one `g5.2xlarge`) and all GPU
+  spot quota is 0
+
+Whatever is chosen, Phase 2 re-chunks and re-embeds what it touches. Plan that; do not
+stumble into it.
+
+### `FleetMode: confidence` — built, not recommended, three blockers open
+
+`infra/ws13_fleet.yaml` gained a `FleetMode` parameter that lets the existing ASG run the
+confidence pass. It works by having each node claim one of `ConfidenceNodeSlots` slots through
+an S3 object, deriving its shard indices from the slot. Review found three blockers in that
+protocol, and they are inherent to inventing ordinals for an ASG rather than incidental:
+
+1. A replacement for a hard-dead node arrives long before `ClaimStaleSeconds`, finds no free
+   slot, and retires **with** `--should-decrement-desired-capacity` — permanently removing the
+   only capacity that could ever reclaim the dead node's shard.
+2. Exit status 1 is overloaded: it is both the pass's deliberate "this shard has work left"
+   and CPython's status for any uncaught exception. The sweep loop treats both as "sweep
+   again", with no backoff, for the full 24 h ceiling.
+3. Nothing asserts every slot reached `complete`. Once the group decrements to zero, "run
+   finished" and "run finished with slots nobody ever claimed" are the same observable — which
+   is the same class of silent-hole defect as the rc=127 this whole pass exists to repair.
+
+Since the efficient shard count is 64–128 and a single `c7g.16xlarge` supplies 64 with no
+coordination at all, the simplest fix is not to use this path for this pass. Fix the three
+blockers before `FleetMode: confidence` is used, or drive the pass from SQS the way the OCR
+worker already is, which supplies at-least-once delivery and retry without a bespoke claim
+protocol.
+
+## Failed documents (`pipelines/ws13_rescue.py`)
+
+Six `error` and one stuck `running`, all `ocr_queue`, all with `pages=NULL` and no
+`ws13_documents` row — they contributed no text at all. The handoff called them
+509-megapixel map plates needing reclassification; the recorded reasons say otherwise:
+
+| Recorded | Count | Meaning | Remedy |
+|---|---|---|---|
+| `ocr_exit_4` | 5 | `INVALID_OUTPUT_PDF` — OCR ran, PDF/A validation failed | `--output-type pdf`, skipping PDF/A entirely |
+| `ocr_exit_7` | 2 | `CHILD_PROCESS_ERROR` — tesseract crashed or was killed | larger `--tesseract-timeout`, then page-seg alternatives, then skip the page |
+
+Two of those also report `invalid jpeg data reading stream`, where no OCR setting helps and
+the input must be repaired first (`qpdf --decode-level=all`, then a ghostscript rewrite). The
+rescue tool classifies on the recorded exit code and escalates a remedy ladder, defaults to
+`--dry-run`, ends a document that exhausts the ladder in a terminal state with a *classified*
+reason rather than a traceback fragment, and re-enters rescued documents through
+`ws13_enqueue.py` so there is one indexing path rather than two.
+
 ## Operator sequence
 
 Everything below is opt-in. Run it in this order. Steps 1 and 2 are done.

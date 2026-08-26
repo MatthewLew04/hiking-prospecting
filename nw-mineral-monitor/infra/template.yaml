@@ -849,6 +849,23 @@ Resources:
                 Resource:
                   - !Sub '${SiteBucket.Arn}/private/ws12/document-store-manifest.json'
                   - !Sub '${SiteBucket.Arn}/docs/*'
+                  # The two shapes the WS13 resolver in infra/docs_lambda.py
+                  # signs, and nothing else. An OCR'd document is served from
+                  # its searchable copy; a born-digital one is served from the
+                  # ORIGINAL, because its publisher text layer is already there
+                  # and because admission_class is GENERATED ALWAYS AS
+                  # (split_part(s3_key,'/',2)), so the ws12/{class}/ prefix is
+                  # the rights signal a copy under ws13/ would lose.
+                  # The three classes are named individually rather than as
+                  # ws12/*: that prefix also holds ws12/deploy/
+                  # document-index.sqlite3, a build artefact this role has no
+                  # business reading. The searchable entry ends in the PDF so
+                  # the sidecar.txt written beside it stays unsignable — it is
+                  # extracted text, never a page image.
+                  - !Sub '${SiteBucket.Arn}/ws13/searchable/*/*/searchable.pdf'
+                  - !Sub '${SiteBucket.Arn}/ws12/originals/*.pdf'
+                  - !Sub '${SiteBucket.Arn}/ws12/licensed-copies/*.pdf'
+                  - !Sub '${SiteBucket.Arn}/ws12/research-copies/*.pdf'
 
   DocsFunction:
     Type: AWS::Lambda::Function

@@ -58,7 +58,14 @@ import boto3
 DEFAULT_INSTANCE = 'i-0818521a8b3ff7c90'
 DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION', 'us-west-2')
 DOCUMENT = 'AWS-RunShellScript'
-SECRET_ID = 'ws13/postgres-7wq3XL'
+# The secret NAME, not the ARN. 'ws13/postgres-7wq3XL' -- the form the
+# original handoff prescribed and both of these copied -- appends the ARN's
+# random suffix to the name and is AccessDenied against the fleet role,
+# whose policy grants GetSecretValue on the secret's own ARN. It never
+# worked; it was simply never reached, because the fallback only runs once
+# the backfill process is gone and there is no DSN left to borrow. That
+# process has now exited, so this path is the only one there is.
+SECRET_ID = 'ws13/postgres'
 DB_INSTANCE = 'nwmm-ws13'
 DB_STACK = 'ws13-dataplane'
 DB_NAME = 'nwmm'
@@ -126,6 +133,17 @@ def _aws(*args):
     return value
 
 
+# Last resort, and in practice the only one that answers. The fleet role can
+# call neither rds:DescribeDBInstances nor cloudformation:DescribeStacks, so
+# both discovery paths below return None and the fallback died at
+# 'cannot resolve the db endpoint' -- one step past the secret it had just
+# successfully read. The endpoint is stable and public (the instance is not:
+# PubliclyAccessible=false, and the only ingress is tcp/5432 from
+# sg-0a0594b37a7d3087d), so naming it here costs nothing and makes the
+# documented recovery path actually complete.
+DEFAULT_DB_HOST = 'nwmm-ws13.cdso6e0me8he.us-west-2.rds.amazonaws.com'
+
+
 def _db_endpoint():
     return (os.environ.get('WS13_DB_HOST')
             or _aws('rds', 'describe-db-instances',
@@ -135,7 +153,8 @@ def _db_endpoint():
             or _aws('cloudformation', 'describe-stacks',
                     '--stack-name', _DB_STACK, '--query',
                     "Stacks[0].Outputs[?OutputKey=='DbEndpoint'].OutputValue|[0]",
-                    '--output', 'text'))
+                    '--output', 'text')
+            or DEFAULT_DB_HOST)
 
 
 def _dsn_from_secret():

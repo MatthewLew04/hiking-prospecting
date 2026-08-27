@@ -132,7 +132,14 @@ STATEMENT_TIMEOUT_MS = 60000
 # That scan is not the failure this gate is about; a scan of the 852,027-row
 # chunk table is, whatever else the plan does.
 FILTERED_SEQ_SCAN_OK = ('ws13_documents',)
-SECRET_ID = 'ws13/postgres-7wq3XL'
+# The secret NAME, not the ARN. 'ws13/postgres-7wq3XL' -- the form the
+# original handoff prescribed and both of these copied -- appends the ARN's
+# random suffix to the name and is AccessDenied against the fleet role,
+# whose policy grants GetSecretValue on the secret's own ARN. It never
+# worked; it was simply never reached, because the fallback only runs once
+# the backfill process is gone and there is no DSN left to borrow. That
+# process has now exited, so this path is the only one there is.
+SECRET_ID = 'ws13/postgres'
 DB_NAME = 'nwmm'
 DB_PORT = 5432
 EXIT_OK = 0

@@ -171,17 +171,37 @@ Two more operations, making four in total.
     already orphaned, so no shell can walk on to a shutdown line"`. The trap the runbook warns
     about did not apply, because the backfill had already been reparented to init. The tool
     determined that itself rather than being told.
-  - The index build ran with `maintenance_work_mem=3GB`,
-    `max_parallel_maintenance_workers=2`, `statement_timeout=0` over 848,032 estimated rows,
-    against `db.m7g.large` (2 vCPU / 8 GB) holding a steady 5.05 GB FreeableMemory and 2
-    connections beforehand.
+  - **The index is built and usable.** `create_seconds` **626.3**, `analyze_seconds` **49.3**,
+    **2.15 GiB**, `valid=true`, over 848,032 rows with `maintenance_work_mem=3GB`,
+    `max_parallel_maintenance_workers=2`, `statement_timeout=0`, against `db.m7g.large`
+    (2 vCPU / 8 GB) holding a steady 5.05 GB FreeableMemory and 2 connections beforehand.
+  - **`verify` passed**: `index_exists`, `index_usable`, `problems: []`, and all **4** probe
+    shapes plan through `ws13_chunks_titan_hnsw` at `ef_search=200` — including the filtered
+    `state=ID` shape, which flattens to a nested loop over the semi-join and is the shape that
+    can silently lose the index.
+  - **`measure`**, read against the 30 s API Gateway deadline, not the Lambda's 60 s:
 
-**Run it detached.** `AWS-RunShellScript` defaults to a 3600 s `executionTimeout`, and an HNSW
-build over 852,027 × 1024-dim vectors on 2 vCPU runs longer than that. A synchronous SSM
-invocation would be killed at the hour, the client connection would drop, Postgres would
-cancel the `CREATE INDEX`, and the whole run would be lost to a timeout that has nothing to do
-with the database. `nohup setsid … &` and poll the log — which is also why the backfill it
-replaces was already orphaned to init.
+    | `ef_search` | p50 | p95 | max |
+    |---|---|---|---|
+    | 40 | 51.5 ms | 57.9 ms | 57.9 ms |
+    | 100 | 79.8 ms | 87.6 ms | 89.0 ms |
+    | 200 | 127.1 ms | 137.6 ms | 139.1 ms |
+
+    All three leave the lexical arm, RRF and citation assembly comfortable room inside 30 s.
+
+**It does not run for hours.** The code said so in three places and printed it to the operator;
+the first real run took **626.3 s**. A hardcoded guess, wrong by roughly 20×, in front of
+someone deciding whether to keep a terminal open. Corrected to the measurement and the hardware
+it was taken on — and note the reason `statement_timeout=0` matters was never the duration, it
+is that a build cut off partway leaves an INVALID index that this script deliberately will not
+drop.
+
+**Run it detached anyway.** `AWS-RunShellScript` defaults to a 3600 s `executionTimeout`. At
+626 s a synchronous invocation would in fact have fit — but nothing had measured that, the
+failure mode if it did not fit was losing the whole run (SSM kills the command, the client
+drops, Postgres cancels the `CREATE INDEX`), and the cost of detaching is one `nohup setsid`.
+Keep detaching: the measurement above is one run, at these settings, on this instance class,
+and a larger corpus or a smaller box moves it.
 
 ## Per-page confidence: a two-phase pass
 

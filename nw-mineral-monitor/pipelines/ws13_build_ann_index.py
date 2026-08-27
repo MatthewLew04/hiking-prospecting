@@ -103,9 +103,14 @@ SHUTDOWN_MARKER = 'shutdown -h now'
 BUILD_SETTINGS = (
     ('maintenance_work_mem', '3GB'),
     ('max_parallel_maintenance_workers', '2'),
-    # An 852,027-row HNSW build runs for hours. An inherited statement_timeout
-    # would abort it and leave an INVALID index behind, which is the one state
-    # this script refuses to clean up on its own.
+    # An inherited statement_timeout would abort the build and leave an
+    # INVALID index behind, which is the one state this script refuses to
+    # clean up on its own. Measured 2026-08-27: 626.3 s to build plus 49.3 s
+    # to ANALYZE, over 848,032 rows on db.m7g.large (2 vCPU / 8 GB) at these
+    # settings. That is well inside any timeout anyone would set -- but the
+    # reason to pin it to 0 was never the duration, it was that a build cut
+    # off partway leaves an index nothing can use and this script will not
+    # drop.
     ('statement_timeout', '0'),
 )
 EF_LADDER = (40, 100, 200)
@@ -121,7 +126,7 @@ LAMBDA_TIMEOUT_S = 60
 # one it was watching for, and 60 s is already twice the API Gateway deadline
 # every measurement below is read against: a statement that needs longer has
 # failed whatever the plan says. --build sets its own statement_timeout = 0,
-# because an 852,027-row HNSW build legitimately runs for hours.
+# because a build that is cut off partway leaves an INVALID index behind.
 STATEMENT_TIMEOUT_MS = 60000
 # The EXISTS side of a filtered probe reads ws13_documents (56,282 rows).
 # That scan is not the failure this gate is about; a scan of the 852,027-row
@@ -634,8 +639,14 @@ def build_index(conn, consts, execute):
     for name, value in BUILD_SETTINGS:
         applied = set_config(conn, name, value)
         log(f'set {name} = {applied}')
+    # No duration promised here. This said "this runs for hours" until the
+    # first real run took 626.3 s -- a hardcoded guess, wrong by ~20x, printed
+    # to an operator deciding whether to keep a terminal open. The measured
+    # figure lives beside BUILD_SETTINGS with the hardware it was measured on;
+    # a line printed before the work starts is the wrong place to assert how
+    # long the work takes.
     log(f'creating {consts["INDEX_NAME"]} over '
-        f'{result["estimated_rows"]} estimated rows; this runs for hours')
+        f'{result["estimated_rows"]} estimated rows')
     started = time.perf_counter()
     conn.execute(consts['CREATE_INDEX_SQL'])
     result['create_seconds'] = round(time.perf_counter() - started, 1)

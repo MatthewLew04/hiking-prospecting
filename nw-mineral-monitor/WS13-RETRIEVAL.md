@@ -5,9 +5,14 @@ Postgres while the ASK Lambda served a 3.2 MB SQLite file holding two documents.
 document records what is now in the repository, what has to be run against live AWS to
 activate it, and what is deliberately still open.
 
-Two steps HAVE been executed against production — the schema migrations and the provenance
-backfill, recorded below. Everything else is a command for an operator to run deliberately;
-the code is written, tested offline, and shipped dark.
+Four steps HAVE been executed against production — the schema migrations and the provenance
+backfill on 2026-08-25, then the worker-bundle upload and Phase A on 2026-08-27, all recorded
+below. Everything else is a command for an operator to run deliberately; the code is written,
+tested offline, and shipped dark.
+
+This count is the first thing to update when something is run. It has been wrong once already
+— it said "nothing has been executed against production" for a day after the migrations ran,
+twenty lines above the section recording them.
 
 ## State verified against AWS on 2026-08-25 (read-only)
 
@@ -145,8 +150,38 @@ else has.
 - `ws13_reader` is still **NOLOGIN**. It needs
   `ws13_migrate.py --apply --reader-secret-arn ...` on the in-VPC host before the retrieval
   Lambda can connect — deliberately deferred until that stack is deployed.
-- The embedding backfill was left **running** (pid 255517 at the time). Phase A pauses it;
-  that has not happened.
+- The embedding backfill was left **running** (pid 255517). Phase A pauses it — see below;
+  on 2026-08-27 that happened.
+
+## Applied to production on 2026-08-27
+
+Two more operations, making four in total.
+
+- **The worker bundle was rebuilt and uploaded.** `sha256
+  d9da7a342a405c8192938397bc08fef725d9b819690ce92665a623cbcb63b81d`, 21 members, 198,650
+  bytes, downloaded back out of S3 and re-verified against these sources. What it replaced
+  held **3 of 21 files** — recorded in step 0 above.
+- **Phase A was run**, detached, on `i-0818521a8b3ff7c90`:
+  `ws13_build_ann_index.py --pause-backfill --build --verify --measure --yes`.
+  - The backfill is **stopped**: `SIGTERM → 255517`, confirmed gone. Which also stops Cohere,
+    deliberately — that is the recorded decision, and pausing the process is the only clean
+    control because the Cohere thread resets its own budget file at UTC midnight.
+  - The parent check that this step exists to perform **passed cleanly and is worth
+    recording**: `parent_kind: orphaned`, `ppid 1`, `reason: "parent is PID 1: the process is
+    already orphaned, so no shell can walk on to a shutdown line"`. The trap the runbook warns
+    about did not apply, because the backfill had already been reparented to init. The tool
+    determined that itself rather than being told.
+  - The index build ran with `maintenance_work_mem=3GB`,
+    `max_parallel_maintenance_workers=2`, `statement_timeout=0` over 848,032 estimated rows,
+    against `db.m7g.large` (2 vCPU / 8 GB) holding a steady 5.05 GB FreeableMemory and 2
+    connections beforehand.
+
+**Run it detached.** `AWS-RunShellScript` defaults to a 3600 s `executionTimeout`, and an HNSW
+build over 852,027 × 1024-dim vectors on 2 vCPU runs longer than that. A synchronous SSM
+invocation would be killed at the hour, the client connection would drop, Postgres would
+cancel the `CREATE INDEX`, and the whole run would be lost to a timeout that has nothing to do
+with the database. `nohup setsid … &` and poll the log — which is also why the backfill it
+replaces was already orphaned to init.
 
 ## Per-page confidence: a two-phase pass
 

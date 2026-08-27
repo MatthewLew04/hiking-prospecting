@@ -24,6 +24,7 @@ list against THESE sources.
 from __future__ import annotations
 
 import ast
+import contextlib
 import gzip
 import hashlib
 import io
@@ -281,14 +282,79 @@ class VerifyTests(unittest.TestCase):
     def test_a_missing_archive_is_reported_not_raised(self):
         self.assertEqual(bundle.verify(self.tmp / "absent.tar.gz"), 2)
 
+    def hand_built(self, names, prefix="./", apple_double=False):
+        """An archive the way macOS `tar czf` writes one, for these tests."""
+        out = io.BytesIO()
+        with tarfile.open(fileobj=out, mode="w") as tar:
+            for name in names:
+                data = (ROOT / dict(
+                    (n, r) for n, r, _w in bundle.MEMBERS)[name]).read_bytes()
+                info = tarfile.TarInfo(prefix + name)
+                info.size = len(data)
+                tar.addfile(info, io.BytesIO(data))
+                if apple_double:
+                    fork = tarfile.TarInfo(f"{prefix}._{name}")
+                    fork.size = 4
+                    tar.addfile(fork, io.BytesIO(b"junk"))
+        path = self.tmp / "hand.tar.gz"
+        path.write_bytes(gzip.compress(out.getvalue(), mtime=0))
+        return path
+
+    def test_a_dot_slash_archive_is_compared_by_content_not_spelling(self):
+        """`tar czf` writes './x'; this builder writes 'x'.
+
+        They extract to the same path. Comparing the spellings reported every
+        member of the live hand-built bundle as BOTH missing and unexpected --
+        42 lines of noise over the one fact that mattered, which was that only
+        3 of 21 files were in it.
+        """
+        every = [name for name, _r, _w in bundle.MEMBERS]
+        path = self.hand_built(every)
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            status = bundle.verify(path)
+        printed = buffer.getvalue()
+        # Only the manifest is genuinely absent; no member may be called
+        # missing purely because of its './' prefix.
+        for name in every:
+            self.assertNotIn(f"{name}: missing", printed)
+            self.assertNotIn(f"./{name}: in the archive", printed)
+        self.assertIn(f"{bundle.MANIFEST_NAME}: missing", printed)
+        self.assertEqual(status, 1)
+
+    def test_apple_double_forks_are_named_as_a_mac_hand_build(self):
+        # The live bundle carried three of these. They extract onto the node
+        # as dot-files beside the code, and they are the fingerprint of a
+        # hand-build rather than an unexplained extra member.
+        path = self.hand_built(["ws13_seed.py"], apple_double=True)
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            bundle.verify(path)
+        printed = buffer.getvalue()
+        self.assertIn("AppleDouble", printed)
+        self.assertIn("COPYFILE_DISABLE", printed)
+        self.assertNotIn("._ws13_seed.py: in the archive but not", printed)
+
+    def test_a_fork_is_never_counted_as_a_member(self):
+        path = self.hand_built(["ws13_seed.py"], apple_double=True)
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            bundle.verify(path)
+        self.assertIn("1 member(s)", buffer.getvalue())
+
 
 class UploadTests(unittest.TestCase):
     def test_the_builder_has_no_s3_write_path(self):
         """--upload prints a command; it must not be able to run one.
 
-        The permission classifier refuses S3 writes to this bucket. A builder
-        that grew an upload call would be working around that control rather
-        than reporting it, so the absence is asserted rather than trusted.
+        Not because the bucket is unwritable -- it is writable with the
+        project credentials, and the 2026-08-27 bundle was published by hand
+        from the line --upload prints. Building and publishing are different
+        decisions, and --verify and the digest sit between them; a builder
+        that uploaded on success would run both only after the fleet could
+        already download the result. The absence is asserted rather than
+        trusted because that separation is easy to erode one convenience flag
+        at a time.
 
         Parsed, not grepped, for the same reason the builder parses its
         members: this file's own prose says the words "boto3" and "upload"

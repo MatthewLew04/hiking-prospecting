@@ -401,10 +401,25 @@ sources build? And it carries `bundle_manifest.json`, a sha256 per member, which
 the code: `cat /opt/ws13/bundle_manifest.json` on a node says which bundle that node is
 running, instead of inferring it from a `LaunchTime`.
 
-The **upload is a human step**. The builder has no S3 write path at all — no `boto3`, no
-`subprocess`, asserted by test — because the local permission classifier refuses writes to this
-bucket, and a builder that retried around that refusal would be defeating the control rather
-than reporting it. It prints the `aws s3 cp` line; run that yourself.
+The **upload is a separate step**. The builder has no S3 write path at all — no `boto3`, no
+`subprocess`, asserted by test — but not because the bucket is unwritable. It is writable with
+the project credentials, and this is where an earlier draft of this section was wrong: it said
+the local permission classifier refused the write, a claim carried over from the handoff and
+never tested. The real reason is that building and publishing are different decisions, with
+`--verify` and the digest sitting between them; a builder that uploaded on success would run
+both checks only after the fleet could already download the result. It prints the `aws s3 cp`
+line; run that deliberately.
+
+**Done on 2026-08-27.** `sha256 d9da7a342a405c8192938397bc08fef725d9b819690ce92665a623cbcb63b81d`,
+21 members, 198,650 bytes, round-tripped out of S3 and re-verified against these sources.
+
+What it replaced is worth recording, because it was worse than "stale": the object in S3 held
+**three** files — `ws13_seed.py`, `ws13_worker.py`, `ws13_enqueue.py`, all at their 2026-08-24
+sizes — plus three `._*` AppleDouble forks from a macOS `tar czf` run without
+`COPYFILE_DISABLE=1`. Eighteen members were absent, including the three `ws13_seed.py` imports
+and aborts by name without. So `FleetMode: ocr` would have died in the seeder before enqueuing
+anything, and `FleetMode: confidence` had no `ws13_confidence_pass.py` on the node at all —
+that mode has never once been able to run.
 
 **1. Migrations, on the in-VPC host** (`i-0818521a8b3ff7c90`):
 

@@ -43,10 +43,23 @@ diffing it, which from a laptop is not possible anyway: the fleet bucket is
 in an account this machine can read but must not write.
 
 WHAT THIS SCRIPT WILL NOT DO. It will not upload. --upload prints the exact
-`aws s3 cp` line and stops, because the local permission classifier refuses S3
-writes to this bucket and a script that retried around that refusal would be
-working around the control rather than reporting it. Hand the printed line to
-an operator.
+`aws s3 cp` line and stops.
+
+Not because it cannot: this bucket IS writable from a machine holding the
+project credentials, and the 2026-08-27 bundle was published exactly that way,
+by hand, from the line this prints. An earlier version of this comment claimed
+the local permission classifier refused the write, which was inherited from
+the handoff and never tested -- a restated claim, in a builder whose whole
+purpose is to stop restated claims, and it is corrected here rather than
+quietly deleted.
+
+The real reason is that BUILDING and PUBLISHING are different decisions and a
+build must not make the second one as a side effect of the first. Between them
+sit the two checks that make the artifact worth having: --verify against these
+sources, and reading the digest. A builder that uploaded on success would run
+both of those AFTER the fleet could already download the result. Publishing is
+one `aws s3 cp`, and it should be typed deliberately, by someone who has just
+looked at the digest.
 
     # build to var/, verify the closure, print the digest
     tools/build_ws13_bundle.py
@@ -420,12 +433,27 @@ def verify(path: Path) -> int:
         return 2
     try:
         with tarfile.open(path, 'r:gz') as tar:
-            found = {}
+            found, junk = {}, []
             for info in tar.getmembers():
                 if not info.isfile():
                     continue
+                # `tar czf` from a directory writes './name'; this builder
+                # writes 'name'. They extract to the same path, so comparing
+                # the spellings would report every member of a hand-built
+                # archive as both missing and unexpected -- 42 lines of noise
+                # over the one fact that matters, which is which files are
+                # actually in there.
+                name = info.name[2:] if info.name.startswith('./') else info.name
+                # AppleDouble resource forks. macOS tar emits one per file
+                # unless COPYFILE_DISABLE=1 is set, and they extract onto the
+                # node as dot-files beside the code. They are not members and
+                # never were; they are the fingerprint of a hand-build on a
+                # Mac, so they are named as that rather than as a mystery.
+                if os.path.basename(name).startswith('._'):
+                    junk.append(name)
+                    continue
                 handle = tar.extractfile(info)
-                found[info.name] = handle.read() if handle else b''
+                found[name] = handle.read() if handle else b''
     except (tarfile.TarError, OSError) as exc:
         print(f'{path}: not a readable tar.gz ({exc})', file=sys.stderr)
         return 2
@@ -437,6 +465,11 @@ def verify(path: Path) -> int:
         problems.append(f'{name}: missing from the archive')
     for name in sorted(set(found) - set(expected)):
         problems.append(f'{name}: in the archive but not in MEMBERS')
+    if junk:
+        problems.append(
+            f'{len(junk)} AppleDouble resource fork(s) ({", ".join(junk[:3])}'
+            f'{" ..." if len(junk) > 3 else ""}): this archive was built by '
+            f'hand with macOS tar and no COPYFILE_DISABLE=1')
     for name in sorted(set(found) & set(expected)):
         if found[name] != expected[name]:
             problems.append(
@@ -464,9 +497,10 @@ def parse_args(argv=None):
                         help=f'where to write the archive '
                              f'(default {DEFAULT_OUTPUT})')
     parser.add_argument('--upload', action='store_true',
-                        help='print the aws s3 cp line an operator must run. '
-                             'This script never uploads: the local permission '
-                             'classifier refuses S3 writes to this bucket')
+                        help='print the aws s3 cp line to run. This script '
+                             'never uploads: publishing is a separate '
+                             'decision from building, taken after reading '
+                             'the digest')
     parser.add_argument('--verify', metavar='ARCHIVE',
                         help='compare an existing archive against these '
                              'sources and exit non-zero on any difference')
@@ -517,11 +551,13 @@ def main(argv=None) -> int:
     if args.upload:
         print()
         print('--upload prints the command and stops. This script has no S3 '
-              'write path at all:')
-        print('the classifier refuses writes to this bucket, and a builder '
-              'that retried around')
-        print('that refusal would be defeating the control rather than '
-              'reporting it.')
+              'write path at all -- not')
+        print('because the bucket is unwritable (it is not), but because '
+              'building and publishing are')
+        print('different decisions. --verify and the digest above sit '
+              'between them, and a builder that')
+        print('uploaded on success would run both only after the fleet '
+              'could already download the result.')
     return 0
 
 

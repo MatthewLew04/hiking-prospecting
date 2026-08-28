@@ -504,6 +504,31 @@ invoke it with `{"op":"ping"}`. Expect a response in under 3 s.
 `tools/ws13_live_known_items.py --shadow`, then canary, then cutover. Rollback is flipping
 `WS13_RETRIEVAL_ENABLED` back to `false`.
 
+## Service limits nothing has accounted for
+
+Two defects of this shape have already been found the hard way — the fleet's rendered
+UserData at 29,739 bytes against EC2's 16,384, and this stack's `ReservedConcurrentExecutions`
+defaulting to 20 against an account ceiling of 10. Neither is a property of the code, so no
+test finds them; both make a template that cannot deploy at all. A scan of the rest turned up
+two more that are not yet written down anywhere.
+
+**Lambda concurrency is the real ceiling on database sessions, not `max_connections`.**
+The account's total `ConcurrentExecutions` is **10** (measured 2026-08-28), shared across the
+5 functions that already exist and the retrieval function once it deploys. Every sizing
+discussion so far bounded the retrieval Lambda's Postgres sessions against
+`max_connections = 832`, which is the wrong ceiling by two orders of magnitude. The binding
+constraint is 10 concurrent executions account-wide — and the ASK function holds a warm
+container while it downloads a 795 MB spatial SQLite, so a modest burst can exhaust it.
+Anything that assumes the retrieval path scales independently of the rest of the account is
+wrong. Raising the account limit is a support request, not a template change.
+
+**`ASG MaxSize 40 × 16 vCPU = 640` is exactly the On-Demand Standard quota, with no headroom.**
+The `t4g.small` backfill host consumes 2 of those, so while it is running the group tops out
+at 39 nodes and the 40th launch fails. Harmless in effect — but "scale to MaxSize" silently
+does not, and a run that quietly gets 39/40 shards of work assigned is the same silent-hole
+shape as everything else in this workstream. Either drop MaxSize to 39, or account for the
+backfill host explicitly.
+
 ## Deliberately not done
 
 - **The viewer opens a WS13 document; the map does not yet offer one.** `site/viewer.html`

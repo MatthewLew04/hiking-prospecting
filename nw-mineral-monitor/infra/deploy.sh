@@ -47,14 +47,31 @@ cleanup_release_allowlist() {
 }
 trap cleanup_release_allowlist EXIT
 
+# Finder writes .DS_Store (and ._* AppleDouble forks) into any folder it opens,
+# including site/.  The public-site validator rejects every hidden file, and it
+# is right to: .DS_Store leaks a directory listing if it reaches the bucket.
+# Rather than fail the deploy, remove exactly those two patterns, and say so.
+purge_finder_droppings() {
+  local found
+  found="$(find "$SITE" \( -name '.DS_Store' -o -name '._*' \) -type f -print 2>/dev/null || true)"
+  if [ -z "$found" ]; then
+    return 0
+  fi
+  echo "removing macOS Finder files from site/ before validation:"
+  echo "$found" | sed "s|^$SITE/|  |"
+  find "$SITE" \( -name '.DS_Store' -o -name '._*' \) -type f -delete 2>/dev/null || true
+}
+
 write_release_allowlist() {
   local output="$1"
+  purge_finder_droppings
   python3 "$RELEASE_ASSET_VALIDATOR" --site "$SITE" --format paths > "$output"
 }
 
 write_public_baseline_deployment() {
   local plan_output="$1"
   local manifest_output="$2"
+  purge_finder_droppings
   python3 "$PUBLIC_SITE_VALIDATOR" --site "$SITE" --format deployment \
     --manifest-output "$manifest_output" > "$plan_output"
 }

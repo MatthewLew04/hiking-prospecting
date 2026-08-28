@@ -6,13 +6,18 @@ External validators are used when present and skipped otherwise:
 * pyarrow                 — cross-checks every Parquet file we write;
 * the ``omf2`` wheel      — omf-rust's Python bindings, the reference OMF v2
                             reader (and its OMF v0.9 converter);
-* omf 1.0.1               — the reference OMF v0.9 reader, run through
-                            /tmp/omfenv/bin/python when that venv exists.
+* omf 1.0.1               — the reference OMF v0.9 reader, run through the
+                            interpreter tests/gm_ref.py points at when that
+                            venv exists.
+
+tools/fetch_gm_refs.py installs all of them; gm_ref is the only module that
+knows where they landed.
 """
 import sys, unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'pipelines'))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import gzip
 import io
@@ -34,12 +39,9 @@ from geomodel.formats.parquet_lite import Column, Group
 from geomodel.formats.omf1 import read_omf1, write_omf1
 from geomodel.formats.omf2 import read_omf2, write_omf2, convert_omf1_to_omf2
 
-REF = Path(os.environ.get('GEOMODEL_REF_DIR', '/home/claude/ref'))
-SAMPLE_V2 = REF / 'omf-rust-git' / 'tests' / 'one_of_everything.omf'
-if not SAMPLE_V2.exists():
-    SAMPLE_V2 = REF / 'omfrust' / 'one_of_everything.omf'
-SAMPLE_V09 = REF / 'test_v09.omf'
-OMF1_PYTHON = Path('/tmp/omfenv/bin/python')
+from gm_ref import REF, SAMPLE_V2, SAMPLE_V09, omf1_python   # noqa: E402
+
+OMF1_PYTHON = omf1_python()
 
 NAN = float('nan')
 

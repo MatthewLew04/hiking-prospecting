@@ -20,10 +20,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'pipelines'))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from geomodel.model import Grid2D, PointSet, BlockModel, LineSet, NAN   # noqa: E402
 from geomodel.formats import surfer, geosoft, arcascii, zmap, irap, ubc, cps3   # noqa: E402
 
-HARMONICA_REF = '/home/claude/ref/oasis_montaj_grd.py'
+from gm_ref import HARMONICA_REF as _HARMONICA_REF   # noqa: E402
+
+HARMONICA_REF = str(_HARMONICA_REF)
 
 
 # ----------------------------------------------------------------- helpers

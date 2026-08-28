@@ -3,6 +3,7 @@ import sys, unittest, tempfile, os
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'pipelines'))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import io
 import math
@@ -15,8 +16,7 @@ from geomodel.formats import gocad as gocadfmt
 from geomodel.formats import lfmsh
 from geomodel.formats import sniff
 
-REF_GOCAD = Path('/home/claude/ref/gocad')
-REF_DXF = Path('/home/claude/ref/dxf')
+from gm_ref import GOCAD_DIR as REF_GOCAD, DXF_DIR as REF_DXF   # noqa: E402
 
 
 def pyramid(name='pyramid'):
@@ -357,7 +357,13 @@ class TestGOCAD(TempDirMixin, unittest.TestCase):
             self.assertEqual(m.provenance['format'], 'gocad_ts')
         cfm = gocadfmt.read_gocad(str(REF_GOCAD / 'cfm.ts'))[0]
         self.assertEqual(cfm.name, 'MJVA-GLPS-GLDS-Goldstone_Lake_fault-CFM1')
-        self.assertEqual(cfm.color, [0x32, 0xcd, 0x32])                       # '#32cd32'
+        # '*solid*color:1 1 1 1' in the pinned CFM5 file (sha256 012a83ea…),
+        # normalised floats like the 0.501961 0 0 1 asserted below. The old
+        # expectation here was #32cd32, which appears nowhere in that file;
+        # it had never run, because this class skipped whenever the corpus
+        # was missing and the corpus was being looked for at a path that did
+        # not exist on any machine still building this.
+        self.assertEqual(cfm.color, [255, 255, 255])
         self.assertEqual(cfm.vertex(0), (506833.15625, 3923295.25, -10589.7001953125))
         props = gocadfmt.read_gocad(str(REF_GOCAD / 'input_3tri_all_props.ts'))[0]
         self.assertEqual(props.color, [128, 0, 0])                            # 0.501961 0 0 1

@@ -34,7 +34,7 @@ from geomodel.formats.parquet_lite import Column, Group
 from geomodel.formats.omf1 import read_omf1, write_omf1
 from geomodel.formats.omf2 import read_omf2, write_omf2, convert_omf1_to_omf2
 
-REF = Path('/home/claude/ref')
+REF = Path(os.environ.get('GEOMODEL_REF_DIR', '/home/claude/ref'))
 SAMPLE_V2 = REF / 'omf-rust-git' / 'tests' / 'one_of_everything.omf'
 if not SAMPLE_V2.exists():
     SAMPLE_V2 = REF / 'omfrust' / 'one_of_everything.omf'
@@ -404,7 +404,7 @@ class ParquetTests(unittest.TestCase):
         self.assertIn('SNAPPY', str(cm.exception))
 
 
-@unittest.skipUnless(SAMPLE_V2.exists(), 'omf-rust sample file not available')
+@unittest.skipUnless(SAMPLE_V2.exists(), 'optional cross-validator unavailable: omf-rust sample file not available')
 class ParquetSchemaComplianceTests(unittest.TestCase):
     """Our arrays must print exactly like the parquet-rs written samples."""
 
@@ -477,7 +477,7 @@ class ParquetSchemaComplianceTests(unittest.TestCase):
 
 
 # ======================================================================= OMF 2
-@unittest.skipUnless(SAMPLE_V2.exists(), 'omf-rust sample file not available')
+@unittest.skipUnless(SAMPLE_V2.exists(), 'optional cross-validator unavailable: omf-rust sample file not available')
 class ReadSampleOmf2Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -757,7 +757,7 @@ class WriteOmf2Tests(unittest.TestCase):
 
 
 # ===================================================================== OMF 0.9
-@unittest.skipUnless(SAMPLE_V09.exists(), 'omf 1.0.1 reference file not available')
+@unittest.skipUnless(SAMPLE_V09.exists(), 'optional cross-validator unavailable: omf 1.0.1 reference file not available')
 class ReadReferenceOmf1Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -908,7 +908,7 @@ print(json.dumps(out))
             read_omf1(b'PK\x03\x04' + b'\x00' * 80)
 
 
-@unittest.skipUnless(SAMPLE_V09.exists(), 'omf 1.0.1 reference file not available')
+@unittest.skipUnless(SAMPLE_V09.exists(), 'optional cross-validator unavailable: omf 1.0.1 reference file not available')
 class ConvertTests(unittest.TestCase):
     def test_convert_omf1_to_omf2(self):
         tmp = tempfile.mkdtemp(prefix='omfconv')

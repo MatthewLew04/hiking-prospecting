@@ -1,0 +1,26 @@
+# Reference implementations the geomodel format tests validate against.  These
+# are NOT runtime dependencies: pipelines/geomodel is pure standard library, and
+# that is the point -- every reader and writer here is checked against somebody
+# else's implementation of the same format.
+#
+#   pip install -r ci/requirements-crosscheck.txt
+#   python3 tools/fetch_gm_refs.py
+#
+# NumPy stays below 2 for the same reason as ci/requirements.txt (the reviewed
+# Shapely 2.0.3 wheel targets the NumPy 1.x ABI), and every pin below resolves
+# against it.  The reference OMF v0.9 writer (omf 1.0.1) is deliberately absent:
+# it pins old properties/vectormath releases, so tools/fetch_gm_refs.py gives it
+# a venv of its own instead of letting it near this interpreter.
+numpy==1.26.4
+
+rasterio==1.3.11        # GDAL, via its Python bindings: Surfer 6/7, ArcInfo ASCII, GXF, ZMAP grids
+ezdxf==1.3.5            # DXF R12 reader/writer cross-check
+trimesh==4.5.3          # OBJ triangle meshes
+segyio==1.9.13          # SEG-Y rev1 traces and binary headers
+lasio==0.31             # LAS 2.0 well logs
+xarray==2024.7.0        # needed by harmonica's Oasis montaj .grd reader (fetched as a single module)
+pyarrow==17.0.0         # OMF v2.0 Parquet payloads: schema strings and column values
+Pillow==10.4.0          # decodes the PNGs the JS harness encodes (tools/test_gm_formats.mjs)
+
+# omf2 (Seequent's omf-rust Python binding) is not on PyPI and is built from the
+# pinned omf-rust checkout: python3 tools/fetch_gm_refs.py --build-omf2 (needs cargo).

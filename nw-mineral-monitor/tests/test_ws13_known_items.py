@@ -32,8 +32,13 @@ tools/test_doc_viewer.js asserts) and the other 24 come from the live corpus
 via tools/ws13_gen_known_items.py. An incomplete set must NOT make this suite
 skip -- ci/run_tests.py rejects unreviewed skips, and a skip here would hide
 the shortfall instead of reporting it. So the integrity assertions run at any
-size, and require_complete() is a separate function the deploy preflight calls
-to demand all 25 verified items before cutover.
+size, and require_complete() is a separate function demanding all 25
+verified items before cutover. infra/deploy.sh's preflight calls it when, and
+only when, that deploy is the one setting WS13_RETRIEVAL_ENABLED=true -- a
+deploy that leaves the flag alone is not a cutover and is not blocked by an
+incomplete fixture. Until 2026-08-28 this docstring described a call that did
+not exist anywhere: the gate lived only in tools/ws13_live_known_items.py, so
+flipping the flag by any other route walked past it.
 """
 import hashlib
 import json
@@ -665,7 +670,12 @@ class SidecarDriftTest(unittest.TestCase):
 
 
 class CompletenessGateTest(unittest.TestCase):
-    """require_complete() is what the deploy preflight calls before cutover."""
+    """require_complete() is what gates a cutover.
+
+    infra/deploy.sh runs it from preflight when the deploy sets
+    WS13_RETRIEVAL_ENABLED=true, and tools/ws13_live_known_items.py runs it
+    before a certifying run.
+    """
 
     def test_it_reports_the_current_shortfall_honestly(self):
         fixture = load()

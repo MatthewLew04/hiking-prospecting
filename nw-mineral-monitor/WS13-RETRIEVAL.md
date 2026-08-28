@@ -125,7 +125,10 @@ to a mine.
 already had (IF0126, page 1, `LAVA CREEK DISTRICT`). `tests/test_ws13_known_items.py` asserts
 fixture *integrity* offline and never skips; `require_complete()` gates cutover and refuses a
 fixture in which too few items assert the vector arm — the one failure the gate exists to
-catch. `tools/ws13_gen_known_items.py` proposes the remaining 24 from the live corpus for
+catch. `infra/deploy.sh` runs it from preflight whenever that deploy sets
+`WS13_RETRIEVAL_ENABLED=true`, so the flag cannot be flipped through this script without it;
+`tools/ws13_live_known_items.py` runs it before a certifying run. Flipping the parameter in
+the console still bypasses both, because nothing in CloudFormation can call it. `tools/ws13_gen_known_items.py` proposes the remaining 24 from the live corpus for
 human verification; `tools/ws13_live_known_items.py` is the live runner.
 
 ### AWS worker fleet updates

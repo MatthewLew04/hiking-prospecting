@@ -132,6 +132,34 @@ class DocumentAskRuntimeTests(unittest.TestCase):
             self.assertIn(f'--exclude "{prefix}"', sync)
         self.assertIn("remove_disabled_legacy_document_assets", script)
 
+    def test_deploy_forwards_the_three_ws13_parameters_it_is_given(self):
+        """template.yaml has had these three parameters and deploy.sh passed none.
+
+        The stack could therefore only be pointed at WS13 by a hand-typed
+        cloudformation deploy, which is also the route that bypasses the
+        known-item cutover gate in preflight.
+        """
+        script = (ROOT / "infra" / "deploy.sh").read_text(encoding="utf-8")
+        template = (ROOT / "infra" / "template.yaml").read_text(encoding="utf-8")
+        for parameter, variable in (
+                ("Ws13RetrievalFunction", "WS13_RETRIEVAL_FUNCTION"),
+                ("Ws13RetrievalEnabled", "WS13_RETRIEVAL_ENABLED"),
+                ("Ws13VectorArm", "WS13_VECTOR_ARM")):
+            self.assertRegex(template, rf"(?m)^  {parameter}:$")
+            self.assertIn(f'{parameter}="${variable}"', script)
+            # Guarded on +x, not on emptiness: aws cloudformation deploy keeps
+            # a stack's previous value for any parameter it is not given, so
+            # forwarding the template default when the operator said nothing
+            # would switch retrieval off on every unrelated deploy.
+            self.assertIn(f'[ -n "${{{variable}+x}}" ]', script)
+
+    def test_enabling_ws13_retrieval_runs_the_known_item_cutover_gate(self):
+        """require_complete() had three docstrings claiming this and no caller."""
+        script = (ROOT / "infra" / "deploy.sh").read_text(encoding="utf-8")
+        preflight = script.split("preflight() {", 1)[1].split("\n}", 1)[0]
+        self.assertIn('[ "${WS13_RETRIEVAL_ENABLED:-}" = "true" ]', preflight)
+        self.assertIn("require_complete", preflight)
+
     def test_cloudfront_policy_cannot_read_private_databases_or_originals(self):
         template = (ROOT / "infra" / "template.yaml").read_text(encoding="utf-8")
         policy = template.split("  SiteBucketPolicy:", 1)[1].split(

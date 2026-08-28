@@ -11,6 +11,13 @@
 #   ./deploy.sh preflight           # run executable registry/data/tiling gates
 #   ./deploy.sh refresh        # trigger the claims updater now
 #   ./deploy.sh teardown       # delete everything (empties the bucket first)
+#
+# WS13 retrieval is configured through the environment, and each variable is
+# forwarded to CloudFormation only when it is set — leaving one unset means
+# "keep whatever the stack has", never "reset it to the default":
+#   WS13_RETRIEVAL_FUNCTION=nw-mineral-monitor-ws13-query   # bare NAME, not an ARN
+#   WS13_RETRIEVAL_ENABLED=true|false   # true also arms the known-item cutover gate
+#   WS13_VECTOR_ARM=true|false|''       # mirror of the retrieval stack's flag
 set -euo pipefail
 
 REGION="${AWS_REGION:-us-west-2}"
@@ -165,6 +172,34 @@ preflight() {
     echo "    WS13 live index gate skipped: set WS13_LIVE_INDEX_GATE=true with a"
     echo "    reachable WS13_DB_DSN (the in-VPC host has one) to run"
     echo "    ws13_build_ann_index.py --verify and ws13_migrate.py --check here."
+  fi
+  # The cutover gate. Three docstrings said the deploy preflight calls
+  # require_complete(); it never did. The gate lived only inside
+  # tools/ws13_live_known_items.py, so enabling retrieval any other way --
+  # this script, a raw cloudformation deploy, the console -- walked straight
+  # past the 25-item known-item check the cutover is supposed to rest on.
+  #
+  # It runs only when THIS deploy is the one turning retrieval on. A deploy
+  # that leaves the flag alone is not a cutover and must not be blocked by an
+  # incomplete fixture, which is also why the check keys on the requested
+  # value rather than on the stack's current state.
+  if [ "${WS13_RETRIEVAL_ENABLED:-}" = "true" ]; then
+    echo "    WS13 cutover requested — running the known-item completeness gate…"
+    WS13_TESTS_DIR="$HERE/../tests" python3 -c '
+import os, sys
+sys.path.insert(0, os.environ["WS13_TESTS_DIR"])
+from test_ws13_known_items import require_complete
+problems = require_complete()
+if problems:
+    print("ERROR: WS13 cutover gate refused this deploy.", file=sys.stderr)
+    for problem in problems:
+        print(f"       - {problem}", file=sys.stderr)
+    print("       Verify the candidates in "
+          "tests/fixtures/ws13_known_items.json.new and promote them, or "
+          "deploy without WS13_RETRIEVAL_ENABLED=true.", file=sys.stderr)
+    sys.exit(1)
+print("    WS13 cutover gate passed: the known-item fixture is complete.")
+'
   fi
   # The strict test runtime may be a pinned geospatial environment, while the
   # exhaustive pure-Python PMTiles decoder is materially faster in the system
@@ -877,9 +912,36 @@ case "${1:-deploy}" in
     require_cognito_secrets
     echo "==> [1/5] Creating/updating CloudFormation stack '$STACK' in $REGION (5-10 min first time)…"
     wait_for_clear_state
+    # The three WS13 parameters exist in template.yaml and nothing here ever
+    # passed them, so this script could not configure WS13 at all and the
+    # cutover had to be a hand-typed cloudformation deploy -- which is also
+    # how it bypassed the known-item gate in preflight.
+    #
+    # Each is passed ONLY when the operator set the variable. aws
+    # cloudformation deploy keeps the stack's previous value for any
+    # parameter it is not given, so silence here means "leave WS13 as it is";
+    # passing the template defaults instead would make every routine deploy
+    # of an unrelated change silently switch retrieval back off. Test with
+    # -n "${VAR+x}" rather than -n "$VAR", so an explicitly empty value can
+    # still be sent to deliberately unconfigure the function name.
+    cfn_params=(EnableLegacyDocumentStore="${ENABLE_LEGACY_DOC_STORE:-true}")
+    if [ -n "${WS13_RETRIEVAL_FUNCTION+x}" ]; then
+      cfn_params+=(Ws13RetrievalFunction="$WS13_RETRIEVAL_FUNCTION")
+    fi
+    if [ -n "${WS13_RETRIEVAL_ENABLED+x}" ]; then
+      cfn_params+=(Ws13RetrievalEnabled="$WS13_RETRIEVAL_ENABLED")
+    fi
+    if [ -n "${WS13_VECTOR_ARM+x}" ]; then
+      cfn_params+=(Ws13VectorArm="$WS13_VECTOR_ARM")
+    fi
+    if [ "${#cfn_params[@]}" -gt 1 ]; then
+      echo "    WS13 parameters this deploy sets: ${cfn_params[*]:1}"
+    else
+      echo "    WS13 parameters unset — the stack keeps its current values"
+    fi
     aws cloudformation deploy --template-file "$HERE/template.yaml" \
       --stack-name "$STACK" --region "$REGION" --capabilities CAPABILITY_IAM \
-      --parameter-overrides EnableLegacyDocumentStore="${ENABLE_LEGACY_DOC_STORE:-true}" \
+      --parameter-overrides "${cfn_params[@]}" \
       --no-fail-on-empty-changeset
 
     BUCKET="$(outputs BucketName)"; FN="$(outputs UpdaterFunctionName)"; URL="$(outputs SiteURL)"

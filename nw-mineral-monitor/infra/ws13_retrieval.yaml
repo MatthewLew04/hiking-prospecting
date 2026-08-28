@@ -119,11 +119,25 @@ Parameters:
 
   MaxConcurrency:
     Type: Number
-    Default: 20
+    Default: 0
+    MinValue: 0
     Description: >-
       Reserved concurrency, which is also the hard ceiling on backend
       connections this function can hold: each warm container keeps one
       psycopg session open, and the OCR/embed fleet shares the same instance.
+
+      0 (the default) reserves NOTHING and is not the same as throttling the
+      function to zero -- the property is withheld entirely rather than sent
+      as 0, which Lambda would read as "never run". The default is 0 because
+      this account's TOTAL concurrent-execution limit is 10 and Lambda
+      refuses to leave fewer than 10 unreserved, so ANY reservation here is
+      rejected outright: the previous default of 20 was twice the whole
+      account's ceiling and could never deploy. Leaving it unreserved is also
+      the stricter bound on database sessions, not the looser one -- the
+      account cap of 10 is below the 20 this parameter was trying to impose.
+
+      Raise it above 0 only after the account's Lambda concurrency limit has
+      been raised, and only to a value that leaves 10 unreserved.
 
   CodeS3Bucket:
     Type: String
@@ -162,6 +176,11 @@ Conditions:
   HasPackage: !Not [!Equals [!Ref CodeS3Key, '']]
   HasCodeVersion: !Not [!Equals [!Ref CodeS3ObjectVersion, '']]
   HasLayer: !Not [!Equals [!Ref PsycopgLayerArn, '']]
+  # 0 means "reserve nothing", NOT "allow nothing". Lambda reads a literal
+  # ReservedConcurrentExecutions: 0 as throttled-to-zero -- the function is
+  # deployed and can never run -- so the value has to be withheld entirely
+  # rather than passed as 0. See MaxConcurrency's description.
+  HasReservedConcurrency: !Not [!Equals [!Ref MaxConcurrency, 0]]
 
 Resources:
 
@@ -207,7 +226,10 @@ Resources:
       # Under the 30 s API Gateway integration timeout, and above the 20 s
       # statement timeout, so the database is what gives up first.
       Timeout: 25
-      ReservedConcurrentExecutions: !Ref MaxConcurrency
+      ReservedConcurrentExecutions: !If
+        - HasReservedConcurrency
+        - !Ref MaxConcurrency
+        - !Ref 'AWS::NoValue'
       Role: !GetAtt RetrievalRole.Arn
       Layers: !If [HasLayer, [!Ref PsycopgLayerArn], !Ref 'AWS::NoValue']
       # This is the only function in the account with a VpcConfig, and it must

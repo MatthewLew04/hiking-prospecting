@@ -678,6 +678,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
 }
+/* Esri's Dark Gray Canvas paints land at ~#414141 — far lighter than the
+   panel chrome. CSS pulls it down to the near-black CARTO's dark_all used to
+   give us; the label overlay is left alone so place names stay readable. */
+.leaflet-tile.dark-canvas{filter:contrast(1.54) brightness(.5)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:13px/1.45 var(--sans);overflow:hidden}
@@ -944,9 +948,21 @@ const map = L.map('map', {zoomControl:false, renderer:L.canvas({padding:.3}), wo
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.control.scale({position:'bottomright', imperial:true}).addTo(map);
 
+/* CARTO's keyless dark_all tiles now arrive stamped "API KEY REQUIRED", so the
+   dark basemap is Esri's Dark Gray Canvas: keyless, on the host that already
+   serves the imagery below. It ships as an opaque base plus a transparent
+   label/boundary overlay where dark_all was one tile, so DARK is a group of
+   two; its cache stops at z16, so maxNativeZoom stretches rather than fetching
+   the white "map data not yet available" placeholder. */
+const darkCanvas = (service, opts) => L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/'+service+'/MapServer/tile/{z}/{y}/{x}',
+  Object.assign({maxZoom:20, maxNativeZoom:16}, opts));
 const BASEMAPS = {
-  dark: L.tileLayer('https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    {maxZoom:20, attribution:'&copy; OpenStreetMap &copy; CARTO'}),
+  dark: L.layerGroup([
+    darkCanvas('World_Dark_Gray_Base', {zIndex:1, className:'dark-canvas',
+      attribution:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'}),
+    darkCanvas('World_Dark_Gray_Reference', {zIndex:2, opacity:.8})
+  ]),
   sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     {maxZoom:19, attribution:'Imagery &copy; Esri, Maxar, Earthstar Geographics'}),
   topo: L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
@@ -956,7 +972,11 @@ let curBase = BASEMAPS.dark.addTo(map);
 document.getElementById('basemaps').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   document.querySelectorAll('#basemaps button').forEach(x=>x.classList.toggle('on', x===b));
-  map.removeLayer(curBase); curBase = BASEMAPS[b.dataset.b].addTo(map); curBase.bringToBack();
+  map.removeLayer(curBase); curBase = BASEMAPS[b.dataset.b].addTo(map);
+  /* DARK is a two-tile group: send its members back bottom-up so the labels
+     still land on top of their own base. */
+  if(curBase.bringToBack) curBase.bringToBack();
+  else curBase.getLayers().slice().reverse().forEach(l=>l.bringToBack());
 });
 
 /* county boundary */

@@ -964,13 +964,29 @@ async function boot(){
   if (/[?&]debug=1/.test(location.search)) dbgPanel();
 }
 
+/* Dark basemap. CARTO's keyless dark_all tiles started coming back stamped
+   "API KEY REQUIRED — carto.com/basemaps/apikey", so every dark-mode tile was a
+   watermark. Esri's Dark Gray Canvas is keyless on the host that already serves
+   imagery here, but it ships as two services — an opaque base and a transparent
+   label/boundary overlay — where dark_all was one tile with labels baked in, so
+   DARK is two layers that toggle together. Its cache stops at z16 (z17+ returns a
+   white "map data not yet available" placeholder), hence source maxzoom: MapLibre
+   overzooms the z16 tile instead of requesting one. */
+const DARK_TILE = z => ['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/'+z+'/MapServer/tile/{z}/{y}/{x}'];
 function baseStyle(){
   return {version:8, sources:{
-    carto:{type:'raster', tiles:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap © CARTO'},
+    darkbase:{type:'raster', tiles:DARK_TILE('World_Dark_Gray_Base'), tileSize:256, maxzoom:16, attribution:'© Esri, HERE, Garmin, © OpenStreetMap contributors'},
+    darkref:{type:'raster', tiles:DARK_TILE('World_Dark_Gray_Reference'), tileSize:256, maxzoom:16},
     esri:{type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'Imagery © Esri, Maxar, Earthstar Geographics'},
     usgs:{type:'raster', tiles:['https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'USGS The National Map'}
   }, layers:[
-    {id:'base-dark', type:'raster', source:'carto'},
+    /* Dark Gray Canvas paints land at ~#414141, far lighter than the #0b0d10
+       chrome and bright enough to wash out the site markers. Brightness scales
+       it to roughly dark_all's near-black; the contrast bump keeps roads and
+       drainages from collapsing into the land once darkened. Labels are painted
+       after that, unscaled, so they stay readable. */
+    {id:'base-dark', type:'raster', source:'darkbase', paint:{'raster-contrast':0.35,'raster-brightness-max':0.5}},
+    {id:'base-dark-labels', type:'raster', source:'darkref', paint:{'raster-opacity':0.8}},
     {id:'base-sat',  type:'raster', source:'esri', layout:{visibility:'none'}},
     {id:'base-topo', type:'raster', source:'usgs', layout:{visibility:'none'}, maxzoom:16}
   ]};
@@ -2271,8 +2287,10 @@ function buildUI(){
   $('basemaps').addEventListener('click', e=>{
     const b = e.target.closest('button'); if(!b) return;
     document.querySelectorAll('#basemaps button').forEach(x=>x.classList.toggle('on', x===b));
-    for (const [id,key] of [['base-dark','dark'],['base-sat','sat'],['base-topo','topo']])
-      map.setLayoutProperty(id,'visibility', b.dataset.b===key?'visible':'none');
+    /* DARK is base + label overlay; the other two are single layers. */
+    for (const [key,ids] of [['dark',['base-dark','base-dark-labels']],['sat',['base-sat']],['topo',['base-topo']]])
+      for (const id of ids)
+        map.setLayoutProperty(id,'visibility', b.dataset.b===key?'visible':'none');
   });
   $('btnAbout').onclick = ()=>toggleModal('aboutModal',1);
   $('btnReading').onclick = ()=>toggleModal('readingModal',1);

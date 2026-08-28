@@ -9,6 +9,7 @@
     "test:python": "python3 -m unittest discover -s tests -v",
     "test:browser": "node tools/measure.js",
     "test:doc-viewer": "node tools/test_doc_viewer.js",
+    "test:ws13-citations": "node tools/test_ws13_citation_frontend.mjs",
     "vendor:three": "mkdir -p site/assets/three && cp node_modules/three/build/three.module.min.js node_modules/three/build/three.core.min.js site/assets/three/ && cp node_modules/three/examples/jsm/controls/OrbitControls.js site/assets/three/ && cp node_modules/three/LICENSE site/assets/three/LICENSE",
     "test:geomodel": "python3 -m unittest discover -s tests -p 'test_geomodel_*.py' && node tools/test_gm_formats.mjs && node tools/test_gm_engine.mjs",
     "test:model3d": "node tools/test_model3d.mjs"

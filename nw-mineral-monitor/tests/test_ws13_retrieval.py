@@ -61,6 +61,7 @@ end. The three neighbours this contract spans are driven the same way: ASK
 index builder's parent classification (pipelines/ws13_build_ann_index.py)
 over the plain dicts it decides on -- no /proc, no signals, nothing killed.
 """
+import ast
 import contextlib
 import importlib
 import io
@@ -177,6 +178,50 @@ def row(chunk_id=1, sha256=None, page=3, ordinal=0, text=PAGE_TEXT,
     return values
 
 
+def _harvest_licensed_rights_basis():
+    """The literal CC BY-NC-SA rights_basis pipelines/mine_file_harvest.py writes.
+
+    Lifted out of that pipeline's own source rather than retyped here, because
+    the whole point of the page-size measurement below is that the fixture is
+    what the corpus really carries. What comes back is the FLOOR: every
+    interpolation (the licence text, the collection id, the title) is dropped,
+    so a real one is longer.
+    """
+    tree = ast.parse(Path(ROOT, "pipelines", "mine_file_harvest.py")
+                     .read_text(encoding="utf-8"))
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        target = node.targets[0]
+        if not (isinstance(target, ast.Name) and target.id == "rights_basis"
+                and isinstance(node.value, ast.JoinedStr)):
+            continue
+        literal = "".join(part.value for part in node.value.values
+                          if isinstance(part, ast.Constant))
+        if "CC BY-NC-SA" in literal:
+            return literal
+    raise AssertionError(
+        "pipelines/mine_file_harvest.py no longer builds a CC BY-NC-SA "
+        "rights_basis; the page-size measurement below has lost its fixture")
+
+
+LICENSED_BASIS_FLOOR = _harvest_licensed_rights_basis()
+# One realistic value: the floor with the licence text, the AZGS collection id
+# and a title filled in, which is what the 13,013 licensed copies actually
+# carry into a citation.
+LICENSED_BASIS_REAL = LICENSED_BASIS_FLOOR.replace(
+    " - explicit",
+    "CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ - "
+    "explicit", 1).replace(
+    "for collection  (\"\")",
+    "for collection admmr-mine-files (\"St. Louis Mine, Cassia County\")", 1)
+# The longest rights_basis any validator in this repo accepts:
+# pipelines/build_doc_store.py:260 bounds a registry entry at 500 characters.
+# ws13_documents.rights_basis is unbounded TEXT, so this is a ceiling by
+# convention rather than by constraint, and the test says so.
+LICENSED_BASIS_CEILING = "x" * 500
+
+
 # --- a fake connection that shapes rows from the SELECT list it is handed --
 
 ALIAS_RE = re.compile(r"\bAS\s+\"?([A-Za-z_][A-Za-z0-9_]*)\"?\s*$", re.I)
@@ -285,10 +330,18 @@ class FakeConn:
     """
 
     def __init__(self, lexical=(), vector=(), index_present=True, plan=None,
-                 mine_id_map=None):
+                 mine_id_map=None, documents=None, document_total=None):
         self.lexical = list(lexical)
         self.vector = list(vector)
         self.index_present = index_present
+        # The document listing op reads ws13_documents rather than an arm.
+        # ``documents`` is the page the database hands back and
+        # ``document_total`` is what count(*) says the filter selects, and
+        # they are separate on purpose: a fake that derived the total from the
+        # page could not tell a true total from the length of a bounded list,
+        # which is the exact confusion the op exists to remove.
+        self.documents = None if documents is None else list(documents)
+        self.document_total = document_total
         # None models the table pipelines/ws13_migrate.py does not create: a
         # later stage builds ws13_mine_id_map, so retrieval has to work before
         # it exists. A dict is the built table.
@@ -328,6 +381,17 @@ class FakeConn:
                               [(front, corpus)
                                for front, values in self.mine_id_map.items()
                                for corpus in values])
+        if "count(*) as total" in lowered:
+            total = (self.document_total if self.document_total is not None
+                     else len(self._documents()))
+            return FakeCursor(["total"], [(total,)])
+        if "count(distinct c.page)" in lowered:
+            return FakeCursor(
+                names, [(item["sha256"], item.get("indexed_pages", 1),
+                         item.get("unembedded_chunks", 0))
+                        for item in self._documents()])
+        if "from ws13_documents d" in lowered:
+            return self._shape(names, self._documents())
         if "pg_class" in lowered or "pg_indexes" in lowered:
             if not self.index_present:
                 return FakeCursor(names or ["exists"], [])
@@ -350,6 +414,15 @@ class FakeConn:
             return self._shape(names, self._merged())
         return FakeCursor(names or ["one"],
                           [tuple(1 for _ in (names or ["one"]))])
+
+    def _documents(self):
+        """The rows ws13_documents answers with; the arms' rows by default.
+
+        Defaulting to the merged arm rows keeps every pre-existing statement
+        that reads ws13_documents -- plan_filtered_probe's sha256 resolution
+        above all -- shaped exactly as it was before this branch existed.
+        """
+        return self.documents if self.documents is not None else self._merged()
 
     def _merged(self):
         seen, merged = set(), []
@@ -1140,6 +1213,700 @@ class MineIdNamespaceTest(QueryLambdaTestCase):
         self.assertNotIn("filter_unresolved", response)
 
 
+class DocumentListingTest(QueryLambdaTestCase):
+    """op 'documents': the per-mine document list, at corpus scale.
+
+    The defect it closes is a disagreement between two surfaces: ASK routed
+    search_documents at 852,027 chunks while docs_for still answered from the
+    3.2 MB SQLite slice, which holds exactly 2 documents. So the same mine had
+    documents when you asked a question about it and none when you clicked it.
+
+    The two properties this class exists to pin are that the count is a TRUE
+    total rather than a by-product of an over-fetch, and that a document is
+    never listed without the rights that make serving it defensible at all.
+    """
+
+    FRONT_END_ID = "stategeo-igs-dd-1-if0126"
+    MAPPED = {FRONT_END_ID: ["IF0126", "ADMM-01234"]}
+
+    def list_documents(self, documents=None, total=None, mine_id_map="__mapped__",
+                       **event):
+        if mine_id_map == "__mapped__":
+            mine_id_map = dict(self.MAPPED)
+        conn = FakeConn(documents=documents if documents is not None else [row(1)],
+                        document_total=total, mine_id_map=mine_id_map)
+        self.conn = conn
+        payload = {"op": "documents",
+                   "filters": {"mine_id": self.FRONT_END_ID}}
+        payload.update(event)
+        with mock.patch.object(ql, "_open_connection", lambda: conn):
+            return ql.handler(payload, None)
+
+    # -- the count -------------------------------------------------------
+    def test_the_count_is_the_true_total_not_the_length_of_the_page(self):
+        """A fused chunk search returns `limit` hits, so the number of
+        distinct documents behind them is a property of over_fetch. This count
+        is an aggregate over ws13_documents under the page's own predicate."""
+        response = self.list_documents(documents=[row(1), row(2), row(3)],
+                                       total=130)
+        self.assertEqual(response["count"], 130)
+        self.assertEqual(response["returned"], 3)
+        self.assertEqual(len(response["documents"]), 3)
+
+    def test_a_bounded_page_says_it_is_bounded(self):
+        response = self.list_documents(documents=[row(1), row(2), row(3)],
+                                       total=130)
+        self.assertTrue(response["truncated"])
+        self.assertEqual(response["next_offset"], 3)
+        self.assertIn("page, not the set", response["note"])
+        self.assertIn("130", response["note"])
+
+    def test_a_complete_page_is_not_marked_truncated(self):
+        """A note that always warns about truncation trains a reader to
+        ignore it."""
+        response = self.list_documents(documents=[row(1), row(2)], total=2)
+        self.assertFalse(response["truncated"])
+        self.assertIsNone(response["next_offset"])
+        self.assertNotIn("page, not the set", response["note"])
+
+    def test_the_count_survives_the_page_being_empty(self):
+        """count comes from its own aggregate, so an offset past the end
+        still reports how many documents there are."""
+        response = self.list_documents(documents=[], total=4, offset=40)
+        self.assertEqual(response["count"], 4)
+        self.assertEqual(response["returned"], 0)
+        self.assertIn("past the end", response["note"])
+
+    def test_paging_runs_over_a_total_order(self):
+        """Title is not unique in this corpus, and LIMIT/OFFSET over a partial
+        order lets page 2 repeat a row page 1 showed and skip one nobody
+        sees."""
+        sql = ql.documents_sql({"mine_id": ["IF0126"]}, 12, 24)[0]
+        self.assertTrue(sql.rstrip().endswith("LIMIT %s OFFSET %s"), sql)
+        order = sql.split("ORDER BY")[1]
+        self.assertIn("d.sha256", order.split("LIMIT")[0])
+
+    def test_a_listing_with_no_filter_at_all_is_refused(self):
+        """Without a filter this would page through all 56,282 documents."""
+        for builder in (ql.documents_sql, ql.documents_count_sql):
+            with self.subTest(builder=builder.__name__):
+                with self.assertRaises(ValueError):
+                    (builder({}, 12, 0) if builder is ql.documents_sql
+                     else builder({}))
+
+    def test_the_sha256_filter_is_spelled_against_the_document_table(self):
+        """filter_sql() spells it `c.sha256`, which names no relation in a
+        query whose only FROM is ws13_documents."""
+        clauses, params = ql.documents_where({"sha256": "a" * 64})
+        self.assertIn("d.sha256 = %s", clauses)
+        self.assertEqual(params, ["a" * 64])
+
+    # -- rights ----------------------------------------------------------
+    def test_every_listed_document_carries_its_rights(self):
+        response = self.list_documents(documents=[
+            row(7, admission_class="licensed-copies", source_url=None,
+                rights_basis="AZGS ADMMR")])
+        document = response["documents"][0]
+        for field in ("admission_class", "rights_basis", "rights_terms",
+                      "attribution_required", "non_commercial", "share_alike"):
+            self.assertIn(field, document, field)
+        self.assertEqual(document["admission_class"], "licensed-copies")
+        self.assertIn("CC BY-NC-SA", document["rights_terms"])
+        self.assertIn("AZGS ADMMR", document["rights_terms"])
+        self.assertTrue(document["attribution_required"])
+        self.assertTrue(document["non_commercial"])
+        self.assertTrue(document["share_alike"])
+
+    def test_the_rights_also_travel_inside_the_citation(self):
+        """The row is what a list renders and the citation is what a model
+        pastes; attribution has to be unmissable in both."""
+        response = self.list_documents(documents=[
+            row(8, admission_class="research-copies", source_url=None,
+                rights_basis="Idaho Geological Survey state archive")])
+        citation = response["documents"][0]["citation"]
+        self.assertEqual(citation["admission_class"], "research-copies")
+        self.assertIn("Idaho Geological Survey", citation["rights_terms"])
+        self.assertTrue(citation["attribution_required"])
+
+    def test_a_document_whose_rights_cannot_be_stated_is_withheld(self):
+        """13,013 licensed and 32,312 research copies name their licensor in
+        their own terms, and rights_basis is NULL on every row until the
+        provenance backfill runs. One such row must neither be published
+        unattributable nor take the whole mine's list down with it."""
+        response = self.list_documents(
+            documents=[row(9, admission_class="licensed-copies",
+                           rights_basis=None, source_url=None),
+                       row(10)],
+            total=2)
+        self.assertEqual(response["returned"], 1)
+        self.assertEqual(response["withheld_count"], 1)
+        self.assertEqual([hit["sha256"] for hit in
+                          response["withheld_documents"]], [f"{9:064x}"])
+        # Counted, not lost: the total still knows about it and the note says
+        # a document on this page was not listed.
+        self.assertEqual(response["count"], 2)
+        self.assertIn("counted but NOT listed", response["note"])
+
+    def test_an_unknown_admission_class_is_withheld_not_listed(self):
+        response = self.list_documents(
+            documents=[row(11, admission_class="mystery")], total=1)
+        self.assertEqual(response["documents"], [])
+        self.assertEqual(response["withheld_count"], 1)
+
+    def test_no_page_carries_a_document_whose_rights_are_not_stated(self):
+        """All three admission classes on one page, row by row.
+
+        A mine's file is mixed -- the corpus is 10,957 originals, 13,013
+        CC BY-NC-SA licensed copies and 32,312 state-archive research copies,
+        and one mine can attach documents from all three -- so "the rights
+        travelled" has to hold for every row of a page rather than for the
+        shape of one. The obligations are checked against the class as well:
+        a page that carried the licensed copy's terms with the original's
+        flags would read as public domain on the row a reader is most likely
+        to reuse.
+        """
+        response = self.list_documents(
+            documents=[
+                row(21, admission_class="originals", rights_basis=None,
+                    source_url=None),
+                row(22, admission_class="licensed-copies",
+                    rights_basis="AZGS ADMMR", source_url=None),
+                row(23, admission_class="research-copies",
+                    rights_basis="Idaho Geological Survey state archive",
+                    source_url=None)],
+            total=3)
+        self.assertEqual(response["returned"], 3)
+        self.assertNotIn("withheld_count", response)
+        expected = {
+            "originals": (False, False, False),
+            "licensed-copies": (True, True, True),
+            "research-copies": (True, True, False),
+        }
+        seen = []
+        for document in response["documents"]:
+            admission_class = document["admission_class"]
+            seen.append(admission_class)
+            self.assertIn(admission_class, expected, document)
+            self.assertTrue(document["rights_terms"], document)
+            self.assertEqual(
+                (document["attribution_required"], document["non_commercial"],
+                 document["share_alike"]), expected[admission_class],
+                admission_class)
+            # The row and the citation are two different surfaces -- a list
+            # and a pasted reference -- and they must not disagree about the
+            # licence of the same document.
+            citation = document["citation"]
+            for field in ("admission_class", "rights_basis", "rights_terms",
+                          "attribution_required", "non_commercial",
+                          "share_alike"):
+                self.assertEqual(document[field], citation[field],
+                                 f"{admission_class}.{field}")
+            if admission_class != "originals":
+                self.assertIn(document["rights_basis"],
+                              document["rights_terms"])
+        self.assertEqual(sorted(seen), sorted(expected))
+
+    # -- the citation ----------------------------------------------------
+    def test_the_listing_citation_claims_no_page(self):
+        """Nothing here was matched to a page, and docs_for's own contract is
+        that it does not invent one."""
+        response = self.list_documents(documents=[row(12, source_url=None)])
+        citation = response["documents"][0]["citation"]
+        self.assertIsNone(citation["page"])
+        self.assertNotIn("p. ", citation["markdown"])
+
+    def test_the_stored_copy_chip_is_the_form_the_browser_parses(self):
+        response = self.list_documents(documents=[row(13, source_url=None)])
+        citation = response["documents"][0]["citation"]
+        self.assertEqual(citation["resolvable_via"], "stored_copy")
+        match = DOC_CHIP_RE.fullmatch(citation["markdown"])
+        self.assertIsNotNone(match, citation["markdown"])
+        self.assertEqual(match.group(2), f"{13:064x}")
+        # The page group is optional in the browser rule and docChip opens at
+        # page 1, so the reader gets the document without the answer ever
+        # naming a page.
+        self.assertIsNone(match.group(3))
+
+    def test_a_listing_citation_never_publishes_an_object_key_as_the_link(self):
+        response = self.list_documents(documents=[row(14, source_url=None)])
+        citation = response["documents"][0]["citation"]
+        self.assertNotIn("ws12/", citation["markdown"])
+        self.assertNotIn("ws13/", citation["markdown"])
+        # They stay in the payload as internal fields for the viewer
+        # integration, exactly as they do on a search hit.
+        self.assertTrue(citation["s3_key"].startswith("ws12/"))
+        self.assertTrue(citation["viewer_key"])
+
+    def test_a_published_source_url_still_resolves_through_the_publisher(self):
+        response = self.list_documents(documents=[
+            row(15, source_url="https://pubs.example.gov/report.pdf")])
+        citation = response["documents"][0]["citation"]
+        self.assertEqual(citation["resolvable_via"], "source_url")
+        self.assertEqual(citation["markdown"],
+                         "[Report 15](https://pubs.example.gov/report.pdf)")
+
+    # -- the mine-id namespace bridge ------------------------------------
+    def test_the_mine_predicate_matches_the_resolved_ids_by_overlap(self):
+        """Identical to search(): one front-end id can resolve to several
+        corpus ids, and && is the operator that matches a document carrying
+        any of them while still using ws13_documents_mines."""
+        response = self.list_documents()
+        resolution = response["filter_resolution"]["mine_id"]
+        self.assertEqual(resolution["requested"], self.FRONT_END_ID)
+        self.assertEqual(sorted(resolution["resolved"]),
+                         ["ADMM-01234", "IF0126"])
+        self.assertEqual(resolution["via"], "ws13_mine_id_map")
+        bound = [param for sql, params in self.conn.statements
+                 if "d.mine_ids && %s::text[]" in sql
+                 for param in params if isinstance(param, list)]
+        self.assertTrue(bound, "the mine predicate never ran")
+        self.assertNotIn([self.FRONT_END_ID], bound,
+                         "the front-end id reached the corpus predicate")
+        self.assertTrue(any(sorted(value) == ["ADMM-01234", "IF0126"]
+                            for value in bound), bound)
+
+    def test_a_missing_map_table_is_an_empty_map_not_an_error(self):
+        """pipelines/ws13_migrate.py deliberately does not create
+        ws13_mine_id_map, so this op has to work before it exists."""
+        response = self.list_documents(mine_id_map=None, total=1)
+        self.assertEqual(response["status"], "loaded")
+        self.assertEqual(response["filter_resolution"]["mine_id"]["via"],
+                         "as_supplied")
+
+    def test_an_unmapped_id_reads_as_never_translated_not_as_no_documents(self):
+        response = self.list_documents(documents=[], total=0, mine_id_map={})
+        self.assertEqual(response["count"], 0)
+        self.assertEqual(response["filter_unresolved"], ["mine_id"])
+        self.assertIn("NEVER TRANSLATED", response["note"])
+        self.assertIn("not that this mine has no documents", response["note"])
+
+    def test_a_result_set_never_carries_the_unresolved_marker(self):
+        """An id already in the corpus namespace has no map row and is still
+        correct."""
+        response = self.list_documents(mine_id_map={}, total=1)
+        self.assertNotIn("filter_unresolved", response)
+
+    def test_an_empty_page_of_a_real_result_is_not_an_unresolved_filter(self):
+        """The marker sends ASK back to a 2-document index, so it has to mean
+        "nothing matched", not "this page is past the end". search()'s test is
+        `not hits`, which is the same thing only because search has no
+        offset."""
+        response = self.list_documents(documents=[], total=41, offset=100,
+                                       mine_id_map={})
+        self.assertEqual(response["count"], 41)
+        self.assertNotIn("filter_unresolved", response)
+        self.assertNotIn("NEVER TRANSLATED", response["note"])
+
+    # -- shape -----------------------------------------------------------
+    def test_the_shape_is_the_one_the_sqlite_document_tool_returns(self):
+        """The browser and the model must need no special case for which
+        stack answered."""
+        response = self.list_documents(total=1)
+        for key in ("status", "mine_id", "count", "documents"):
+            self.assertIn(key, response)
+        self.assertEqual(response["status"], "loaded")
+        self.assertEqual(response["mine_id"], self.FRONT_END_ID)
+        document = response["documents"][0]
+        for key in ("document_id", "title", "portal", "mine_ids", "mine_names",
+                    "state", "county", "doc_date", "doc_type", "page_count",
+                    "indexed_pages", "source_url", "indexed", "embedded"):
+            self.assertIn(key, document, key)
+        self.assertEqual(document["document_id"], document["sha256"])
+
+    def test_the_result_passes_the_sqlite_tools_own_validation(self):
+        """_validate_result walks result['hits'] and demands an http(s)
+        source_url on every citation there. This listing has no 'hits' key, so
+        it passes -- vacuously, because there is nothing there to check, not
+        because these citations were validated by it. Publishing the documents
+        as hits would fail outright: source_url is NULL for most of the 56,282
+        rows until the provenance backfill runs."""
+        response = self.list_documents(documents=[row(16, source_url=None)])
+        self.assertNotIn("hits", response)
+        runtime_docs._validate_result(response)      # must not raise
+
+    def test_indexed_pages_counts_pages_that_produced_chunks(self):
+        """ws13_pages carries a row for every page rendered, blank ones
+        included; only a page with a chunk can come back from a search."""
+        response = self.list_documents(documents=[
+            row(17, indexed_pages=42, unembedded_chunks=0)])
+        document = response["documents"][0]
+        self.assertEqual(document["indexed_pages"], 42)
+        self.assertTrue(document["indexed"])
+        self.assertTrue(document["embedded"])
+
+    def test_a_document_with_no_indexed_page_is_listed_and_says_so(self):
+        """It is still attached to the mine; it just cannot be cited."""
+        response = self.list_documents(documents=[
+            row(18, indexed_pages=0, unembedded_chunks=0)])
+        document = response["documents"][0]
+        self.assertEqual(document["indexed_pages"], 0)
+        self.assertFalse(document["indexed"])
+        self.assertFalse(document["embedded"])
+
+    def test_a_partially_embedded_document_is_not_reported_as_embedded(self):
+        response = self.list_documents(documents=[
+            row(19, indexed_pages=9, unembedded_chunks=3)])
+        self.assertFalse(response["documents"][0]["embedded"])
+
+    def test_the_limit_and_offset_are_clamped(self):
+        request = ql.normalize_documents_request(
+            {"filters": {"mine_id": "x"}, "limit": 900, "offset": -3})
+        self.assertEqual(request["limit"], ql.DOCUMENTS_LIMIT_MAX)
+        self.assertEqual(request["offset"], 0)
+
+    def test_a_clamped_offset_is_reported_rather_than_applied_silently(self):
+        """`offset` in the response is the number this op used, and that is
+        not the number the caller asked for once the cap bites. Without
+        offset_clamped_from the two are indistinguishable, and a caller paging
+        its way down reads the page at 10,000 as the page at 99,999."""
+        response = self.list_documents(documents=[row(1), row(2)], total=50000,
+                                       offset=99999)
+        self.assertEqual(response["offset"], ql.DOCUMENTS_OFFSET_MAX)
+        self.assertEqual(response["offset_clamped_from"], 99999)
+        self.assertIn("was clamped to", response["note"])
+
+    def test_no_cursor_is_emitted_past_the_offset_cap(self):
+        """next_offset was computed unclamped while offset is clamped, so at
+        the cap the response handed back a cursor that clamped straight back
+        to the page it came from: identical rows, truncated still true,
+        forever. Reachable for any filter selecting more than 10,000
+        documents, which a bare `state` over 56,282 does."""
+        response = self.list_documents(
+            documents=[row(1), row(2), row(3)], total=50000,
+            offset=ql.DOCUMENTS_OFFSET_MAX)
+        self.assertTrue(response["truncated"])
+        self.assertIsNone(response["next_offset"])
+        self.assertIn("NOT reachable by paging", response["note"])
+
+    def test_the_last_reachable_cursor_is_still_emitted(self):
+        """The cap is a boundary, not a cliff: a next_offset that lands
+        exactly on DOCUMENTS_OFFSET_MAX still resolves to the page it names,
+        so withholding it would strand documents that are reachable."""
+        response = self.list_documents(
+            documents=[row(1), row(2), row(3)], total=50000,
+            offset=ql.DOCUMENTS_OFFSET_MAX - 3)
+        self.assertEqual(response["next_offset"], ql.DOCUMENTS_OFFSET_MAX)
+        self.assertIn("next_offset carries the cursor", response["note"])
+
+    def test_a_cursor_that_does_not_advance_is_not_published(self):
+        """The count and the page are two statements, so a concurrent delete
+        can leave an empty page under a total that still says there is more.
+        next_offset would then equal offset, and a caller following it reads
+        the same empty page forever."""
+        response = self.list_documents(documents=[], total=50000, offset=5)
+        self.assertTrue(response["truncated"])
+        self.assertIsNone(response["next_offset"])
+        self.assertIn("no cursor for the rest", response["note"])
+
+    def test_the_listing_ships_the_page_less_citation_rule(self):
+        """CITATION_RULE tells a reader both markdown forms end in ', p. N'.
+        document_citation() emits neither -- nothing here was matched to a
+        page -- so shipping the search rule beside a page-less markdown told
+        the model to paste a page number that is not in the string it was
+        told to paste verbatim."""
+        response = self.list_documents(documents=[row(24, source_url=None)])
+        rule = response["citation_rule"]
+        self.assertEqual(rule, ql.DOCUMENT_CITATION_RULE)
+        self.assertNotIn("p. N", rule)
+        self.assertIn("[title](doc:<sha256>)", rule)
+        self.assertIn("rights_terms", rule)
+        self.assertIn("search_documents", rule)
+        # The markdown beside it really is the form the rule describes.
+        self.assertNotIn("p. ", response["documents"][0]["citation"]["markdown"])
+
+    def test_the_response_is_json_serialisable(self):
+        response = self.list_documents(documents=[row(20, source_url=None)])
+        self.assertIsInstance(json.dumps(response), str)
+
+    def test_the_op_is_reachable_through_the_handler(self):
+        response = self.list_documents()
+        self.assertEqual(response["op"], "documents")
+        self.assertEqual(response["retrieval_mode"], "document_filter")
+
+    # -- the cursor, and the budget the page size was measured against ----
+    def test_a_withheld_document_does_not_shift_the_page_cursor(self):
+        """next_offset counts rows the DATABASE returned, not rows that
+        survived the rights check.
+
+        The two numbers differ exactly when a document is withheld, and that
+        is the case where the difference is destructive: LIMIT/OFFSET pages by
+        rows, so a cursor advanced by ``len(listed)`` re-reads every withheld
+        row on the next page and never reaches the end of the set. Here 3 rows
+        come back, one is unattributable, and the next page has to start at 3.
+        """
+        response = self.list_documents(
+            documents=[row(31), row(32, admission_class="licensed-copies",
+                                     rights_basis=None, source_url=None),
+                       row(33)],
+            total=9)
+        self.assertEqual(response["returned"], 2)
+        self.assertEqual(response["withheld_count"], 1)
+        self.assertTrue(response["truncated"])
+        self.assertEqual(response["next_offset"], 3)
+        self.assertIn("1-3 of 9", response["note"])
+
+    def _fattest_page(self, rights_basis, limit):
+        """The fattest realistic page: `limit` licensed copies, whose
+        rights_terms names its licensor, with an 80-character title, both
+        mine-id namespaces, two mine names, a 64-hex s3_key and viewer_key."""
+        documents = [
+            row(40 + index,
+                sha256=f"{0xc0ffee + index:064x}",
+                title="Mines and Prospects of the Cassia Quadrangle, Idaho: "
+                      "Mine File IF0126, Volume II",
+                admission_class="licensed-copies",
+                rights_basis=rights_basis,
+                source_url=None,
+                mine_ids=["IF0126", "ADMM-01234"],
+                mine_names=["St. Louis Mine", "Lava Creek Group"],
+                pages=118)
+            for index in range(limit)]
+        response = self.list_documents(documents=documents, total=130,
+                                       limit=limit)
+        self.assertEqual(response["returned"], limit)
+        return len(json.dumps(response))
+
+    def test_the_default_page_fits_the_browser_json_budget_it_was_measured_against(self):
+        """DOCUMENTS_LIMIT_DEFAULT is a measurement, and this is the
+        measurement.
+
+        Every tool result reaches the model through trimJson(result, 14000) in
+        site/index.html, which POPS entries off `documents` and sets
+        truncated=true until the JSON fits. That thinning happens in the
+        BROWSER, after `returned`, `truncated` and `next_offset` were computed
+        in the Lambda -- so a default page that does not fit is published as a
+        response stating a page size it no longer has, over a cursor that
+        skips exactly the rows the browser dropped. That is the bounded-
+        result-reading-as-a-total failure this repo is emphatic about, with
+        the browser rather than the Lambda doing the lying.
+
+        The first version of this test was the defect. It built its rows with
+        a 44-character rights_basis, measured a page of 6 at 13,303, and its
+        docstring asserted that nothing in the corpus writes a longer one.
+        pipelines/mine_file_harvest.py already did: LICENSED_BASIS_FLOOR is
+        235 characters before a single interpolation and ~346 filled in, and
+        rights_basis is serialised FOUR times per row -- raw and interpolated
+        into rights_terms, on the row and again inside the citation -- so each
+        character of it costs four. The same page of 6 measures 20,575
+        characters with the filled-in basis, and the browser keeps 4 of them
+        while `returned` still says 6 and next_offset still says 6.
+
+        So the fixture is now the harvest's own string, read out of that
+        pipeline's source rather than retyped here, and the page is measured
+        again at 500 characters -- the longest basis any validator in this
+        repo accepts (pipelines/build_doc_store.py:260).
+
+        Two limits of this measurement, since neither is obvious from the
+        number it asserts. It counts in json.dumps's default separators, which
+        run ~2% long against the browser's own JSON.stringify -- the
+        conservative side, and not the same units trimJson works in. And
+        ws13_documents.rights_basis is unbounded TEXT: 500 is a convention
+        borrowed from the WS12 registry validator, not a constraint this
+        column has, so a longer basis would overflow the default too. This
+        test is where that would surface, and the fix is the default page
+        size, not this assertion.
+        """
+        for label, basis in (("harvest floor", LICENSED_BASIS_FLOOR),
+                             ("harvest, filled in", LICENSED_BASIS_REAL),
+                             ("the 500-character ceiling",
+                              LICENSED_BASIS_CEILING)):
+            with self.subTest(basis=label):
+                serialised = self._fattest_page(basis,
+                                                ql.DOCUMENTS_LIMIT_DEFAULT)
+                self.assertLessEqual(
+                    serialised, 14000,
+                    f"a default page of licensed copies with a "
+                    f"{len(basis)}-character rights_basis serialises to "
+                    f"{serialised} characters, and the browser thins anything "
+                    f"over 14,000 AFTER returned/truncated were computed here")
+
+    def test_the_default_page_is_the_largest_one_that_fits(self):
+        """The other half of the measurement, so the constant cannot quietly
+        drift downwards either: one more document than the default overflows
+        the budget at the 500-character ceiling the page above was sized for.
+        Note what this does NOT say -- at the realistic 346-character basis a
+        page of 4 comes to 13,810 characters in the browser's own units and
+        does fit, by 190 characters. The default is 3 because 190 characters
+        of headroom over an unbounded TEXT column is not a margin, not because
+        4 is impossible. If this test starts failing the rows got cheaper, and
+        the default is costing the model documents it could have had."""
+        serialised = self._fattest_page(LICENSED_BASIS_CEILING,
+                                        ql.DOCUMENTS_LIMIT_DEFAULT + 1)
+        self.assertGreater(serialised, 14000)
+
+    def test_the_browser_still_thins_the_key_this_default_was_sized_for(self):
+        """The 14,000 budget above is not a constant this stack owns.
+
+        trimJson pops entries off a fixed list of array keys, and 'documents'
+        being on that list is the whole reason a listing can be thinned at
+        all. If the browser's cap or its key list moves, DOCUMENTS_LIMIT_
+        DEFAULT was measured against a budget that no longer exists.
+        """
+        source = Path(ROOT, "site", "index.html").read_text(encoding="utf-8")
+        trim = source.split("function trimJson(o, max=10000){", 1)
+        self.assertEqual(len(trim), 2, "trimJson is not where this was measured")
+        body = trim[1].split("\n}", 1)[0]
+        self.assertIn("'documents'", body,
+                      "trimJson no longer thins the listing's own array")
+        self.assertIn("o.truncated=true", body.replace(" ", ""))
+        self.assertIn("trimJson(local,14000)", source.replace(" ", ""),
+                      "the browser's tool-result budget is no longer 14,000")
+
+
+class MineIdCaseSpellingTest(QueryLambdaTestCase):
+    """The bridge carries spellings; it must never invent or fold them.
+
+    mine_file_harvest.py seeds ws13_documents.mine_ids from a raw survey
+    attribute and does not case-fold it, so 'SP0145' and 'sp0145' are two
+    different values to ws13_documents_mines -- a GIN index whose only
+    operators are exact-match. pipelines/ws13_mine_id_map.py:61-68 records
+    every stored spelling in ws13_mine_id_all for exactly that reason and
+    states that a reader must match against the whole array.
+
+    Two things follow, and they pull in opposite directions, which is why
+    they are pinned together here:
+
+      * Nothing between the map row and the bound parameter may normalise a
+        case. A .lower() added anywhere on this path would not raise, would
+        not warn, and would match nothing at all in a corpus whose ids are
+        mostly upper case.
+      * Nothing here may GUESS a spelling either. The map is the authority on
+        which spellings exist; deriving 'sp0145' from 'SP0145' in the Lambda
+        would put an id in the predicate that no pipeline ever recorded.
+
+    The open half of this -- that the live reader still SELECTs ws13_mine_id
+    alone, so the array it overlaps against is the primary spelling only --
+    is pinned by the last test in this class, as a tripwire and NOT as an
+    endorsement.
+    """
+
+    FRONT_END_ID = "stategeo-igs-sp-145"
+
+    def bound_mine_ids(self):
+        """Every list parameter bound to the mine overlap predicate."""
+        return [param for sql, params in self.conn.statements
+                if "d.mine_ids && %s::text[]" in sql
+                for param in params if isinstance(param, list)]
+
+    def cold_container(self):
+        """Drop the cached connection between two requests in one test.
+
+        ``connection()`` keeps _CONN for the life of the container, which is
+        the behaviour test_a_warm_container_reuses_one_connection pins. Left
+        alone it also means a second request inside one test keeps talking to
+        the FIRST test case's fake, and every assertion about what the second
+        one bound reads an empty statement log.
+        """
+        ql._CONN = None
+
+    def test_a_resolved_spelling_is_bound_verbatim(self):
+        """Byte-for-byte what the map row held, in both directions of case."""
+        for corpus_id in ("SP0145", "sp0145"):
+            with self.subTest(corpus_id=corpus_id):
+                self.cold_container()
+                self.search(lexical=[row(401)], arms=["lexical"],
+                            filters={"mine_id": self.FRONT_END_ID},
+                            mine_id_map={self.FRONT_END_ID: [corpus_id]})
+                self.assertEqual(self.bound_mine_ids(), [[corpus_id]])
+
+    def test_no_case_variant_is_invented_for_a_spelling_the_map_did_not_hold(self):
+        """The map is the authority on which spellings exist.
+
+        Deriving the other case here would be the retrieval layer guessing at
+        corpus contents -- the same class of move as resolving an 8-character
+        sha256 prefix -- and it would do it in the one place where a wrong
+        guess silently serves another mine's documents.
+        """
+        self.search(lexical=[row(402)], arms=["lexical"],
+                    filters={"mine_id": self.FRONT_END_ID},
+                    mine_id_map={self.FRONT_END_ID: ["SP0145"]})
+        for bound in self.bound_mine_ids():
+            self.assertEqual(bound, ["SP0145"])
+            self.assertNotIn("sp0145", bound)
+
+    def test_every_spelling_the_map_returns_reaches_one_overlap_predicate(self):
+        """Several spellings of one mine are one predicate, not several.
+
+        This is the transport ws13_mine_id_all needs: && matches a document
+        carrying ANY member, and it is the operator that can carry a
+        multi-spelling resolution at all -- `= ANY(d.mine_ids)` would scan all
+        56,282 documents and `@>` would demand the document carry every
+        spelling at once.
+        """
+        for op in ("search", "documents"):
+            with self.subTest(op=op):
+                self.cold_container()
+                mapped = {self.FRONT_END_ID: ["SP0145", "sp0145", "SP-145"]}
+                if op == "search":
+                    self.search(lexical=[row(403)], arms=["lexical"],
+                                filters={"mine_id": self.FRONT_END_ID},
+                                mine_id_map=mapped)
+                else:
+                    conn = FakeConn(documents=[row(403)], document_total=1,
+                                    mine_id_map=mapped)
+                    self.conn = conn
+                    with mock.patch.object(ql, "_open_connection", lambda: conn):
+                        ql.handler({"op": "documents",
+                                    "filters": {"mine_id": self.FRONT_END_ID}},
+                                   None)
+                bound = self.bound_mine_ids()
+                self.assertTrue(bound, "the mine predicate never ran")
+                for value in bound:
+                    self.assertEqual(sorted(value),
+                                     ["SP-145", "SP0145", "sp0145"])
+
+    def test_the_predicate_never_wraps_mine_ids_in_a_function(self):
+        """lower(d.mine_ids::text) would make the case problem disappear and
+        take ws13_documents_mines with it: an expression over the array is not
+        the indexed expression, so the mine filter would fall back to a
+        sequential scan over 56,282 rows inside the 30 s gateway budget."""
+        for builder, filters in (
+                (ql.documents_where, {"mine_id": ["SP0145"]}),
+                (ql.document_clauses, {"mine_id": ["SP0145"]})):
+            with self.subTest(builder=builder.__name__):
+                clauses, _ = builder(filters)
+                predicate = [item for item in clauses if "mine_ids" in item]
+                self.assertEqual(predicate, ["d.mine_ids && %s::text[]"])
+
+    def test_the_reader_selects_one_spelling_and_the_docstring_says_so(self):
+        """A TRIPWIRE ON AN OPEN LIMIT, not a blessing of it.
+
+        pipelines/ws13_mine_id_map.py:154-166 states the reader query this
+        table was built for: SELECT front_end_id, ws13_mine_id,
+        ws13_mine_id_all ... AND ws13_mine_id IS NOT NULL AND (verified OR
+        confidence >= 0.8). The live mine_id_map() selects ws13_mine_id alone
+        and applies neither guard, so documents filed under another spelling
+        are lost here exactly as they are lost in search(), and a fuzzy_name
+        difflib guess capped at 0.6 confidence can scope a query.
+
+        ws13_query_lambda.documents() says so in its own docstring rather than
+        implying it fixed it. This test asserts the code and that sentence
+        agree. Widening the SELECT is the right change and it will fail this
+        test: when you make it, delete this test, and take BOTH guards with
+        you -- the array without the confidence filter turns a 0.6 difflib
+        guess into a silently scoped search, which is what the tiers exist to
+        prevent, and a pre-ws13_mine_id_all table answers the wider SELECT
+        with 42703, which mine_id_map() swallows as "bridge empty".
+        """
+        self.search(lexical=[row(404)], arms=["lexical"],
+                    filters={"mine_id": self.FRONT_END_ID},
+                    mine_id_map={self.FRONT_END_ID: ["SP0145"]})
+        bridge = [sql for sql, _ in self.conn.statements
+                  if "ws13_mine_id_map" in sql]
+        self.assertEqual(len(bridge), 1, bridge)
+        self.assertNotIn("ws13_mine_id_all", bridge[0])
+        documents_doc = " ".join((ql.documents.__doc__ or "").split())
+        self.assertIn("primary spelling only", documents_doc)
+        self.assertIn("does not fix that", documents_doc)
+        # The contract the tripwire points at has to still be there to point
+        # at: if the pipeline stops stating the reader query, a later fix has
+        # nothing to implement against.
+        pipeline = Path(ROOT, "pipelines", "ws13_mine_id_map.py").read_text(
+            encoding="utf-8")
+        self.assertIn("ws13_mine_id_all", pipeline)
+        self.assertIn("verified OR confidence >= 0.8", pipeline)
+
+
 class PlanGuardTest(QueryLambdaTestCase):
     """The Seq Scan guard, actually executed.
 
@@ -1392,6 +2159,36 @@ def ws13_citation(**changes):
     return citation
 
 
+def ws13_document(**changes):
+    """One listed document exactly as ws13_query_lambda.documents() emits one."""
+    sha256 = "3c3fc7e970db5286640b83c35e886fc07a6db4c415e92782674aa94a3058a9a1"
+    citation = ws13_citation(page=None, markdown=f"[Mines and Prospects of "
+                                                 f"Idaho, DD-1](doc:{sha256})")
+    document = {
+        "document_id": sha256, "sha256": sha256,
+        "title": "Mines and Prospects of Idaho, DD-1",
+        "portal": "igs-mines", "state": "ID", "county": "Cassia County",
+        "page_count": 118, "indexed_pages": 118, "source_url": None,
+        "indexed": True, "embedded": True,
+        "admission_class": "research-copies",
+        "rights_basis": "Idaho Geological Survey state archive",
+        "rights_terms": "state-archive research copy, not redistributable",
+        "attribution_required": True, "non_commercial": True,
+        "share_alike": False, "citation": citation,
+    }
+    document.update(changes)
+    return document
+
+
+def ws13_document_list(**changes):
+    result = {"status": "loaded", "op": "documents",
+              "mine_id": "stategeo-igs-dd-1-if0126", "count": 3, "returned": 1,
+              "documents": [ws13_document()], "truncated": True,
+              "next_offset": 1}
+    result.update(changes)
+    return result
+
+
 class AskWs13RoutingTest(unittest.TestCase):
     """infra/ask_lambda's WS13 path: what it sends, and when it gives up.
 
@@ -1528,6 +2325,250 @@ class AskWs13RoutingTest(unittest.TestCase):
         markdown = result["hits"][0]["citation"]["markdown"]
         self.assertNotIn("ws12/research-copies", markdown)
         self.assertRegex(markdown, DOC_CHIP_RE)
+
+    # -- docs_for, the per-mine document list -----------------------------
+    def test_the_document_list_asks_for_the_documents_op(self):
+        """Routed at the corpus behind the same flag as search_documents, so
+        "ask a question" and "click a mine" cannot answer from different
+        archives."""
+        self.aws.lambda_client.result = ws13_document_list()
+        result, reason = self.ask._ws13_docs_for(
+            {"mine_id": "stategeo-igs-dd-1-if0126"})
+        self.assertIsNone(reason)
+        payload = self.aws.lambda_client.payload()
+        self.assertEqual(payload["op"], "documents")
+        self.assertEqual(payload["filters"],
+                         {"mine_id": "stategeo-igs-dd-1-if0126"})
+        self.assertEqual(result["retrieval_source"], "ws13")
+
+    def test_the_document_list_never_spends_an_embedding(self):
+        """The op ranks nothing, so a Titan round trip -- or a Titan throttle
+        -- would buy the listing exactly nothing."""
+        self.aws.lambda_client.result = ws13_document_list()
+        self.ask._ws13_docs_for({"mine_id": "stategeo-igs-dd-1-if0126"})
+        self.assertEqual(self.aws.bedrock.calls, [])
+        self.assertNotIn("query_vector", self.aws.lambda_client.payload())
+
+    def test_the_count_and_the_page_reach_the_caller_apart(self):
+        self.aws.lambda_client.result = ws13_document_list()
+        result, _ = self.ask._ws13_docs_for(
+            {"mine_id": "stategeo-igs-dd-1-if0126"})
+        self.assertEqual(result["count"], 3)
+        self.assertEqual(len(result["documents"]), 1)
+        self.assertTrue(result["truncated"])
+
+    def test_docs_for_without_a_mine_id_never_spends_a_ws13_invoke(self):
+        result, reason = self.ask._ws13_docs_for({})
+        self.assertIsNone(result)
+        self.assertIn("mine_id", reason)
+        self.assertEqual(self.aws.lambda_client.calls, [])
+
+    def test_a_function_error_is_a_miss_not_a_document_list(self):
+        self.aws.lambda_client.function_error = "Unhandled"
+        self.aws.lambda_client.result = {"errorMessage": "boom"}
+        result, reason = self.ask._ws13_docs_for({"mine_id": "IF0126"})
+        self.assertIsNone(result)
+        self.assertIn("Unhandled", reason)
+
+    def test_a_transport_failure_on_the_document_list_is_a_miss(self):
+        self.aws.lambda_client.error = RuntimeError("connect timeout")
+        result, reason = self.ask._ws13_docs_for({"mine_id": "IF0126"})
+        self.assertIsNone(result)
+        self.assertIn("connect timeout", reason)
+
+    def test_an_unmapped_mine_falls_back_to_sqlite_and_says_why(self):
+        """The SQLite index is keyed on the front-end id, so it is the half
+        that answers this mine today. Relaying WS13's zero would put "this
+        mine has no documents" in front of a user whose documents are in the
+        corpus."""
+        self.aws.lambda_client.result = ws13_document_list(
+            count=0, returned=0, documents=[], truncated=False,
+            next_offset=None, filter_unresolved=["mine_id"])
+        stub = types.ModuleType("document_tools")
+        stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+        stub.execute = lambda name, arguments: {
+            "status": "loaded", "mine_id": arguments["mine_id"], "count": 2,
+            "documents": [], "retrieval_source": "sqlite"}
+        with mock.patch.dict(sys.modules, {"document_tools": stub}):
+            result = self.ask.execute_local_tool(
+                "docs_for", {"mine_id": "stategeo-igs-dd-1-if0126"})
+        self.assertEqual(result["retrieval_source"], "sqlite")
+        self.assertIn("mine_id", result["ws13_fallback_reason"])
+
+    def test_a_stale_stored_copy_markdown_becomes_the_page_less_chip(self):
+        stale = ws13_document(citation=ws13_citation(
+            page=None,
+            markdown="Mines and Prospects of Idaho, DD-1 (stored copy: "
+                     "ws12/research-copies/3c/if0131.pdf)"))
+        self.aws.lambda_client.result = ws13_document_list(documents=[stale])
+        result, _ = self.ask._ws13_docs_for({"mine_id": "IF0126"})
+        markdown = result["documents"][0]["citation"]["markdown"]
+        self.assertNotIn("ws12/research-copies", markdown)
+        match = DOC_CHIP_RE.fullmatch(markdown)
+        self.assertIsNotNone(match, markdown)
+        self.assertIsNone(match.group(3), "the listing must claim no page")
+
+    def test_a_citation_too_malformed_for_a_chip_loses_the_key(self):
+        """The branch that cannot build a chip is exactly the one where a
+        stale "(stored copy: <s3 key>)" string would otherwise survive into an
+        answer as decoration."""
+        broken = ws13_document(citation=ws13_citation(
+            page=None, sha256="not-a-digest",
+            markdown="DD-1 (stored copy: ws12/research-copies/3c/if0131.pdf)"))
+        self.aws.lambda_client.result = ws13_document_list(documents=[broken])
+        result, _ = self.ask._ws13_docs_for({"mine_id": "IF0126"})
+        self.assertNotIn(
+            "ws12/", str(result["documents"][0]["citation"]["markdown"]))
+
+    def test_the_listing_does_not_arm_the_citation_guard(self):
+        """A listing citation has page None by construction, and the guard
+        requires an int page -- so collecting these would withhold every
+        answer that merely listed a mine's documents."""
+        messages = [
+            {"role": "user", "content": [{"text": "what is filed on IF0126?"}]},
+            {"role": "assistant", "content": [{"toolUse": {
+                "toolUseId": "t1", "name": "docs_for",
+                "input": {"mine_id": "stategeo-igs-dd-1-if0126"}}}]},
+            {"role": "user", "content": [{"toolResult": {
+                "toolUseId": "t1",
+                "content": [{"json": ws13_document_list()}]}}]},
+        ]
+        self.assertEqual(self.ask._document_citations(messages), [])
+
+    def test_every_docs_for_miss_ends_at_sqlite_with_the_reason_attached(self):
+        """The rule the whole path rests on, for the listing half.
+
+        A retrieval upgrade may degrade an answer and must never take the tool
+        offline, so each of the four ways WS13 can fail to answer has to end
+        at the bounded index -- with the reason on the result, because a
+        deployment that has silently stopped using WS13 is otherwise visible
+        only in a retrieval mode nobody reads. The SQLite tool has to receive
+        the caller's own arguments too: a fallback that dropped the mine_id
+        would answer a different question rather than the same one from a
+        smaller index.
+        """
+        cases = {
+            "a function error": dict(function_error="Unhandled",
+                                     result={"errorMessage": "boom"}),
+            "a transport failure": dict(error=RuntimeError("connect timeout")),
+            "a status that is not loaded": dict(
+                result={"status": "not_loaded", "count": None,
+                        "documents": []}),
+            "an unresolved mine id": dict(result=ws13_document_list(
+                count=0, returned=0, documents=[], truncated=False,
+                next_offset=None, filter_unresolved=["mine_id"])),
+        }
+        arguments = {"mine_id": "stategeo-igs-dd-1-if0126"}
+        for label, failure in cases.items():
+            with self.subTest(failure=label):
+                self.aws.lambda_client = FakeLambdaClient()
+                for key, value in failure.items():
+                    setattr(self.aws.lambda_client, key, value)
+                seen = []
+                stub = types.ModuleType("document_tools")
+                stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+                stub.execute = lambda name, args: (
+                    seen.append((name, args)) or
+                    {"status": "loaded", "mine_id": args["mine_id"],
+                     "count": 2, "documents": [], "retrieval_source": "sqlite"})
+                with mock.patch.dict(sys.modules, {"document_tools": stub}):
+                    result = self.ask.execute_local_tool("docs_for", arguments)
+                self.assertEqual(result["retrieval_source"], "sqlite")
+                self.assertTrue(result["ws13_fallback_reason"], result)
+                self.assertEqual(seen, [("docs_for", arguments)])
+                # The bounded index answered, so the bounded index's own count
+                # is what the caller gets -- not WS13's zero wearing a reason.
+                self.assertEqual(result["count"], 2)
+
+    def test_a_fallback_result_is_the_bounded_index_answer_and_nothing_else(self):
+        """Exactly one key is added. A merge of the two stacks' documents
+        would be a document list whose rows came from two different corpora
+        under one count, and only one of those corpora carries rights."""
+        self.aws.lambda_client.error = RuntimeError("connect timeout")
+        sqlite_result = {"status": "loaded", "mine_id": "IF0126", "count": 2,
+                         "documents": [{"document_id": "a" * 64,
+                                        "title": "IGS mine file"}]}
+        stub = types.ModuleType("document_tools")
+        stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+        stub.execute = lambda name, args: dict(sqlite_result)
+        with mock.patch.dict(sys.modules, {"document_tools": stub}):
+            result = self.ask.execute_local_tool("docs_for",
+                                                 {"mine_id": "IF0126"})
+        self.assertEqual(set(result) - set(sqlite_result),
+                         {"ws13_fallback_reason"})
+        for key, value in sqlite_result.items():
+            self.assertEqual(result[key], value, key)
+
+
+class AskWs13DarkShipTest(unittest.TestCase):
+    """With the flag off, both document tools are the SQLite call they were.
+
+    infra/ask_lambda.py:52-62 states the rule the dark rollout rests on, and
+    docs_for now shares the switch with search_documents -- so the flag-off
+    dispatch has to be proven for it too, not assumed from the search half.
+    """
+
+    def setUp(self):
+        self.aws = FakeAws()
+        self.ask = load_ask_lambda(self.aws)
+
+    def test_neither_document_tool_reaches_ws13_with_the_flag_off(self):
+        self.assertFalse(self.ask.WS13_RETRIEVAL_ENABLED)
+        stub = types.ModuleType("document_tools")
+        stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+        stub.execute = lambda name, arguments: {"status": "loaded",
+                                                "tool": name, "count": 0,
+                                                "documents": [], "hits": []}
+        with mock.patch.dict(sys.modules, {"document_tools": stub}):
+            for name, arguments in (("docs_for", {"mine_id": "IF0126"}),
+                                    ("search_documents", {"query": "silver"})):
+                with self.subTest(tool=name):
+                    result = self.ask.execute_local_tool(name, arguments)
+                    self.assertEqual(result["tool"], name)
+                    self.assertNotIn("ws13_fallback_reason", result)
+                    self.assertNotIn("retrieval_source", result)
+        self.assertEqual(self.aws.lambda_client.calls, [])
+        self.assertEqual(self.aws.bedrock.calls, [])
+
+    def test_the_flag_off_dispatch_never_enters_the_ws13_helper_at_all(self):
+        """"Inert" is stronger than "the invoke did not happen": the helper
+        catches every exception it can raise and reports it as a miss, so a
+        helper that ran and failed would look exactly like one that never ran
+        -- except for the ws13_fallback_reason it would leave on the result.
+        These raisers cannot be swallowed by that except clause because they
+        never get inside it."""
+        def never(*args, **kwargs):
+            raise AssertionError("the WS13 helper ran with the flag off")
+
+        stub = types.ModuleType("document_tools")
+        stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+        stub.execute = lambda name, args: {"status": "loaded", "tool": name}
+        with mock.patch.dict(sys.modules, {"document_tools": stub}), \
+                mock.patch.object(self.ask, "_ws13_docs_for", never), \
+                mock.patch.object(self.ask, "_ws13_search", never):
+            self.assertEqual(
+                self.ask.execute_local_tool("docs_for", {"mine_id": "IF0126"}),
+                {"status": "loaded", "tool": "docs_for"})
+
+    def test_the_switch_needs_a_function_name_as_well_as_the_flag(self):
+        """WS13_RETRIEVAL_ENABLED is `flag and bool(function name)`.
+
+        The order a rollout actually happens in is flag first, function later,
+        and an invoke of "" is a ParamValidationError inside the helper -- a
+        miss, so the answer survives, but every docs_for call would spend a
+        boto3 round trip and arrive carrying a fallback reason that reads like
+        a WS13 outage rather than an unconfigured stack.
+        """
+        ask = load_ask_lambda(self.aws, WS13_RETRIEVAL_ENABLED="true",
+                              WS13_RETRIEVAL_FUNCTION="")
+        self.assertFalse(ask.WS13_RETRIEVAL_ENABLED)
+        stub = types.ModuleType("document_tools")
+        stub.TOOL_NAMES = frozenset({"search_documents", "docs_for"})
+        stub.execute = lambda name, args: {"status": "loaded", "tool": name}
+        with mock.patch.dict(sys.modules, {"document_tools": stub}):
+            result = ask.execute_local_tool("docs_for", {"mine_id": "IF0126"})
+        self.assertNotIn("ws13_fallback_reason", result)
+        self.assertEqual(self.aws.lambda_client.calls, [])
 
 
 class AskCitationGuardTest(unittest.TestCase):
@@ -1978,6 +3019,66 @@ class AnnIndexParentClassificationTest(unittest.TestCase):
         self.assertTrue(ann_index.looks_like_target(
             "/bin/bash /var/lib/cloud/instance/scripts/part-001"))
         self.assertFalse(ann_index.looks_like_target("sshd: ec2-user@pts/0"))
+
+
+class ReservedConcurrencyTemplateTests(unittest.TestCase):
+    """MaxConcurrency=0 must withhold the property, not send a literal 0.
+
+    Two different failures meet here, and the second is the nasty one.
+
+    The template asked for ReservedConcurrentExecutions: 20. This account's
+    TOTAL concurrent-execution limit is 10 and Lambda refuses to leave fewer
+    than 10 unreserved, so the reservation was rejected and the stack could
+    not create -- the default was twice the whole account's ceiling.
+
+    The obvious fix, passing 0, is worse than the bug: Lambda reads a literal
+    ReservedConcurrentExecutions: 0 as throttled-to-zero. The function deploys
+    and then can never run, which fails at request time rather than at deploy
+    time. So 0 has to resolve to AWS::NoValue.
+    """
+
+    TEMPLATE = (ROOT / "infra" / "ws13_retrieval.yaml").read_text(encoding="utf-8")
+
+    def test_zero_is_withheld_rather_than_sent(self):
+        self.assertIn("HasReservedConcurrency", self.TEMPLATE)
+        self.assertIn("!Equals [!Ref MaxConcurrency, 0]", self.TEMPLATE)
+        # Anchored to the PROPERTY line at resource indentation. Matching the
+        # bare string finds the prose in the Conditions comment first, which
+        # is how the first version of this test passed against a template
+        # that still bound the property unconditionally.
+        match = re.search(
+            r"^ {6}ReservedConcurrentExecutions:(.*?)(?=^ {6}\w)",
+            self.TEMPLATE, re.MULTILINE | re.DOTALL)
+        self.assertIsNotNone(match, "property not found at resource indent")
+        block = match.group(1)
+        self.assertIn("!If", block)
+        self.assertIn("HasReservedConcurrency", block)
+        self.assertIn("AWS::NoValue", block)
+
+    def test_the_property_is_never_bound_unconditionally(self):
+        # The shape that could not deploy. A bare `!Ref MaxConcurrency` on
+        # this line is the regression.
+        self.assertNotRegex(
+            self.TEMPLATE,
+            r"ReservedConcurrentExecutions:\s*!Ref\s+MaxConcurrency")
+
+    def test_the_default_reserves_nothing(self):
+        match = re.search(
+            r"MaxConcurrency:\s*\n\s+Type: Number\s*\n\s+Default:\s*(\d+)",
+            self.TEMPLATE)
+        self.assertIsNotNone(match, "MaxConcurrency default not found")
+        self.assertEqual(
+            match.group(1), "0",
+            "a non-zero default cannot deploy while the account's Lambda "
+            "concurrency limit is 10 with a 10-unreserved floor")
+
+    def test_the_description_says_zero_is_not_throttle_to_zero(self):
+        # This is the whole trap: a reader who sees Default: 0 and assumes it
+        # disables the function would raise it back to a value that cannot
+        # deploy. The parameter has to say so itself.
+        block = self.TEMPLATE.split("MaxConcurrency:")[1].split("CodeS3Bucket:")[0]
+        self.assertIn("reserves NOTHING", block)
+        self.assertIn("never run", block)
 
 
 if __name__ == "__main__":

@@ -10,8 +10,8 @@ model relay; it holds the system prompt and tool contract.
 Env: MODEL_ID (default us.anthropic.claude-3-5-haiku-20241022-v1:0),
      ALLOW_ANON ("true" to skip Cognito check — local/dev only),
      WS13_RETRIEVAL_FUNCTION + WS13_RETRIEVAL_ENABLED (route search_documents
-     at the 852,027-chunk WS13 corpus instead of the 3.2 MB SQLite index;
-     disabled by default, see below),
+     AND docs_for at the 852,027-chunk WS13 corpus instead of the 3.2 MB
+     SQLite index; disabled by default, see below),
      WS13_INVOKE_TIMEOUT_S (client deadline on that invoke, default 12),
      WS13_VECTOR_ARM ("true"/"false" mirror of the retrieval stack's flag;
      unset means learn it from the response instead of embedding for nothing).
@@ -56,6 +56,11 @@ _ws13_lambda = {"client": None}
 # upgrade instead of something the dashboard waits on: with
 # WS13_RETRIEVAL_ENABLED unset or false, every path below is byte-for-byte the
 # behaviour that shipped before the flag existed.
+# The same flag routes docs_for, and it has to be the same one: while
+# search_documents alone was routed, "ask a question" answered from 852,027
+# chunks and "click a mine, see its documents" answered from an index holding
+# exactly 2 documents, so the two surfaces contradicted each other about what
+# the archive contains.
 WS13_RETRIEVAL_FUNCTION = os.environ.get("WS13_RETRIEVAL_FUNCTION", "").strip()
 WS13_RETRIEVAL_ENABLED = (
     os.environ.get("WS13_RETRIEVAL_ENABLED", "false").lower() == "true"
@@ -190,7 +195,7 @@ TOOLS = [
      "lat": {"type": "number", "minimum": -90, "maximum": 90},
      "lon": {"type": "number", "minimum": -180, "maximum": 180}},
      "required": ["lat", "lon"]}}}},
- {"toolSpec": {"name": "docs_for", "description": "Return harvested public mine-file metadata joined to a mine/site ID: title, page_count, indexed_pages, and source URL. It does not invent matched pages; use document search for page-level citations. A not_loaded status is not an empty document set.",
+ {"toolSpec": {"name": "docs_for", "description": "Return the documents attached to a mine/site ID: title, page_count, indexed_pages, source URL, and, on a full-corpus deployment, each document's rights. `count` and the length of `documents` are not the same number there: count is the total attached and documents[] is a page of it, with truncated and next_offset saying so, so never present the listed rows as the whole set; a deployment still reading the bounded 3.2 MB index has neither field and its count is just the length of the list, which its own query stops at 200 rows — so that count is a ceiling as much as a total, and that index is not the corpus. Whenever a returned document carries non_commercial or share_alike terms, name its rights_terms and rights_basis in the answer. Nothing here is matched to a page — page_count and indexed_pages are not citations — so use search_documents for page-level citations. A not_loaded status is not an empty document set.",
    "inputSchema": {"json": {"type": "object", "properties": {
      "mine_id": {"type": "string", "minLength": 1}},
      "required": ["mine_id"]}}}},
@@ -403,12 +408,122 @@ def _ws13_search(arguments):
     return result, None
 
 
+def _ws13_rewrite_document_markdown(result):
+    """The stored-copy markdown guard, for the page-less document listing.
+
+    Same job as _ws13_rewrite_stored_copy_markdown and the same reason for it:
+    ws13_query_lambda.document_citation owns this markdown, ASK is the surface
+    that hands it to a model told to paste citations verbatim, and version
+    skew between the two stacks lands here. A listing citation carries no page
+    — nothing in it was matched to one — so the chip is the page-less form
+    site/index.html:3592 accepts, where the '#<page>' group is optional and
+    docChip opens the document at page 1 without the answer ever claiming a
+    page number.
+
+    A citation too malformed to build a chip from LOSES its markdown rather
+    than keeping whatever the far end sent: an unusable title or sha256 is
+    exactly the case where a stale "(stored copy: <s3 key>)" string would
+    otherwise survive into an answer as decoration, carrying a private object
+    key that resolves nowhere for the reader.
+    """
+    for document in result.get("documents") or []:
+        citation = document.get("citation") if isinstance(document, dict) else None
+        if (not isinstance(citation, dict) or
+                str(citation.get("resolvable_via") or "") != "stored_copy"):
+            continue
+        title = str(citation.get("document_title") or "").strip()
+        sha256 = str(citation.get("sha256") or "").strip().lower()
+        if title and re.fullmatch(r"[0-9a-f]{16,64}", sha256):
+            citation["markdown"] = f"[{title}](doc:{sha256})"
+        else:
+            citation["markdown"] = title or None
+    return result
+
+
+def _ws13_docs_for(arguments):
+    """The per-mine document list from WS13. Returns (result, None) or (None, reason).
+
+    Mirrors _ws13_search's contract exactly, for the same reason: it never
+    raises, and on any failure the caller falls back to the bounded SQLite
+    index carrying ws13_fallback_reason, so routing the document list at the
+    corpus can degrade an answer but can never take the tool offline.
+
+    Two differences from the search path, both deliberate:
+
+      * No embedding. The documents op ranks nothing, so there is no query
+        vector to compute and ASK does not spend a Titan round trip — or a
+        Titan throttle — on a listing.
+      * The result is NOT collected by _document_citations(), which filters on
+        the search_documents tool name. That must stay true. A listing
+        citation has page None by construction, _citation_references() and
+        _answer_has_resolvable_citation() both require an int page, and so
+        arming the citation guard with these would withhold every answer that
+        merely listed a mine's documents.
+    """
+    try:
+        mine_id = str(arguments.get("mine_id") or "").strip()[:256]
+        if not mine_id:
+            # The op refuses an unfiltered listing rather than paging all
+            # 56,282 documents, and the SQLite tool raises on a missing
+            # mine_id too — so this is the fallback's error to report, not a
+            # WS13 round trip to spend.
+            return None, "docs_for was called without a mine_id"
+        payload = {
+            "op": "documents",
+            "filters": {key: arguments[key] for key in WS13_FILTER_KEYS
+                        if arguments.get(key) not in (None, "", [])},
+        }
+        # limit/offset are honoured when a caller supplies them but are NOT in
+        # the docs_for tool schema: the SQLite fallback ignores both (it takes
+        # mine_id alone), so advertising them to the model would offer a page
+        # cursor that silently returns page 1 again on a deployment reading
+        # the bounded index.
+        for key in ("limit", "offset"):
+            if arguments.get(key) not in (None, ""):
+                payload[key] = int(arguments[key])
+        response = _ws13_lambda_client().invoke(
+            FunctionName=WS13_RETRIEVAL_FUNCTION,
+            InvocationType="RequestResponse",
+            Payload=json.dumps(payload).encode("utf-8"))
+        # An unhandled exception inside WS13 still returns HTTP 200 with a
+        # FunctionError header, so a bare status check would read a traceback
+        # as a document list.
+        if response.get("FunctionError"):
+            raise RuntimeError(f"ws13 {response['FunctionError']}")
+        body = response.get("Payload")
+        raw = body.read() if hasattr(body, "read") else (body or b"{}")
+        result = json.loads(raw or b"{}")
+        if not isinstance(result, dict) or result.get("status") != "loaded":
+            raise RuntimeError(f"ws13 status {str(result)[:200]}")
+    except Exception as exc:
+        return None, f"{type(exc).__name__}: {str(exc)[:280]}"
+    # An unresolved mine id is a MISS, never an authoritative empty list. The
+    # front end emits 'stategeo-igs-dd-1-if0126' and ws13_documents.mine_ids
+    # holds AZGS 'ADMM-...' and bare IGS codes, so an id with no
+    # ws13_mine_id_map row was never translated — and the SQLite index, which
+    # is keyed on the front-end id, is the half that answers that mine today.
+    # Relaying count 0 would put "this mine has no documents" in front of a
+    # user whose documents are demonstrably in the corpus.
+    unresolved = [str(key) for key in (result.get("filter_unresolved") or [])][:4]
+    if unresolved:
+        return None, "ws13 could not resolve filter(s): " + ", ".join(unresolved)
+    result["retrieval_source"] = "ws13"
+    _ws13_rewrite_document_markdown(result)
+    return result, None
+
+
 def execute_local_tool(name, arguments):
     """Dispatch server-side WS12/WS13 tools without broad module side effects."""
     from document_tools import TOOL_NAMES as DOCUMENT_TOOLS, execute as execute_document
     if name in DOCUMENT_TOOLS:
-        if name == "search_documents" and WS13_RETRIEVAL_ENABLED:
-            result, reason = _ws13_search(arguments)
+        # Both document tools route at the corpus behind the one flag, so
+        # "ask a question" and "click a mine, see its documents" cannot end up
+        # answering from different corpora. With the flag off neither branch
+        # is reachable and the dispatch is the SQLite call it always was.
+        remote = {"search_documents": _ws13_search,
+                  "docs_for": _ws13_docs_for}.get(name)
+        if remote is not None and WS13_RETRIEVAL_ENABLED:
+            result, reason = remote(arguments)
             if result is not None:
                 return result
             # Fall back to the bounded SQLite index and carry the reason, so a

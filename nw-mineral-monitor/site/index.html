@@ -553,6 +553,27 @@ const DOC_SEARCH_CITATIONS = Object.create(null); // normalized source/page -> r
 // defensible only because access is Cognito-authenticated AND the attribution
 // travels with the citation, so the chip has to be able to show it.
 const DOC_RIGHTS = Object.create(null);
+// docUrlKey(source_url) -> the sha256 a tool result gave that URL. A listing
+// citation is page-less by construction, so its markdown reaches mdToHtml as a
+// plain [title](source_url) and docChipForCitation() — which needs a 'p. N' in
+// the label — can never match it. Without this the CC BY-NC-SA and research
+// copies among those citations would render in the answer body as bare
+// outbound links with no terms beside them. Filled from tool results only, and
+// it grants nothing: the answer text supplies a lookup key, never the rights.
+// Limit worth naming: it is last-write-wins, so two documents manifested under
+// one source_url would show the later one's terms.
+const DOC_RIGHTS_BY_URL = Object.create(null);
+// sha256 -> what it takes to OPEN that same document: the stored original's
+// private S3 key, the licence text the viewer prints beside the page, which
+// shape of stored copy is servable, and the document's own title. Kept apart
+// from DOC_RIGHTS because these are two different obligations — a citation
+// whose route we cannot build still has to render its rights, which is exactly
+// what docCiteStatic() does.
+const DOC_WS13_ROUTES = Object.create(null);
+// mine_id -> the sha256s this session's tool results filed against that mine.
+// It is what those particular calls returned out of a 56,282-document corpus,
+// never that mine's holdings, and docRefsHtml() has to label it that way.
+const DOC_WS13_BY_MINE = Object.create(null);
 let map, tipEl, liveAbort = null;
 const WS11_LAYER_STATE = {}, WS11_LAYER_SPEC = {}, WS11_CLAIM_LAYER = {}, WS11_HOVER_LAYERS = [];
 const WS11_RASTER_SPECS = {}, WS11_VECTOR_GROUPS = {};
@@ -3523,6 +3544,23 @@ async function aiAnswer(q){
         // to include one.
         if (c.toolUse.name==='search_documents' && out && Array.isArray(out.hits))
           for (const hit of out.hits) rememberSearchDocumentHit(hit);
+        // docs_for lists a mine's documents rather than one cited page, and the
+        // full-corpus version carries the same rights + viewer fields on every
+        // row. Read out.mine_id rather than c.toolUse.input.mine_id, but do not
+        // read that as a check on the subject: it is NOT one. Both backends
+        // echo the model's own argument back — ws13_query_lambda.documents()
+        // republishes filters.mine_id after strip()[:256], and
+        // document_tools._docs_for does the same — so the two strings are equal
+        // and the only thing this buys is that a version-skewed backend cannot
+        // disagree with itself about which mine it just answered for.
+        // What actually keeps an invented mine off a panel is the corpus: an id
+        // that resolves to nothing comes back with count 0 and filter_unresolved
+        // set, ASK falls back to the bounded index, and this loop never runs;
+        // every row that IS returned overlaps the resolved id, and
+        // rememberDocsForRow files it under row.mine_ids as well, which is
+        // corpus data rather than an echo.
+        if (c.toolUse.name==='docs_for' && out && Array.isArray(out.documents))
+          for (const row of out.documents) rememberDocsForRow(row, out.mine_id);
         if (c.toolUse.name==='open_doc' && out && out.ok){
           rememberDocQuote(out.doc_id, out.page, out.quote);
           opened.push(out);
@@ -3576,9 +3614,12 @@ function mdToHtml(t){
     // The canonical document-search tool returns a stable title/page/source
     // URL citation. If that source is in our stored corpus, turn it into the
     // same S3-backed chip even when the model omitted an explicit open_doc
-    // round. Unstored sources remain normal provenance links.
+    // round. A source we cannot open but whose rights a tool result stated
+    // keeps those terms on the link; everything else remains a normal
+    // provenance link.
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,
       (whole, label, url)=>docChipForCitation(label, url) ||
+        docLinkRights(label, url) ||
         `<a href="${url}" target="_blank">${label}</a>`)
     .replace(/^\s*[-*•]\s+(.+)$/gm, '<span class="mdli">· $1</span>')
     .replace(/^\s*(\d+)\.\s+(.+)$/gm, '<span class="mdli">$1. $2</span>');
@@ -3677,6 +3718,10 @@ function rememberSearchDocumentHit(hit){
   if (citation.source_url)
     DOC_SEARCH_CITATIONS[docSearchKey(citation.source_url,page)] = docId.toLowerCase();
   rememberDocRights(docId,citation);
+  // Rights first: rememberDocViewerRoute() refuses to record a route for a
+  // document whose licence is not already stated.
+  if (rememberDocViewerRoute(docId,citation))
+    rememberDocMines(docId,(hit.metadata||{}).mine_ids);
   rememberDocQuote(docId,page,hit.excerpt);
 }
 /* A licensed or research-copy citation that arrives without its rights is a
@@ -3685,13 +3730,130 @@ function rememberSearchDocumentHit(hit){
 function rememberDocRights(docId,citation){
   const cls=String(citation&&citation.admission_class||'').trim();
   if (!cls) return;
-  DOC_RIGHTS[String(docId).toLowerCase()] = {
+  const sha=String(docId).toLowerCase();
+  DOC_RIGHTS[sha] = {
     admission_class:cls,
     rights_basis:String(citation.rights_basis||'').slice(0,400),
     rights_terms:String(citation.rights_terms||'').slice(0,400),
     non_commercial:!!citation.non_commercial,
     share_alike:!!citation.share_alike,
     attribution_required:!!citation.attribution_required};
+  // The publisher link this document is cited by, so docLinkRights() can put
+  // the terms on it when the answer renders it as an ordinary <a>.
+  const url=String((citation&&citation.source_url)||'').trim();
+  if (url) DOC_RIGHTS_BY_URL[docUrlKey(url)] = sha;
+}
+/* The stored-original key shape, mirrored from docs_lambda.WS12_ORIGINAL_KEY_RE.
+   Anchored, so a leading '/', an embedded newline or a valid prefix buried in a
+   longer string all fail; no segment may begin with a dot, which is what makes
+   '.' and '..' unrepresentable rather than merely filtered. This copy is a
+   pre-flight for the UI ONLY: it decides whether painting an openable chip is
+   worth it, and it authorizes nothing. The docs API runs the same match again
+   on every request, reads the admission class off this key's ws12/{class}/
+   prefix, and still requires a live Cognito session before it signs a byte. */
+const WS13_ORIGINAL_KEY = new RegExp('^ws12/(originals|licensed-copies|' +
+  'research-copies)(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*){0,5}' +
+  '/[A-Za-z0-9_-][A-Za-z0-9._-]*\\.pdf$');
+// pipelines/ws13_worker.py's OCR output, derived from the digest exactly as
+// docs_lambda.searchable_key_for() derives it — never taken from a citation.
+const ws13SearchableKey = sha => `ws13/searchable/${sha.slice(0,2)}/${sha}/searchable.pdf`;
+// docs_lambda.VIEWER_KEY_KINDS. An unlisted word is a 400 there.
+const WS13_VIEWER_KEY_KINDS = new Set(
+  ['searchable','born_digital_original','scanned_original_no_text_layer']);
+
+/* Record how to OPEN one WS13 document, from a TOOL RESULT and nowhere else.
+
+   This registry is the reason the citation path is shaped the way it is.
+   s3_key is a private S3 object key: it may travel from a structured tool
+   result into this state and from here into a viewer fragment, but it must
+   never be parsed out of the model's answer text. infra/ask_lambda.py's system
+   prompt already forbids the model from printing one — the answer carries only
+   [title, p. N](doc:SHA256#N) — but a prompt is a request, not a boundary, and
+   a hallucinated key lifted out of markdown would become a real signed-URL
+   request for an object nobody chose. So docChip() looks the sha256 up HERE,
+   and a sha256 the answer names but no tool returned renders as inert text
+   rather than having a key guessed for it.
+
+   Returns whether a route was recorded, so a caller only files the document
+   against a mine once it is genuinely openable. */
+function rememberDocViewerRoute(docId,citation){
+  const sha=String(docId||'').toLowerCase();
+  // A full digest, never a prefix. docs_lambda.validate_ws13_request() refuses
+  // one outright: this corpus has no manifest to disambiguate against, so an
+  // 8-character prefix that matched one of 56,282 documents would be a guess.
+  if (!/^[0-9a-f]{64}$/.test(sha) || !citation) return false;
+  // ws13_query_lambda.rights_for() will not emit a citation whose licence it
+  // cannot state, so a citation arriving here with no recorded admission_class
+  // is malformed. Refusing it keeps the one thing that makes serving 13,013
+  // CC BY-NC-SA copies and 32,312 research copies defensible: an openable chip
+  // always carries its rights badge, and never implies public domain by silence.
+  if (!DOC_RIGHTS[sha]) return false;
+  const s3Key=String(citation.s3_key||'').trim();
+  if (!WS13_ORIGINAL_KEY.test(s3Key)) return false;
+  // Where the key names its document by digest, that digest must be this
+  // document's. The flat archive shape (ws12/research-copies/IF0131_001.pdf)
+  // names none and is accepted unchecked — the same conditional check
+  // validate_ws13_request() performs, and the same limit it states outright:
+  // a mispaired id and flat key still resolves, to the wrong document's bytes
+  // under this document's label, inside the session gate.
+  const stem=s3Key.slice(s3Key.lastIndexOf('/')+1,-4).toLowerCase();
+  if (/^[0-9a-f]{64}$/.test(stem) && stem!==sha) return false;
+  // viewer_key is the SERVABLE object — the ws13/searchable/ OCR copy for the
+  // 28,988 scanned documents, the original itself for the 27,294 born-digital
+  // ones. It is checked here and deliberately NOT put in the fragment: the
+  // viewer forwards its s3_key straight to the docs API, which fullmatches it
+  // against the ws12/ original shape, so sending a searchable key there would
+  // 400 for every one of those 28,988 documents. The docs API finds the
+  // servable object itself, by HEAD-probing the key it derives from the digest;
+  // this check only catches a pair of citation fields that disagree, and like
+  // everything else in this function it grants nothing.
+  const viewerKey=String(citation.viewer_key||'').trim();
+  if (viewerKey && viewerKey!==s3Key && viewerKey!==ws13SearchableKey(sha)) return false;
+  // An unrecognised kind is a 400 at the docs API, and a DROPPED kind is not
+  // free either: resolve_ws13_doc() takes the weaker of the two original shapes
+  // when the hint is missing, so a born-digital page would be labelled as
+  // having no text layer and the viewer would stop offering search over text it
+  // actually has. Pass it through when it is one of the three words.
+  const kind=String(citation.viewer_key_kind||'').trim();
+  // A citation names the page it was written against; a docs_for row names no
+  // page at all. Keep the cited page when a later row has none, so the
+  // References chip opens where something was actually read.
+  const cited=Math.max(0,parseInt(citation.page,10)||0), prev=DOC_WS13_ROUTES[sha];
+  DOC_WS13_ROUTES[sha]={
+    s3_key:s3Key,
+    rights_basis:String(citation.rights_basis||'').slice(0,400),
+    viewer_key_kind:WS13_VIEWER_KEY_KINDS.has(kind)?kind:'',
+    title:String(citation.document_title||'').slice(0,300),
+    page:cited || (prev&&prev.page) || 1};
+  return true;
+}
+const ws13Route = docId => DOC_WS13_ROUTES[String(docId||'').toLowerCase()] || null;
+/* File an openable document against every mine its tool result named. Guarded
+   on the route so this index only ever holds documents the References block
+   can actually open. */
+function rememberDocMines(docId,mineIds){
+  const sha=String(docId||'').toLowerCase();
+  if (!DOC_WS13_ROUTES[sha] || !Array.isArray(mineIds)) return;
+  for (const raw of mineIds){
+    const mine=String(raw||'').trim();
+    if (!mine) continue;
+    const list=DOC_WS13_BY_MINE[mine]=DOC_WS13_BY_MINE[mine]||[];
+    if (!list.includes(sha)) list.push(sha);
+  }
+}
+/* One docs_for row. The full-corpus tool puts the rights and viewer fields on
+   the row itself, so row fields win over any per-page citation block the row
+   also carries. Rows from the legacy WS12 index carry neither, so nothing is
+   recorded for them — which is what keeps this whole path inert while
+   WS13_RETRIEVAL_ENABLED is unset. */
+function rememberDocsForRow(row,mineId){
+  if (!row || typeof row!=='object') return;
+  const citation=Object.assign({},row.citation||{},row);
+  if (!citation.document_title) citation.document_title=row.title||'';
+  const docId=String(citation.sha256||citation.document_id||'');
+  rememberDocRights(docId,citation);
+  if (rememberDocViewerRoute(docId,citation))
+    rememberDocMines(docId,[...(Array.isArray(row.mine_ids)?row.mine_ids:[]),mineId]);
 }
 /* Badge text is deliberately short: the ASK panel is ~340 px wide. The full
    licence and attribution ride in the chip's title attribute. */
@@ -3730,12 +3892,48 @@ function docFind(ref){
   }
   return null;
 }
+/* Open a document from the corpus the WS12 manifest knows nothing about. The
+   fragment is viewer.html's WS13 contract: #corpus=ws13 plus the stored
+   original's key and the rights basis, because that viewer has no manifest to
+   look a document up in and the docs API cannot read the Postgres this corpus
+   is indexed in.
+
+   Every field here comes out of DOC_WS13_ROUTES — that is, out of a tool
+   result. `ref` is only ever a lookup key; it never supplies a route, so a
+   sha256 the model wrote but no tool returned opens nothing and returns null.
+   Nothing in this fragment grants access either: the viewer re-signs through
+   the same Cognito-gated docs API, which re-anchors the key's shape and reads
+   the rights class off its ws12/{class}/ prefix rather than off this link. */
+function openWs13Doc(ref, page, quote){
+  const route = ws13Route(ref);
+  if (!route) return null;
+  const sha = String(ref).toLowerCase();
+  // route.page inside the max, not after it: Math.max(1, …) is always >= 1 and
+  // so always truthy, which made a trailing `|| route.page` unreachable and
+  // opened every page-less call at page 1 instead of the page the citation was
+  // written against.
+  const target = Math.max(1, parseInt(page,10) || route.page || 1);
+  const params = new URLSearchParams({corpus:'ws13', doc:sha,
+    page:String(target), s3_key:route.s3_key});
+  const q = quote || docQuoteFor(sha,target) || '';
+  if (q) params.set('q', q);
+  if (route.rights_basis) params.set('rights_basis', route.rights_basis);
+  if (route.viewer_key_kind) params.set('viewer_key_kind', route.viewer_key_kind);
+  // Display only. This corpus has no manifest for the viewer to look a title up
+  // in, so without it the reader gets the digest in the header.
+  if (route.title) params.set('title', route.title);
+  const url = `viewer.html#${params}`;
+  window.open(url, '_blank', 'noopener');
+  return {doc:{doc_id:sha, title:route.title}, citation:null, page:target, url};
+}
 /* Open the stored copy. viewer.html is same-origin, so it reuses the signed-in
    session and asks the docs API for its own fresh signature — nothing secret
    ever rides in this URL. */
 function openDoc(ref, page, quote){
   const hit = docFind(ref);
-  if (!hit) return null;
+  // The manifest first, unchanged. Only an id it does not carry falls through
+  // to the full corpus, so nothing about a WS12 citation moves.
+  if (!hit) return openWs13Doc(ref, page, quote);
   const c = hit.citation;
   const params = new URLSearchParams({doc: hit.doc.doc_id});
   const target = page || (c && c.page) || 1;
@@ -3780,11 +3978,14 @@ function execOpenDoc(a){
    answer path hands us text that mdToHtml has escaped once already. */
 function docChip(docId, page, labelHtml, quote){
   if (!/^[0-9a-f]{16,64}$/.test(String(docId||''))) return '';
-  // openDoc() resolves through docFind(); an id the manifest does not carry would
-  // paint a chip that does nothing when clicked. The WS13 corpus is indexed far
-  // ahead of the stored-copy manifest, so that case is now the common one, not a
-  // corner: render nothing and let the caller fall back to inert cited text.
-  if (!docFind(docId)) return '';
+  // A chip has to be clickable to be worth painting, so it is painted only when
+  // one of the two indexes can actually resolve the id: the WS12 manifest, or a
+  // WS13 route captured from a tool result. An id the model wrote that no tool
+  // returned resolves in neither — there is no key to open it with and none may
+  // be guessed — so it falls back to docCiteStatic()'s inert cited text, still
+  // carrying its rights badge. That was every WS13 citation's fate before the
+  // route registry existed; it is now only the uncaptured ones.
+  if (!docFind(docId) && !ws13Route(docId)) return '';
   const n = Math.max(1, parseInt(page,10)||1);
   const q=quote || docQuoteFor(docId,n) || '';
   const rights=docRightsBadge(docId);
@@ -3816,6 +4017,31 @@ function docToolCitationForQuote(quote){
     page_cite:hit.citation.page_cite,source_url:hit.doc.source_url,
     quote_located:!!hit.citation.quote_located};
 }
+/* An outbound document link with its licence attached.
+
+   docChipForCitation() opens our stored copy and needs a matched page to do
+   it, so it requires 'p. N' in the label. A docs_for listing citation has no
+   page by construction, and since the provenance backfill took source_url
+   coverage to 100% (WS13-RETRIEVAL.md:144) its markdown is almost always
+   [title](source_url) — so the page-less form is the COMMON case for that
+   tool, not an edge, and every one of them fell through to a bare <a>
+   carrying nothing about its terms.
+
+   This does not make the document openable — the WS12 manifest still does not
+   know it — it only keeps the badge with the reference. Nothing renders
+   unless a TOOL RESULT recorded rights for that URL, and the badge only
+   appears for the two classes that carry an obligation, so a public-domain
+   link is untouched and so is every link on a deployment where
+   WS13_RETRIEVAL_ENABLED is off (those results carry no admission_class, so
+   DOC_RIGHTS_BY_URL stays empty). */
+function docLinkRights(labelHtml,url){
+  const sha=DOC_RIGHTS_BY_URL[docUrlKey(url)];
+  if (!sha) return '';
+  const rights=docRightsBadge(sha);
+  if (!rights.html) return '';
+  return `<a href="${url}" target="_blank" title="${esc(rights.tip)}">`+
+    `${labelHtml}${rights.html}</a>`;
+}
 function docChipForCitation(label,url){
   if (!docsAvailable()) return '';
   const page=String(label||'').match(/\bp\.\s*(\d{1,5})\b/i);
@@ -3834,21 +4060,57 @@ const docShortTitle = t => { t=String(t||''); return t.length>44? t.slice(0,42)+
    index, so the row's own verbatim quote is what identifies the subject in
    the store; every other citation filed against that subject comes with it.
    A dossier with no stored document renders nothing rather than an empty
-   heading that would read as "no sources exist". */
+   heading that would read as "no sources exist".
+
+   That quote is also the ONLY thing here that can name the subject — a dossier
+   carries no mine id of its own — so a mine whose documents exist only in the
+   WS13 corpus still shows nothing. docRefsHtml() can render those; nothing on
+   this path knows which mine to ask it for. Closing that needs a mine id on the
+   dossier row, not a change to the References block. */
 function docRefsForDossier(kind, key){
   if (kind!=='mine' || !GR || !docsAvailable()) return '';
   const hit = docFind(GR.quote[Number(key)]);
   if (!hit || !hit.citation) return '';
   return docRefsHtml(hit.citation.state, hit.citation.mine_id);
 }
+/* The full-corpus documents THIS SESSION has seen for one mine.
+
+   It is not the mine's document set and the heading must not read as one:
+   DOC_WS13_BY_MINE holds whatever the search_documents and docs_for calls made
+   so far happened to return, out of 56,282 documents, and each of those calls
+   was itself bounded by its own limit server-side. A References block is
+   exactly where a reader would take a count for a total, so the heading says
+   what the number is instead of leaving it to be inferred. */
+function ws13RefsHtml(mineId){
+  const shas = DOC_WS13_BY_MINE[String(mineId||'').trim()] || [];
+  if (!shas.length) return '';
+  return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">`+
+    `FULL-CORPUS DOCUMENTS — ${shas.length} SEEN THIS SESSION, NOT THIS MINE'S WHOLE FILE</h3>`+
+    shas.map(sha=>{
+      const route=DOC_WS13_ROUTES[sha]||{}, page=route.page||1;
+      const quote=docQuoteFor(sha,page), rights=docRightsBadge(sha);
+      return `<div class="docref"><div class="t">`+
+        `${esc(route.title||('untitled document '+sha.slice(0,12)))}</div>`+
+        (quote?`<div class="q">“${esc(quote)}”</div>`:'')+
+        // The licence rides beside every entry, not only inside the chip's
+        // tooltip: a research copy listed with no terms is a licence gap.
+        `<div class="n">sha256 ${esc(sha.slice(0,12))}… · ${esc(rights.tip)}</div>`+
+        docChip(sha, page, esc('open p. '+page), quote)+`</div>`;
+    }).join('');
+}
 /* Every stored citation filed against one subject — the dossier References
    list. A subject with no stored document says so; it is not rendered as
    "no sources exist". */
 function docRefsHtml(state, mineId){
-  if (!docsAvailable()) return '';
-  const rows = (DOCS.bySubject[state+'/'+mineId]||[]);
-  if (!rows.length) return '';
-  return `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">REFERENCES — STORED SOURCE DOCUMENTS</h3>`+
+  const rows = (docsAvailable() && DOCS.bySubject[state+'/'+mineId]) || [];
+  // The WS12 manifest and the WS13 corpus are separate indexes filed against
+  // the same portal-prefixed mine ids, so a mine can have documents in one, the
+  // other, or both. Reading only the manifest made every corpus document
+  // invisible on a panel a reader takes for the mine's whole file.
+  const corpus = ws13RefsHtml(mineId);
+  if (!rows.length && !corpus) return '';
+  return (rows.length ?
+    `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">REFERENCES — STORED SOURCE DOCUMENTS</h3>`+
     rows.map(c=>{
       const d = DOCS.byId[c.doc_id]||{};
       return `<div class="docref"><div class="t">${esc(d.title||'')}</div>`+
@@ -3856,7 +4118,7 @@ function docRefsHtml(state, mineId){
         `<div class="n">${esc(d.authority||'')} · ${esc(c.page_cite)}`+
         `${c.quote_located?'':' · quote not located in the text layer'}</div>`+
         docChip(c.doc_id, c.page, esc('open '+c.page_cite), c.quote)+`</div>`;
-    }).join('');
+    }).join('') : '') + corpus;
 }
 /* --- the query engine --- */
 const GAZ = {'tonopah':[38.07,-117.23],'goldfield':[37.71,-117.24],'virginia city':[39.31,-119.65],

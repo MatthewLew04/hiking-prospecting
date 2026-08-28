@@ -9,6 +9,7 @@ import * as E from './gm-engine.js';
 import * as F from './gm-formats.js';
 import { THREE, canvasTexture } from './gm-render.js';
 import { h, clear, row, num, txt, sel, btn, range, note, kv, section, toast, modal, menu, colorInput, fmtNum, plotVariogram } from './gm-ui.js';
+import { StructureTool, StereonetTool, FormTool } from './gm-struct-tools.js';
 
 const $ = id => document.getElementById(id);
 
@@ -17,13 +18,18 @@ export class Tools {
     this.app = app; this.active = null; this.panel = null;
     this.section = new SectionTool(this); this.workings = new WorkingsTool(this); this.georef = new GeorefTool(this);
     this.strat = new StratTool(this); this.blocks = new BlocksTool(this); this.implicit = new ImplicitTool(this);
-    this.all = { section: this.section, workings: this.workings, georef: this.georef, strat: this.strat, blocks: this.blocks, implicit: this.implicit };
+    this.structure = new StructureTool(this); this.stereonet = new StereonetTool(this); this.form = new FormTool(this);
+    this.all = { section: this.section, workings: this.workings, georef: this.georef, strat: this.strat, blocks: this.blocks, implicit: this.implicit, structure: this.structure, stereonet: this.stereonet, form: this.form };
   }
   get R() { return this.app.R; }
   get project() { return this.app.project; }
   onProject() { for (const t of Object.values(this.all)) t.onProject && t.onProject(); this.stop(); }
   menu(anchor) {
     menu(anchor, [
+      { label: 'Structural data', hint: 'dip / dip azimuth', onclick: () => this.open('structure') },
+      { label: 'Stereonet', hint: 'poles, contours, Bingham', onclick: () => this.open('stereonet') },
+      { label: 'Form interpolant & trends', hint: 'deformation fabric', onclick: () => this.open('form') },
+      '-',
       { label: 'Section & slice', hint: 'cut the model', onclick: () => this.open('section') },
       { label: 'Workings from maps', hint: 'adits, drifts, shafts, stopes', onclick: () => this.open('workings') },
       { label: 'Georeference an image', hint: 'level plan / section scan', onclick: () => this.open('georef') },
@@ -32,6 +38,7 @@ export class Tools {
       { label: 'Implicit surface (RBF)', hint: 'veins / contacts from points', onclick: () => this.open('implicit') },
       '-',
       { label: 'Virtual drillhole (click the ground)', onclick: () => this.strat.virtualHole() },
+      { label: 'Derive structure from all mapped traces', hint: 'three-point problem', onclick: () => { this.open('structure'); this.structure.deriveAll(); } },
     ]);
   }
   open(name, ...args) { this.stop(); const t = this.all[name]; this.active = t; this.panel = t.panel(...args); this.app.select(null); showPanel(this.panel); }

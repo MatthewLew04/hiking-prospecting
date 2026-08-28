@@ -9,6 +9,7 @@ import * as GM from './gm-core.js';
 import * as E from './gm-engine.js';
 
 const DEG = Math.PI / 180;
+export const CATEGORY_PALETTE = [[104, 176, 255], [244, 162, 97], [138, 201, 38], [231, 111, 81], [187, 148, 255], [42, 196, 179], [255, 209, 102], [148, 163, 184], [214, 93, 177], [125, 211, 252]];
 
 export class Renderer {
   constructor(canvas, opts = {}) {
@@ -22,6 +23,7 @@ export class Renderer {
     this.scene = new THREE.Scene();
     this.scene.fog = null;
     this.camera = new THREE.PerspectiveCamera(50, 1, 1, 2e6);
+    this.projection = 'persp'; this.orthoHeight = 2000;
     this.camera.position.set(1500, 1200, 1500);
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = true; this.controls.dampingFactor = 0.12;
@@ -50,7 +52,39 @@ export class Renderer {
   }
   resize() {
     const el = this.canvas.parentElement; const w = el.clientWidth || 800, h = el.clientHeight || 600;
-    this.renderer.setSize(w, h, false); this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); this.needs = true;
+    this.renderer.setSize(w, h, false);
+    if (this.camera.isOrthographicCamera) { const a = w / Math.max(1, h), hh = this.orthoHeight || 2000; this.camera.left = -hh * a / 2; this.camera.right = hh * a / 2; this.camera.top = hh / 2; this.camera.bottom = -hh / 2; }
+    else this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix(); this.needs = true;
+  }
+  /** Orthographic is what Leapfrog recommends for modelling: perspective
+      skews the interpretation, and the scale bar is only meaningful without
+      foreshortening. */
+  setProjection(kind) {
+    kind = kind === 'ortho' ? 'ortho' : 'persp';
+    if (kind === this.projection) return kind;
+    const t = this.controls.target.clone(), pos = this.camera.position.clone(), up = this.camera.up.clone();
+    const dist = Math.max(1, pos.distanceTo(t));
+    const el = this.canvas.parentElement, w = el.clientWidth || 800, hgt = el.clientHeight || 600, aspect = w / Math.max(1, hgt);
+    let cam;
+    if (kind === 'ortho') {
+      const fov = this.camera.fov || 50;
+      this.orthoHeight = 2 * Math.tan(fov * DEG / 2) * dist;
+      cam = new THREE.OrthographicCamera(-this.orthoHeight * aspect / 2, this.orthoHeight * aspect / 2, this.orthoHeight / 2, -this.orthoHeight / 2, -dist * 50, dist * 50);
+    } else {
+      cam = new THREE.PerspectiveCamera(50, aspect, Math.max(0.5, dist / 5000), dist * 200);
+    }
+    cam.position.copy(pos); cam.up.copy(up); cam.zoom = 1; cam.updateProjectionMatrix();
+    this.camera = cam; this.controls.object = cam; this.controls.target.copy(t); this.controls.update();
+    this.projection = kind; this.resize(); this.invalidate();
+    return kind;
+  }
+  /** metres per device pixel at the orbit target — drives the scale bar */
+  metresPerPixel() {
+    const el = this.canvas.parentElement, hgt = el.clientHeight || 600;
+    if (this.camera.isOrthographicCamera) return (this.camera.top - this.camera.bottom) / this.camera.zoom / hgt;
+    const d = this.camera.position.distanceTo(this.controls.target);
+    return 2 * Math.tan((this.camera.fov || 50) * DEG / 2) * d / hgt;
   }
   invalidate() { this.needs = true; }
   setVE(ve) { this.ve = ve; this.root.scale.set(1, ve, 1); this.applyClipping(); this.invalidate(); }
@@ -63,10 +97,14 @@ export class Renderer {
     if (!bounds) return;
     const c = this.toScene((bounds[0] + bounds[3]) / 2, (bounds[1] + bounds[4]) / 2, (bounds[2] + bounds[5]) / 2); c.y *= this.ve;
     const size = Math.max(bounds[3] - bounds[0], bounds[4] - bounds[1], (bounds[5] - bounds[2]) * this.ve, 10);
-    const dist = size * pad / Math.tan(this.camera.fov * DEG / 2) * 0.6;
+    const fov = this.camera.fov || 50;
+    const dist = size * pad / Math.tan(fov * DEG / 2) * 0.6;
     const dir = new THREE.Vector3(0.55, 0.55, 0.65).normalize();
     this.camera.position.copy(c).addScaledVector(dir, dist);
-    this.controls.target.copy(c); this.camera.near = Math.max(0.5, dist / 5000); this.camera.far = dist * 50; this.camera.updateProjectionMatrix();
+    this.controls.target.copy(c);
+    if (this.camera.isOrthographicCamera) { this.orthoHeight = size * pad; this.camera.zoom = 1; this.camera.near = -dist * 50; this.camera.far = dist * 50; this.resize(); }
+    else { this.camera.near = Math.max(0.5, dist / 5000); this.camera.far = dist * 50; }
+    this.camera.updateProjectionMatrix();
     this.controls.update(); this.invalidate();
   }
   viewFrom(dirName) {
@@ -142,7 +180,7 @@ export class Renderer {
       case 'grid2d': return this.buildGrid(obj, L);
       case 'mesh': return this.buildMesh(obj, L);
       case 'lineset': return this.buildLines(obj, L);
-      case 'points': return this.buildPoints(obj, L);
+      case 'points': return (obj.role === 'structural' || obj.role === 'trend') ? this.buildStructural(obj, L) : this.buildPoints(obj, L);
       case 'blockmodel': return this.buildBlocks(obj, L);
       case 'drillholes': return this.buildDrillholes(obj, L);
       case 'imageplane': return this.buildImage(obj, L);
@@ -270,6 +308,94 @@ export class Renderer {
     const mat = new THREE.PointsMaterial({ size, sizeAttenuation: false, vertexColors: true, map: this.pointTexture(), alphaTest: 0.4, transparent: true, depthWrite: false, clippingPlanes: this.clip.planes });
     const pts = new THREE.Points(geo, mat); pts.userData.kind = 'points'; L.group.add(pts);
     if (d.labels) this.addLabels(ps, L, d.labelField || 'name');
+  }
+  /* Planar structural measurements as oriented discs, and structural-trend
+     ellipsoids as discs scaled by local trend strength.  A disc lies in the
+     measured plane; the tick runs down dip; `sides = 3` gives Leapfrog's
+     triangle glyph whose apex points down dip. */
+  buildStructural(ps, L) {
+    const d = L.display, n = ps.n;
+    if (!n) return;
+    const dips = ps.attributes.dip || [], azs = ps.attributes.dip_azimuth || [], pols = ps.attributes.polarity || [];
+    const isTrend = ps.role === 'trend';
+    const strength = isTrend && ps.attributes.strength ? ps.numeric('strength') : null;
+    const bb = ps.bounds();
+    const span = bb ? Math.max(bb[3] - bb[0], bb[4] - bb[1], 50) : 1000;
+    const R0 = d.radius || Math.max(8, span * (isTrend ? 0.03 : 0.014));
+    const sides = Math.max(3, Math.round(d.sides || 16));
+    const by = d.attribute || null;
+    let cols = null;
+    if (by && by !== 'polarity' && ps.isNumeric(by)) { const r = this.colorsForAttribute(ps.numeric(by), d.colormap || (by === 'dip' ? 'turbo' : 'viridis'), d.range); cols = r.colors; L.range = r.range; }
+    else if (by === 'polarity') { cols = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const up = (pols[i] == null ? 1 : +pols[i]) >= 0; cols[3 * i] = up ? 0.41 : 0.85; cols[3 * i + 1] = up ? 0.69 : 0.45; cols[3 * i + 2] = up ? 1 : 0.18; } L.range = null; L.categories = ['right way up', 'overturned']; L.categoryColors = [[104, 176, 255], [217, 112, 45]]; }
+    else if (by && ps.attributes[by]) {
+      const col = ps.attributes[by]; const cats = [...new Set(col.filter(v => v != null && v !== '').map(String))].sort();
+      const pal = CATEGORY_PALETTE; cols = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { const v = col[i]; const k = (v == null || v === '') ? -1 : cats.indexOf(String(v)); const c = k < 0 ? [110, 118, 128] : pal[k % pal.length]; cols[3 * i] = c[0] / 255; cols[3 * i + 1] = c[1] / 255; cols[3 * i + 2] = c[2] / 255; }
+      L.categories = cats; L.categoryColors = cats.map((_, k) => pal[k % pal.length]); L.range = null;
+    }
+    let smin = Infinity, smax = -Infinity;
+    if (strength) for (const v of strength) { if (v !== v) continue; if (v < smin) smin = v; if (v > smax) smax = v; }
+    const pos = [], col = [], idx = [], tick = [], tcol = [];
+    const base = ps.color.map(c => c / 255);
+    let vbase = 0, drawn = 0;
+    const cap = d.maxGlyphs || 6000;
+    const stride = Math.max(1, Math.ceil(n / cap));
+    for (let i = 0; i < n; i += stride) {
+      const dip = +dips[i], az = +azs[i];
+      if (dip !== dip || az !== az) continue;
+      const x = ps.xyz[3 * i], y = ps.xyz[3 * i + 1], z = ps.xyz[3 * i + 2];
+      if (x !== x || y !== y) continue;
+      const a = az * DEG, dd = dip * DEG, cd = Math.cos(dd), sd = Math.sin(dd);
+      const S = [-Math.cos(a), Math.sin(a), 0];                       // strike
+      const D = [Math.sin(a) * cd, Math.cos(a) * cd, -sd];            // down dip
+      const P = [Math.sin(a) * sd, Math.cos(a) * sd, cd];             // pole (up)
+      let R = R0;
+      if (strength && smax > smin) R = R0 * (0.35 + 0.65 * ((strength[i] - smin) / (smax - smin)));
+      const c = cols ? [cols[3 * i], cols[3 * i + 1], cols[3 * i + 2]] : base;
+      const ctr = this.toSceneArr(x, y, z);
+      pos.push(ctr[0], ctr[1], ctr[2]); col.push(c[0], c[1], c[2]);
+      const c0 = vbase; vbase++;
+      for (let k = 0; k < sides; k++) {
+        const t = (k / sides) * 2 * Math.PI + (sides === 3 ? Math.PI / 2 : 0);
+        const ct = Math.cos(t), st = Math.sin(t);
+        const px = x + R * (ct * S[0] + st * D[0]), py = y + R * (ct * S[1] + st * D[1]), pz = z + R * (ct * S[2] + st * D[2]);
+        const v = this.toSceneArr(px, py, pz);
+        pos.push(v[0], v[1], v[2]); col.push(c[0], c[1], c[2]); vbase++;
+      }
+      for (let k = 0; k < sides; k++) idx.push(c0, c0 + 1 + k, c0 + 1 + ((k + 1) % sides));
+      if (d.tick !== false && !isTrend) {
+        const e = this.toSceneArr(x + R * D[0] * 1.35, y + R * D[1] * 1.35, z + R * D[2] * 1.35);
+        tick.push(ctr[0], ctr[1], ctr[2], e[0], e[1], e[2]);
+        for (let q = 0; q < 2; q++) tcol.push(c[0] * 0.6, c[1] * 0.6, c[2] * 0.6);
+        const pol = (pols[i] == null ? 1 : +pols[i]) >= 0 ? 1 : -1;
+        const u = this.toSceneArr(x + R * P[0] * 0.55 * pol, y + R * P[1] * 0.55 * pol, z + R * P[2] * 0.55 * pol);
+        tick.push(ctr[0], ctr[1], ctr[2], u[0], u[1], u[2]);
+        for (let q = 0; q < 2; q++) { if (pol > 0) tcol.push(0.55, 0.83, 1); else tcol.push(1, 0.62, 0.28); }
+      }
+      drawn++;
+    }
+    L.drawn = drawn; L.totalGlyphs = n;
+    if (!pos.length) return;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.setIndex(idx);
+    g.computeVertexNormals(); g.computeBoundingSphere();
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.05, flatShading: true, transparent: d.opacity != null && d.opacity < 1, opacity: d.opacity == null ? 1 : d.opacity, clippingPlanes: this.clip.planes });
+    const mesh = new THREE.Mesh(g, mat); mesh.userData.kind = 'structural'; L.group.add(mesh);
+    if (tick.length) {
+      const lg = new THREE.BufferGeometry();
+      lg.setAttribute('position', new THREE.Float32BufferAttribute(tick, 3));
+      lg.setAttribute('color', new THREE.Float32BufferAttribute(tcol, 3));
+      L.group.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ vertexColors: true, clippingPlanes: this.clip.planes })));
+    }
+    // an invisible point cloud so hovering and picking still report the row
+    const ppos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const v = this.toSceneArr(ps.xyz[3 * i], ps.xyz[3 * i + 1], ps.xyz[3 * i + 2]); ppos[3 * i] = v[0]; ppos[3 * i + 1] = v[1]; ppos[3 * i + 2] = v[2]; }
+    const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(ppos, 3)); pg.computeBoundingSphere();
+    const pts = new THREE.Points(pg, new THREE.PointsMaterial({ size: 6, sizeAttenuation: false, transparent: true, opacity: 0.01, depthWrite: false, clippingPlanes: this.clip.planes }));
+    pts.userData.kind = 'points'; L.group.add(pts);
+    if (d.labels) this.addLabels(ps, L, d.labelField || 'dip');
   }
   addLabels(ps, L, field) {
     const col = ps.attributes[field]; if (!col) return; const n = Math.min(ps.n, 300);

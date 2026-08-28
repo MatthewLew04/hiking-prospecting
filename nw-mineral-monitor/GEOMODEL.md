@@ -58,6 +58,20 @@ The same page does the other three things a geologist wants from Leapfrog:
   cut-offs, grade–tonnage, export CSV / UBC / OMF.
 * **Implicit surfaces** (TOOLS ▸ Implicit surface): RBF of signed distances →
   iso-surface (veins, intrusions, ore shells) — the FastRBF idea.
+* **Structural geology** (TOOLS ▸ Structural data / Stereonet / Form
+  interpolant) — the pathway that lets a district with *no drilling* still
+  carry orientation. Dip and dip azimuth are derived automatically from where
+  a mapped contact or fault trace crosses the terrain (a least-squares plane
+  through the 3-D trace: the three-point problem run continuously along the
+  line, with relief / spread / RMS gates so flat ground never produces a
+  confident-looking number), digitised by hand on the draped map, or imported
+  from CSV. From there: a lower-hemisphere stereonet with Kamb, exponential
+  Kamb and Schmidt contouring, Bingham and Fisher statistics, selection linked
+  both ways to the 3-D scene; declustering; a **form interpolant** whose
+  gradient is constrained by the poles (Lajaunie's potential field), giving
+  form surfaces in 3-D and form lines on topography; and a **structural
+  trend** field whose anisotropy halves every range. See §7.
+
 * **Sections & slicing** (TOOLS ▸ Section & slice): draw a line or use W–E /
   S–N presets; the plane clips the model, intersects every mesh and surface,
   fills the pancake units, samples block models, projects nearby workings; the
@@ -80,6 +94,10 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
  gm-tools.js    Section, Workings, Georef, Stratigraphy, Blocks/kriging, Implicit tools
  gm-engine.js   numerics (pure): IDW, RBF, variograms, OK, stratigraphy, block models,
                 plane cuts, marching tetrahedra, workings constructors  ──▶ gm-worker.js (Web Worker)
+ gm-structural.js  structural geology: poles, three-point derivation from map
+                traces, declustering, stereonet projection + contouring, Bingham /
+                Fisher statistics, the gradient (form) interpolant, trend fields
+ gm-struct-tools.js  the three structural tool panels
  gm-formats.js  every reader/writer (OMF v0.9 + v2.0 incl. a Parquet/Thrift writer, Surfer,
                 Geosoft GRD/GXF/XYZ, Arc ASCII, ZMAP+, Irap, CPS-3, UBC, OBJ, DXF, GOCAD,
                 Leapfrog .msh, CSV tables, SEG-Y, LAS, PNG, ZIP)
@@ -107,7 +125,7 @@ wraps them without parsing. Kinds:
 | `grid2d` | node-registered regular grid | roles `topography` / `contact` / `surface` / `property`; values south-row-first, x fastest (Surfer/Geosoft order) |
 | `mesh` | triangles | roles `geology` (draped map unit), `unit` (closed pancake volume), `contact`, `stope`, `section` |
 | `lineset` | polylines + per-part features | roles `workings` (schema `nwmm-workings/1`: type, level, level_z, width_m, source, confidence, units_in), `faults`, `geology-outline`, `drillhole-traces`, `section` |
-| `points` | xyz + attribute columns | roles `mines`, `targets`, `claims`, `samples`, `contacts`, `structural`, `collars` |
+| `points` | xyz + attribute columns | roles `mines`, `targets`, `claims`, `samples`, `contacts`, `collars`; role `structural` additionally guarantees the columns `dip` (0–90), `dip_azimuth` (0–360, clockwise from north, down-dip direction) and `polarity` (+1 right way up, −1 overturned), and renders as oriented discs; role `trend` is the same contract plus a `strength` column and carries its `TrendField` in `metadata.trend` |
 | `blockmodel` | regular blocks, i-fastest attributes | numeric + category attributes; estimates recorded in metadata |
 | `drillholes` | collar / survey / interval tables | Leapfrog conventions, dip positive down, minimum-curvature desurvey |
 | `imageplane` | georeferenced scan | `plan` (control points + elevation) or `section` (two top corners + z top/bottom) |
@@ -164,6 +182,16 @@ interchange is the files those packages import/export.
 * Workings digitised from a map inherit that map's accuracy; the feature
   schema records source, page and confidence so a sketch never masquerades as a
   survey. Never enter adits or shafts.
+* Orientations derived from a map trace inherit the accuracy of both the map
+  and the DEM. Every derived measurement carries `relief_m`, `fit_rms_m` and
+  `window_m`, and `confidence: 'inferred'`; windows without relief, without
+  spread, or with a poor plane fit are counted and rejected rather than
+  guessed, and a layer that yields nothing says so instead of returning zeros.
+* The form interpolant is a real gradient-constrained RBF, not offset points
+  pretending to be one — but it is a dense O(n³) solve in the browser, so it
+  caps at a few hundred measurements and declustering is the way to get under
+  the cap. It is blind to faults and truncating intrusions, and clustered data
+  produces geologically implausible surfaces; both are stated in the panel.
 * Kriging and RBF are deterministic, documented implementations (moving
   neighbourhood OK, spherical-family variograms, Gaussian-elimination solves);
   they are research tools, not a replacement for a resource geologist.
@@ -171,6 +199,14 @@ interchange is the files those packages import/export.
   refresh, or use the CSV/grid route for layers you expect to update.
 
 ## 5. Roadmap — from mine files to underground maps
+
+**Delivered 2026-08-27 (build `2026-08-27-struct1`)** — the structural layer
+described in §7, plus the platform work it needed: display settings are now
+part of the project (colormap, attribute, glyph size, labels and cut-offs
+survive a reload), the camera has an orthographic mode (`o` / `p`), and the
+scene carries a legend and a scale bar. The rest of the plan lives in the
+Leapfrog parity roadmap.
+
 
 The architecture was laid out so the next steps are data, not plumbing:
 
@@ -278,3 +314,189 @@ fails loudly rather than quietly cross-checking against something else.
 
 Vendored: three.js 0.185 (`site/assets/three/`, `npm run vendor:three`). No
 CDN, no build step, no npm dependency at runtime.
+
+## 7. Structural geology — orientation without drillholes
+
+Leapfrog's fundamentals course spends five of six modules on drilling data.
+This project usually has none: what it has is a geological map, a DEM, mapped
+fault traces, scanned mine plans and a handful of graded mines. The one
+Leapfrog course that fits that exactly is *Model From Map*, and its structural
+extension. §7 is that workflow.
+
+### 7.1 The measurement
+
+A planar structural measurement is a `points` object with `role: 'structural'`
+and three guaranteed columns:
+
+| column | range | meaning |
+|---|---|---|
+| `dip` | 0 – 90 | degrees below horizontal |
+| `dip_azimuth` | 0 – 360 | clockwise from north, **in the down-dip direction** |
+| `polarity` | +1 / −1 | right way up / overturned |
+
+Dip and dip azimuth rather than strike, for the reason the guide gives: it
+removes the right-hand-rule ambiguity and the regional convention differences,
+and it is directly readable by a machine. `normaliseStructural()` accepts
+`strike` (converted with the right-hand rule), the usual column synonyms, and
+polarity written as `0`/`1`, `±1` or the words `overturned` / `inverted`; it
+folds an out-of-range dip back into 0–90 by rotating the azimuth 180° and says
+so in a warning rather than silently.
+
+The upward pole of a plane dipping δ toward α is
+`[sin α · sin δ, cos α · sin δ, cos δ]` — a plane that faces north has a pole
+that tilts north, which is the gradient of the surface. Everything downstream
+(stereonet, statistics, form interpolant, trends) works on poles.
+
+Measurements render as oriented discs: `disc sides = 3` gives the triangle
+glyph whose apex points down dip, a tick runs down the dip line, and a short
+stub along the pole is blue for right-way-up and orange for overturned.
+Colour by dip, dip azimuth, polarity, or any column — a category column
+selected on the stereonet colours the 3-D scene immediately.
+
+### 7.2 Derivation from a mapped trace (the three-point problem)
+
+`TOOLS ▸ Structural data ▸ DERIVE FROM ALL TRACE LAYERS`, or
+`TOOLS ▸ Derive structure from all mapped traces`.
+
+Where a planar contact crosses topography it leaves a trace whose 3-D shape
+encodes the plane's orientation. A sliding window along each draped trace is
+fitted with a least-squares plane (PCA; the normal is the smallest
+eigenvector), and the plane's dip and dip azimuth are read off the normal.
+
+The window **grows** — from `window` up to `max_window` — until the segment
+has enough relief and enough spread to determine a plane, so a smooth trace on
+gentle ground is looked at over a longer distance rather than being answered
+badly. Three gates decide whether a reading is emitted at all:
+
+| gate | default | why |
+|---|---|---|
+| `min_relief` | 20 m | a trace on flat ground carries no dip information |
+| `min_spread` | 25 m | measured **in map view** — a trace that is straight in plan leaves the plane free to rotate about that line however much elevation it gains, and the least-squares answer there is a meaningless near-vertical plane |
+| `max_rms` | 15 m | the contact is not planar over this window, or the map and the DEM disagree |
+
+Rejections are counted by reason and shown in the panel. A layer that yields
+nothing warns that the ground is too flat rather than returning a dip of zero.
+One consequence is worth stating plainly: a genuinely vertical structure also
+traces a straight line in plan, so it comes back as *indeterminate* rather than
+as 90°. The trace cannot tell "vertical" from "unconstrained" apart, and
+guessing 90° would be a fabrication. (This gate matters: run against the real
+Cassia geology with the gate on the 3-D spread instead of the plan spread, the
+median derived dip was 87° — the degenerate answer. With the plan-view gate it
+is 10°, which is what flat-lying Basin-and-Range cover actually does.)
+
+Each surviving point carries `relief_m`, `plan_spread_m`, `fit_rms_m`,
+`span_m`, `window_m`, `n_pts`, its source layer and `confidence: 'inferred'`, so a weak reading stays
+visibly weak, and a hand-digitised or field measurement placed over the top of
+it at `surveyed` confidence outranks it.
+
+The same routine runs on mapped **fault** traces, which is how a fault surface
+gets its dip in the Model-From-Map workflow.
+
+### 7.3 Digitising and draping
+
+`POINT + DOWN-DIP (2 clicks)` places a measurement on the ground or on a
+georeferenced plate and takes its azimuth from the bearing between the two
+clicks; `POINT ONLY` takes a typed azimuth, with `FROM VIEW` to read the
+direction you are currently looking along. The panel repeats the course's
+orientation check: rotate until the mapped dip tick points to the top of the
+screen and confirm the azimuth — a reading 180° out means you are looking at
+the symbol backwards.
+
+`SET ELEVATION FROM TOPOGRAPHY` is not optional housekeeping. Measurements
+digitised off a flat map have no elevation, sit at or below the model base,
+and are then **silently classified as outside the boundary and dropped** when a
+surface is built — three pages of the Model From Map course are about exactly
+this. The original z is kept in `z_original`.
+
+### 7.4 Declustering
+
+`radius` groups measurements spatially (optionally within a category);
+`angular tolerance` discards outliers from the cluster mean; the measurement
+closest to the mean survives, weighted by an optional numeric `priority`
+column. A cluster too inconsistently oriented to have a meaningful mean is
+dropped **whole** and counted — the guide warns about this, so it is surfaced
+rather than hidden. Declustering is the supported way to get a large derived
+set under the form interpolant's point cap.
+
+### 7.5 Stereonet
+
+Lower hemisphere, equatorial or polar grid, equal-area (Schmidt, the default)
+or equal-angle (Wulff). Poles for every dataset, great circles for planar data,
+and density contours by:
+
+* **Kamb** — counting circle sized so the expected count is σ² ; contoured in σ
+* **exponential Kamb** — Vollmer's smoothly weighted variant
+* **Schmidt** — the 1 % area count, contoured in % per 1 % area
+
+`desample` (0–1, default 0.5) thins the *picture* only; every measurement is
+always used for the statistics and the contours.
+
+**Bingham** gives the mean plane (whose pole is e1), the best-fit great circle
+through the poles (whose pole, e3, *is* the fold hinge — and the best-fit plane
+*is* the profile plane, the ideal section through the fold), all three
+eigenvalues and Woodcock's K, which classifies the fabric as a cluster or a
+girdle. **Fisher** gives the mean, κ, R̄ and α95, with the guide's caveat
+surfaced automatically: when the mean dip exceeds 50° the panel says the Fisher
+mean is being pulled by the steepest measurements and points at Bingham
+instead.
+
+Selection runs both ways. `LASSO ON THE NET` and `CLICK POINTS` pick on the
+stereonet; `BOX IN THE SCENE` drags a rectangle over the 3-D view and picks
+what falls inside it. Either way `ASSIGN TO CATEGORY` writes a category column
+on the *source* layer, which immediately becomes a colour-by option on the
+layer, a filter on the net, and a domain for the form interpolant.
+
+Export is PNG (the canvas) or SVG (vector, with the statistics in the caption).
+
+### 7.6 Form interpolant
+
+`TOOLS ▸ Form interpolant & trends`. An RBF whose **gradient** is constrained
+by the poles — Lajaunie et al. (1997), the potential-field method, implemented
+directly rather than approximated with offset points:
+
+    f(x) = Σⱼ ∇K(x − pⱼ)·cⱼ + g·x       K(r) = r³,  H = 3(r I + d dᵀ / r)
+
+solved for `∇f(pᵢ) = poleᵢ` at every measurement, with a constant drift and the
+side condition `Σ cⱼ = 0` that the cubic kernel needs. The level sets of `f`
+are therefore everywhere tangent to the measured planes: they *are* the form
+surfaces. Absolute values are meaningless — they are shifted so the centre of
+the box is zero, and the thresholds label surfaces rather than dating them,
+exactly as the guide says.
+
+The panel reports the maximum and mean angle between the reproduced gradient
+and the measured pole; anything above about half a degree means the fit is not
+honouring the data and the smoothing or the point cap needs attention.
+`also evaluate onto topography` writes the interpolant onto the topography grid
+as a property layer — the map-view **form lines**.
+
+Limits, stated in the panel and worth repeating: form interpolants are blind to
+faults and to intrusions that truncate the fabric, because they only see
+planar structural data; and they are very sensitive to clustering, which is why
+declustering comes first.
+
+### 7.7 Trends
+
+A **structural trend** is built from structural measurements, meshes, or mapped
+fault traces. At any point the nearest input supplies the local plane, and the
+anisotropy ratio starts at `strength` on the input and **halves every
+`range`** — 5:5:1 on the surface, 2.5:2.5:1 at one range, 1.25:1.25:1 at two,
+approaching but never reaching isotropic, and floored at 1:1:1 once it passes
+`log₂(strength)` ranges (about 2.3 ranges at the default strength, which is why
+the guide calls 3× the range "practically indistinguishable from isotropic").
+Glyph size encodes local strength, so the extent of the trend is visible, and
+glyphs are simply omitted where it has decayed away.
+
+A **global trend** is the single-plane version: dip, dip azimuth and *pitch*
+(the direction of maximum continuity, measured in the plane from strike) plus
+`Ellipsoid Ratios`, defaulting to Leapfrog's 3, 3, 1. `SET FROM THE BINGHAM
+MEAN PLANE` takes it from the data — and says so when the data is a girdle,
+because one plane cannot describe a fold and a structural trend will. It is
+stored on the project as `metadata.global_trend` and exposed to the other tools
+through `globalAnisotropy()`.
+
+### 7.8 What is deliberately not here yet
+
+Structural surfaces (a contact surface that honours non-contact structural
+data), fault surfaces with fault blocks and terminations, and rose diagrams.
+The first two need the volume-point / surface-chronology machinery, which is
+the next phase.

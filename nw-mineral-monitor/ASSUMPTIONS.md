@@ -162,3 +162,27 @@
     CSV, SEG-Y, LAS); proprietary project databases (.aproj, .gdb, .tks)
     are out of scope rather than approximated. Leapfrog's `.msh` layout
     is community-documented and flagged as such on every read.
+
+49. **A dip read off a map is an inference, and it says so.** Orientations
+    derived from where a mapped contact or fault trace crosses the DEM are
+    real measurements of the *map*, not of the rock: they inherit the
+    accuracy of the mapping, the digitising and the elevation model at once.
+    Every derived measurement therefore carries `confidence: 'inferred'`
+    alongside the relief it was read from, the RMS of its plane fit, and the
+    length of trace the fit had to look at, so a reading taken from 20 m of
+    relief over 2 km of line is never mistaken for a compass measurement. The
+    three gates — relief, spread and fit RMS — reject rather than guess: a
+    trace on flat ground yields nothing and says the ground is too flat,
+    because a dip of zero returned in that situation would be a fabrication.
+    A hand-digitised or field measurement placed over the top of a derived one
+    outranks it by confidence, and the two never merge silently.
+
+50. **A statistic that is known to mislead is labelled where it is shown.**
+    The Fisher mean loses robustness as planes steepen, so when the mean dip
+    passes 50° the stereonet says so and points at the Bingham mean instead;
+    a girdle distribution is named as a girdle and its e3 is reported as the
+    fold hinge, because a single mean plane through folded data is a number
+    with no geology in it. A form interpolant reports the largest angle
+    between the gradient it reproduced and the pole it was given, so a fit
+    that is not honouring the data cannot look like one that is. Declustering
+    reports the clusters it dropped whole rather than quietly thinning them.

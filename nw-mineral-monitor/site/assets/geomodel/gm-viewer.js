@@ -10,16 +10,17 @@ import * as SITE from './gm-site.js';
 import { Renderer, canvasTexture, THREE } from './gm-render.js';
 import { h, clear, row, num, txt, sel, btn, range, note, kv, section, toast, modal, menu, colorInput, fmtNum } from './gm-ui.js';
 import { Tools } from './gm-tools.js';
+import * as ST from './gm-structural.js';
 
 const $ = id => document.getElementById(id);
-const BUILD = '2026-08-21-gm1';
+const BUILD = '2026-08-27-struct1';
 const GROUP_ORDER = ['Topography', 'Geology (draped)', 'Geology outlines', 'Structure', 'Mines', 'Claims', 'Workings', 'Stratigraphy', 'Block models', 'Surfaces', 'Sections', 'Images', 'Drillholes', 'Imports', 'Other'];
 
 export const app = {
   project: null, R: null, engine: null, tools: null,
   display: new Map(),           // obj.id -> display options
   selected: null,               // obj id
-  imagery: 'sat', imageryTex: null, topoId: null,
+  imagery: 'sat', imageryTex: null, topoId: null, showLegend: true,
   dirty: false, saveTimer: null, key: null,
   hover: null,
 };
@@ -75,6 +76,8 @@ export function setProject(p, key) {
   if (p.site) p.site.key = app.key;
   p.ensureOrigin(); app.R.origin = p.origin || [0, 0, 0];
   app.display.clear();
+  const savedDisplay = (p.metadata && p.metadata.display) || null;
+  if (savedDisplay) for (const [k, v] of Object.entries(savedDisplay)) if (v && typeof v === 'object') app.display.set(k, Object.assign({}, v));
   const topo = p.byKind('grid2d').find(g => g.role === 'topography'); app.topoId = topo ? topo.id : null;
   for (const o of p.objects) syncObject(o);
   p.on((type, obj) => { if (type === 'add') { syncObject(obj); } else if (type === 'remove') { app.R.remove(obj.id); app.display.delete(obj.id); if (app.selected === obj.id) select(null); } renderLayers(); markDirty(); });
@@ -93,7 +96,7 @@ export function syncObject(o) {
 }
 function defaultDisplay(o) {
   if (o.kind === 'grid2d') return o.role === 'property' ? { mode: 'draped', colormap: 'turbo', lift: 2 } : o.role === 'topography' ? { colorBy: 'elevation', colormap: 'terrain' } : { colorBy: 'flat' };
-  if (o.kind === 'points') return { size: o.role === 'mines' ? 14 : 9, labels: o.role === 'mines' && o.n <= 60 };
+  if (o.kind === 'points') return o.role === 'structural' ? { sides: 16, tick: true, attribute: 'dip', colormap: 'turbo' } : o.role === 'trend' ? { sides: 20, tick: false } : { size: o.role === 'mines' ? 14 : 9, labels: o.role === 'mines' && o.n <= 60 };
   if (o.kind === 'blockmodel') return { colormap: 'turbo', shrink: 0.92 };
   if (o.kind === 'lineset') return { tubes: o.role === 'workings' || o.role === 'drillhole-traces' };
   return {};
@@ -103,7 +106,19 @@ export function refresh(o) { syncObject(o); renderLayers(); markDirty(); }
 export function markDirty() { app.dirty = true; clearTimeout(app.saveTimer); app.saveTimer = setTimeout(saveProject, 2500); $('saveBtn').classList.add('dirty'); }
 export async function saveProject(explicit = false) {
   if (!app.project) return;
-  try { app.project.site = app.project.site || {}; app.project.site.key = app.key; await GM.store.saveProject(app.project); app.dirty = false; $('saveBtn').classList.remove('dirty'); if (explicit) toast('saved in this browser (IndexedDB). Use EXPORT for files.', 'ok'); }
+  try {
+    app.project.site = app.project.site || {}; app.project.site.key = app.key;
+    // display settings (colormap, attribute, cut-offs, glyph size, labels...)
+    // are part of the project, so a reload looks like what you left
+    const disp = {};
+    for (const [id, d] of app.display) {
+      if (!app.project.get(id)) continue;
+      const keep = {};
+      for (const [k, v] of Object.entries(d)) { if (v == null) continue; if (typeof v === 'object' && !Array.isArray(v)) continue; if (k === 'range' || k === 'topo' || k === 'texture') continue; keep[k] = v; }
+      if (Object.keys(keep).length) disp[id] = keep;
+    }
+    app.project.metadata.display = disp;
+    await GM.store.saveProject(app.project); app.dirty = false; $('saveBtn').classList.remove('dirty'); if (explicit) toast('saved in this browser (IndexedDB). Use EXPORT for files.', 'ok'); }
   catch (e) { console.warn(e); if (explicit) toast('save failed: ' + e.message, 'err'); }
 }
 
@@ -123,7 +138,7 @@ function groupOf(o) {
   if (o.kind === 'grid2d') return o.role === 'topography' ? 'Topography' : o.role === 'contact' ? 'Stratigraphy' : o.role === 'property' ? 'Surfaces' : 'Surfaces';
   if (o.kind === 'mesh') return o.role === 'unit' ? 'Stratigraphy' : o.role === 'geology' ? 'Geology (draped)' : o.role === 'stope' ? 'Workings' : 'Surfaces';
   if (o.kind === 'lineset') return o.role === 'workings' ? 'Workings' : o.role === 'faults' ? 'Structure' : o.role === 'geology-outline' ? 'Geology outlines' : o.role === 'section' ? 'Sections' : 'Imports';
-  if (o.kind === 'points') return o.role === 'claims' ? 'Claims' : o.role === 'mines' || o.role === 'targets' ? 'Mines' : 'Imports';
+  if (o.kind === 'points') return o.role === 'structural' || o.role === 'trend' ? 'Structure' : o.role === 'claims' ? 'Claims' : o.role === 'mines' || o.role === 'targets' ? 'Mines' : 'Imports';
   if (o.kind === 'blockmodel') return 'Block models';
   if (o.kind === 'drillholes') return 'Drillholes';
   if (o.kind === 'imageplane') return 'Images';
@@ -163,7 +178,7 @@ function tag(o) {
     case 'grid2d': return `${o.nx}×${o.ny}`;
     case 'mesh': return `${(o.nTriangles / 1000).toFixed(o.nTriangles > 9999 ? 0 : 1)}k△`;
     case 'lineset': return `${o.parts.length} ln`;
-    case 'points': return `${o.n} pt`;
+    case 'points': return o.role === 'structural' ? `${o.n} \u25B1` : o.role === 'trend' ? `${o.n} \u2B2D` : `${o.n} pt`;
     case 'blockmodel': return `${o.count.join('×')}`;
     case 'drillholes': return `${o.collars.length} dh`;
     case 'imageplane': return o.plane;
@@ -223,7 +238,27 @@ function inspectorFor(o) {
     ctl.appendChild(row('edges', h('input', { type: 'checkbox', checked: !!d.edges, onchange: e => { d.edges = e.target.checked; syncObject(o); } })));
     ctl.appendChild(kv([['Vertices', o.nVertices], ['Triangles', o.nTriangles]]));
   }
-  if (o.kind === 'points') {
+  if (o.kind === 'points' && (o.role === 'structural' || o.role === 'trend')) {
+    const cols = Object.keys(o.attributes).filter(k => !['dip', 'dip_azimuth', 'polarity', 'z_original'].includes(k));
+    ctl.appendChild(row('colour by', sel([['', 'layer colour'], ['dip', 'dip'], ['dip_azimuth', 'dip azimuth'], ['polarity', 'polarity'], ...cols], d.attribute || '', { onchange: e => { d.attribute = e.target.value || null; syncObject(o); select(o.id); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'turbo', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('disc size m', num(d.radius == null ? '' : d.radius, { placeholder: 'auto', onchange: e => { d.radius = e.target.value === '' ? null : +e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('disc sides', sel([[3, '3 \u2014 triangle (apex down dip)'], [6, '6'], [16, '16 \u2014 disc'], [32, '32']], d.sides || 16, { onchange: e => { d.sides = +e.target.value; syncObject(o); } })));
+    if (o.role !== 'trend') ctl.appendChild(row('down-dip ticks', h('input', { type: 'checkbox', checked: d.tick !== false, onchange: e => { d.tick = e.target.checked; syncObject(o); } })));
+    ctl.appendChild(row('labels', h('input', { type: 'checkbox', checked: !!d.labels, onchange: e => { d.labels = e.target.checked; syncObject(o); } }), sel(['dip', 'dip_azimuth', ...cols], d.labelField || 'dip', { onchange: e => { d.labelField = e.target.value; syncObject(o); } })));
+    const L = app.R.layers.get(o.id);
+    if (L && L.range) ctl.appendChild(note(`range ${fmtNum(L.range[0])} \u2013 ${fmtNum(L.range[1])}`));
+    if (L && L.drawn != null && L.drawn < L.totalGlyphs) ctl.appendChild(note(`drawing ${L.drawn} of ${L.totalGlyphs} glyphs (decimated for speed)`, 'note warn'));
+    try {
+      const RS = ST.readStructural(o); const bg = RS.n >= 2 ? ST.binghamStats(RS.poles, RS.n) : null;
+      ctl.appendChild(kv([['Measurements', `${RS.n}${RS.n < o.n ? ` of ${o.n}` : ''}`],
+        ['Mean plane', bg ? `${bg.mean_plane.dip.toFixed(0)}\u00B0 \u2192 ${bg.mean_plane.dip_azimuth.toFixed(0)}\u00B0` : null],
+        ['Fabric', bg ? bg.fabric : null],
+        ['Columns', Object.keys(o.attributes).join(', ')]]));
+    } catch (e) { ctl.appendChild(note(e.message, 'note warn')); }
+    ctl.appendChild(h('div', { class: 'frow' }, btn('STEREONET', () => app.tools.open('stereonet', o)), btn('EDIT / DERIVE', () => app.tools.open('structure', o)), btn('FORM INTERPOLANT', () => app.tools.open('form', o))));
+  }
+  else if (o.kind === 'points') {
     const nums = Object.keys(o.attributes).filter(k => o.isNumeric(k)); const texts = Object.keys(o.attributes).filter(k => !o.isNumeric(k));
     ctl.appendChild(row('colour by', sel([['', 'layer colour'], ...nums], d.attribute || '', { onchange: e => { d.attribute = e.target.value || null; syncObject(o); } })));
     ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'viridis', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
@@ -279,7 +314,14 @@ function inspectorFor(o) {
 export function describePick(p) {
   if (!p || !p.obj) return null;
   const o = p.obj; const lines = [];
-  if (o.kind === 'points' && p.index != null) { const i = p.index; lines.push(`${o.name} #${i}`); for (const [k, col] of Object.entries(o.attributes)) { const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 80)}`); if (lines.length > 14) break; } }
+  if (o.kind === 'points' && o.role === 'structural' && p.index != null) {
+    const i = p.index; const dip = o.attributes.dip ? o.attributes.dip[i] : null, az = o.attributes.dip_azimuth ? o.attributes.dip_azimuth[i] : null;
+    lines.push(`${o.name} #${i}`);
+    if (dip != null && az != null) lines.push(`${(+dip).toFixed(0)}\u00B0 \u2192 ${(+az).toFixed(0)}\u00B0  (dip / dip azimuth)`);
+    const pol = o.attributes.polarity ? +o.attributes.polarity[i] : 1; if (pol < 0) lines.push('overturned');
+    for (const [k, col] of Object.entries(o.attributes)) { if (['dip', 'dip_azimuth', 'polarity', 'z_original'].includes(k)) continue; const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 60)}`); if (lines.length > 12) break; }
+  }
+  else if (o.kind === 'points' && p.index != null) { const i = p.index; lines.push(`${o.name} #${i}`); for (const [k, col] of Object.entries(o.attributes)) { const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 80)}`); if (lines.length > 14) break; } }
   else if (o.kind === 'lineset') { const sp = p.object.userData.segPart; const k = sp && p.index != null ? sp[Math.floor(p.index / 2)] : -1; const f = k >= 0 ? o.features[k] : null; lines.push(o.name + (k >= 0 ? ` · part ${k}` : '')); if (f) for (const [kk, v] of Object.entries(f)) if (v != null && v !== '' && typeof v !== 'object') lines.push(`${kk}: ${v}`); if (k >= 0) lines.push(`length: ${fmtNum(o.length(k), 1)} m`); }
   else if (o.kind === 'blockmodel' && p.instanceId != null) { const ids = p.object.userData.blockIds; const idx = ids ? ids[p.instanceId] : null; if (idx != null) { const [i, j, k] = o.ijk(idx); lines.push(`${o.name} block (${i},${j},${k})`); for (const [kk, a] of Object.entries(o.attributes)) { const v = a.values[idx]; if (v == null || v !== v) continue; lines.push(`${kk}: ${typeof v === 'number' ? fmtNum(v, 3) : v}`); } } }
   else if (o.kind === 'mesh') { lines.push(o.name); for (const k of ['unit', 'lithology', 'age', 'description']) if (o.metadata[k]) lines.push(`${k}: ${String(o.metadata[k]).slice(0, 120)}`); }
@@ -306,7 +348,7 @@ function wireChrome() {
     const p = R.pick(e.clientX, e.clientY); if (p && p.obj) { select(p.obj.id); const lines = describePick(p); if (lines) { const host = $('inspector'); host.insertBefore(section('PICKED', ...lines.map(l => note(l))), host.firstChild.nextSibling); } }
   });
   canvas.addEventListener('dblclick', e => { if (app.tools.active && app.tools.active.onDblClick && app.tools.active.onDblClick(e)) return; const p = R.pick(e.clientX, e.clientY); if (p) { const v = R.toScene(p.world[0], p.world[1], p.world[2]); v.y *= R.ve; R.controls.target.copy(v); R.invalidate(); } });
-  window.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; if (app.tools.active && app.tools.active.onKey && app.tools.active.onKey(e)) return; if (e.key === 'Escape') { app.tools.stop(); select(null); } if (e.key === 'f') { const b = app.project && app.project.bounds(); if (b) R.fitTo(b); } if (e.key === 't') R.viewFrom('top'); if (e.key === 'n') R.viewFrom('north'); if (e.key === 'i') R.viewFrom('iso'); });
+  window.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return; if (app.tools.active && app.tools.active.onKey && app.tools.active.onKey(e)) return; if (e.key === 'Escape') { app.tools.stop(); select(null); } if (e.key === 'f') { const b = app.project && app.project.bounds(); if (b) R.fitTo(b); } if (e.key === 't') R.viewFrom('top'); if (e.key === 'n') R.viewFrom('north'); if (e.key === 'i') R.viewFrom('iso'); if (e.key === 'o' || e.key === 'p') setProjection(e.key === 'o' ? 'ortho' : 'persp'); });
   // toolbar
   $('btnImport').onclick = () => $('fileIn').click();
   $('fileIn').onchange = async e => { for (const f of e.target.files) await importFile(f); e.target.value = ''; };
@@ -321,16 +363,74 @@ function wireChrome() {
   $('btnHelp').onclick = () => helpModal();
   $('btnMap').onclick = () => { const s = app.project && app.project.site; location.href = s && s.lon != null ? `index.html#12/${s.lat}/${s.lon}` : 'index.html'; };
   $('veRange').oninput = e => { R.setVE(+e.target.value); $('veLbl').textContent = `VE ×${(+e.target.value).toFixed(1)}`; };
-  R.onRender = () => { const az = R.northArrow(); $('north').style.transform = `rotate(${-az}rad)`; };
+  let legendTick = 0;
+  R.onRender = () => { const az = R.northArrow(); $('north').style.transform = `rotate(${-az}rad)`; const now = performance.now(); if (now - legendTick > 250) { legendTick = now; renderLegend(); } };
   window.addEventListener('beforeunload', () => { if (app.dirty) saveProject(); });
 }
 function renderHeader() { const p = app.project; $('siteName').textContent = p ? p.name : '—'; $('crsBadge').textContent = p && p.crs.kind === 'utm' ? `UTM ${p.crs.zone}${p.crs.north ? 'N' : 'S'} · EPSG:${p.crs.epsg}` : 'local XYZ'; document.title = `3D MODEL — ${p ? p.name : ''}`; }
 export function status(t) { $('status').textContent = t || ''; }
 
+/* ------------------------------------------------ projection + legend */
+export function setProjection(kind) {
+  const k = app.R.setProjection(kind);
+  toast(k === 'ortho' ? 'orthographic — the scale bar is exact in this mode' : 'perspective — the scale bar is only nominal', 'info', 2500);
+  renderLegend();
+}
+
+function niceLength(v) {
+  const p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p;
+  return (m >= 5 ? 5 : m >= 2 ? 2 : 1) * p;
+}
+/** Legend for the selected layer plus a scale bar.  Leapfrog only draws a
+    scale bar in orthographic because perspective foreshortens it; we say so
+    rather than drawing a number that is quietly wrong. */
+export function renderLegend() {
+  const host = $('legend'); if (!host) return;
+  clear(host);
+  if (!app.showLegend || !app.project) { host.style.display = 'none'; return; }
+  host.style.display = 'flex';
+  const R = app.R;
+  // scale bar
+  const mpp = R.metresPerPixel();
+  const target = niceLength(mpp * 110);
+  const px = Math.max(24, Math.min(220, target / mpp));
+  const unit = target >= 1000 ? `${(target / 1000).toFixed(target % 1000 ? 1 : 0)} km` : `${Math.round(target)} m`;
+  host.appendChild(h('div', { class: 'lgd-scale' },
+    h('div', { class: 'bar', style: { width: px.toFixed(0) + 'px' } }),
+    h('span', {}, unit + (R.projection === 'ortho' ? '' : ' (nominal)'))));
+  // colour legend for the selected layer
+  const o = app.selected ? app.project.get(app.selected) : null;
+  const L = o ? R.layers.get(o.id) : null;
+  if (L && (L.range || L.categories)) {
+    const box = h('div', { class: 'lgd-key' }, h('div', { class: 'ttl' }, (o.name || '').slice(0, 34)));
+    const d = app.display.get(o.id) || {};
+    if (L.categories) {
+      const cols = L.categoryColors || [];
+      for (let i = 0; i < Math.min(L.categories.length, 12); i++) {
+        const c = cols[i] || GM.colormap(d.colormap || 'geology', L.categories.length > 1 ? i / (L.categories.length - 1) : 0);
+        box.appendChild(h('div', { class: 'sw-row' }, h('i', { style: { background: `rgb(${c[0]},${c[1]},${c[2]})` } }), String(L.categories[i]).slice(0, 24)));
+      }
+      if (L.categories.length > 12) box.appendChild(h('div', { class: 'sw-row more' }, `+${L.categories.length - 12} more`));
+    } else {
+      const cm = d.colormap || 'viridis';
+      const cv = h('canvas', { width: 140, height: 10, class: 'ramp' });
+      const cx = cv.getContext('2d');
+      for (let i = 0; i < 140; i++) { const c = GM.colormap(cm, i / 139); cx.fillStyle = `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; cx.fillRect(i, 0, 1, 10); }
+      box.appendChild(cv);
+      box.appendChild(h('div', { class: 'sw-row rng' }, h('span', {}, fmtNum(L.range[0])), h('span', {}, d.attribute || 'value'), h('span', {}, fmtNum(L.range[1]))));
+    }
+    host.appendChild(box);
+  }
+}
+
 function viewMenu(anchor) {
   menu(anchor, [
     { label: 'Fit all (f)', onclick: () => { const b = app.project.bounds(); if (b) app.R.fitTo(b); } },
     { label: 'Top (t)', onclick: () => app.R.viewFrom('top') }, { label: 'Look north (n)', onclick: () => app.R.viewFrom('north') }, { label: 'Look south', onclick: () => app.R.viewFrom('south') }, { label: 'Look east', onclick: () => app.R.viewFrom('east') }, { label: 'Look west', onclick: () => app.R.viewFrom('west') }, { label: 'Isometric (i)', onclick: () => app.R.viewFrom('iso') },
+    '-',
+    { label: (app.R.projection === 'ortho' ? '\u25CF ' : '\u25CB ') + 'Orthographic (o)', hint: 'no foreshortening', onclick: () => setProjection('ortho') },
+    { label: (app.R.projection !== 'ortho' ? '\u25CF ' : '\u25CB ') + 'Perspective (p)', onclick: () => setProjection('persp') },
+    { label: (app.showLegend ? '\u25CF ' : '\u25CB ') + 'Legend + scale bar', onclick: () => { app.showLegend = !app.showLegend; renderLegend(); } },
     '-',
     ...Object.entries(SITE.IMAGERY).map(([k, v]) => ({ label: (app.imagery === k ? '● ' : '○ ') + 'Drape: ' + v.name, onclick: () => applyImagery(k) })),
     '-',
@@ -428,6 +528,7 @@ async function importTableDialog(name, bytes) {
         if (kind.value === 'xyz') res = await F.readAny({ name, bytes }, Object.assign(opts, { format: 'geosoft_xyz' }));
         else if (kind.value === 'collar') { res = await F.readAny({ name, bytes }, Object.assign(opts, { format: 'csv_drillholes' })); toast('collars loaded — import survey.csv and interval CSVs from the drillhole layer properties', 'info', 6000); }
         else res = await F.readAny({ name, bytes }, Object.assign(opts, { table: kind.value }));
+        if (kind.value === 'structural') for (const o of res.objects) if (o.kind === 'points') { try { ST.normaliseStructural(o); } catch (err) { toast('structural columns: ' + err.message, 'warn', 7000); } }
         for (const o of res.objects) if (o.kind === 'points' && !zs.value) { const topo = topoGrid(); if (topo) for (let i = 0; i < o.n; i++) { if (o.xyz[3 * i + 2] === 0 || o.xyz[3 * i + 2] !== o.xyz[3 * i + 2]) { const t = topo.sample(o.xyz[3 * i], o.xyz[3 * i + 1]); if (t === t) o.xyz[3 * i + 2] = t + 2; } } }
         await placeImported(res, name);
       } catch (e) { toast(`${name}: ${e.message}`, 'err', 8000); }
@@ -493,6 +594,9 @@ function helpModal() {
   modal('3D MODEL — HOW TO', h('div', { class: 'help' },
     h('p', {}, h('b', {}, 'Navigate'), ' — left-drag orbit · right-drag pan · wheel zoom · double-click re-centres · f fit · t top · n north · i iso · Esc stops a tool. VE slider exaggerates elevation.'),
     h('p', {}, h('b', {}, 'Layers'), ' — tick to show/hide, swatch to recolour, ⋯ for zoom / export / delete. Click a layer or pick in the scene for its properties (colour by attribute, cut-offs, labels).'),
+    h('p', {}, h('b', {}, 'TOOLS ▾ Structural data'), ' — DERIVE FROM ALL TRACE LAYERS reads dip and dip azimuth from where the mapped contacts and faults cross the terrain: a least-squares plane along the trace, which is the three-point problem run continuously. Windows without relief or without enough bend are rejected rather than guessed, and every reading carries the relief and the fit error it came from, tagged as inferred. Digitise over the top of it with POINT + DOWN-DIP (two clicks: the location, then the down-dip direction). SET ELEVATION FROM TOPOGRAPHY anything digitised off a flat map — measurements with no elevation sit below the model and get silently ignored when a surface is built.'),
+    h('p', {}, h('b', {}, 'TOOLS ▾ Stereonet'), ' — lower hemisphere, equal-area (Schmidt) or equal-angle (Wulff), equatorial or polar. Poles, great circles and density contours by Kamb, exponential Kamb or Schmidt. Bingham gives the mean plane and, for folded data, the best-fit girdle whose pole is the fold hinge. Fisher is shown alongside, with a warning when steep planes make it unreliable. Lasso on the net, or drag a box in the 3-D scene; either selection becomes a category column that colours the model. Desampling thins the picture only — the statistics always use every measurement.'),
+    h('p', {}, h('b', {}, 'TOOLS ▾ Form interpolant & trends'), ' — an RBF whose gradient is pinned by the measurements, so its iso-surfaces lie parallel to the fabric everywhere; tick evaluate onto topography for form lines in map view. It reports the worst angle between the gradient it reproduced and the pole it was given — above about half a degree the fit is not honouring the data. It is blind to faults and very sensitive to clustered data, so decluster first. Below it: a structural trend whose anisotropy halves every range, and a global trend plane you can set from the Bingham mean.'),
     h('p', {}, h('b', {}, 'TOOLS ▾ Section & slice'), ' — draw a section line (two clicks on the ground), or use the W–E / S–N presets; the plane clips the model, intersects every surface, fills the pancake units, samples block models and projects nearby workings; the 2-D panel shows the section the way you would draw it and exports PNG/DXF.'),
     h('p', {}, h('b', {}, 'TOOLS ▾ Workings'), ' — turn a paper map into 3-D: georeference a scanned level plan at its level elevation (or a longitudinal section between two surface points), trace drifts on it, add adits from portals (bearing + length), shafts from collars (depth, dip), raises between levels, stopes as extruded outlines. Feet convert to metres at the door. Send the footprint back to the map as a MY DATA layer.'),
     h('p', {}, h('b', {}, 'TOOLS ▾ Stratigraphy'), ' — the pancake model: add units youngest-first with a base from contact points (RBF / kriging / IDW), a surface grid, or a constant; deposit bases on-lap older units, erosion bases cut them; BUILD makes surfaces + volumes, a virtual drillhole reports the column anywhere.'),
@@ -503,5 +607,5 @@ function helpModal() {
     h('p', { class: 'note' }, 'Coordinates are WGS84/UTM metres, Z = elevation. Grades are cited historic figures, claims are BLM centroids, geology is map-scale, terrain is a ~30 m public composite. Never enter adits or shafts.')));
 }
 
-Object.assign(app, { renderLayers, refresh, select, status, topoGrid, exportObjects, exportDialog, syncObject, markDirty, saveProject, applyImagery, importFile, setProject });
+Object.assign(app, { renderLayers, refresh, select, status, topoGrid, exportObjects, exportDialog, syncObject, markDirty, saveProject, applyImagery, importFile, setProject, setProjection, renderLegend });
 boot();

@@ -354,10 +354,39 @@ mines, targets and claim centroids, plus whatever tiled points the map had
 loaded in the viewport.
 
 * **Navigate** — left-drag orbit, right-drag pan, wheel zoom, double-click
-  re-centres, `f` fit, `t` top, `n` look north, VE slider for exaggeration.
+  re-centres, `f` fit, `t` top, `n` look north, `o` orthographic / `p`
+  perspective (orthographic is the right one for interpreting — it does not
+  foreshorten, and the scale bar bottom-left is only exact in it), VE slider
+  for exaggeration. The legend and scale bar can be turned off in VIEW ▾.
 * **Layers** — tick to show/hide, swatch to recolour, ⋯ for zoom / export /
   delete; click a layer or pick in the scene for properties (colour by an
   attribute, cut-offs, labels, tubes).
+* **TOOLS ▾ Structural data** — the fastest thing to do in a new model is
+  press **DERIVE FROM ALL TRACE LAYERS**. Where a mapped contact or fault
+  crosses the terrain, its trace encodes the plane's orientation, and a
+  least-squares plane along the line reads dip and dip azimuth straight off
+  it — the three-point problem, run continuously. You get discs on the ground
+  in seconds, in a district with no drilling at all. Windows without relief or
+  without enough bend are rejected, not guessed, and the counts are shown, so
+  flat ground honestly returns nothing. Every derived reading carries the
+  relief and the fit error it came from and is tagged `inferred`; digitise
+  over the top of it (**POINT + DOWN-DIP**, two clicks) wherever you have a
+  real one. Also here: **SET ELEVATION FROM TOPOGRAPHY** (do this to anything
+  digitised off a flat map, or it will be silently ignored later) and
+  **DECLUSTER**.
+* **TOOLS ▾ Stereonet** — lower hemisphere, equal-area or equal-angle,
+  equatorial or polar. Poles, great circles, and density contours by Kamb,
+  exponential Kamb or Schmidt. The statistics panel gives the Bingham mean
+  plane and — when the data is folded — the best-fit girdle, whose pole is the
+  fold hinge and whose plane is the profile section. Lasso on the net or drag
+  a box in the 3-D scene; either selection becomes a category on the layer, so
+  it colours the model straight away. Export PNG or SVG.
+* **TOOLS ▾ Form interpolant & trends** — the deformation fabric. The form
+  interpolant is an RBF whose gradient is pinned by the measurements, so its
+  surfaces lie parallel to the bedding or foliation everywhere; tick *evaluate
+  onto topography* and you also get form lines in map view. Below it, a
+  structural trend (strength and range, halving every range) and a global
+  trend plane you can set from the Bingham mean.
 * **TOOLS ▾ Section & slice** — draw a section line or use W–E / S–N; the
   plane clips the model and cuts every surface; the 2-D panel shows the section
   the way you would draw it; export DXF / PNG.
@@ -378,4 +407,6 @@ loaded in the viewport.
   kit zip with a README of click-paths, or single layers in any format.
 
 Models autosave in the browser (PROJECTS ▾ lists them); nothing is uploaded.
+Colour maps, chosen attributes, cut-offs, glyph sizes and labels are saved with
+the model, so reopening it looks like what you left.
 

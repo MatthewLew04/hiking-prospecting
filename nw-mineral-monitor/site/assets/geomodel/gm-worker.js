@@ -18,6 +18,7 @@
    blockmodelPlaneSample, linesetNearPlane, desurvey, composite, ...). */
 
 import { runOp, packValue, unpackValue, collectTransferables } from './gm-engine.js';
+import './gm-structural.js';   // registers the structural ops into the shared OPS registry
 
 // a real browser worker scope (not a page that happened to import this file on its main thread)
 const inBrowser = typeof self !== 'undefined' && typeof self.postMessage === 'function'

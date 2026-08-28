@@ -118,3 +118,20 @@ possible (MapLibre custom layer / three.js) but is not built.
   resource estimate.
 - Terrain is a public ~30 m composite: good for draping and access thinking,
   not survey-grade.
+
+
+## Structural data (added 2026-08-27)
+
+The 3-D modeller now carries planar structural measurements as a first-class
+layer: `dip`, `dip_azimuth` (clockwise from north, down-dip direction) and
+`polarity`, which is the same contract Leapfrog's `Import Planar Structural
+Data` expects, and which `csv_structural` already reads and writes. So the
+round trip is direct — derive or digitise orientations here, export the CSV,
+and import it into Leapfrog's `Structural Modelling` folder unchanged.
+
+What that unlocks locally: a stereonet (Kamb / exponential Kamb / Schmidt
+contouring, Bingham and Fisher statistics, selection linked to the 3-D scene),
+declustering, a gradient-constrained form interpolant with form surfaces and
+form lines, and structural trend fields. `GEOMODEL.md` §7 has the detail,
+including the derivation of dip from a mapped trace crossing the DEM — the
+step that makes all of it usable in a district with no drilling.

@@ -356,6 +356,31 @@ class LambdaUpdaterSafetyTests(unittest.TestCase):
             template = source.read()
         self.assertNotRegex(template, r"(?m)^\s+CLOSED_CAP:")
 
+    def test_updater_role_can_list_the_bucket_so_a_missing_key_is_404(self):
+        """The IAM grant lock_read() and ckpt_load() silently depend on.
+
+        Both treat NoSuchKey/404/NotFound as "not there yet" and re-raise
+        everything else -- see the AccessDenied tests above, which pin that
+        on purpose. S3 only answers a GetObject for a nonexistent key with
+        404 when the caller holds s3:ListBucket on the bucket; without it the
+        answer is AccessDenied, and the first lock read of every run raises
+        before a lock can be acquired. That was the 2026-08-21 outage.
+        """
+        with open(os.path.join(INFRA, "template.yaml"), encoding="utf-8") as source:
+            template = source.read()
+        role = template.split("UpdaterRole:", 1)[1].split("\n  UpdaterFunction:", 1)[0]
+        self.assertRegex(
+            role,
+            r"(?m)^\s+-\s+Effect:\s+Allow\n\s+Action:\s+s3:ListBucket\n"
+            r"\s+Resource:\s+!GetAtt\s+SiteBucket\.Arn\s*$",
+            "UpdaterRole must grant s3:ListBucket on the bucket itself, or a "
+            "missing lock/checkpoint returns AccessDenied instead of NoSuchKey")
+        # A GetObject carries no prefix, so a condition on s3:prefix cannot be
+        # satisfied by the implicit existence check and would leave the 403 in
+        # place while looking like a tighter grant.
+        list_stanza = role.split("Action: s3:ListBucket", 1)[1]
+        self.assertNotIn("s3:prefix", list_stanza)
+
     def test_schedules_cover_every_claim_state_once_per_mode(self):
         with open(os.path.join(INFRA, "template.yaml"), encoding="utf-8") as source:
             template = source.read()

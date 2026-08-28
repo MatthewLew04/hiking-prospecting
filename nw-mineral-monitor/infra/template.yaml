@@ -249,6 +249,29 @@ Resources:
               - Effect: Allow
                 Action: lambda:InvokeFunction
                 Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProjectName}-claims-updater'
+              # ListBucket is what makes a MISSING object return 404 rather
+              # than 403, and this role's control flow is built on that
+              # distinction. lock_read() and ckpt_load() in lambda_updater.py
+              # treat NoSuchKey/404/NotFound as "no lock yet" and re-raise
+              # anything else; without s3:ListBucket, S3 answers a GetObject
+              # for a key that does not exist with AccessDenied, so the first
+              # lock read of every run raised before a lock could ever be
+              # acquired. That is the whole of the 2026-08-21 outage: 102
+              # consecutive failures, 8-16 a day, one per scheduled state*mode.
+              #
+              # Do NOT "fix" this by treating AccessDenied as missing.
+              # test_lambda_updater.py pins the opposite, and rightly: a real
+              # denial read as an absent lock puts two chains on one
+              # checkpoint and doubles the BLM load the lock exists to stop.
+              #
+              # Deliberately carries no s3:prefix condition. A GetObject
+              # request supplies no prefix, so the implicit existence check
+              # cannot satisfy one, and any condition here would leave the
+              # 403 in place -- a scoped grant that reads as tighter while
+              # restoring nothing.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt SiteBucket.Arn
 
   UpdaterFunction:
     Type: AWS::Lambda::Function

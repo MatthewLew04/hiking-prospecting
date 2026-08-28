@@ -5,14 +5,41 @@ Postgres while the ASK Lambda served a 3.2 MB SQLite file holding two documents.
 document records what is now in the repository, what has to be run against live AWS to
 activate it, and what is deliberately still open.
 
-Four steps HAVE been executed against production — the schema migrations and the provenance
-backfill on 2026-08-25, then the worker-bundle upload and Phase A on 2026-08-27, all recorded
-below. Everything else is a command for an operator to run deliberately; the code is written,
-tested offline, and shipped dark.
+**Six** steps have been executed against production, measured 2026-08-28:
 
-This count is the first thing to update when something is run. It has been wrong once already
-— it said "nothing has been executed against production" for a day after the migrations ran,
-twenty lines above the section recording them.
+| # | Step | When | Evidence |
+|---|---|---|---|
+| 1 | Schema migrations | 2026-08-25 | 20 statements, 27/27 `--check` green |
+| 2 | Provenance backfill | 2026-08-25 | `source_url` 0% → 100%; rights-missing 45,325 → 0 |
+| 3 | Worker-bundle upload | 2026-08-27 23:50 | `bundle.tar.gz` 208,996 B, was 11,335 B |
+| 4 | Phase A — ANN index | 2026-08-27 | `ws13_chunks_titan_hnsw` valid, ready, **2,199 MB** |
+| 5 | `ws13_reader` login | by 2026-08-28 | `rolcanlogin = true` |
+| 6 | Retrieval Lambda deploy | 2026-08-28 04:16 | `nw-mineral-monitor-ws13-query` exists |
+
+`ws13_mine_id_map` also exists, so Phase D has run. Everything else is a command for an
+operator to run deliberately.
+
+This count is the first thing to update when something is run, and it has now been wrong
+**twice**: it said "nothing has been executed against production" for a day after the
+migrations ran, and it said "four" while six were live. Both times it was wrong in the
+direction of understating what had already touched production, which is the more dangerous
+direction — it invites re-running something that has already run.
+
+The index size is worth keeping: 2,199 MB ≈ 2.15 GiB against the halfvec projection of 2.5 GB
+versus 7.2 GB for the raw column. That projection is what the whole expression-index design
+rests on, and it held.
+
+### Still NOT deployed, despite the bundle being current
+
+The fleet stack has **not** been applied. Measured 2026-08-28: ASG `ws13-workers` still has
+**zero scaling policies** and the account still has **zero CloudWatch alarms**. The UserData
+fix made the template deployable and the bundle it needs is uploaded, so everything is staged
+— and inert. The worker fixes do not take effect, and a scale-up today would still run with no
+scaling policy and nothing watching it. "Fixed below" in the table that follows means fixed in
+code, not fixed in AWS.
+
+The confidence pass has also not run: `ws13_conf_skips` does not exist and
+`ws13_pages.confidence` is NULL for all 760,059 rows.
 
 ## State verified against AWS on 2026-08-25 (read-only)
 
@@ -23,8 +50,8 @@ twenty lines above the section recording them.
 | DB subnets | `subnet-05fbd5a24361ba3cb`, `subnet-0f09ac65853437382`, `subnet-0e1ea2386c106fda0` | all `MapPublicIpOnLaunch=true`, which is why EC2 reaches Bedrock and a Lambda ENI still will not |
 | DB security group | `sg-05ebc8c61bfebe67b` | ingress tcp/5432 from `sg-0a0594b37a7d3087d` only — no SG change is needed or permitted |
 | RDS `nwmm-ws13` | available, 16.14, `IAMDatabaseAuthentication=false` | the query Lambda takes a DSN from a CloudFormation dynamic reference, not `rds-db:connect` |
-| ASG `ws13-workers` | desired 0, **zero scaling policies** | fixed below |
-| CloudWatch alarms | 0 in the account | fixed below |
+| ASG `ws13-workers` | desired 0, **zero scaling policies** | code fix written; still true in AWS as of 2026-08-28 |
+| CloudWatch alarms | 0 in the account | code fix written; still true in AWS as of 2026-08-28 |
 | `ws13-ocr-dlq` | 8 messages | nothing polls it; requeue with `ws13_enqueue.py` |
 
 ## What was built

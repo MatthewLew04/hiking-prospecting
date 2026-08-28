@@ -666,5 +666,59 @@ class SeedBundleTests(unittest.TestCase):
         self.assertNotIn("\nimport ws13_backfill_provenance", head)
 
 
+class ReaderPasswordTests(unittest.TestCase):
+    """Which key in the secret becomes ws13_reader's password.
+
+    ws13_retrieval.yaml resolves the reader password out of DbSecretArn under
+    the key ws13_reader_password, and ws13/postgres is the only secret in the
+    account -- so --reader-secret-arn is pointed at a secret whose 'password'
+    is the RDS MASTER credential. Preferring 'password' therefore did not pick
+    a reader password at all; it picked the superuser's, for the one role in
+    this schema created SELECT-only and asserted to hold no write privileges.
+    """
+
+    def _password(self, payload):
+        client = mock.MagicMock()
+        client.get_secret_value.return_value = {
+            "SecretString": json.dumps(payload)}
+        with mock.patch.object(ws13_migrate, "reader_password",
+                               ws13_migrate.reader_password):
+            with mock.patch("boto3.client", return_value=client):
+                return ws13_migrate.reader_password("arn:aws:test", "us-west-2")
+
+    def test_the_reader_key_wins_over_a_generic_password(self):
+        # Reverting the key order makes this return the master password.
+        self.assertEqual(
+            self._password({"username": "master", "password": "MASTER-CRED",
+                            "ws13_reader_password": "READER-CRED"}),
+            "READER-CRED")
+
+    def test_reader_password_alias_is_also_preferred(self):
+        self.assertEqual(
+            self._password({"username": "master", "password": "MASTER-CRED",
+                            "reader_password": "READER-CRED"}),
+            "READER-CRED")
+
+    def test_a_username_password_pair_with_no_reader_key_is_refused(self):
+        # The live shape of ws13/postgres today: username + password, nothing
+        # else. Silently returning that pair is the defect this guards.
+        with self.assertRaises(SystemExit) as caught:
+            self._password({"username": "master", "password": "MASTER-CRED"})
+        message = str(caught.exception)
+        self.assertIn("ws13_reader_password", message)
+        self.assertNotIn("MASTER-CRED", message)   # names only, never values
+
+    def test_a_dedicated_reader_secret_still_works(self):
+        # A secret created FOR the reader carries a bare password and no other
+        # role's username; that remains the simplest correct setup.
+        self.assertEqual(self._password({"password": "READER-ONLY"}),
+                         "READER-ONLY")
+
+    def test_the_failure_message_lists_key_names_only(self):
+        with self.assertRaises(SystemExit) as caught:
+            self._password({"unrelated": "x"})
+        self.assertNotIn("x", str(caught.exception).replace("arn:aws:test", ""))
+
+
 if __name__ == "__main__":
     unittest.main()

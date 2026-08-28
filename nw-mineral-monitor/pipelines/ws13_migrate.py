@@ -263,10 +263,35 @@ def reader_password(secret_arn, region):
         return raw.strip()
     if not isinstance(payload, dict):
         return raw.strip()
-    for key in ('password', 'ws13_reader_password', 'reader_password'):
+    # SPECIFIC NAMES FIRST, and the order is the whole point. This function
+    # accepts either a dedicated reader secret (whose password is naturally
+    # under 'password') or the main ws13/postgres secret carrying an extra
+    # reader key -- which is what ws13_retrieval.yaml expects, since it
+    # resolves {{...:SecretString:ws13_reader_password}} out of DbSecretArn.
+    # With 'password' checked first, pointing --reader-secret-arn at
+    # ws13/postgres found the RDS MASTER credential and would have set
+    # ws13_reader's password to it: the role created SELECT-only and verified
+    # to hold no write privileges, handed the superuser's password. There is
+    # exactly one secret in this account, so that was not a corner case, it
+    # was the only way the documented command could run.
+    for key in ('ws13_reader_password', 'reader_password'):
         value = payload.get(key)
         if value:
             return str(value)
+    # Last resort, and only meaningful for a secret created FOR the reader. If
+    # this secret also carries a 'username', it is a database credential pair
+    # for some other role -- almost certainly the master -- and reusing it here
+    # would be the defect above rather than a convenience.
+    value = payload.get('password')
+    if value and payload.get('username'):
+        raise SystemExit(
+            f'{secret_arn} has a username/password pair but no reader key. '
+            f"That pair is another role's credential (the master, for "
+            f'ws13/postgres); reusing it would give ws13_reader those '
+            f'privileges. Add a {READER_ROLE}_password key to this secret, or '
+            f'point --reader-secret-arn at a secret created for the reader.')
+    if value:
+        return str(value)
     # Names only, never values: this message can end up in a deploy log.
     raise SystemExit(f'{secret_arn} has no password field; keys present: '
                      f'{sorted(payload)}')

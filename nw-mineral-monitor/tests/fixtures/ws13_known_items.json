@@ -13,7 +13,7 @@
     "Never fabricate an item. A made-up sha256 or a quote that is not on the page turns the whole gate into a test of the fixture rather than a test of retrieval, and it would pass forever without proving anything.",
     "expect_vector_source is not decoration. tools/ws13_live_known_items.py only asserts the vector arm for items that carry it, so a set with the flag cleared everywhere passes on lexical hits alone and certifies a dead ANN index. require_complete() therefore demands it on at least 80% of the items, and refuses a run whose measured vector_arm_rate is zero.",
     "A question built out of the quote's own words only proves the lexical arm works. An item may not be marked verified while its question still shares more than five of the quote's words in order; that is the generator's template, and rewriting it is what puts the vector arm under test.",
-    "admission_class spans the three rights prefixes. Item 1 declares null: the WS12 manifest it was copied from records public-domain rights (17 U.S.C. 105) but not the WS13 admission_class, and this fixture never guesses a value it has not read."
+    "admission_class spans the rights prefixes that carry a licence term: 'licensed-copies' (CC BY-NC-SA, share-alike and non-commercial) and 'research-copies' (state-archive). 'originals' is exempt and is the only exemption -- it is public-domain USGS work with no term to get wrong, and all 10,957 of its documents are field labels ('Township:', 'Latitude:') with median line length 5 characters and none over 40, so the class has no phrase in it to quote and the requirement could only be met by inventing one. See CLASS_COVERAGE_EXEMPT in tests/test_ws13_known_items.py. Item 1 declares null: the WS12 manifest it was copied from records public-domain rights (17 U.S.C. 105) but not the WS13 admission_class, and this fixture never guesses a value it has not read."
   ],
   "item_schema": {
     "id": "stable slug, unique across the set; used in the pass/fail report",
@@ -22,7 +22,7 @@
     "page": "1-based page number the quote appears on, preserved by the OCR pagination guarantee",
     "quote": "verbatim, whitespace-normalised phrase that must appear in the returned excerpt",
     "expect_vector_source": "true when this item is also expected to be reachable through the vector arm",
-    "admission_class": "WS13 ws13_documents.admission_class -- 'originals', 'licensed-copies' or 'research-copies' -- or null when the corpus row was not read. A complete set must span all three, so one rights prefix cannot go untested.",
+    "admission_class": "WS13 ws13_documents.admission_class -- 'originals', 'licensed-copies' or 'research-copies' -- or null when the corpus row was not read. A complete set must cover 'licensed-copies' and 'research-copies', so neither prefix carrying a licence term goes untested. 'originals' is exempt: public-domain USGS work with no term to test, and no quotable phrase in the class.",
     "sidecar_sha256": "sha256 of the checked-in page sidecar when one exists locally, else null",
     "verified": "true only after a human has read the page and confirmed the quote",
     "provenance": "where the triple came from, specific enough to re-check"

@@ -89,7 +89,7 @@ import math
 import os
 import re
 import time
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, NamedTuple, Sequence
 
 try:
     import psycopg
@@ -603,15 +603,22 @@ def document_clauses(filters: Mapping[str, Any]) -> tuple[list[str], list[Any]]:
         # the ws13_documents_county_key index expression.
         doc_clauses.append("ws13_county_key(d.county) = ws13_county_key(%s)")
         doc_params.append(filters["county"])
-    if filters.get("mine_id"):
+    mine_ids = filters.get("mine_id")
+    if isinstance(mine_ids, str):
+        mine_ids = [mine_ids] if mine_ids.strip() else None
+    if mine_ids is not None:
         # Array overlap, not `%s = ANY(d.mine_ids)`: && and @> both use the
         # ws13_documents_mines GIN index, while = ANY() scans all 56,282
         # documents. && rather than @> because one front-end mine id can
         # resolve through ws13_mine_id_map to more than one corpus id, and a
         # document matching ANY of them is a document about that mine.
-        mine_ids = filters["mine_id"]
-        if isinstance(mine_ids, str):
-            mine_ids = [mine_ids]
+        #
+        # An EMPTY list reaches here as a decision, not as an absent filter,
+        # and `&& '{}'` is false for every row. resolve_mine_filter() returns
+        # one when the bridge has a row for the front-end id and that row is
+        # unmapped -- the id exists and translates to no corpus id. Tested
+        # for truthiness instead, as this was, the predicate would have been
+        # dropped and a mine with no documents answered with the whole corpus.
         doc_clauses.append("d.mine_ids && %s::text[]")
         doc_params.append([str(value) for value in mine_ids])
     if filters.get("admission_class"):
@@ -1180,15 +1187,80 @@ def index_present(conn: Any, deadline: float | None = None) -> bool:
     return index_state(conn, deadline) == "present"
 
 
+class MineMapShape(NamedTuple):
+    """One projection of ws13_mine_id_map, and where its values sit.
+
+    The column offsets are carried rather than looked up by name because the
+    fake connection in tests/test_ws13_retrieval.py answers with positional
+    rows, exactly as psycopg does here.
+    """
+    name: str
+    sql: str
+    has_all: bool
+    has_gate: bool
+    has_relation: bool
+    index_all: int = 2
+    index_verified: int = 3
+    index_confidence: int = 4
+    index_relation: int = 5
+
+
+MINE_MAP_SHAPES = (
+    MineMapShape(
+        "relation",
+        "SELECT front_end_id, ws13_mine_id, ws13_mine_id_all, verified, "
+        "confidence, relation FROM ws13_mine_id_map "
+        "WHERE front_end_id = ANY(%s)",
+        has_all=True, has_gate=True, has_relation=True),
+    MineMapShape(
+        "legacy",
+        "SELECT front_end_id, ws13_mine_id, ws13_mine_id_all, verified, "
+        "confidence FROM ws13_mine_id_map WHERE front_end_id = ANY(%s)",
+        has_all=True, has_gate=True, has_relation=False),
+)
+# Which projection this container settled on. Cached because the answer cannot
+# change under a running Lambda -- a migration that adds the column starts new
+# containers -- and re-learning it would cost an extra failed statement on
+# every mine-filtered request against a pre-migration table.
+_MINE_MAP_SHAPE: MineMapShape | None = None
+# The admission threshold pipelines/ws13_mine_id_map.py documents beside its
+# CREATE TABLE and nothing enforced. Its two exact tiers sit at 0.85 and above
+# and its difflib tier is capped at 0.6, so this cuts exactly where the
+# builder put the gap.
+MINE_MAP_MIN_CONFIDENCE = 0.8
+
+
 def mine_id_map(conn: Any, front_end_ids: Sequence[str],
-                deadline: float | None = None) -> dict[str, list[str]]:
-    """front-end mine ids -> corpus mine ids, through ws13_mine_id_map.
+                deadline: float | None = None) -> dict[str, dict[str, Any]]:
+    """front-end mine ids -> what ws13_mine_id_map says about each.
 
     The front end emits 'stategeo-igs-dd-1-if0126'; ws13_documents.mine_ids
     holds AZGS 'ADMM-...' codes and bare IGS codes. The namespaces do not
     intersect, so an unresolved mine filter matched 0 of 56,282 documents and
     ASK reported "the indexed documents do not answer it" for a mine whose
     documents are in the corpus.
+
+    Each returned entry is a dict, not a bare list, because three states have
+    to be told apart and only two of them were before:
+
+      ids        the corpus ids to match, empty when nothing was accepted
+      relation   how the front-end mine relates to those documents --
+                 'identity' for a translated id, 'district' or 'county' for a
+                 place-level association. None when nothing was accepted.
+      enumerated whether the bridge has a row for this front-end id at all.
+                 A row saying 'unmapped' is a MEASUREMENT: this id was
+                 enumerated from the front end and could not be translated.
+                 Absence of a row means the caller is passing something the
+                 bridge never saw, which is a different fact and takes the
+                 different fallback in resolve_mine_filter().
+
+    Three columns behind this reading are newer than the deployed table, so
+    the SELECT degrades once, permanently, per process: the wide statement
+    runs first and an undefined-column error demotes to the legacy pair for
+    the life of the container. Without that, deploying this Lambda before
+    pipelines/ws13_mine_id_map.py has migrated the table would take the whole
+    bridge out (42703 lands in the handler below, which reports an empty
+    bridge) and drop Idaho from 25,820 reachable documents to zero.
 
     A missing table is an empty map, not an error: pipelines/ws13_migrate.py
     deliberately does not create ws13_mine_id_map (a later stage builds it and
@@ -1199,50 +1271,121 @@ def mine_id_map(conn: Any, front_end_ids: Sequence[str],
     ids = [str(value) for value in front_end_ids if str(value or "").strip()]
     if not ids:
         return {}
-    try:
-        rows = run(conn,
-                   "SELECT front_end_id, ws13_mine_id FROM ws13_mine_id_map "
-                   "WHERE front_end_id = ANY(%s)", [ids], deadline).fetchall()
-    except Exception as exc:
-        # 42P01 undefined_table, 42703 undefined_column, 42501 insufficient
-        # privilege: the bridge has not been built yet, or ws13_reader has no
-        # grant on it. Those are the states this function promises to survive.
-        # Anything else is a real database failure and is re-raised, because
-        # swallowing it would turn an outage into silently unfiltered results.
-        state = getattr(exc, "sqlstate", None)
-        message = str(exc).lower()
-        if state not in ("42P01", "42703", "42501") and not (
-                state is None and any(token in message for token in
-                                      ("does not exist", "undefined",
-                                       "permission denied"))):
-            raise
-        LOG.warning("ws13_mine_id_map is not readable (%s %s: %s); treating "
-                    "the mine-id namespace bridge as empty",
-                    type(exc).__name__, state or "-", str(exc)[:200])
-        return {}
-    mapped: dict[str, list[str]] = {}
+    global _MINE_MAP_SHAPE
+    for attempt in (_MINE_MAP_SHAPE,) if _MINE_MAP_SHAPE else MINE_MAP_SHAPES:
+        try:
+            cursor = run(conn, attempt.sql, [ids], deadline)
+            rows = cursor.fetchall()
+        except Exception as exc:
+            state = getattr(exc, "sqlstate", None)
+            message = str(exc).lower()
+            undefined_column = state == "42703" or (
+                state is None and "column" in message and
+                ("does not exist" in message or "undefined" in message))
+            if undefined_column and attempt is not MINE_MAP_SHAPES[-1]:
+                # The narrower statement is the fallback, not an error: this
+                # is the pre-migration table and it still bridges namespaces.
+                LOG.info("ws13_mine_id_map has no %s column; using the "
+                         "legacy projection", attempt.name)
+                continue
+            # 42P01 undefined_table, 42703 undefined_column, 42501
+            # insufficient privilege: the bridge has not been built yet, or
+            # ws13_reader has no grant on it. Those are the states this
+            # function promises to survive. Anything else is a real database
+            # failure and is re-raised, because swallowing it would turn an
+            # outage into silently unfiltered results.
+            if state not in ("42P01", "42703", "42501") and not (
+                    state is None and any(token in message for token in
+                                          ("does not exist", "undefined",
+                                           "permission denied"))):
+                raise
+            LOG.warning("ws13_mine_id_map is not readable (%s %s: %s); "
+                        "treating the mine-id namespace bridge as empty",
+                        type(exc).__name__, state or "-", str(exc)[:200])
+            return {}
+        _MINE_MAP_SHAPE = attempt
+        return _read_mine_map_rows(rows, attempt)
+    return {}
+
+
+def _read_mine_map_rows(rows: Sequence[Sequence[Any]],
+                        shape: "MineMapShape") -> dict[str, dict[str, Any]]:
+    """Apply the table's own admission rule to the rows it returned.
+
+    The rule is the one pipelines/ws13_mine_id_map.py writes down beside
+    CREATE_TABLE_SQL and which nothing enforced until now: a row is a mapping
+    only when it has a corpus id AND (verified OR confidence >= 0.8).
+
+    Neither half is optional. Unmapped rows are in the table on purpose, so a
+    row is not a mapping just because it exists. And the fuzzy tier is a
+    difflib guess the builder caps at 0.6 and refuses to mark verified,
+    documented there as something that "must never silently scope a search" --
+    4,060 of those rows are in the table today and every one of them was being
+    used. They bought 5 reachable documents out of 26,153 and put the other
+    4,000-odd front-end ids one difflib tie away from serving one mine's
+    documents under another mine's name.
+    """
+    mapped: dict[str, dict[str, Any]] = {}
     for row in rows:
-        corpus_id = str(row[1] or "").strip()
-        if corpus_id:
-            mapped.setdefault(str(row[0]), []).append(corpus_id)
+        front_end_id = str(row[0])
+        entry = mapped.setdefault(front_end_id, {
+            "ids": [], "relation": None, "enumerated": True, "rejected": 0})
+        corpus_ids = [str(row[1] or "").strip()] if row[1] else []
+        if shape.has_all and len(row) > shape.index_all:
+            corpus_ids = [str(value).strip()
+                          for value in (row[shape.index_all] or [])
+                          if str(value or "").strip()] or corpus_ids
+        if not corpus_ids:
+            continue
+        verified = bool(row[shape.index_verified]) if shape.has_gate else True
+        confidence = (float(row[shape.index_confidence] or 0.0)
+                      if shape.has_gate else 1.0)
+        if not (verified or confidence >= MINE_MAP_MIN_CONFIDENCE):
+            entry["rejected"] += 1
+            continue
+        relation = (str(row[shape.index_relation] or "").strip() or None
+                    if shape.has_relation else None)
+        for corpus_id in corpus_ids:
+            if corpus_id not in entry["ids"]:
+                entry["ids"].append(corpus_id)
+        entry["relation"] = entry["relation"] or relation or "identity"
     return mapped
 
 
 def resolve_mine_filter(conn: Any, mine_id: str,
-                        deadline: float | None = None
-                        ) -> tuple[list[str], bool]:
-    """(corpus mine ids to match, whether the id resolved to nothing).
+                        deadline: float | None = None) -> dict[str, Any]:
+    """What to match on, and an honest account of how it was decided.
 
-    An id with no mapping row falls back to itself: the caller may already be
-    passing a corpus-namespace id ('ADMM-01234' or a bare IGS code), and
-    refusing it would break the path that works today. It is still reported as
-    unresolved, so a zero-hit response can say WHY it is zero rather than
-    asserting the corpus holds nothing about the mine.
+    Returns ids / unresolved / relation / enumerated / via. The three ways
+    this can end are genuinely different and the caller has to be able to tell
+    them apart:
+
+    * The bridge translated it. ids are corpus ids, relation says whether they
+      are the same mine or the district or county it sits in.
+    * There is no row. The caller may already be passing a corpus-namespace id
+      ('ADMM-01234' or a bare IGS code) and refusing it would break the path
+      that works today, so the id falls back to itself. Still reported
+      unresolved, so a zero-hit response can say WHY it is zero.
+    * There is a row and it is unmapped -- the id was enumerated off the front
+      end and could not be translated. Here the fallback is WRONG, and
+      measurably so: MRDS numbers Nevada deposits from 10006806 and NBMG
+      numbered its mining-district files from 10000001, two unrelated
+      namespaces of the same shape, and 52 of those integers collide. Matching
+      the id as supplied answered a click on the Sand Springs district with
+      the Cordera Mine recharge file from a county 200 km away, at
+      confidence 1.0. ids is empty here and the caller must not query with it.
     """
-    mapped = mine_id_map(conn, [mine_id], deadline).get(mine_id) or []
-    if mapped:
-        return mapped, False
-    return [mine_id], True
+    entry = mine_id_map(conn, [mine_id], deadline).get(mine_id)
+    if entry and entry["ids"]:
+        return {"ids": entry["ids"], "unresolved": False,
+                "relation": entry["relation"] or "identity",
+                "enumerated": True, "via": "ws13_mine_id_map"}
+    if entry:
+        return {"ids": [], "unresolved": True, "relation": None,
+                "enumerated": True, "via": "ws13_mine_id_map_unmapped",
+                "rejected": entry.get("rejected", 0)}
+    return {"ids": [mine_id], "unresolved": True, "relation": None,
+            "enumerated": False, "via": "as_supplied"}
 
 
 def iterative_scan_supported(conn: Any,
@@ -1504,15 +1647,18 @@ def search(event: Mapping[str, Any],
     filter_resolution: dict[str, Any] = {}
     if filters.get("mine_id"):
         requested_mine_id = str(filters["mine_id"])
-        corpus_ids, unresolved = resolve_mine_filter(conn, requested_mine_id,
-                                                     deadline)
-        filters["mine_id"] = corpus_ids
+        resolution = resolve_mine_filter(conn, requested_mine_id, deadline)
+        # The empty list is passed through deliberately: an enumerated id the
+        # bridge could not translate matches nothing, and document_clauses()
+        # renders that as `&& '{}'` rather than dropping the predicate.
+        filters["mine_id"] = resolution["ids"]
         filter_resolution["mine_id"] = {
             "requested": requested_mine_id,
-            "resolved": corpus_ids,
-            "via": "as_supplied" if unresolved else "ws13_mine_id_map",
+            "resolved": resolution["ids"],
+            "via": resolution["via"],
+            "relation": resolution["relation"],
         }
-        if unresolved:
+        if resolution["unresolved"]:
             filter_unresolved.append("mine_id")
 
     if vector_reason is None and require_index():
@@ -1654,7 +1800,8 @@ def search(event: Mapping[str, Any],
 def _documents_note(request: Mapping[str, Any], total: int, on_page: int,
                     withheld: int, truncated: bool,
                     next_offset: int | None,
-                    unresolved_mine_id: str | None) -> str:
+                    unresolved_mine_id: str | None,
+                    unmapped_mine_id: str | None = None) -> str:
     """What this listing is, in the words a reader would otherwise assume.
 
     The one sentence that has to be here is that `count` is the whole set and
@@ -1665,7 +1812,23 @@ def _documents_note(request: Mapping[str, Any], total: int, on_page: int,
     parts = ["count is the TOTAL number of distinct documents these filters "
              "select in the WS13 corpus; documents[] holds the page of them "
              "listed here."]
-    if unresolved_mine_id is not None and total == 0:
+    if unmapped_mine_id is not None and total == 0:
+        # Distinct from the case below and worth its own sentence: the bridge
+        # HAS a row for this id and the row says the id could not be
+        # translated. That is a measurement, so the honest report is a gap in
+        # the bridge rather than a gap in the corpus -- and unlike the case
+        # below, the id was NOT matched as supplied, because for an id the
+        # bridge enumerated that fallback is what produced 52 Nevada mines
+        # answering with another district's documents at confidence 1.0.
+        parts.append(
+            f"mine id {unmapped_mine_id!r} is in ws13_mine_id_map as UNMAPPED: "
+            f"the bridge enumerated it from the front end and could not "
+            f"translate it into the corpus namespace, so it was matched "
+            f"against nothing rather than against itself. count 0 means THE "
+            f"BRIDGE HAS NO ENTRY FOR THIS MINE, not that this mine has no "
+            f"documents — fall back to the bounded index rather than "
+            f"reporting an empty document set.")
+    elif unresolved_mine_id is not None and total == 0:
         # The failure this exists to prevent, stated as plainly as it can be:
         # the front end emits 'stategeo-igs-dd-1-if0126' and
         # ws13_documents.mine_ids holds AZGS 'ADMM-...' codes and bare IGS
@@ -1753,15 +1916,17 @@ def documents(event: Mapping[str, Any] | None,
         several corpus ids. It is also the only spelling that can pick up the
         case variants pipelines/ws13_mine_id_map.py records in
         ws13_mine_id_all — mine_ids is case-sensitive and its GIN index is
-        exact-match, so 'SP0145' and 'sp0145' are different values. NOTE the
-        limit: mine_id_map() below still SELECTs ws13_mine_id alone, so the
-        set this op overlaps against is the primary spelling only. Documents
-        filed under another spelling are lost here exactly as they are lost in
-        search() — this op does not fix that, and must not be described as
-        though it had.
+        exact-match, so 'SP0145' and 'sp0145' are different values.
+        mine_id_map() now SELECTs that array and matches against every
+        spelling in it; until 2026-08-28 it selected ws13_mine_id alone and
+        documents filed under the other spelling were lost here exactly as
+        they were lost in search().
       * An id that resolved to nothing is reported as unresolved and the note
-        says the id was never translated. A zero here is never evidence that a
-        mine has no documents.
+        says why. There are two different reasons and the note tells them
+        apart: the bridge has no row for the id (matched as supplied), or the
+        bridge has a row saying the id could not be translated (matched
+        against nothing). A zero here is never evidence that a mine has no
+        documents.
     """
     request = normalize_documents_request(event)
     # A copy: filters.mine_id is rewritten in place below and the request bag
@@ -1774,17 +1939,20 @@ def documents(event: Mapping[str, Any] | None,
 
     filter_resolution: dict[str, Any] = {}
     unresolved_mine_id: str | None = None
+    unmapped_mine_id: str | None = None
     if requested_mine_id:
-        corpus_ids, unresolved = resolve_mine_filter(conn, requested_mine_id,
-                                                     deadline)
-        filters["mine_id"] = corpus_ids
+        resolution = resolve_mine_filter(conn, requested_mine_id, deadline)
+        filters["mine_id"] = resolution["ids"]
         filter_resolution["mine_id"] = {
             "requested": requested_mine_id,
-            "resolved": corpus_ids,
-            "via": "as_supplied" if unresolved else "ws13_mine_id_map",
+            "resolved": resolution["ids"],
+            "via": resolution["via"],
+            "relation": resolution["relation"],
         }
-        if unresolved:
+        if resolution["unresolved"]:
             unresolved_mine_id = requested_mine_id
+        if resolution["enumerated"] and not resolution["ids"]:
+            unmapped_mine_id = requested_mine_id
 
     count_sql, count_params = documents_count_sql(filters)
     row = run(conn, count_sql, count_params, deadline).fetchone()
@@ -1908,7 +2076,7 @@ def documents(event: Mapping[str, Any] | None,
         "citation_rule": DOCUMENT_CITATION_RULE,
         "note": _documents_note(request, total, on_page, len(withheld),
                                 truncated, next_offset,
-                                unresolved_mine_id),
+                                unresolved_mine_id, unmapped_mine_id),
     }
     if request.get("offset_clamped_from") is not None:
         # `offset` above is the one this op used, not the one asked for.

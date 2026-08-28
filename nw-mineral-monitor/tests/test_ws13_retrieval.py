@@ -330,7 +330,8 @@ class FakeConn:
     """
 
     def __init__(self, lexical=(), vector=(), index_present=True, plan=None,
-                 mine_id_map=None, documents=None, document_total=None):
+                 mine_id_map=None, documents=None, document_total=None,
+                 mine_map_has_relation=True):
         self.lexical = list(lexical)
         self.vector = list(vector)
         self.index_present = index_present
@@ -344,8 +345,18 @@ class FakeConn:
         self.document_total = document_total
         # None models the table pipelines/ws13_migrate.py does not create: a
         # later stage builds ws13_mine_id_map, so retrieval has to work before
-        # it exists. A dict is the built table.
+        # it exists. A dict is the built table. Its values may be
+        #
+        #   ["IF0126"]  a mapped row, identity, verified, confidence 1.0
+        #   []          an UNMAPPED row: the bridge enumerated this front-end
+        #               id off the map and could not translate it, which is a
+        #               different fact from having no row at all
+        #   {...}       ids / relation / confidence / verified, spelled out
         self.mine_id_map = mine_id_map
+        # False models the table as it stands in production before
+        # pipelines/ws13_mine_id_map.py has migrated it: no relation column,
+        # so the wide projection has to demote rather than take the bridge out.
+        self.mine_map_has_relation = mine_map_has_relation
         # The plan text EXPLAIN returns. Default is the shape the contract
         # requires; a test that wants the failure states the Seq Scan.
         self.plan = plan or [
@@ -353,6 +364,37 @@ class FakeConn:
             "  Order By: ((titan_embedding)::halfvec(1024) <=> '[...]')"]
         self.statements = []
         self.closed = False
+
+    def _mine_map_rows(self, lowered):
+        """ws13_mine_id_map, in whichever projection was asked for.
+
+        Positional rows, as psycopg returns them, because that is what
+        ws13_query_lambda.MineMapShape indexes into.
+        """
+        if "relation" in lowered and not self.mine_map_has_relation:
+            raise RuntimeError(
+                'column "relation" does not exist\nLINE 1: SELECT '
+                'front_end_id, ws13_mine_id, ws13_mine_id_all, ...')
+        wide = "relation" in lowered
+        columns = ["front_end_id", "ws13_mine_id", "ws13_mine_id_all",
+                   "verified", "confidence"] + (["relation"] if wide else [])
+        rows = []
+        for front, value in self.mine_id_map.items():
+            if isinstance(value, dict):
+                ids = list(value.get("ids") or [])
+                verified = value.get("verified", True)
+                confidence = value.get("confidence", 1.0)
+                relation = value.get("relation", "identity" if ids else None)
+            else:
+                ids = list(value or [])
+                verified, confidence = True, 1.0
+                relation = "identity" if ids else None
+            row = [front, ids[0] if ids else None, ids or None,
+                   verified, confidence]
+            if wide:
+                row.append(relation)
+            rows.append(tuple(row))
+        return FakeCursor(columns, rows)
 
     # -- psycopg surface -------------------------------------------------
     def transaction(self):
@@ -377,10 +419,7 @@ class FakeConn:
             if self.mine_id_map is None:
                 raise RuntimeError(
                     'relation "ws13_mine_id_map" does not exist')
-            return FakeCursor(["front_end_id", "ws13_mine_id"],
-                              [(front, corpus)
-                               for front, values in self.mine_id_map.items()
-                               for corpus in values])
+            return self._mine_map_rows(lowered)
         if "count(*) as total" in lowered:
             total = (self.document_total if self.document_total is not None
                      else len(self._documents()))
@@ -457,11 +496,18 @@ class QueryLambdaTestCase(unittest.TestCase):
         ql._PLAN_ASSERTED = set()
         ql._ITERATIVE_SCAN = None
         ql._APPLIED_TIMEOUT_MS = None
+        # The projection ws13_mine_id_map answered to last. It is a warm
+        # container global for the same reason as the others -- a migration
+        # that adds the relation column starts new containers -- and left
+        # alone a test running against a pre-migration table would demote
+        # every later test to the legacy projection.
+        ql._MINE_MAP_SHAPE = None
         self.addCleanup(setattr, ql, "_CONN", None)
         self.addCleanup(setattr, ql, "_INDEX_PRESENT", False)
         self.addCleanup(setattr, ql, "_PLAN_ASSERTED", set())
         self.addCleanup(setattr, ql, "_ITERATIVE_SCAN", None)
         self.addCleanup(setattr, ql, "_APPLIED_TIMEOUT_MS", None)
+        self.addCleanup(setattr, ql, "_MINE_MAP_SHAPE", None)
 
     def run_search(self, event, lexical=(), vector=(), index_present=True,
                    vector_arm="true", plan=None, environment=None,
@@ -1480,6 +1526,55 @@ class DocumentListingTest(QueryLambdaTestCase):
         self.assertIn("NEVER TRANSLATED", response["note"])
         self.assertIn("not that this mine has no documents", response["note"])
 
+    def test_an_enumerated_unmapped_id_is_matched_against_nothing(self):
+        """The Nevada collision, and the reason the two zero-answers are told
+        apart.
+
+        MRDS numbers Nevada deposits from 10006806 and NBMG numbered its
+        mining-district files from 10000001 -- two unrelated namespaces of the
+        same shape, 52 of whose integers collide. Falling back to the id as
+        supplied answered a click on one district with another district's
+        file, at confidence 1.0, and every check downstream read it as a
+        translated hit. A row saying 'unmapped' is the bridge reporting it
+        enumerated this id and could not translate it, so the honest predicate
+        is one that matches nothing.
+        """
+        response = self.list_documents(documents=[], total=0,
+                                       mine_id_map={self.FRONT_END_ID: []})
+        self.assertEqual(response["count"], 0)
+        self.assertEqual(response["filter_unresolved"], ["mine_id"])
+        self.assertEqual(response["filter_resolution"]["mine_id"]["resolved"],
+                         [])
+        self.assertEqual(response["filter_resolution"]["mine_id"]["via"],
+                         "ws13_mine_id_map_unmapped")
+        self.assertIn("UNMAPPED", response["note"])
+        self.assertIn("not that this mine has no documents", response["note"])
+        bound = [param for sql, params in self.conn.statements
+                 if "d.mine_ids && %s::text[]" in sql
+                 for param in params if isinstance(param, list)]
+        self.assertTrue(bound, "the mine predicate never ran")
+        for value in bound:
+            self.assertEqual(value, [], "the front-end id was matched anyway")
+
+    def test_an_unmapped_row_does_not_drop_the_mine_predicate(self):
+        """The predicate has to be BUILT and empty, not omitted. Read for
+        truthiness an empty resolution looks like no mine filter at all, and
+        the op would answer a mine with no documents with the whole corpus."""
+        clauses, params = ql.document_clauses({"mine_id": []})
+        self.assertIn("d.mine_ids && %s::text[]", clauses)
+        self.assertIn([], params)
+
+    def test_the_relation_of_a_place_level_match_is_reported(self):
+        """A district file is not a document about this mine, it is a document
+        about the district the mine sits in. The bridge can say so and the
+        response has to carry it, or the distinction dies here."""
+        response = self.list_documents(
+            total=1, mine_id_map={self.FRONT_END_ID: {
+                "ids": ["60000037"], "relation": "district",
+                "confidence": 0.8, "verified": False}})
+        self.assertEqual(response["filter_resolution"]["mine_id"]["relation"],
+                         "district")
+
     def test_a_result_set_never_carries_the_unresolved_marker(self):
         """An id already in the corpus namespace has no map row and is still
         correct."""
@@ -1868,43 +1963,101 @@ class MineIdCaseSpellingTest(QueryLambdaTestCase):
                 predicate = [item for item in clauses if "mine_ids" in item]
                 self.assertEqual(predicate, ["d.mine_ids && %s::text[]"])
 
-    def test_the_reader_selects_one_spelling_and_the_docstring_says_so(self):
-        """A TRIPWIRE ON AN OPEN LIMIT, not a blessing of it.
+    def test_the_reader_selects_every_spelling(self):
+        """The limit this class was a tripwire on, now closed.
 
-        pipelines/ws13_mine_id_map.py:154-166 states the reader query this
-        table was built for: SELECT front_end_id, ws13_mine_id,
-        ws13_mine_id_all ... AND ws13_mine_id IS NOT NULL AND (verified OR
-        confidence >= 0.8). The live mine_id_map() selects ws13_mine_id alone
-        and applies neither guard, so documents filed under another spelling
-        are lost here exactly as they are lost in search(), and a fuzzy_name
-        difflib guess capped at 0.6 confidence can scope a query.
-
-        ws13_query_lambda.documents() says so in its own docstring rather than
-        implying it fixed it. This test asserts the code and that sentence
-        agree. Widening the SELECT is the right change and it will fail this
-        test: when you make it, delete this test, and take BOTH guards with
-        you -- the array without the confidence filter turns a 0.6 difflib
-        guess into a silently scoped search, which is what the tiers exist to
-        prevent, and a pre-ws13_mine_id_all table answers the wider SELECT
-        with 42703, which mine_id_map() swallows as "bridge empty".
+        pipelines/ws13_mine_id_map.py:154-166 states the reader query the
+        table was built for -- ws13_mine_id_all, and the admission rule -- and
+        mine_id_map() selected ws13_mine_id alone and applied neither guard.
+        Documents filed under another spelling were lost, and a difflib guess
+        capped at 0.6 could scope a query. Both guards moved across together,
+        because the array without the confidence filter turns that guess into
+        a silently scoped search over MORE documents than before.
         """
         self.search(lexical=[row(404)], arms=["lexical"],
                     filters={"mine_id": self.FRONT_END_ID},
-                    mine_id_map={self.FRONT_END_ID: ["SP0145"]})
+                    mine_id_map={self.FRONT_END_ID: ["SP0145", "sp0145"]})
         bridge = [sql for sql, _ in self.conn.statements
                   if "ws13_mine_id_map" in sql]
         self.assertEqual(len(bridge), 1, bridge)
-        self.assertNotIn("ws13_mine_id_all", bridge[0])
-        documents_doc = " ".join((ql.documents.__doc__ or "").split())
-        self.assertIn("primary spelling only", documents_doc)
-        self.assertIn("does not fix that", documents_doc)
-        # The contract the tripwire points at has to still be there to point
-        # at: if the pipeline stops stating the reader query, a later fix has
-        # nothing to implement against.
+        self.assertIn("ws13_mine_id_all", bridge[0])
+        for value in self.bound_mine_ids():
+            self.assertEqual(sorted(value), ["SP0145", "sp0145"])
+        # The contract this implements has to still be stated where the table
+        # is defined, or the next reader has nothing to check the code against.
         pipeline = Path(ROOT, "pipelines", "ws13_mine_id_map.py").read_text(
             encoding="utf-8")
         self.assertIn("ws13_mine_id_all", pipeline)
         self.assertIn("verified OR confidence >= 0.8", pipeline)
+
+    def test_a_low_confidence_row_does_not_scope_the_search(self):
+        """4,060 fuzzy_name rows are in the table, every one of them a difflib
+        guess the builder caps at 0.6 and refuses to mark verified. They were
+        all being used. They bought five reachable documents and put four
+        thousand front-end ids one tie away from serving the wrong mine."""
+        self.search(lexical=[row(405)], arms=["lexical"],
+                    filters={"mine_id": self.FRONT_END_ID},
+                    mine_id_map={self.FRONT_END_ID: {
+                        "ids": ["SP0145"], "confidence": 0.6,
+                        "verified": False, "relation": "identity"}})
+        for value in self.bound_mine_ids():
+            self.assertEqual(value, [])
+
+    def test_a_verified_row_is_admitted_whatever_its_confidence(self):
+        """The rule is `verified OR confidence >= 0.8`, not the threshold
+        alone: a human-confirmed row is a mapping by fiat."""
+        self.search(lexical=[row(406)], arms=["lexical"],
+                    filters={"mine_id": self.FRONT_END_ID},
+                    mine_id_map={self.FRONT_END_ID: {
+                        "ids": ["SP0145"], "confidence": 0.1,
+                        "verified": True}})
+        for value in self.bound_mine_ids():
+            self.assertEqual(value, ["SP0145"])
+
+    def test_a_table_without_the_relation_column_still_bridges(self):
+        """The deployed table has no relation column until
+        pipelines/ws13_mine_id_map.py migrates it, and this Lambda may ship
+        first. A 42703 on the wide projection has to demote to the legacy one,
+        not take the bridge out -- that would drop Idaho from 25,820 reachable
+        documents to zero."""
+        conn = FakeConn(lexical=[row(407)],
+                        mine_id_map={self.FRONT_END_ID: ["SP0145"]},
+                        mine_map_has_relation=False)
+        self.conn = conn
+        with mock.patch.dict(os.environ, {"WS13_VECTOR_ARM": "false"}), \
+                mock.patch.object(ql, "_open_connection", lambda: conn):
+            response = ql.handler(
+                {"op": "search", "query": "lava creek", "limit": 25,
+                 "filters": {"mine_id": self.FRONT_END_ID}}, None)
+        self.assertEqual(
+            response["filter_resolution"]["mine_id"]["resolved"], ["SP0145"])
+        for value in self.bound_mine_ids():
+            self.assertEqual(value, ["SP0145"])
+
+    def test_the_demoted_projection_is_learned_once(self):
+        """Re-learning it would cost a failed statement on every mine-filtered
+        request against a pre-migration table, and the answer cannot change
+        under a running container."""
+        attempts = []
+        for _ in range(2):
+            # A fresh connection each time, as a warm container gets on a
+            # reconnect; the projection is what has to survive, not the socket.
+            ql._CONN = None
+            conn = FakeConn(lexical=[row(408)],
+                            mine_id_map={self.FRONT_END_ID: ["SP0145"]},
+                            mine_map_has_relation=False)
+            self.conn = conn
+            with mock.patch.dict(os.environ, {"WS13_VECTOR_ARM": "false"}), \
+                    mock.patch.object(ql, "_open_connection", lambda: conn):
+                ql.handler({"op": "search", "query": "lava creek", "limit": 25,
+                            "filters": {"mine_id": self.FRONT_END_ID}}, None)
+            attempts.append([sql for sql, _ in conn.statements
+                             if "ws13_mine_id_map" in sql])
+        # First invocation: the wide projection, then the demotion. Second:
+        # the demoted projection alone.
+        self.assertEqual(len(attempts[0]), 2, attempts[0])
+        self.assertEqual(len(attempts[1]), 1, attempts[1])
+        self.assertNotIn("relation", attempts[1][0])
 
 
 class PlanGuardTest(QueryLambdaTestCase):

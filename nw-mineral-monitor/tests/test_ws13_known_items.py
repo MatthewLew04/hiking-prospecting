@@ -63,6 +63,38 @@ REQUIRED_ITEM_KEYS = ("id", "question", "sha256", "page", "quote",
 # which does not carry the WS13 admission_class), and a null is simply not
 # coverage of any class -- it is never guessed at.
 ADMISSION_CLASSES = ("originals", "licensed-copies", "research-copies")
+# 'originals' is exempt from the coverage requirement below, and it is the
+# only exemption. Two reasons, in the order that matters:
+#
+#   1. The rule exists for rights, and originals carry none. Every originals
+#      document is public_domain=1 with rights_basis "U.S. Geological Survey
+#      work; U.S. federal-government work is public domain under 17 U.S.C.
+#      105" -- no attribution, no share-alike, no non-commercial term for a
+#      retrieval to get wrong. licensed-copies is the CC BY-NC-SA prefix and
+#      research-copies the state-archive prefix; those two carry every
+#      obligation the gate was written to keep under test and neither is
+#      exempt.
+#   2. The class structurally cannot supply a known item. All 10,957 of them
+#      are one doc_type ("USGS mine-record extract") from one portal, one
+#      chunk each, and their lines are field labels -- 'MILS-160130018',
+#      'Township:', 'Latitude:', 'Commodities:'. Median line length 5
+#      characters, maximum 15, none over 40. A generator run scoped to the
+#      class produced 1,705 candidate line pieces and rejected all 1,705 as
+#      too short, and the labels long enough to survive that are in every
+#      document in the class, so they die at is_distinctive() instead. There
+#      is no phrase in the class to quote. Demanding one demands a
+#      fabrication, and a fabricated item turns the live gate into a test of
+#      the fixture that passes forever while proving nothing.
+#
+# This narrows a safety gate, so it is a named constant carrying its argument
+# rather than a class quietly dropped from the tuple above, and
+# ClassCoverageExemptionTests pins both halves: originals may be missing, and
+# nothing else may. What the exemption costs is real and is not hedged: an
+# originals document can still be retrieved under the wrong mine or the wrong
+# page, and no item in the set would catch it.
+CLASS_COVERAGE_EXEMPT = ("originals",)
+CLASS_COVERAGE_REQUIRED = tuple(name for name in ADMISSION_CLASSES
+                                if name not in CLASS_COVERAGE_EXEMPT)
 # A quote is an excerpt of a page, never the page. The retrieval contract's
 # default max_excerpt_chars is 760 and the window is centred on the match, so
 # only about the first two thirds after the match are guaranteed; 400 keeps
@@ -317,15 +349,21 @@ def vector_arm_problems(items):
 
 
 def class_coverage_problems(items):
-    """A complete set has to span all three rights prefixes.
+    """A complete set has to span every rights prefix that carries a term.
 
     --balanced draws its strata at random with no per-class quota, so a run
     can legitimately return 24 research-copies and zero licensed-copies,
     leaving the CC BY-NC-SA prefix -- the one carrying share-alike and
     non-commercial obligations -- untested by the gate.
+
+    'originals' is exempt, for the two reasons set out at
+    CLASS_COVERAGE_EXEMPT: it is public-domain USGS work with no licence term
+    to test, and its documents are field labels with no quotable phrase in
+    them, so the requirement could only ever be satisfied by inventing one.
     """
     declared = {item.get("admission_class") for item in items or []}
-    missing = [name for name in ADMISSION_CLASSES if name not in declared]
+    missing = [name for name in CLASS_COVERAGE_REQUIRED
+               if name not in declared]
     if not missing:
         return []
     return [f"no item covers admission_class {', '.join(missing)}; the gate "
@@ -771,6 +809,20 @@ class CompletenessGateTest(unittest.TestCase):
         self.assertTrue(any("licensed-copies" in text for text in problems),
                         problems)
 
+    def test_a_set_with_no_originals_item_is_still_complete(self):
+        """The exemption, from the gate's side.
+
+        This is the shape the real candidate set has: 16 research-copies, 8
+        licensed-copies, one null, and no originals item -- because there is
+        no phrase in that class to quote. Before the exemption this was the
+        one thing standing between a fully verified fixture and a cutover.
+        """
+        fixture = synthetic_fixture()
+        for item in fixture["items"]:
+            if item["admission_class"] == "originals":
+                item["admission_class"] = "research-copies"
+        self.assertEqual(require_complete(fixture), [])
+
     def test_it_refuses_a_verified_item_still_carrying_the_template_question(self):
         """A reviewer who flips verified across 24 untouched generated items
         produces a set that measures keyword recall and nothing else."""
@@ -786,6 +838,59 @@ class CompletenessGateTest(unittest.TestCase):
         # emits templates and they still have to pass the integrity gate.
         item["verified"] = False
         self.assertEqual(integrity_problems(fixture), [])
+
+
+class ClassCoverageExemptionTests(unittest.TestCase):
+    """The exemption is exactly one class, and it is the harmless one.
+
+    Written as its own suite because the risk here is not that the exemption
+    is wrong today; it is that a later hand widens it. A gate that has been
+    narrowed once is easy to narrow again, and 'licensed-copies is hard to
+    generate this week' is the same sentence as the argument that carried
+    originals. These tests make that a red suite rather than a judgement
+    call.
+    """
+
+    def test_only_originals_is_exempt(self):
+        self.assertEqual(CLASS_COVERAGE_EXEMPT, ("originals",))
+        self.assertEqual(CLASS_COVERAGE_REQUIRED,
+                         ("licensed-copies", "research-copies"))
+
+    def test_every_exempt_class_is_a_real_class(self):
+        """A typo would exempt nothing and read as though it exempted
+        something, which is the worst of both."""
+        for name in CLASS_COVERAGE_EXEMPT:
+            self.assertIn(name, ADMISSION_CLASSES)
+
+    def test_a_missing_originals_item_is_not_a_problem(self):
+        items = [{"admission_class": "licensed-copies"},
+                 {"admission_class": "research-copies"}]
+        self.assertEqual(class_coverage_problems(items), [])
+
+    def test_each_required_class_is_still_demanded_on_its_own(self):
+        for missing in CLASS_COVERAGE_REQUIRED:
+            with self.subTest(missing=missing):
+                items = [{"admission_class": name}
+                         for name in CLASS_COVERAGE_REQUIRED
+                         if name != missing]
+                problems = class_coverage_problems(items)
+                self.assertTrue(any(missing in text for text in problems),
+                                f"{missing} may be dropped without complaint")
+
+    def test_an_originals_only_set_still_fails(self):
+        """Exempt means 'need not be present', never 'counts as coverage'."""
+        problems = class_coverage_problems([{"admission_class": "originals"}])
+        self.assertTrue(any("licensed-copies" in text for text in problems),
+                        problems)
+        self.assertTrue(any("research-copies" in text for text in problems),
+                        problems)
+
+    def test_null_is_still_not_coverage(self):
+        items = [{"admission_class": None},
+                 {"admission_class": "licensed-copies"}]
+        problems = class_coverage_problems(items)
+        self.assertTrue(any("research-copies" in text for text in problems),
+                        problems)
 
 
 class LiveRunnerVerdictTest(unittest.TestCase):

@@ -35,20 +35,30 @@ sys.path.insert(0, str(ROOT / "pipelines"))
 # psycopg is a deployment dependency of the in-VPC host, not of the test host.
 # The module imports it at the top and uses psycopg.Error in one except clause
 # and Jsonb in write_rows(); neither is reached by anything here.
-if "psycopg" not in sys.modules:
-    try:
-        import psycopg                                     # noqa: F401
-    except ModuleNotFoundError:
-        _stub = types.ModuleType("psycopg")
+#
+# The condition is what the stub SUPPLIES, never merely whether some psycopg is
+# registered. Five sibling ws13 tests install a bare psycopg stub carrying only
+# .Error, and four of them sort ahead of this file, so under unittest discovery
+# one of those is already in sys.modules by the time this line runs. Guarding on
+# "psycopg" not in sys.modules therefore skipped the stub exactly when it was
+# needed, and `from psycopg.types.json import Jsonb` then failed with "'psycopg'
+# is not a package" -- a failure that never appears when this file is run alone.
+try:
+    from psycopg.types.json import Jsonb as _Jsonb          # noqa: F401
+except (ImportError, ModuleNotFoundError):
+    # Complete whatever is there rather than replacing it: a sibling's stub may
+    # already be bound into a module under test.
+    _stub = sys.modules.get("psycopg") or types.ModuleType("psycopg")
+    if not hasattr(_stub, "Error"):
         _stub.Error = type("Error", (Exception,), {})
-        _json = types.ModuleType("psycopg.types.json")
-        _json.Jsonb = lambda value: value
-        _types = types.ModuleType("psycopg.types")
-        _types.json = _json
-        _stub.types = _types
-        sys.modules["psycopg"] = _stub
-        sys.modules["psycopg.types"] = _types
-        sys.modules["psycopg.types.json"] = _json
+    _json = types.ModuleType("psycopg.types.json")
+    _json.Jsonb = lambda value: value
+    _types = types.ModuleType("psycopg.types")
+    _types.json = _json
+    _stub.types = _types
+    sys.modules["psycopg"] = _stub
+    sys.modules["psycopg.types"] = _types
+    sys.modules["psycopg.types.json"] = _json
 
 import ws13_mine_id_map as bridge                           # noqa: E402
 

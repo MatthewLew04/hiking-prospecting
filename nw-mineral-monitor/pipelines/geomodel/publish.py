@@ -40,6 +40,7 @@ import re
 import subprocess
 import sys
 import time
+import urllib.parse
 
 from . import agentbuild
 from . import mapplate
@@ -49,6 +50,20 @@ from . import render2d
 PUBLISHER_VERSION = 'nwmm-publish/1'
 
 PREFIX = 'models'
+
+#: Phase 5.  ``private/`` is absent from the CloudFront read allowlist in
+#: infra/template.yaml, so a model written here is unreachable through the
+#: distribution by construction — the only way in is a presigned GET, exactly
+#: as the WS12 document store works.  The bucket's CORS rule is already
+#: bucket-wide and GET/HEAD only, with the signature doing the authorising, so
+#: model3d.html can fetch a presigned project cross-origin unchanged.
+PRIVATE_PREFIX = 'private/models'
+
+#: seconds a presigned link stays good; the same default and clamp the document
+#: store uses, because the same reasoning applies — long enough to open, short
+#: enough that a copied URL stops working
+PRESIGN_TTL = 300
+PRESIGN_MIN, PRESIGN_MAX = 30, 3600
 
 CONTENT_TYPES = {
     '.json': 'application/json',
@@ -77,6 +92,12 @@ class Target(object):
     def get(self, key):
         """Bytes, or ``None`` when the key is absent."""
         raise NotImplementedError
+
+    def presign(self, key, expires_in):
+        """A time-limited read URL, or ``None`` when this target cannot mint
+        one.  ``None`` is an answer, not a failure: it means the caller must
+        not claim the object is privately reachable."""
+        return None
 
 
 class LocalTarget(Target):
@@ -111,11 +132,12 @@ class S3Target(Target):
     it is not; both take their credentials from the instance role, so nothing
     here handles a secret."""
 
-    def __init__(self, bucket, prefix=PREFIX, client=None):
+    def __init__(self, bucket, prefix=PREFIX, client=None, prefixes=None):
         if not bucket:
             raise PublishError('no bucket: pass bucket= or set NWMM_MODELS_BUCKET')
         self.bucket = bucket
         self.prefix = prefix
+        self.prefixes = tuple(prefixes or (PREFIX, PRIVATE_PREFIX))
         self.puts = []
         self._client = client
         if client is None:
@@ -126,8 +148,9 @@ class S3Target(Target):
                 self._client = None
 
     def put(self, key, data, content_type):
-        if not key.startswith(self.prefix + '/'):
-            raise PublishError('refusing to write outside %s/: %r' % (self.prefix, key))
+        if not any(key.startswith(p + '/') for p in self.prefixes):
+            raise PublishError('refusing to write outside %s: %r'
+                               % ('/, '.join(self.prefixes) + '/', key))
         if self._client is not None:
             self._client.put_object(Bucket=self.bucket, Key=key, Body=data,
                                     ContentType=content_type)
@@ -148,6 +171,22 @@ class S3Target(Target):
         except PublishError:
             return None
 
+    def presign(self, key, expires_in):
+        seconds = clamp_ttl(expires_in)
+        if self._client is not None:
+            try:
+                return self._client.generate_presigned_url(
+                    'get_object', Params={'Bucket': self.bucket, 'Key': key},
+                    ExpiresIn=seconds)
+            except Exception:
+                return None
+        try:
+            out = self._cli(['s3', 'presign', 's3://%s/%s' % (self.bucket, key),
+                             '--expires-in', str(seconds)], None)
+        except PublishError:
+            return None
+        return out.decode('utf-8', 'replace').strip() or None
+
     def _cli(self, args, data):
         try:
             proc = subprocess.run(['aws'] + args, input=data, stdout=subprocess.PIPE,
@@ -157,6 +196,14 @@ class S3Target(Target):
         if proc.returncode != 0:
             raise PublishError('aws %s failed: %s' % (args[0], proc.stderr.decode('utf-8', 'replace').strip()))
         return proc.stdout
+
+
+def clamp_ttl(expires_in):
+    try:
+        seconds = int(expires_in if expires_in is not None else PRESIGN_TTL)
+    except (TypeError, ValueError):
+        seconds = PRESIGN_TTL
+    return max(PRESIGN_MIN, min(PRESIGN_MAX, seconds))
 
 
 def target_from_env(bucket=None, prefix=PREFIX):
@@ -206,7 +253,7 @@ def model_id(spec, site, builder_version=agentbuild.BUILDER_VERSION):
 
 
 # ------------------------------------------------------------------ manifest
-def manifest(built, spec, site, files, mid, content_hash, now=None):
+def manifest(built, spec, site, files, mid, content_hash, now=None, access='app-gate'):
     """The audit trail.  Everything a reader needs in order to check a number
     in the model against the sentence it came from."""
     placed = dict((p['element'], p) for p in built['placed'])
@@ -227,6 +274,7 @@ def manifest(built, spec, site, files, mid, content_hash, now=None):
     return {
         'schema': 'nwmm-model-manifest/1',
         'model_id': mid,
+        'access': access,
         'published_utc': now or time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         'versions': {'parser': narrative.PARSER_VERSION, 'builder': agentbuild.BUILDER_VERSION,
                      'renderer': render2d.RENDERER_VERSION, 'publisher': PUBLISHER_VERSION},
@@ -279,13 +327,16 @@ def manifest(built, spec, site, files, mid, content_hash, now=None):
             'their geometry is the survey\'s, not this builder\'s.',
             'assay "basis" separates a selected sample from an average; no grade surface is '
             'interpolated from quoted figures.',
+            'access "app-gate" means the model sits under the public models/ prefix and is '
+            'reachable by anyone who can construct its URL; "presigned" means it sits under '
+            'private/ and is reachable only through a short-lived signed link.',
         ],
     }
 
 
 # ------------------------------------------------------------------- publish
-def publish(built, spec, site, views=None, target=None, base_url=None, prefix=PREFIX,
-            force=False, log=print):
+def publish(built, spec, site, views=None, target=None, base_url=None, prefix=None,
+            force=False, private=False, expires_in=None, log=print):
     """Write the model and return the link the agent hands back.
 
     Republishing the same description is a no-op: the model id is derived from
@@ -295,6 +346,9 @@ def publish(built, spec, site, views=None, target=None, base_url=None, prefix=PR
     target = target or target_from_env()
     base_url = base_url_from_env(base_url)
     views = views if views is not None else render2d.render(built)
+    if prefix is None:
+        prefix = PRIVATE_PREFIX if private else PREFIX
+    expires_in = clamp_ttl(expires_in) if private else None
 
     mid = model_id(spec, site)
     key_root = '%s/%s' % (prefix.rstrip('/'), mid)
@@ -308,7 +362,8 @@ def publish(built, spec, site, views=None, target=None, base_url=None, prefix=PR
             prior = {}
         if prior.get('content_sha256') == content_hash:
             log('%s already published, unchanged' % mid)
-            return _result(mid, key_root, base_url, prior, republished=False)
+            return _result(mid, key_root, base_url, prior, republished=False,
+                           target=target, private=private, expires_in=expires_in)
 
     payloads = _payloads(built, views)
     files = []
@@ -323,7 +378,8 @@ def publish(built, spec, site, views=None, target=None, base_url=None, prefix=PR
     # `files` deliberately does not list manifest.json: a manifest cannot carry
     # its own checksum, and leaving it out is what keeps the freshly published
     # result and a later republished one describing the same set of files.
-    man = manifest(built, spec, site, files, mid, content_hash)
+    man = manifest(built, spec, site, files, mid, content_hash,
+                   access='presigned' if private else 'app-gate')
     payloads['manifest.json'] = json.dumps(man, indent=1, sort_keys=True,
                                            default=str).encode('utf-8')
 
@@ -333,7 +389,8 @@ def publish(built, spec, site, views=None, target=None, base_url=None, prefix=PR
         target.put('%s/%s' % (key_root, name), payloads[name], _content_type(name))
         log('  put %s/%s (%d bytes)' % (key_root, name, len(payloads[name])))
 
-    return _result(mid, key_root, base_url, man, republished=True)
+    return _result(mid, key_root, base_url, man, republished=True,
+                   target=target, private=private, expires_in=expires_in)
 
 
 def _payloads(built, views):
@@ -354,26 +411,82 @@ def _content_type(name):
     return CONTENT_TYPES.get(os.path.splitext(name)[1], 'application/octet-stream')
 
 
-def _result(mid, key_root, base_url, man, republished):
-    project_path = '/%s/model.geomodel.json' % key_root
-    return {
+def _result(mid, key_root, base_url, man, republished, target=None, private=False,
+            expires_in=None):
+    names = [f['name'] for f in man.get('files', [])]
+    link = _linker(key_root, base_url, target, private, expires_in)
+
+    out = {
         'model_id': mid,
         'key_prefix': key_root,
         'republished': republished,
-        'model_url': ('%s/model3d.html?project=%s' % (base_url, project_path)) if base_url
-                     else 'model3d.html?project=%s' % project_path,
-        'project_url': ('%s%s' % (base_url, project_path)) if base_url else project_path,
-        'views': dict((v, ('%s/%s/%s.svg' % (base_url, key_root, v)) if base_url
-                       else '/%s/%s.svg' % (key_root, v))
-                      for v in ('plan', 'section', 'iso')
-                      if any(f['name'] == '%s.svg' % v for f in man.get('files', []))),
-        'exports': dict((f['name'], ('%s/%s' % (base_url, f['key'])) if base_url else '/' + f['key'])
-                        for f in man.get('files', [])
-                        if f['name'] not in ('plan.svg', 'section.svg', 'iso.svg')),
+        'access': 'presigned' if private else 'app-gate',
+        # a public model keeps the documented root-relative ?project= form; a
+        # private one has to carry its whole signed URL in that parameter
+        'model_url': _viewer_url(base_url,
+                                 link('model.geomodel.json') if private
+                                 else '/%s/model.geomodel.json' % key_root,
+                                 private),
+        'project_url': link('model.geomodel.json'),
+        'views': dict((v, link('%s.svg' % v)) for v in ('plan', 'section', 'iso')
+                      if '%s.svg' % v in names),
+        'exports': dict((n, link(n)) for n in names
+                        if n not in ('plan.svg', 'section.svg', 'iso.svg')),
+        'manifest_url': link('manifest.json'),
         'confidence': man.get('confidence', {}),
         'unresolved': man.get('unresolved', []),
         'warnings': man.get('warnings', []),
-        'manifest_url': ('%s/%s/manifest.json' % (base_url, key_root)) if base_url
-                        else '/%s/manifest.json' % key_root,
         'content_sha256': man.get('content_sha256'),
     }
+    if private:
+        out['expires_in'] = expires_in
+        out['expires_utc'] = time.strftime('%Y-%m-%dT%H:%M:%SZ',
+                                           time.gmtime(time.time() + (expires_in or 0)))
+        if out['project_url'] and out['project_url'].startswith('http'):
+            out['note'] = ('this model is private: the links above are signed and stop '
+                           'working in %d seconds. Call sign_model_url to mint fresh ones.'
+                           % expires_in)
+        else:
+            out['note'] = ('this model was written to the private prefix, but this storage '
+                           'target cannot mint signed links, so the paths above are not '
+                           'usable by a browser')
+    return out
+
+
+def _linker(key_root, base_url, target, private, expires_in):
+    """How one file inside the model is addressed from outside."""
+    def link(name):
+        key = '%s/%s' % (key_root, name)
+        if private:
+            signed = target.presign(key, expires_in) if target is not None else None
+            return signed if signed else '/' + key
+        return ('%s/%s' % (base_url, key)) if base_url else '/' + key
+    return link
+
+
+def _viewer_url(base_url, project_url, private):
+    """model3d.html already accepts ?project=<url>; a signed URL carries its own
+    query string, so it has to be encoded into that parameter."""
+    param = urllib.parse.quote(project_url, safe='') if private else project_url
+    return ('%s/model3d.html?project=%s' % (base_url, param)) if base_url \
+        else 'model3d.html?project=%s' % param
+
+
+def sign(model_id, target=None, base_url=None, prefix=PRIVATE_PREFIX, expires_in=None):
+    """Mint a fresh set of signed links for a model already published to the
+    private prefix, without rebuilding it."""
+    target = target or target_from_env()
+    base_url = base_url_from_env(base_url)
+    expires_in = clamp_ttl(expires_in)
+    key_root = '%s/%s' % (prefix.rstrip('/'), model_id)
+    raw = target.get('%s/manifest.json' % key_root)
+    if raw is None:
+        raise PublishError('no model %r under %s/' % (model_id, prefix))
+    try:
+        man = json.loads(raw.decode('utf-8'))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise PublishError('the manifest for %r is unreadable: %s' % (model_id, exc))
+    out = _result(model_id, key_root, base_url, man, republished=False, target=target,
+                  private=True, expires_in=expires_in)
+    out['published_utc'] = man.get('published_utc')
+    return out

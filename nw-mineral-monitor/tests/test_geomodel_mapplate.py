@@ -60,11 +60,54 @@ class ValidationTests(unittest.TestCase):
             with self.assertRaises(mapplate.PlateError, msg=why):
                 mapplate.validate_plate(bad)
 
+    def test_a_georeference_that_cannot_be_solved_is_a_correctable_error(self):
+        """These reach the agent as a 400 with guidance, never as a 500."""
+        cases = {
+            'collinear': plan(control=[[100, 700, -116.8700, 36.8760],
+                                       [500, 700, -116.8660, 36.8760],
+                                       [900, 700, -116.8620, 36.8760]]),
+            'same pixel': plan(control=[[100, 700, -116.8700, 36.8760],
+                                        [100, 700, -116.8600, 36.8760]]),
+            'same ground': plan(control=[[100, 700, -116.8700, 36.8760],
+                                         [900, 300, -116.8700, 36.8760]]),
+            'flat section': dict(SECTION, p2=list(SECTION['p1'])),
+        }
+        for label, bad in cases.items():
+            with self.assertRaises(mapplate.PlateError, msg=label) as ctx:
+                mapplate.validate_plate(bad)
+            self.assertTrue(str(ctx.exception), label)
+
+    def test_the_collinear_message_says_what_to_do_about_it(self):
+        with self.assertRaises(mapplate.PlateError) as ctx:
+            mapplate.validate_plate(plan(control=[[100, 700, -116.8700, 36.8760],
+                                                  [500, 700, -116.8660, 36.8760],
+                                                  [900, 700, -116.8620, 36.8760]]))
+        self.assertIn('one line', str(ctx.exception))
+        self.assertIn('scale bar', str(ctx.exception))
+
+    def test_two_good_control_points_are_still_enough(self):
+        p = mapplate.validate_plate(plan(control=PLAN['control'][:2]))
+        self.assertAlmostEqual(mapplate.scale_check(p)['m_per_px'], 1.11, delta=0.02)
+        self.assertIsNone(mapplate.scale_check(p)['residual_m'])
+
     def test_a_trace_far_outside_the_scan_is_caught_as_a_units_mistake(self):
         p = mapplate.validate_plate(PLAN)
         with self.assertRaises(mapplate.PlateError) as ctx:
             mapplate.validate_traces(p, [{'kind': 'drift', 'points': [[0, 0], [50000, 40000]]}])
         self.assertIn('really pixels', str(ctx.exception))
+
+    def test_a_plate_with_no_traces_can_still_be_checked(self):
+        # checking a georeference before tracing anything on it is the first
+        # thing anyone does
+        p = mapplate.validate_plate(PLAN)
+        self.assertEqual(mapplate.validate_traces(p, None), [])
+        self.assertEqual(mapplate.validate_traces(p, []), [])
+        self.assertTrue(mapplate.scale_check(p)['m_per_px'] > 0)
+
+    def test_traces_of_the_wrong_type_still_error(self):
+        p = mapplate.validate_plate(PLAN)
+        with self.assertRaises(mapplate.PlateError):
+            mapplate.validate_traces(p, 'a drift')
 
     def test_trace_shape_is_enforced(self):
         p = mapplate.validate_plate(PLAN)
@@ -203,6 +246,25 @@ class AttachTests(unittest.TestCase):
         got = mapplate.attach(self.spec(), [dict(plan(control=None), traces=[TRACE])])
         self.assertEqual([g['id'] for g in got['gaps']],
                          ['g%d' % i for i in range(1, len(got['gaps']) + 1)])
+
+
+class PlateAnswerTests(unittest.TestCase):
+    def test_a_plate_question_cannot_be_answered_through_answers(self):
+        spec = mapplate.attach(narrative.parse('An adit was driven N45E 900 feet.'),
+                               [{'plate_id': 'p1', 'image': 'x.png', 'width': 100,
+                                 'height': 100, 'plane': 'plan', 'traces': []}])
+        gap = [g for g in spec['gaps'] if g.get('plate')][0]
+        with self.assertRaises(ValueError) as ctx:
+            narrative.apply_answers(spec, [{'id': gap['id'], 'value': 'anything'}])
+        self.assertIn('Send the plate again', str(ctx.exception))
+
+    def test_prose_questions_still_answer_normally_alongside_a_plate(self):
+        text = 'On the 300 level a drift was extended 450 feet.'
+        spec = mapplate.attach(narrative.parse(text), [dict(PLAN, traces=[TRACE])])
+        gap = [g for g in spec['gaps'] if g['field'] == 'bearing_deg'][0]
+        got = narrative.apply_answers(spec, [{'id': gap['id'], 'value': 45.0}])
+        self.assertEqual(got['elements'][0]['bearing_deg'], 45.0)
+        self.assertTrue(any(e.get('plate') == 'p3' for e in got['elements']))
 
 
 class BuildTests(unittest.TestCase):

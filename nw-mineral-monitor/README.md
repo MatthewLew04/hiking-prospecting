@@ -216,6 +216,9 @@ same kits in batch (`pipelines/geomodel_kit.py site --grade-index 157`) and
 converts between any supported formats. Details, format matrix, honesty notes
 and the mine-files → underground-maps roadmap: [`GEOMODEL.md`](GEOMODEL.md).
 
+Turning a **written** mine description into a 3-D model — from the command line
+or from an agent over HTTP — is [`MINE-VISUALS-GUIDE.md`](MINE-VISUALS-GUIDE.md).
+
 ## WS12 — mine files, cited documents, and GIS tools (2026-08-14)
 
 WS12 adds a validated 33-entry state/federal mine-file portal registry. Three

@@ -1,6 +1,10 @@
 # Agent mine visuals — implementation plan
 
-**Status (2026-08-25): phases 1–4 built and tested; phase 2's AWS half and phase 5 are not.**
+**Status (2026-08-25): every phase built and tested. Only phase 2's AWS half — the
+IAM role, the `models/*` allowlist and the `deploy.sh --exclude` guard — is
+outstanding, and it belongs to the "AWS worker updates" run.**
+
+The how-to is [`MINE-VISUALS-GUIDE.md`](MINE-VISUALS-GUIDE.md).
 
 | Phase | State |
 |---|---|
@@ -8,13 +12,13 @@
 | **2** — `publish.py` | **built**, against a `Target` interface; the AWS half (IAM role, `models/*` allowlist, `deploy.sh --exclude`) is still owed by the "AWS worker updates" run |
 | **3** — `services/minevis/` HTTP + `/tools` + job queue + systemd unit + wiring doc | **built** |
 | **4** — `list_mine_documents`, map-plate georeferencing handoff (`mapplate.py`), grades and vein attitude from assay text (`assay.py`) | **built** |
-| **5** — private models with presigned reads | not built (conditional on the Cognito gate proving insufficient) |
+| **5** — private models with presigned reads | **built**: `private: true` writes under `private/`, which is absent from the CloudFront read allowlist by construction, and returns signed links; `sign_model_url` re-mints them |
 
 With no `NWMM_MODELS_BUCKET` set the service publishes to local disk and serves the
 files itself, so the whole loop — prose in, model URL out, questions in between —
 is provable on the box today with no AWS change at all.
 
-Test counts: 48 narrative · 17 resolve · 27 agentbuild · 22 render2d · 27 publish · 30 mapplate · 37 assay · 60 service = 268 new tests.
+Test counts: 48 narrative · 17 resolve · 27 agentbuild · 22 render2d · 43 publish · 37 mapplate · 42 assay · 69 service = 305 new tests.
 
 Goal: an agent running on an EC2 instance (a Qwen or Kimi variant doing OpenAI-style
 tool calls) hands in a **mine description in prose** and gets back a **3-D model URL**

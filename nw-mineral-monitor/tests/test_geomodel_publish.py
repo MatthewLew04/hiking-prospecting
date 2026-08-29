@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +45,10 @@ class FakeS3(object):
     def get_object(self, Bucket, Key):                      # noqa: N803 - boto3 API
         body, _ = self.objects[(Bucket, Key)]
         return {'Body': _Reader(body)}
+
+    def generate_presigned_url(self, operation, Params, ExpiresIn):   # noqa: N803
+        return ('https://s3.amazonaws.com/%s/%s?X-Amz-Expires=%d&X-Amz-Signature=deadbeef'
+                % (Params['Bucket'], Params['Key'], ExpiresIn))
 
 
 class _Reader(object):
@@ -96,6 +101,41 @@ class ModelIdTests(unittest.TestCase):
             self.assertEqual(publish.slugify(raw), want)
 
 
+class StableBytesTests(unittest.TestCase):
+    """Object ids carry a counter and the clock. If the hash saw them, a
+    context build's republish check could never fire."""
+
+    def project(self):
+        from geomodel.model import Project, Grid2D, StratModel, farray, utm_crs
+
+        p = Project('t', utm_crs(11, True), origin=[0, 0, 0])
+        g = Grid2D(3, 3, 0, 0, 10, 10, name='Topography', role='topography')
+        g.values = farray([1.0] * 9)
+        p.add(g)
+        g.metadata['source'] = 'grid:' + g.id
+        sm = StratModel(name='strat', topography=g.id)
+        sm.units = [{'name': 'u1', 'top': g.id, 'base': None}]
+        p.add(sm)
+        return p
+
+    def test_two_identical_projects_hash_the_same_despite_different_ids(self):
+        a, b = self.project(), self.project()
+        self.assertNotEqual(a.objects[0].id, b.objects[0].id)
+        self.assertEqual(agentbuild.content_sha256(a), agentbuild.content_sha256(b))
+
+    def test_cross_references_are_canonicalised_too(self):
+        blob = agentbuild.stable_bytes(self.project())
+        self.assertIn(b'"topography":"o0"', blob)
+        self.assertIn(b'"grid:o0"', blob)
+        self.assertNotIn(b'"created"', blob)
+        self.assertNotIn(b'"modified"', blob)
+
+    def test_a_real_difference_still_changes_the_hash(self):
+        a, b = self.project(), self.project()
+        b.objects[0].values[0] = 99.0
+        self.assertNotEqual(agentbuild.content_sha256(a), agentbuild.content_sha256(b))
+
+
 class TargetTests(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.mkdtemp(prefix='publish-test-')
@@ -110,14 +150,24 @@ class TargetTests(unittest.TestCase):
         self.assertEqual(t.puts, ['models/x/model.geomodel.json'])
         self.assertIsNone(t.get('models/x/missing.json'))
 
-    def test_s3_target_refuses_to_write_outside_the_models_prefix(self):
+    def test_s3_target_refuses_to_write_outside_its_prefixes(self):
         t = publish.S3Target('a-bucket', client=FakeS3())
-        with self.assertRaises(publish.PublishError):
-            t.put('index.html', b'x', 'text/html')
-        with self.assertRaises(publish.PublishError):
-            t.put('../secrets', b'x', 'text/plain')
+        for bad in ('index.html', '../secrets', 'data/coverage.json', 'privatemodels/x'):
+            with self.assertRaises(publish.PublishError, msg=bad):
+                t.put(bad, b'x', 'text/plain')
         t.put('models/ok/plan.svg', b'<svg/>', 'image/svg+xml')
-        self.assertEqual(t.puts, ['models/ok/plan.svg'])
+        t.put('private/models/ok/plan.svg', b'<svg/>', 'image/svg+xml')
+        self.assertEqual(t.puts, ['models/ok/plan.svg', 'private/models/ok/plan.svg'])
+
+    def test_a_target_that_cannot_presign_returns_none(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertIsNone(publish.LocalTarget(d).presign('models/x/y.json', 300))
+
+    def test_ttl_is_clamped_to_the_document_stores_range(self):
+        self.assertEqual(publish.clamp_ttl(1), publish.PRESIGN_MIN)
+        self.assertEqual(publish.clamp_ttl(10 ** 9), publish.PRESIGN_MAX)
+        self.assertEqual(publish.clamp_ttl(None), publish.PRESIGN_TTL)
+        self.assertEqual(publish.clamp_ttl('nonsense'), publish.PRESIGN_TTL)
 
     def test_s3_target_needs_a_bucket_and_says_where_to_put_one(self):
         with self.assertRaises(publish.PublishError) as ctx:
@@ -196,6 +246,103 @@ class PublishTests(unittest.TestCase):
         result = self.go(t)
         t.put('%s/manifest.json' % result['key_prefix'], b'not json', 'application/json')
         self.assertTrue(self.go(t)['republished'])
+
+
+class PrivateTests(unittest.TestCase):
+    """Phase 5. `private/` is absent from the CloudFront read allowlist, so a
+    model written there is unreachable through the distribution by
+    construction; the only way in is a signed link."""
+
+    def setUp(self):
+        self.spec, self.built = prepared()
+        self.views = render2d.render(self.built)
+        self.client = FakeS3()
+        self.target = publish.S3Target('nwmm-bucket', client=self.client)
+
+    def go(self, **kw):
+        kw.setdefault('private', True)
+        return publish.publish(self.built, self.spec, SITE, views=self.views,
+                               target=self.target, base_url='https://cdn.invalid',
+                               log=lambda *a: None, **kw)
+
+    def test_a_private_model_is_written_under_the_private_prefix(self):
+        got = self.go()
+        self.assertTrue(got['key_prefix'].startswith(publish.PRIVATE_PREFIX + '/'))
+        for _, key in self.client.objects:
+            self.assertTrue(key.startswith(publish.PRIVATE_PREFIX + '/'), key)
+
+    def test_a_public_model_stays_out_of_the_private_prefix(self):
+        got = self.go(private=False)
+        self.assertTrue(got['key_prefix'].startswith(publish.PREFIX + '/'))
+        self.assertNotIn('private', got['key_prefix'])
+        self.assertEqual(got['access'], 'app-gate')
+
+    def test_every_link_comes_back_signed(self):
+        got = self.go()
+        self.assertEqual(got['access'], 'presigned')
+        for url in [got['project_url'], got['manifest_url']] + \
+                list(got['views'].values()) + list(got['exports'].values()):
+            self.assertIn('X-Amz-Expires', url)
+
+    def test_the_viewer_url_carries_the_signed_project_url_encoded(self):
+        got = self.go()
+        self.assertTrue(got['model_url'].startswith('https://cdn.invalid/model3d.html?project='))
+        param = got['model_url'].split('project=', 1)[1]
+        self.assertNotIn('&', param, 'the signature query must not leak into the viewer URL')
+        self.assertEqual(urllib.parse.unquote(param), got['project_url'])
+
+    def test_the_expiry_is_reported_and_clamped(self):
+        self.assertEqual(self.go(expires_in=600)['expires_in'], 600)
+        self.assertEqual(self.go(expires_in=1)['expires_in'], publish.PRESIGN_MIN)
+        self.assertEqual(self.go(expires_in=99999)['expires_in'], publish.PRESIGN_MAX)
+        self.assertEqual(self.go()['expires_in'], publish.PRESIGN_TTL)
+        self.assertRegex(self.go()['expires_utc'], r'^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$')
+
+    def test_the_manifest_records_which_access_it_was_published_under(self):
+        self.go()
+        key = [k for _, k in self.client.objects if k.endswith('manifest.json')][0]
+        man = json.loads(self.target.get(key))
+        self.assertEqual(man['access'], 'presigned')
+        self.assertTrue(any('presigned' in n for n in man['notes']))
+
+    def test_the_stored_manifest_holds_keys_not_expiring_urls(self):
+        self.go()
+        key = [k for _, k in self.client.objects if k.endswith('manifest.json')][0]
+        man = json.loads(self.target.get(key))
+        for entry in man['files']:
+            self.assertNotIn('http', entry['key'])
+            self.assertTrue(entry['key'].startswith(publish.PRIVATE_PREFIX + '/'))
+
+    def test_a_private_model_can_be_re_signed_without_rebuilding(self):
+        first = self.go(expires_in=600)
+        again = publish.sign(first['model_id'], target=self.target,
+                             base_url='https://cdn.invalid', expires_in=60)
+        self.assertEqual(again['model_id'], first['model_id'])
+        self.assertEqual(again['expires_in'], 60)
+        self.assertEqual(sorted(again['views']), sorted(first['views']))
+        self.assertIn('X-Amz-Expires=60', again['project_url'])
+        self.assertEqual(again['content_sha256'], first['content_sha256'])
+
+    def test_signing_a_model_that_is_not_there_says_so(self):
+        with self.assertRaises(publish.PublishError) as ctx:
+            publish.sign('nope-00000000', target=self.target)
+        self.assertIn('no model', str(ctx.exception))
+
+    def test_a_target_that_cannot_sign_says_so_rather_than_implying_privacy(self):
+        with tempfile.TemporaryDirectory() as d:
+            got = publish.publish(self.built, self.spec, SITE, views=self.views,
+                                  target=publish.LocalTarget(d), base_url='',
+                                  private=True, log=lambda *a: None)
+        self.assertEqual(got['access'], 'presigned')
+        self.assertFalse(got['project_url'].startswith('http'))
+        self.assertIn('cannot mint signed links', got['note'])
+
+    def test_republishing_a_private_model_still_re_signs_the_links(self):
+        first = self.go()
+        second = self.go()
+        self.assertFalse(second['republished'])
+        self.assertIn('X-Amz-Expires', second['project_url'])
+        self.assertEqual(first['model_id'], second['model_id'])
 
 
 class ManifestTests(unittest.TestCase):

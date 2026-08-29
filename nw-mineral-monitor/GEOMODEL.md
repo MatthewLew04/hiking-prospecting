@@ -263,6 +263,13 @@ Three rules run through all of it, and they are enforced by tests:
    mode this is designed against is a hand-drawn-from-text adit being read as
    a survey.
 
+A model goes to the public `models/` prefix by default and inherits the Cognito
+**app** gate — which gates the app, not the object, so anyone who can construct
+its URL can fetch the file. `private: true` writes it under `private/` instead,
+absent from the CloudFront read allowlist by construction, and returns
+short-lived signed links (`sign_model_url` mints fresh ones).
+
+[`MINE-VISUALS-GUIDE.md`](MINE-VISUALS-GUIDE.md) is the how-to.
 `AGENT-VISUALS.md` has the plan and phasing; `services/minevis/README.md` has
 the tool schemas and the agent wiring.
 
@@ -280,8 +287,8 @@ python3 pipelines/geomodel_kit.py narrate --file desc.txt --mine-id grades:17 --
 python3 services/minevis/server.py --state-dir /var/lib/minevis                 # the agent's HTTP service
 
 python3 ci/run_tests.py                                        # everything, with the strict-skip check
-python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 365 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
-python3 tests/test_minevis_service.py                          # 60 service tests (in-process, no network)
+python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 393 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
+python3 tests/test_minevis_service.py                          # 69 service tests (in-process, no network)
 node tools/test_gm_formats.mjs      # JS readers/writers vs the Python fixtures (171 checks)
 node tools/test_gm_engine.mjs       # JS numerics vs Python (166 checks)
 node tools/test_model3d.mjs         # headless browser acceptance of the page (28 checks)

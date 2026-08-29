@@ -781,8 +781,9 @@ def apply_answers(spec, answers):
     spec = json.loads(json.dumps(spec))
     by_id = dict((g['id'], g) for g in spec['gaps'])
     els = dict((e['id'], e) for e in spec['elements'])
+    assays = dict((a['id'], a) for a in (spec.get('assays') or []))
     already = dict((a['gap'], a) for a in (spec.get('answers') or []))
-    applied, dropped = [], set()
+    applied, dropped, dropped_assays = [], set(), set()
     for ans in answers or []:
         g = by_id.get(ans.get('id'))
         if g is None:
@@ -796,11 +797,36 @@ def apply_answers(spec, answers):
                 raise ValueError('%s was already answered with %r; it cannot be changed to %r'
                                  % (ans['id'], prior.get('value'), ans.get('value')))
             raise ValueError('unknown gap id: %r' % (ans.get('id'),))
+        if g.get('plate'):
+            # A plate question is answered by sending the plate again with the
+            # missing field filled in.  Accepting it here would look like it
+            # worked and change nothing.
+            raise ValueError('%s is a question about plate %r. Send the plate again with '
+                             '%s filled in rather than answering it.'
+                             % (g['id'], g['plate'], g['field']))
         value = ans.get('value')
-        el = els.get(g['element']) if g['element'] else None
         record = {'gap': g['id'], 'element': g['element'], 'field': g['field'],
                   'value': value, 'because': ans.get('because', ''),
                   'answered_by': ans.get('answered_by', 'agent')}
+
+        if g.get('assay'):
+            # An assay question is about the grade, not about the working it
+            # was quoted for; answering it must never touch the working.
+            target = assays.get(g['assay'])
+            if target is None:
+                raise ValueError('%s refers to assay %r, which is not in this spec'
+                                 % (g['id'], g['assay']))
+            record['assay'] = g['assay']
+            if value is None:
+                dropped_assays.add(g['assay'])
+                record['effect'] = 'assay omitted'
+            else:
+                target[g['field']] = value
+                target['confidence'] = 'assumed'
+            applied.append(record)
+            continue
+
+        el = els.get(g['element']) if g['element'] else None
         if el is None:
             applied.append(record)
             continue
@@ -821,8 +847,17 @@ def apply_answers(spec, answers):
     answered = set(a['gap'] for a in applied)
     spec['elements'] = [e for e in spec['elements'] if e['id'] not in dropped]
     kept = set(e['id'] for e in spec['elements'])
+    if spec.get('assays') is not None:
+        # a grade quoted for a working that has been dropped goes with it
+        spec['assays'] = [a for a in spec['assays']
+                          if a['id'] not in dropped_assays and a.get('element') not in dropped]
+        spec['coverage']['assays'] = len(spec['assays'])
+    live_assays = set(a['id'] for a in (spec.get('assays') or []))
     spec['gaps'] = [g for g in spec['gaps']
-                    if g['id'] not in answered and (g['element'] is None or g['element'] in kept)]
+                    if g['id'] not in answered
+                    and (g.get('assay') is None or g['assay'] in live_assays)
+                    and (g.get('plate') is not None or g['element'] is None
+                         or g['element'] in kept)]
     spec['answers'] = (spec.get('answers') or []) + applied
     spec['coverage']['unresolved'] = sum(1 for g in spec['gaps'] if g['required'])
     spec['coverage']['questions'] = len(spec['gaps'])

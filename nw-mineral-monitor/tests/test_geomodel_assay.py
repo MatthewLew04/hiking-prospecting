@@ -41,9 +41,25 @@ class ValueTests(unittest.TestCase):
             self.assertEqual((a['commodity'], a['value']), ('ag', 20.0), text)
 
     def test_dollars_a_ton(self):
-        for text in ('$19.14 a ton', '$19.14 to the ton', '$19.14 per ton', '$19.14'):
+        for text in ('$19.14 a ton', '$19.14 to the ton', '$19.14 per ton'):
             a = one('The average gross value was %s.' % text)
             self.assertEqual((a['commodity'], a['value'], a['unit']), ('usd', 19.14, '$/ton'), text)
+
+    def test_a_dollar_total_is_not_a_grade(self):
+        # "the group yielded $1,000,000" is production, and reading it as a
+        # grade would claim a million dollars to the ton
+        for text in ('The group yielded about $1,000,000 during the period.',
+                     'The property has produced $40,000 in all.',
+                     'It was bought for $250,000.'):
+            self.assertEqual(read(text)['assays'], [], text)
+
+    def test_a_recovery_percentage_is_not_an_ore_grade(self):
+        for text in ('Mill recovery was 92 per cent.',
+                     'Extraction reached 88 per cent on the sulphides.',
+                     'The royalty was 10 per cent.'):
+            self.assertEqual(read(text)['assays'], [], text)
+        # and a real grade in the same shape still reads
+        self.assertEqual(one('The ore carried 12 per cent lead.')['commodity'], 'pb')
 
     def test_per_cent_base_metals(self):
         for text, want in (('12 per cent lead', ('pb', 12.0)),
@@ -146,6 +162,48 @@ class AttachmentTests(unittest.TestCase):
         lo, hi = a['span']
         self.assertEqual(' '.join(text[lo:hi].split()), a['quote'])
         self.assertIn('0.5 ounce gold', a['quote'])
+
+
+class AnswerTests(unittest.TestCase):
+    """An assay question is about the grade, never about the working it was
+    quoted for."""
+
+    TEXT = 'An adit was driven N45E 900 feet; assays ran 30 ounces to the ton.'
+
+    def spec(self):
+        return assay.attach(narrative.parse(self.TEXT), self.TEXT)
+
+    def gap(self, spec):
+        return [g for g in spec['gaps'] if g['kind'] == 'assay'][0]
+
+    def test_naming_the_metal_updates_the_assay_and_leaves_the_working_alone(self):
+        spec = self.spec()
+        got = narrative.apply_answers(spec, [{'id': self.gap(spec)['id'], 'value': 'ag',
+                                              'because': 'a silver camp'}])
+        self.assertEqual(got['assays'][0]['commodity'], 'ag')
+        self.assertEqual(got['assays'][0]['confidence'], 'assumed')
+        el = got['elements'][0]
+        self.assertNotIn('commodity', el)
+        self.assertNotIn('commodity', el['fields'])
+        self.assertEqual(el['confidence'], 'described')
+        self.assertEqual(got['answers'][0]['assay'], 'a1')
+
+    def test_declining_to_name_the_metal_drops_the_assay_not_the_working(self):
+        spec = self.spec()
+        got = narrative.apply_answers(spec, [{'id': self.gap(spec)['id'], 'value': None}])
+        self.assertEqual([e['kind'] for e in got['elements']], ['adit'])
+        self.assertEqual(got['assays'], [])
+        self.assertEqual(got['coverage']['assays'], 0)
+        self.assertEqual(got['gaps'], [])
+
+    def test_dropping_a_working_drops_the_grades_quoted_for_it(self):
+        text = ('On the 300 level a drift was extended 450 feet; the ore averaged '
+                '0.5 ounce gold to the ton.')
+        spec = assay.attach(narrative.parse(text), text)
+        bearing = [g for g in spec['gaps'] if g['field'] == 'bearing_deg'][0]
+        got = narrative.apply_answers(spec, [{'id': bearing['id'], 'value': None}])
+        self.assertEqual(got['elements'], [])
+        self.assertEqual(got['assays'], [], 'a grade with no working left to sit on')
 
 
 class VeinTests(unittest.TestCase):

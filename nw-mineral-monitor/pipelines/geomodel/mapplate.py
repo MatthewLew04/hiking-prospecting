@@ -89,6 +89,45 @@ def _pixel(value, label, plate=None):
     return px, py
 
 
+def _spread(points):
+    x0, y0 = points[0]
+    return max(math.hypot(px - x0, py - y0) for px, py in points)
+
+
+def _collinear(points):
+    """True when every point lies on one line — a georeference cannot be solved
+    from those, because they fix no rotation."""
+    if len(points) < 3:
+        return False
+    x0, y0 = points[0]
+    span = _spread(points)
+    if span <= 0.0:
+        return True                               # all the same point
+    far = max(points, key=lambda p: math.hypot(p[0] - x0, p[1] - y0))
+    dx, dy = far[0] - x0, far[1] - y0
+    for px, py in points:
+        if abs((px - x0) * dy - (py - y0) * dx) > 1e-6 * span * span:
+            return False
+    return True
+
+
+def _check_control(control):
+    """Control points that no affine can be fitted to are a mistake to correct,
+    not information that is missing, so they are an error rather than a gap."""
+    pixels = [(c[0], c[1]) for c in control]
+    world = [(c[2], c[3]) for c in control]
+    if len(control) >= 2 and _spread(pixels) <= 0.0:
+        raise PlateError('every control point is at the same pixel; they must be at '
+                         'different places on the scan')
+    if len(control) >= 2 and _spread(world) <= 0.0:
+        raise PlateError('every control point maps to the same lon/lat; they must be at '
+                         'different places on the ground')
+    if _collinear(pixels) or _collinear(world):
+        raise PlateError('the control points all lie on one line, so they fix scale but not '
+                         'rotation. Move one of them well off that line, or use an anchor '
+                         'plus a scale bar instead.')
+
+
 def _identifier(value, label):
     if not isinstance(value, str) or not _SLUG.match(value):
         raise PlateError('%s must be a short identifier, got %r' % (label, value))
@@ -126,6 +165,8 @@ def validate_plate(plate):
                 px, py = _pixel(c[:2], 'control[%d] pixel' % i, out)
                 lon, lat = _lonlat(c[2:], 'control[%d] world' % i)
                 pts.append([px, py, lon, lat])
+            if len(pts) >= 2:
+                _check_control(pts)
             out['control'] = pts
         anchor = plate.get('anchor')
         if anchor is not None:
@@ -147,6 +188,9 @@ def validate_plate(plate):
         for key in ('p1', 'p2'):
             if plate.get(key) is not None:
                 out[key] = list(_lonlat(plate[key], key))
+        if out.get('p1') and out.get('p2') and out['p1'] == out['p2']:
+            raise PlateError('a section\'s top-left and top-right corners are the same '
+                             'point, so the image covers no ground')
         for key in ('z_top', 'z_bottom'):
             if plate.get(key) is not None:
                 out[key] = _num(plate[key], key)
@@ -157,9 +201,15 @@ def validate_plate(plate):
 
 
 def validate_traces(plate, traces):
-    """Normalise the traces, or raise :class:`PlateError`."""
+    """Normalise the traces, or raise :class:`PlateError`.
+
+    A plate with no traces at all is valid: checking a georeference *before*
+    tracing anything on it is the first thing anyone sensibly does."""
+    if traces is None:
+        traces = []
     if not isinstance(traces, (list, tuple)):
-        raise PlateError('traces must be a list')
+        raise PlateError('traces must be a list of {kind, points}, got %s'
+                         % type(traces).__name__)
     seen, out = set(), []
     for i, t in enumerate(traces or ()):
         if not isinstance(t, dict):
@@ -257,7 +307,21 @@ def _zone_for(plate):
 def image_plane(plate):
     """``(ImagePlane, zone, north)`` with the georeference solved in metres —
     a similarity fitted in degrees would be wrong, because a degree of
-    longitude and a degree of latitude are not the same distance."""
+    longitude and a degree of latitude are not the same distance.
+
+    Any failure in the affine solve is re-raised as a :class:`PlateError`, so a
+    bad georeference reaches the caller as a correctable mistake rather than as
+    an unhandled error."""
+    try:
+        return _image_plane(plate)
+    except PlateError:
+        raise
+    except (ValueError, ZeroDivisionError, ArithmeticError) as exc:
+        raise PlateError('the georeference for plate %s cannot be solved: %s'
+                         % (plate.get('plate_id', '?'), exc))
+
+
+def _image_plane(plate):
     zone, north = _zone_for(plate)
     fwd = lambda lo, la: utm_fwd(lo, la, zone, north)
     name = plate.get('source', {}).get('figure') or 'plate %s' % plate['plate_id']

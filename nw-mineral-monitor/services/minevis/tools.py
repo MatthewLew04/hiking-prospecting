@@ -145,6 +145,14 @@ TOOLS = [
          'context': {'type': 'boolean',
                      'description': 'also build terrain, draped geology and grade points around '
                                     'the mine; slower, fetches tiles'},
+         'private': {'type': 'boolean',
+                     'description': 'publish to the private prefix instead of the public one. '
+                                    'The model is then reachable ONLY through short-lived '
+                                    'signed links, not by anyone who can guess its URL. Use '
+                                    'this when the workings should not be world-readable.'},
+         'expires_in': {'type': 'integer',
+                        'description': 'seconds a private model\'s signed links stay valid '
+                                       '(default 300, clamped to 30-3600)'},
          'plates': {'type': 'array',
                     'description': 'scanned plans or sections with workings traced on them. '
                                    'These build at surveyed confidence and draw solid, unlike '
@@ -163,6 +171,17 @@ TOOLS = [
                    'properties': PLATE_PROPERTIES, 'additionalProperties': False}},
         ('plate',)),
 
+    _fn('sign_model_url',
+        'Mint fresh signed links for a model that was published privately. Private links '
+        'expire; this re-signs them without rebuilding the model. Public models do not need '
+        'this - their URLs do not expire.',
+        {'model_id': {'type': 'string',
+                      'description': 'the model_id from a private build, e.g. "silver-king-9f2c1e0a"'},
+         'expires_in': {'type': 'integer',
+                        'description': 'seconds the new links stay valid (default 300, '
+                                       'clamped to 30-3600)'}},
+        ('model_id',)),
+
     _fn('get_job',
         'Poll a build. state is one of queued, running, done, questions, error. '
         '"questions" is a normal outcome, not a failure.',
@@ -179,8 +198,8 @@ TOOLS = [
 
 TOOL_NAMES = [t['function']['name'] for t in TOOLS]
 
-SYNC = ('mine_lookup', 'parse_mine_description', 'check_map_plate', 'get_job',
-        'list_mine_documents')
+SYNC = ('mine_lookup', 'parse_mine_description', 'check_map_plate', 'sign_model_url',
+        'get_job', 'list_mine_documents')
 ASYNC = ('build_mine_visual',)
 
 
@@ -270,6 +289,17 @@ def _check_map_plate(args, ctx):
     return out
 
 
+def _sign_model_url(args, ctx):
+    model_id = args.get('model_id')
+    if not isinstance(model_id, str) or not model_id.strip():
+        raise ToolError('sign_model_url needs a model_id')
+    try:
+        return publish.sign(model_id.strip(), target=ctx.target, base_url=ctx.base_url,
+                            expires_in=args.get('expires_in'))
+    except publish.PublishError as exc:
+        raise ToolError(str(exc))
+
+
 def _get_job(args, ctx):
     job_id = args.get('job_id')
     try:
@@ -331,6 +361,7 @@ SYNC_IMPL = {
     'mine_lookup': _mine_lookup,
     'parse_mine_description': _parse_mine_description,
     'check_map_plate': _check_map_plate,
+    'sign_model_url': _sign_model_url,
     'get_job': _get_job,
     'list_mine_documents': _list_mine_documents,
 }
@@ -347,6 +378,8 @@ def _precheck_build(args):
         raise ToolError('answers must be a list of {id, value, because}')
     if args.get('plates') is not None and not isinstance(args['plates'], list):
         raise ToolError('plates must be a list of plate objects')
+    if args.get('expires_in') is not None and not args.get('private'):
+        raise ToolError('expires_in only applies to a private model; pass private: true')
     views = args.get('views')
     if views is not None:
         bad = [v for v in views if v not in VIEWS]
@@ -406,7 +439,8 @@ def run_build(args, ctx):
 
     views = render2d.render(built, views=tuple(args.get('views') or VIEWS))
     result = publish.publish(built, spec, site, views=views, target=ctx.target,
-                             base_url=ctx.base_url, log=ctx.log)
+                             base_url=ctx.base_url, private=bool(args.get('private')),
+                             expires_in=args.get('expires_in'), log=ctx.log)
     result['spec_id'] = spec['spec_id']
     result['mine'] = _mine_brief(site)
     result['summary'] = built['summary']
@@ -415,7 +449,12 @@ def run_build(args, ctx):
     result['assays'] = built['assays']
     result['vein'] = built['vein']
     result['storage'] = ctx.target_kind
-    if ctx.target_kind == 'local':
+    if ctx.target_kind == 'local' and result.get('access') == 'presigned':
+        result['note'] = ('no models bucket is configured on this box, so the model was '
+                          'written to local disk under the private prefix. Nothing here can '
+                          'mint a signed link, so these paths are not a private URL - they '
+                          'are only reachable through this service.')
+    elif ctx.target_kind == 'local':
         result['note'] = ('no models bucket is configured on this box, so the model was '
                           'written to local disk and the URLs are paths under this service')
     return 'done', result

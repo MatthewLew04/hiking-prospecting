@@ -47,8 +47,10 @@ UNITS = {'au': 'oz/ton', 'ag': 'oz/ton', 'pb': '%', 'zn': '%', 'cu': '%',
 
 _NUM = r'\d[\d,]*(?:\.\d+)?'
 
-RE_DOLLAR = re.compile(r'\$\s*(?P<val>' + _NUM + r')'
-                       r'(?:\s*(?:to|per|a)\s+(?:the\s+)?ton)?', re.I)
+#: a dollar figure is a *grade* only when it is per ton.  "the group yielded
+#: $1,000,000" is total production, and reading it as a grade would claim a
+#: million dollars to the ton.
+RE_DOLLAR = re.compile(r'\$\s*(?P<val>' + _NUM + r')\s*(?:to|per|a)\s+(?:the\s+)?ton\b', re.I)
 RE_OZ = re.compile(r'(?P<val>' + _NUM + r')\s*(?:oz\.?|ounces?)\b', re.I)
 RE_PCT = re.compile(r'(?P<val>' + _NUM + r')\s*(?:per\s*cent\.?|percent|%)', re.I)
 
@@ -72,6 +74,11 @@ BASIS = (
 RE_STRIKE = re.compile(r'\bstrik(?:es?|ing)\b[^.;]{0,40}', re.I)
 RE_VEIN_DIP = re.compile(r'\bdip(?:s|ping|ped)?\b[^.;]{0,40}', re.I)
 RE_VEIN = re.compile(r'\b(vein|lode|ledge|shoot|ore\s+body|orebody)\b', re.I)
+
+#: percentages that are not ore grades
+RE_NOT_A_GRADE = re.compile(
+    r'\b(recover(?:y|ies|ed|ing)|extraction|extracted|moisture|dilution|royalt(?:y|ies)|'
+    r'interest|discount|purity|efficien\w*|of\s+the\s+total|of\s+the\s+output)\b', re.I)
 
 RE_ASSAY_CUE = re.compile(
     r'\b(assay|assays|assayed|averag|ran|carried|yielded|value[sd]?|ore|grade|'
@@ -158,6 +165,8 @@ def parse(text, spec=None):
             for m in pattern.finditer(body):
                 if not claim(start + m.start(), start + m.end()):
                     continue
+                if kind == 'pct' and RE_NOT_A_GRADE.search(body[max(0, m.start() - 40):m.start()]):
+                    continue                      # a recovery, not an ore grade
                 value = _f(m.group('val'))
                 if kind == 'usd':
                     commodity, unit = 'usd', '$/ton'

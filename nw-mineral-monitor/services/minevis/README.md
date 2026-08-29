@@ -84,6 +84,7 @@ it unmodified.
 | `mine_lookup` | yes | name → **candidates** from the 3,369-mine grades bundle, with coordinates and citations |
 | `parse_mine_description` | yes | prose → typed elements, mentions, quoted grades, vein attitude, and the questions the prose leaves open |
 | `check_map_plate` | yes | check a scan's georeference before building with it |
+| `sign_model_url` | yes | mint fresh signed links for a private model |
 | `build_mine_visual` | **no** | → `job_id`; builds, renders and publishes |
 | `get_job` | yes | poll: `queued` \| `running` \| `done` \| `questions` \| `error` |
 | `list_mine_documents` | yes | the scanned sources held for a mine, so the agent can read its own prose |
@@ -214,12 +215,30 @@ unchanged is a no-op — the result comes back with `"republished": false`.
 - **No terrain, no model.** If the tile is unavailable the build is refused
   rather than placed at sea level, because a zero elevation is a lie about a
   mountain.
-- **Access.** `model3d.html` sits behind the Cognito app gate when `auth.json`
-  is present, so generated models inherit that gate. Stated plainly, and
-  consistent with what `DEPLOY.md` already says: that gates the *app*, not the
-  S3 objects — anyone who constructs the `models/<id>/model.geomodel.json` URL
-  can fetch the raw file through CloudFront. If that is not acceptable for a
-  given model, it needs a private prefix with presigned reads.
+- **Access.** By default `model3d.html` sits behind the Cognito app gate when
+  `auth.json` is present, so a public model inherits that gate. Stated plainly:
+  that gates the *app*, not the S3 objects — anyone who constructs the
+  `models/<id>/model.geomodel.json` URL can fetch the raw file through
+  CloudFront. When that is not acceptable, pass `private: true`.
+
+### Private models
+
+`build_mine_visual(…, private: true, expires_in: 600)` writes the model under
+`private/` instead. That prefix is **absent from the CloudFront read allowlist
+in `infra/template.yaml` by construction**, so the distribution cannot serve it
+at all; the only way in is a signed link, exactly as the WS12 document store
+works. The bucket's CORS rule is already bucket-wide and GET/HEAD only with the
+signature doing the authorising, so `model3d.html` fetches a signed project
+cross-origin unchanged.
+
+Links expire — 300 s by default, clamped to 30–3600, the same range the document
+store uses. `sign_model_url(model_id, expires_in)` mints fresh ones without
+rebuilding the model. The stored `manifest.json` holds **keys, never URLs**, so
+it does not go stale.
+
+Its one AWS requirement: the writer role needs `s3:PutObject` on
+`<bucket>/private/models/*`, and whoever signs needs `s3:GetObject` on the same.
+No read-policy change is needed — `private/` is already unreachable.
 
 ---
 

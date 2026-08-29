@@ -333,6 +333,15 @@ class MapPlateTests(ServiceCase):
         self.assertIn('surveyed', body['note'])
         self.assertEqual(body['citation'], 'traced from Plate 3, USGS Bulletin 723, p. 147')
 
+    def test_a_plate_can_be_checked_before_anything_is_traced_on_it(self):
+        plate = dict(PLATE)
+        plate.pop('traces')
+        code, body, _ = self.client.call('check_map_plate', {'plate': plate})
+        self.assertEqual(code, 200)
+        self.assertTrue(body['usable'])
+        self.assertEqual(body['traces'], 0)
+        self.assertAlmostEqual(body['scale']['m_per_px'], 1.11, delta=0.02)
+
     def test_a_plate_missing_its_georeference_comes_back_as_a_question(self):
         plate = dict(PLATE)
         plate.pop('control')
@@ -341,6 +350,15 @@ class MapPlateTests(ServiceCase):
         self.assertFalse(body['usable'])
         self.assertTrue(any(q['required'] for q in body['questions']))
         self.assertNotIn('scale', body)
+
+    def test_a_georeference_that_cannot_be_solved_is_a_400_not_a_500(self):
+        collinear = dict(PLATE, control=[[100, 700, -116.8700, 36.8760],
+                                         [500, 700, -116.8660, 36.8760],
+                                         [900, 700, -116.8620, 36.8760]])
+        code, body, _ = self.client.call('check_map_plate', {'plate': collinear})
+        self.assertEqual(code, 400)
+        self.assertEqual(body['error'], 'bad_call')
+        self.assertIn('one line', body['detail'])
 
     def test_a_malformed_plate_is_a_400_with_a_reason(self):
         code, body, _ = self.client.call('check_map_plate', {'plate': dict(PLATE, width=0)})
@@ -566,6 +584,112 @@ class JobLifecycleTests(ServiceCase):
         for path in ('/models/../../etc/passwd', '/models/..%2f..%2fetc/passwd'):
             code, _, _ = self.client.get(path)
             self.assertIn(code, (400, 404), path)
+
+
+class FakeS3(object):
+    """Enough of the boto3 client to exercise the private path in-process."""
+
+    def __init__(self):
+        self.objects = {}
+
+    def put_object(self, Bucket, Key, Body, ContentType):    # noqa: N803 - boto3 API
+        self.objects[(Bucket, Key)] = Body
+
+    def get_object(self, Bucket, Key):                       # noqa: N803 - boto3 API
+        class _R(object):
+            def __init__(self, d):
+                self.d = d
+
+            def read(self):
+                return self.d
+        return {'Body': _R(self.objects[(Bucket, Key)])}
+
+    def generate_presigned_url(self, operation, Params, ExpiresIn):   # noqa: N803
+        return ('https://s3.amazonaws.com/%s/%s?X-Amz-Expires=%d&X-Amz-Signature=deadbeef'
+                % (Params['Bucket'], Params['Key'], ExpiresIn))
+
+
+class PrivateModelTests(unittest.TestCase):
+    """Phase 5: a model that must not be world-readable."""
+
+    @classmethod
+    def setUpClass(cls):
+        from geomodel import publish
+
+        cls.state = tempfile.mkdtemp(prefix='minevis-private-')
+        cls._patch = mock.patch.object(resolve, 'elevation', lambda *a, **k: COLLAR_Z)
+        cls._patch.start()
+        cls.s3 = FakeS3()
+        cls.service = Service(cls.state, workers=2, offline=True,
+                              base_url='https://cdn.invalid', log=lambda *a: None,
+                              target=publish.S3Target('nwmm-bucket', client=cls.s3))
+        cls.httpd = make_server(cls.service, '127.0.0.1', 0)
+        cls.port = cls.httpd.server_address[1]
+        threading.Thread(target=cls.httpd.serve_forever, daemon=True).start()
+        cls.client = Client(cls.port)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.httpd.shutdown()
+        cls.httpd.server_close()
+        cls.service.close()
+        cls._patch.stop()
+        shutil.rmtree(cls.state, ignore_errors=True)
+
+    def build(self, **extra):
+        args = {'text': PROSE.replace('450 feet', '450 feet N45E'),
+                'lon': -116.87, 'lat': 36.877}
+        args.update(extra)
+        code, sub, _ = self.client.call('build_mine_visual', args)
+        self.assertEqual(code, 202)
+        return self.client.wait(sub['job_id'])
+
+    def test_a_private_build_returns_signed_links_and_an_expiry(self):
+        done = self.build(private=True, expires_in=600)
+        self.assertEqual(done['state'], 'done')
+        self.assertEqual(done['access'], 'presigned')
+        self.assertEqual(done['expires_in'], 600)
+        self.assertTrue(done['key_prefix'].startswith('private/models/'))
+        self.assertIn('X-Amz-Expires=600', done['project_url'])
+        self.assertIn('stop working', done['note'])
+
+    def test_a_public_build_is_still_the_default(self):
+        done = self.build()
+        self.assertEqual(done['access'], 'app-gate')
+        self.assertTrue(done['key_prefix'].startswith('models/'))
+        self.assertNotIn('expires_in', done)
+
+    def test_nothing_private_is_written_under_the_public_prefix(self):
+        self.build(private=True)
+        private = [k for _, k in self.s3.objects if k.startswith('private/models/')]
+        self.assertTrue(private)
+        for _, key in self.s3.objects:
+            self.assertTrue(key.startswith('models/') or key.startswith('private/models/'), key)
+
+    def test_expired_links_can_be_re_signed_without_rebuilding(self):
+        done = self.build(private=True, expires_in=600)
+        code, again, _ = self.client.call('sign_model_url',
+                                          {'model_id': done['model_id'], 'expires_in': 60})
+        self.assertEqual(code, 200)
+        self.assertEqual(again['model_id'], done['model_id'])
+        self.assertEqual(again['expires_in'], 60)
+        self.assertIn('X-Amz-Expires=60', again['project_url'])
+        self.assertEqual(sorted(again['views']), ['iso', 'plan', 'section'])
+
+    def test_signing_an_unknown_model_is_a_400_that_names_the_prefix(self):
+        code, body, _ = self.client.call('sign_model_url', {'model_id': 'nope-00000000'})
+        self.assertEqual(code, 400)
+        self.assertIn('private/models', body['detail'])
+
+    def test_sign_model_url_needs_a_model_id(self):
+        self.assertEqual(self.client.call('sign_model_url', {})[0], 400)
+
+    def test_expires_in_without_private_is_refused_rather_than_ignored(self):
+        code, body, _ = self.client.call('build_mine_visual', {
+            'text': 'An adit was driven N45E 900 feet.', 'lon': -116.87, 'lat': 36.877,
+            'expires_in': 600})
+        self.assertEqual(code, 400)
+        self.assertIn('private: true', body['detail'])
 
 
 class AuthTests(ServiceCase):

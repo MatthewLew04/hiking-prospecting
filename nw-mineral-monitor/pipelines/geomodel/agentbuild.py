@@ -544,13 +544,43 @@ def _stabilise(objects, spec):
 
 
 def stable_bytes(proj):
-    """The project's geometry payload with the wall-clock fields dropped: what
-    content addressing and the "has anything actually changed?" check in
-    ``publish`` are computed over."""
+    """The project's geometry payload with everything wall-clock dependent
+    removed: what the "has anything actually changed?" check in ``publish`` is
+    computed over.
+
+    Object ids carry a counter and the clock, and a few objects reference each
+    other by id (``StratModel.topography``, ``metadata['source']``), so a raw
+    dump of a *context* build differs on every run for no reason at all and its
+    republish check could never fire.  Ids are therefore canonicalised by order
+    of appearance.  Only the hash sees this; the written file keeps its real
+    ids."""
     d = sanitize(proj.to_json())
     d.pop('created', None)
     d.pop('modified', None)
-    return json.dumps(d, sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
+    order = {}
+    for i, obj in enumerate(d.get('objects') or ()):
+        if isinstance(obj, dict) and obj.get('id'):
+            order.setdefault(obj['id'], 'o%d' % i)
+    return json.dumps(_canonical_ids(d, order), sort_keys=True, separators=(',', ':'),
+                      allow_nan=False).encode('utf-8')
+
+
+def _canonical_ids(value, order):
+    if isinstance(value, str):
+        if value in order:
+            return order[value]
+        # "grid:<id>" / "points:<id>" back-references; the length guard keeps
+        # base64 array blobs out of the scan
+        if len(value) < 128 and ':' in value:
+            head, _, tail = value.rpartition(':')
+            if tail in order:
+                return '%s:%s' % (head, order[tail])
+        return value
+    if isinstance(value, list):
+        return [_canonical_ids(v, order) for v in value]
+    if isinstance(value, dict):
+        return dict((k, _canonical_ids(v, order)) for k, v in value.items())
+    return value
 
 
 def content_sha256(proj):

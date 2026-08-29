@@ -238,7 +238,9 @@ it does not go stale.
 
 Its one AWS requirement: the writer role needs `s3:PutObject` on
 `<bucket>/private/models/*`, and whoever signs needs `s3:GetObject` on the same.
-No read-policy change is needed — `private/` is already unreachable.
+No read-policy change is needed — `private/` is already unreachable through
+CloudFront, and `deploy.sh` already excludes `private/*` from its `--delete`
+site sync, so a private model also survives a deploy today.
 
 ---
 
@@ -251,8 +253,10 @@ here. What it needs to provide:
 2. An instance-profile role with `s3:PutObject` and `s3:AbortMultipartUpload`
    on `<bucket>/models/*` **only** — no `s3:Delete*`.
 3. **`--exclude "models/*"` on both site syncs in `deploy.sh`.** `models/`
-   exists only in the bucket, never in `site/`, so a `--delete` sync would
-   otherwise remove every agent-generated model on the next deploy.
+   exists only in the bucket, never in `site/`, so the `--delete` sync would
+   otherwise remove every agent-generated public model on the next deploy.
+   The private prefix is already safe: `sync_public_site_without_pointers`
+   excludes `private/*` today, so only the public prefix needs adding.
 
 Until those land, leave `NWMM_MODELS_BUCKET` unset and the service publishes
 locally — everything else behaves identically.

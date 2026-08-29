@@ -8,6 +8,8 @@
     "vendor:pdfjs": "mkdir -p site/assets/pdfjs/standard_fonts site/assets/pdfjs/wasm && cp node_modules/pdfjs-dist/legacy/build/pdf.min.mjs node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs site/assets/pdfjs/ && cp node_modules/pdfjs-dist/LICENSE site/assets/pdfjs/LICENSE && cp node_modules/pdfjs-dist/standard_fonts/* site/assets/pdfjs/standard_fonts/ && cp node_modules/pdfjs-dist/wasm/* site/assets/pdfjs/wasm/",
     "test:python": "python3 -m unittest discover -s tests -v",
     "test:browser": "node tools/measure.js",
+    "test:ask-routing": "node tools/test_ask_routing.mjs",
+    "test:mine-documents": "node tools/test_mine_documents.mjs",
     "test:doc-viewer": "node tools/test_doc_viewer.js",
     "test:ws13-citations": "node tools/test_ws13_citation_frontend.mjs",
     "vendor:three": "mkdir -p site/assets/three && cp node_modules/three/build/three.module.min.js node_modules/three/build/three.core.min.js site/assets/three/ && cp node_modules/three/examples/jsm/controls/OrbitControls.js site/assets/three/ && cp node_modules/three/LICENSE site/assets/three/LICENSE",

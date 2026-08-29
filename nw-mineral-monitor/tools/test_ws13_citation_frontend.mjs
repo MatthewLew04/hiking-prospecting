@@ -72,7 +72,7 @@ const REGIONS = [
   // The three registries the whole path turns on.
   slice('let DOCS = null;', '\nlet map, tipEl'),
   // The markdown renderer, which is where an answer's doc: chips are built.
-  slice('function mdCells(l){', 'function routeAI(q, localNote){'),
+  slice('function mdCells(l){', '/* ---------- WS12 addendum: stored source documents ----------'),
   // The WS12 addendum: resolution, rights, routes, chips, References.
   slice('const docsAvailable = ()=>', '/* --- the query engine --- */'),
 ];

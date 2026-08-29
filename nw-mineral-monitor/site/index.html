@@ -1512,6 +1512,118 @@ async function loadGrades(){
   }catch(e){ GR = null; }
 }
 
+/* ---------- site-name gazetteer (viewport-independent name resolution) -----
+   Every other site lookup in this app reads loadedTileFeatures(), so a mine
+   outside the current PMTiles view does not exist to it. That is fine for
+   "gold sites near here" and wrong for "the Center Star Mine", which named a
+   specific place and used to parse down to its one grounded token — the
+   state — and get answered with a statewide record count.
+
+   pipelines/build_site_gazetteer.py indexes every NAMED baseline record
+   (MRDS + state surveys) per state. Shards are fetched lazily, on the first
+   question that actually names something, and cached for the session. */
+const SITEGAZ = {index:null, indexPending:null, shards:{}, pending:{}};
+const siteGazAvailable = ()=> !!(SITEGAZ.index && SITEGAZ.index.states);
+/* Fold to a comparable key: lowercase, strip punctuation, collapse space.
+   "Center Star Mine, Centre Star" and "center star mine" have to meet. */
+const siteGazNorm = s => String(s||'').toLowerCase()
+  .replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+async function siteGazIndex(){
+  if (SITEGAZ.index) return SITEGAZ.index;
+  if (!SITEGAZ.indexPending) SITEGAZ.indexPending = jget('data/gazetteer/index.json')
+    .then(j=>{ SITEGAZ.index=j; return j; })
+    .catch(()=>{ SITEGAZ.index=null; return null; });
+  return SITEGAZ.indexPending;
+}
+async function siteGazShard(st){
+  if (SITEGAZ.shards[st]!==undefined) return SITEGAZ.shards[st];
+  if (!SITEGAZ.pending[st]) SITEGAZ.pending[st] = jget(`data/gazetteer/${st}.json`)
+    .then(j=>{ SITEGAZ.shards[st]=j; return j; })
+    .catch(()=>{ SITEGAZ.shards[st]=null; return null; });
+  return SITEGAZ.pending[st];
+}
+/* Rank by how much of the name the query actually accounts for. An exact
+   normalised hit outranks a prefix, which outranks a whole-word run, which
+   outranks a bare substring — so "center star" cannot be beaten by some
+   "Center Star Extension No. 4" just because it sorted first. */
+function siteGazScore(name, needle){
+  const n = siteGazNorm(name);
+  if (!n || !needle) return 0;
+  if (n === needle) return 100;
+  const at = n.indexOf(needle);
+  if (at < 0) return 0;
+  const before = at===0, after = at+needle.length===n.length;
+  const wordStart = before || n[at-1]===' ';
+  const wordEnd = after || n[at+needle.length]===' ';
+  let score = wordStart && wordEnd ? 70 : wordStart ? 55 : 30;
+  // Prefer the tighter name: matching 11 of 12 characters beats 11 of 60.
+  score += Math.round(20 * needle.length / n.length);
+  if (before) score += 5;
+  return score;
+}
+/* A name search runs two needles. The full one — "center star mine" — is what
+   the user typed and what an exact archive name should match outright. The
+   loose one drops the head noun so a record filed as plain "Center Star" is
+   still reachable, but it is penalised, because dropping the head noun is
+   exactly how a bare same-named prospect used to outrank the mine itself. */
+const siteGazLoose = needle => needle.split(' ')
+  .filter(w=>!ASK_HEAD_NOUNS.has(w)).join(' ');
+async function siteGazSearch(name, states, limit){
+  const needle = siteGazNorm(name);
+  if (needle.length < 3) return {available:false, reason:'query too short', hits:[]};
+  const loose = siteGazLoose(needle);
+  const scoreOf = candidate => {
+    const exact = siteGazScore(candidate, needle);
+    if (!loose || loose === needle || loose.length < 3) return exact;
+    return Math.max(exact, siteGazScore(candidate, loose) - 12);
+  };
+  const index = await siteGazIndex();
+  if (!index || !index.states) return {available:false, reason:'gazetteer not deployed', hits:[]};
+  const wanted = (states && states.length ? states : Object.keys(index.states))
+    .filter(st=>index.states[st]);
+  if (!wanted.length)
+    return {available:true, hits:[], searched_states:[],
+      unindexed_states:(states||[]).filter(st=>!index.states[st])};
+  const shards = await Promise.all(wanted.map(siteGazShard));
+  const rows = [];
+  shards.forEach((shard,si)=>{
+    if (!shard) return;
+    for (let i=0;i<shard.n;i++){
+      const score = scoreOf(shard.nm[i]);
+      if (!score) continue;
+      rows.push({score, name:shard.nm[i], state:shard.state,
+        commodities:shard.c[i]||null, status:shard.sx[i]||null,
+        context:shard.d[i]||null, record_source:shard.srcs[shard.src[i]],
+        record_id:shard.id[i]||null,
+        // The id spellings docs_for/search_documents accept for this record, so
+        // a mine found by name reaches its own file without the model guessing
+        // at a format. Empty when the namespace is not one the bridge indexes.
+        document_ids:mineDocIds(shard.srcs[shard.src[i]], shard.id[i]),
+        lat:shard.y[i], lon:shard.x[i]});
+    }
+  });
+  // A producing/past-producing record is the one a person means when two
+  // rows share a name; beyond that keep the build's deterministic order.
+  const rank = r => r.score*10 + (/produc/.test(r.status||'') ? 4 : 0)
+    + (r.commodities ? 1 : 0);
+  rows.sort((a,b)=>rank(b)-rank(a));
+  return {available:true, count:rows.length, searched_states:wanted,
+    unindexed_states:(states||[]).filter(st=>!index.states[st]),
+    hits:rows.slice(0, limit||8)};
+}
+/* Two records for one mine — MRDS and the state survey — are the normal case,
+   not a duplicate to hide. Group them so the answer says "two archives agree"
+   instead of listing the same adit twice. */
+function siteGazCluster(hits){
+  const out = [];
+  for (const h of hits){
+    const near = out.find(c=>havKm(c.lat,c.lon,h.lat,h.lon) <= 1.0);
+    if (near){ near.records.push(h); continue; }
+    out.push({lat:h.lat, lon:h.lon, records:[h]});
+  }
+  return out;
+}
+
 /* ---------- WS10: quad-scale geologic map inventory + lazy rasters ----------
    Inventory metadata stays small and local. Raster pixels stay outside git and
    enter MapLibre only while a user has that layer checked. */
@@ -2531,8 +2643,16 @@ function tipText(f){
 
 /* ============ detail panel ============ */
 const detail = $('detail'), dInner = $('detailInner');
-function openDetail(h){ dInner.innerHTML=h; detail.classList.add('open'); }
-function closeDetail(){ detail.classList.remove('open'); }
+/* `subject` is the mine this panel is about, when the clicked feature is one.
+   It does two things: it starts the document fetch, and it tells ASK which
+   mine "this mine" refers to for as long as the panel is open. */
+function openDetail(h, subject){
+  dInner.innerHTML=h; detail.classList.add('open');
+  MINE_FOCUS = subject || null;
+  MINE_DOC_SEQ++;                       // any in-flight fetch belongs to a dead panel
+  if (subject) fillMineDocs(subject);
+}
+function closeDetail(){ detail.classList.remove('open'); MINE_FOCUS=null; MINE_DOC_SEQ++; }
 function toggleModal(id,on){ $(id).classList.toggle('open',!!on); }
 const gmaps=(y,x)=>`https://www.google.com/maps?q=${y},${x}`;
 const badge=(c,t)=>`<span class="badge ${c}">${t}</span>`;
@@ -2541,13 +2661,17 @@ function kv(rows){ return '<dl class="kv">'+rows.filter(r=>r[1]).map(([k,v,mono]
 
 function showFeature(f){
   const lid = f.layer.id, p = f.properties;
+  // Non-null only for the four record layers that carry an addressable id;
+  // openDetail() uses it to fetch this mine's documents and to tell ASK what
+  // "this mine" means while the panel is open.
+  const subject = mineSubject(f);
   if(lid.startsWith('national-mrds')){
     openDetail(`<h2>${esc(p.nm||'(unnamed)')}</h2>
       <div class="badges">${badge(p.status==='P'?'active':'abandoned',(SMAP[p.status]||'UNKNOWN').toUpperCase())} ${gbadge(Number(p.g)||0)} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Commodities',esc(p.commodities)||'—'],['County',esc(p.county)],['Deposit type',esc(p.deposit)],['Record quality',esc(p.quality)]])}
       <div class="links"><a href="https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=${encodeURIComponent(p.id)}" target="_blank">MRDS record ↗</a>${nationalResearchAnchors(p.nm,'',p.st)}</div>
       ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm):'';})()}
-      <div class="src">USGS Mineral Resources Data System, streamed from the 49-state PMTiles baseline. MRDS is a legacy lead, not current land status.</div>`);
+      <div class="src">USGS Mineral Resources Data System, streamed from the 49-state PMTiles baseline. MRDS is a legacy lead, not current land status.</div>`, subject);
     return;
   }
   if(lid==='national-usmin-c'){
@@ -2613,7 +2737,7 @@ function showFeature(f){
       ${kv([['Commodities',esc(p.commodities)||'—'],['Site type',esc(p.typ)],['Record',esc(p.id),1]])}
       <div class="links">${xy.length===2?`<a href="${gmaps(xy[1],xy[0])}" target="_blank">Google Maps ↗</a>`:''}${nationalResearchAnchors(p.nm,'',p.st)}</div>
       ${xy.length===2? g3dButton(xy[0],xy[1],p.nm):''}
-      <div class="src">State geological-survey occurrence, streamed from the national state-survey PMTiles archive. Source-level provenance is recorded in the manifest.</div>`);
+      <div class="src">State geological-survey occurrence, streamed from the national state-survey PMTiles archive. Source-level provenance is recorded in the manifest.</div>`, subject);
     return;
   }
   if(f.source==='national-claims'){
@@ -3254,7 +3378,16 @@ function execTool(name, a){
   try{
     a=a||{};
     if (WS12_TOOL_NAMES.has(name)) return execWs12Tool(name,a);
-    if (name==='query_sites') return trimJson(execQuerySites(a));
+    /* Tiles first — they carry the live map's own features — but a name is
+       the one filter the viewport must not decide. When a name search finds
+       nothing loaded, fall through to the gazetteer so the model gets the
+       same answer whatever the user happens to be looking at. */
+    if (name==='query_sites'){
+      const tiles = execQuerySites(a);
+      if (a.name_contains && !tiles.count) return execSitesByName(a, tiles);
+      return trimJson(tiles);
+    }
+    if (name==='resolve_site') return execResolveSite(a);
     if (name==='query_claims') return trimJson(execQueryClaims(a));
     if (name==='get_district'){
       const p = findPlace(String(a.name||''));
@@ -3356,6 +3489,35 @@ function execTool(name, a){
     }
     return {error:'unknown tool '+name};
   }catch(e){ return {error:String(e.message||e).slice(0,200)}; }
+}
+/* Resolve a mine/prospect NAME to coordinates from the baseline archives,
+   with no dependence on what the map has loaded. This is the hinge the tool
+   set was missing: resolve_place() only knew curated districts and towns, so
+   a named mine had no path to a lat/lon, and every spatial tool that takes
+   one — mines_near, geology_at, claims_at, faults_near, mag_at — was
+   unreachable for the most common question people actually ask. */
+async function execResolveSite(a){
+  a = a||{};
+  const found = await siteGazSearch(String(a.name||''), Array.isArray(a.states)?a.states:null,
+    Math.min(a.limit||6, 20));
+  if (!found.available)
+    return {error:'site gazetteer not available on this deployment: '+(found.reason||'unknown'),
+      hint:'fall back to query_sites with name_contains, which is scoped to loaded map tiles'};
+  return trimJson({count:found.count||0, searched_states:found.searched_states,
+    unindexed_states:found.unindexed_states,
+    scope:'baseline MRDS + state-survey archives, viewport-independent',
+    note:'Coordinates are archive centroids and can slop hundreds of metres. Two records within ~1 km with the same name are normally one mine recorded by both MRDS and the state survey, not two mines. USMIN topo workings are not name-indexed and are absent here. Each row carries document_ids: pass one to docs_for or to search_documents\'s mine_id to reach that mine\'s own file — never a bare numeric id, which collides across namespaces.',
+    sites:found.hits}, 9000);
+}
+async function execSitesByName(a, tiles){
+  const found = await siteGazSearch(String(a.name_contains||''),
+    Array.isArray(a.states)?a.states:null, Math.min(a.limit||8, 20));
+  if (!found.available || !found.hits.length) return trimJson(tiles);
+  return trimJson({count:found.count||0, loaded_tile_count:tiles.count,
+    scope:'baseline MRDS + state-survey archives (no name match in loaded map tiles, so the viewport-independent gazetteer answered)',
+    searched_states:found.searched_states,
+    note:'Name search fell back to the baseline archives because the loaded tiles held no match; this count is archive-wide for the searched states, not tile-scoped. Commodity/status filters are NOT applied on this path — re-filter from the rows.',
+    sample:found.hits}, 9000);
 }
 function execQuerySites(a){
   a=a||{};
@@ -3520,7 +3682,28 @@ async function aiAnswer(q){
     AI.hist.push({role:'user', content:[{text:`(session context — not a question) Loaded states: ${loaded}. Statewide stats: ${JSON.stringify(INTEL?INTEL.statewide:{})}`}]},
                  {role:'assistant', content:[{text:'Context noted.'}]});
   }
-  const msgs = [...AI.hist, {role:'user', content:[{text:q}]}];
+  /* The mine whose detail panel is open is what "this mine", "it" and "here"
+     refer to. It rides as a labelled context line rather than being folded
+     into the question: the reader's own words reach the model unaltered, and
+     a question plainly about something else can be answered without the model
+     having to unpick an edited sentence.
+
+     The name is archive text, so it is bounded and stripped of line breaks
+     before going anywhere near a prompt — it is data the tools returned, not
+     instructions, and it is not given a chance to look like instructions. */
+  const focusLine = ()=>{
+    if (!MINE_FOCUS) return '';
+    const clean = v => String(v||'').replace(/\s+/g,' ').trim().slice(0,120);
+    const where = MINE_FOCUS.lat!=null
+      ? ` at ${MINE_FOCUS.lat.toFixed(5)}, ${MINE_FOCUS.lon.toFixed(5)}` : '';
+    return `(map context, not the question: the reader has the "${clean(MINE_FOCUS.name)}" `
+      + `record open${MINE_FOCUS.state? ' in '+clean(MINE_FOCUS.state) : ''}${where}. `
+      + `If the question says "this mine", "it", or "here", that is the subject. `
+      + `Its document ids are ${JSON.stringify(MINE_FOCUS.ids.map(clean))} — pass one as `
+      + `docs_for's mine_id and as search_documents's mine_id, so every quote comes from `
+      + `this mine's own file rather than from a same-named record elsewhere.)\n`;
+  };
+  const msgs = [...AI.hist, {role:'user', content:[{text: focusLine() + q}]}];
   const opened = [];
   for (let round=0; round<7; round++){
     /* NB: custom header, NOT Authorization — a public Lambda Function URL
@@ -3627,9 +3810,13 @@ function mdToHtml(t){
           .replace(/<\/table><br>/g, '</table>')
           .replace(/<\/span><br>/g, '</span>');
 }
-function routeAI(q, localNote){
+function routeAI(q, localNote, onFail){
   if (aiAvailable() && AI.on){
     aiAnswer(q).catch(e=>{
+      // A caller that can still answer from local data says so here. Without
+      // it, an AI round that 500s turns a question with a real archive answer
+      // into "try help for patterns".
+      if (onFail) return void onFail(e);
       botMsg(`<span style="color:#e07373">AI: ${esc(String(e.message||e))}</span>` +
         (localNote? `<br>${esc(localNote)}` : '') +
         `<br><span style="font-size:10.5px;color:var(--mut)">Falling back to structured queries — try "help" for patterns.</span>`);
@@ -4120,6 +4307,182 @@ function docRefsHtml(state, mineId){
         docChip(c.doc_id, c.page, esc('open '+c.page_cite), c.quote)+`</div>`;
     }).join('') : '') + corpus;
 }
+/* ---------- documents for the mine the reader just clicked ----------------
+   The References block above could always render a mine's documents; what did
+   not exist was anything that knew WHICH mine to ask it for. A dossier is
+   keyed by grade-row index and identified by its own quote, so only the ~3,370
+   graded mines could ever show a source, and a mine whose file exists only in
+   the 56,282-document corpus showed nothing at all — on a panel a reader takes
+   for that mine's whole record.
+
+   This closes it from the other end: the clicked FEATURE carries the id, so
+   the panel resolves the mine itself and fetches its documents.
+
+   Spelling matters here and is the reason for the candidate list. The bridge
+   (pipelines/ws13_mine_id_map.py) registers three spellings per record —
+   'mrds:60000003', 'mrds-60000003' and the bare '60000003' — but the two
+   backends behind docs_for key differently: WS13 translates through that
+   table, while the bounded index matches ds.mine_id by raw equality with no
+   bridge at all. So more than one spelling has to be offered.
+
+   A BARE NUMERIC id is deliberately never offered. That is the exact shape
+   that made a click on an MRDS Nevada deposit answer with an unrelated NBMG
+   mining-district file: both namespaces number their records with bare
+   integers and 52 of them collide. Unprefixed ids are only sent when they
+   carry their own namespace in their text ('IGS DD-1 IF0126'). */
+let MINE_FOCUS = null;      // the mine whose panel is open, for ASK to read
+let MINE_DOC_SEQ = 0;       // guards a slow fetch painting into a newer panel
+/* Only the two namespaces the bridge can actually address.
+
+   USMIN and ARDF are absent on purpose, and their absence is a fact about the
+   data rather than an oversight: every usmin_*.json in build-inputs carries no
+   `id` column at all — its rows are topo feature types and quadrangles — so
+   ws13_mine_id_map has no front-end id to register for one, and no ARDF file
+   is a bridge source either. Sending a USMIN feature's GDA id would be
+   inventing a lookup, and an invented lookup that happens to hit is how an
+   unrelated file ends up attached to a mine. A null subject means the panel
+   says nothing about documents, which is the honest answer for those layers. */
+const MINE_DOC_NAMESPACES = {'national-mrds':'mrds', 'national-stategeo':'stategeo'};
+/* The spellings docs_for will be offered for one record, most specific first.
+
+   Shared with resolve_site so a mine reached by NAME arrives at its documents
+   the same way a clicked one does — the two paths disagreeing about how an id
+   is spelled is how one of them silently stops finding anything. */
+function mineDocIds(namespace, recordId){
+  const id = String(recordId || '').trim();
+  if (!namespace || !id) return [];
+  const ids = [`${namespace}:${id}`, `${namespace}-${stateSurveySafeId(id)}`];
+  // A bare id is offered only when it namespaces itself in its own text.
+  if (!/^\d+$/.test(id)) ids.push(id);
+  return ids;
+}
+function mineSubject(f){
+  const p = (f && f.properties) || {};
+  const lid = String(f && f.layer && f.layer.id || '');
+  // f.source is the canonical PMTiles source and is what ws12MinesNear() keys
+  // on; the layer id is the fallback for callers that synthesise a feature.
+  const namespace = MINE_DOC_NAMESPACES[String(f && f.source || '')]
+    || (lid.startsWith('national-mrds') ? 'mrds'
+      : lid.startsWith('stategeo') ? 'stategeo' : null);
+  if (!namespace) return null;
+  const recordId = String(p.id || p.source_id || p.serial || '').trim();
+  if (!recordId) return null;
+  const ids = mineDocIds(namespace, recordId);
+  const xy = pointXY(f) || [];
+  return {namespace, recordId, ids,
+    name: String(p.nm || p.site_name || p.typ || '').trim() || '(unnamed)',
+    state: String(p.st || '').trim().toUpperCase() || null,
+    lat: xy.length===2 ? xy[1] : null, lon: xy.length===2 ? xy[0] : null};
+}
+/* Ask docs_for for each spelling until one answers with documents.
+
+   "No documents" and "no index" are different answers and are kept apart all
+   the way to the panel: a not_loaded backend means the reader learned nothing,
+   and rendering that as an empty file would be a false negative about a mine's
+   entire documentary record. */
+const MINE_DOC_CACHE = new Map();
+async function mineDocsFetch(subject){
+  // Re-clicking a mine must not re-spend Lambda slots: this account's TOTAL
+  // concurrency is ten across every function, and one ASK question already
+  // holds two of them. A miss is cached as well as a hit — "nothing filed
+  // here" is an answer, and asking again cannot change it within a session.
+  const cacheKey = subject.ids[0];
+  if (MINE_DOC_CACHE.has(cacheKey)) return MINE_DOC_CACHE.get(cacheKey);
+  const answer = await mineDocsQuery(subject);
+  // An unreachable index is a transient state, not a fact about the mine, so
+  // it is the one answer that is never cached.
+  if (answer.status !== 'not_loaded') MINE_DOC_CACHE.set(cacheKey, answer);
+  return answer;
+}
+async function mineDocsQuery(subject){
+  let sawIndex = false, lastNote = '';
+  for (const mineId of subject.ids){
+    let out = null;
+    try{ out = await execWs12Tool('docs_for', {mine_id: mineId}); }catch(e){ continue; }
+    if (!out || out.error) continue;
+    if (out.status === 'not_loaded') continue;
+    sawIndex = true;
+    lastNote = out.note || lastNote;
+    const documents = Array.isArray(out.documents) ? out.documents : [];
+    if (documents.length) return {status:'loaded', mine_id:mineId, documents, result:out};
+  }
+  return {status: sawIndex ? 'none' : 'not_loaded', note:lastNote, tried:subject.ids};
+}
+function mineDocRow(row, mineId){
+  // Full-corpus rows carry the sha256, rights and viewer key a chip needs;
+  // registering the row is what makes docChip() able to resolve it at all.
+  rememberDocsForRow(row, mineId);
+  const docId = String(row.sha256 || row.document_id || '');
+  const rights = docRightsBadge(docId);
+  const page = Number(row.page) || 1;
+  const quote = docQuoteFor(docId, page);
+  const meta = [row.doc_type, row.doc_date, row.portal || row.portal_id,
+    Number.isFinite(+row.page_count) ? `${row.page_count} pp` : null]
+    .filter(Boolean).map(v=>esc(String(v))).join(' · ');
+  // A chip opens our stored copy; a row we cannot open still has to be
+  // reachable, so it falls back to the portal it came from. A row with
+  // neither is listed rather than hidden — it is evidence that exists.
+  const chip = docChip(docId, page, esc('open p. '+page), quote);
+  const link = !chip && row.source_url
+    ? `<a href="${esc(String(row.source_url))}" target="_blank">source record ↗</a>` : '';
+  return `<div class="docref"><div class="t">${esc(row.title || '(untitled document)')}`
+    + `${rights.html}</div>`
+    + (quote ? `<div class="q">“${esc(quote)}”</div>` : '')
+    + `<div class="n">${meta || 'no document metadata supplied'}`
+    + (rights.tip ? ' · '+esc(rights.tip) : '') + `</div>`
+    + (chip || link);
+}
+function mineDocsHtml(found, subject){
+  const head = t => `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">${t}</h3>`;
+  const note = t => `<div style="font-size:10.5px;color:var(--mut);margin-top:6px">${t}</div>`;
+  if (found.status === 'not_loaded')
+    return head('DOCUMENTS')
+      + note('The document index is not reachable from this deployment, so this mine\'s '
+        + 'documentary record is <b>unknown</b> — that is not the same as having none.');
+  if (found.status === 'none')
+    return head('DOCUMENTS')
+      + note(`No document in the index is filed against this record `
+        + `(${esc(subject.ids.join(', '))}). Most map points are MRDS locations with no `
+        + `document in any corpus, so this is the common case rather than a fault.`);
+  const rows = found.documents;
+  const total = Number.isFinite(+found.result.count) ? +found.result.count : rows.length;
+  // count and documents.length are not the same number on the full-corpus
+  // backend: count is everything attached, the array is one page of it. A
+  // heading that implies the page is the whole file is the failure here.
+  const partial = found.result.truncated || total > rows.length;
+  return head(`DOCUMENTS FILED AGAINST THIS MINE — `
+      + (partial ? `${fmt(rows.length)} OF ${fmt(total)}` : `${fmt(total)}`))
+    + rows.map(row=>mineDocRow(row, found.mine_id)).join('')
+    + note((partial ? `This is a page of ${fmt(total)} attached documents, not all of them. ` : '')
+      + `Matched on <code>${esc(found.mine_id)}</code>. `
+      + `Nothing here is matched to a page. Ask a question about this mine and the answer cites the page it quotes.`)
+    + `<button class="dosbtn" onclick="askAboutMine()">⌁ ASK ABOUT THIS MINE</button>`;
+}
+async function fillMineDocs(subject){
+  const seq = ++MINE_DOC_SEQ;
+  const slot = document.createElement('div');
+  dInner.appendChild(slot);
+  slot.innerHTML = `<div style="font-size:10.5px;color:var(--mut);margin-top:12px">⌁ looking for documents…</div>`;
+  let found;
+  try{ found = await mineDocsFetch(subject); }
+  catch(e){ found = {status:'not_loaded', note:String(e && e.message || e)}; }
+  // The reader has clicked something else since; that panel owns the slot now.
+  if (seq !== MINE_DOC_SEQ || !slot.isConnected) return;
+  slot.innerHTML = mineDocsHtml(found, subject);
+}
+/* Hand the open mine to the ASK panel as a question the reader can edit. */
+function askAboutMine(){
+  if (!MINE_FOCUS) return;
+  $('askPanel').classList.add('open');
+  const box = $('askInput');
+  if (!box) return;
+  // Seeded, not sent: the reader edits it into their real question, and the
+  // mine stays the subject either way because MINE_FOCUS is what scopes the
+  // tools, not the wording of this sentence.
+  box.value = `What do the documents say about the ${MINE_FOCUS.name}?`;
+  box.focus();
+  box.setSelectionRange(box.value.length, box.value.length);
+}
 /* --- the query engine --- */
 const GAZ = {'tonopah':[38.07,-117.23],'goldfield':[37.71,-117.24],'virginia city':[39.31,-119.65],
  'ely':[39.25,-114.89],'elko':[40.83,-115.76],'winnemucca':[40.97,-117.74],'austin':[39.49,-117.07],
@@ -4149,6 +4512,86 @@ const COMTERMS = [
  [/\buranium\b/,2,'uranium'],[/rare earth|\bree\b/,2,null],[/\blithium\b/,2,'lithium'],[/\bthorium\b/,2,'thorium'],
  [/\bstone\b|\bquartzite\b/,3,null],[/\bmica\b/,3,'mica'],[/\bgarnet\b/,3,'garnet'],[/\bopal\b/,3,'opal'],
  [/\bcoal\b/,4,'coal'],[/\bgeothermal\b/,4,'geothermal']];
+/* Words that carry a filter, describe the ask, or are plain English. What is
+   left after removing them is the part of the question this parser cannot
+   ground — in practice, a proper noun. It is NOT noise to be dropped: it is
+   usually the whole subject ("center star mine in idaho" grounds only to ID,
+   and answering the state is answering a different question). */
+const ASK_FILLER = new Set(`a an and any anything are about across around as ask
+at available be been best better between both but by can could data detail
+details did do does down each else even ever every everything explain few find
+first for from get give go good got had has have he her here hers him his how i
+if in info information into is it its just know like list ll look lookup made
+make many map may me mined miner mineral minerals mining more most much must my
+need no not now of off ok okay on once one only or other our out over own place
+places please prospected prospecting question really report right run said same
+say search see set she should show site sites so some something state states
+still such summary tell than that the their them then there these they thing
+things this those through to told too under until up us use used using very
+want was we well were what whats when where which while who why will with
+within would yes you your`.split(/\s+/).filter(Boolean));
+/* Scope, status and unit words the parser consumes into f.scope/f.ex/f.km.
+   Listed separately from ASK_FILLER because they are real signal — they just
+   are not part of a name. */
+const ASK_CONSUMED = new Set(`abandoned active alert alerts assay assays
+claimed count county counties digest epithermal estate feature features
+geologic geological geology grade grades ground help highest historic history
+kilometer kilometers kilometre kilometres km lapsed llm lowest mi mile miles
+number occurrence occurrences old opaline open operating oz past permitted
+producer producers producing quarried rank ranking rankings record records
+rhyolite richest row rows section sections sinter split status target targets
+tonne tons ton top topo total totals unclaimed watch watchlist withdrawn
+work working workings ai answer`.split(/\s+/).filter(Boolean));
+/* Head nouns that END a site name rather than being part of it: "center star
+   MINE", "blue ledge GROUP". They are deliberately NOT filler. Dropping them
+   was its own bug — searching the archives for "center star" let a bare
+   prospect of exactly that name outrank the Center Star Mine the question was
+   about. They are kept when a name precedes them and dropped when one does
+   not, so "gold mines in idaho" still resolves to no name at all. */
+const ASK_HEAD_NOUNS = new Set(`mine mines prospect prospects claim claims
+group groups lode lodes tunnel tunnels shaft shafts pit pits adit adits
+deposit deposits placer placers quarry quarries district districts`
+  .split(/\s+/).filter(Boolean));
+/* Strip every span this parser already understood, then keep what is left.
+   The order matters: multi-word spans (state names, "within 40 km of X",
+   "near X") come out before single tokens, or their fragments survive as
+   fake names. */
+function residualName(q, f){
+  let rest = ' ' + String(q||'').toLowerCase() + ' ';
+  rest = rest.replace(STATE_NAME_RE, ' ')
+             .replace(/\b(?:in|for|state(?:\s+of)?)\s+[a-z]{2}\b/g, ' ')
+             // A radius clause names a PLACE, not a mine: eat the whole span
+             // including its "of butte" tail, or the tail reads as a subject.
+             .replace(/\b(?:with)?in\s+\d+\s*(?:km|mi|miles?|kilometers?|kilometres?)\s+(?:of|from)\s+[a-z .'’-]+$/g, ' ')
+             .replace(/\b(?:with)?in\s+\d+\s*(?:km|mi|miles?|kilometers?|kilometres?)\b/g, ' ')
+             .replace(/\bnear\s+[a-z .'’-]+$/g, ' ')
+             .replace(/\btop\s+\d+\b/g, ' ')
+             .replace(/[^a-z0-9]+/g, ' ');
+  for (const [re] of COMTERMS) rest = rest.replace(new RegExp(re.source,'g'), ' ');
+  // Collect unbroken runs of words this parser did not consume. A run is a
+  // candidate name only if something in it is not merely a head noun.
+  const runs = []; let run = [];
+  for (const token of rest.split(/\s+/)){
+    const drop = !token || token.length < 2 || /^\d+$/.test(token)
+      || ASK_FILLER.has(token) || ASK_CONSUMED.has(token);
+    if (drop){ if (run.length) runs.push(run); run = []; continue; }
+    run.push(token);
+  }
+  if (run.length) runs.push(run);
+  let best = null;
+  for (const candidate of runs){
+    while (candidate.length && ASK_HEAD_NOUNS.has(candidate[0])) candidate.shift();
+    const solid = candidate.filter(t=>!ASK_HEAD_NOUNS.has(t));
+    if (!solid.length) continue;
+    if (!best || solid.length > best.solid) best = {words:candidate, solid:solid.length};
+  }
+  if (!best) return null;
+  const name = best.words.join(' ');
+  // One short leftover token is far more often a typo or an unmodelled filler
+  // word than a mine name; two words, or one distinctive one, is a subject.
+  if (best.words.length === 1 && name.length < 4) return null;
+  return name;
+}
 function parseQuery(q){
   const f = {states:null, g:null, term:null, ex:null, near:null, km:25, scope:'sites', wantCount:/how many|count|number of/.test(q)};
   const st=new Set();
@@ -4167,6 +4610,9 @@ function parseQuery(q){
   if (/\bclaims?\b/.test(q)) f.scope='claims';
   const km = q.match(/within\s+(\d+)\s*(km|mi)/); if (km) f.km = +km[1]*(km[2]==='mi'?1.609:1);
   const nr = q.match(/near\s+([a-z .'’-]+?)(?:\s+within.*)?$/); if (nr) f.near = findPlace(nr[1]);
+  // The subject this parser could not ground. Everything downstream that
+  // answers a whole-archive question has to check it first.
+  f.nameq = residualName(q, f);
   return f;
 }
 function runQuery(f){
@@ -4244,6 +4690,61 @@ function describeFilter(f){
   if (f.near) bits.push(`within ${Math.round(f.km)} km of ${f.near.label.split('(')[0].trim()}`);
   return bits.join(' ');
 }
+/* A question that names a place is a question about that place. Before this
+   existed, "center star mine in idaho" grounded to ID and nothing else, fell
+   into the statewide baseline-count branch, and was answered with "19,741
+   MRDS + state-survey + ARDF occurrence records in the immutable baseline
+   archives for ID" — a true sentence about a question nobody asked.
+
+   The AI answerer is the right destination for these: it can resolve the name
+   and then chain grades, documents, claims and geology onto it. This path
+   exists so that a deployment with the AI off, or an AI round that fails,
+   still answers from the archives instead of changing the subject. */
+async function nameAnswer(q, f, allowAI){
+  // Handing a dead end back to the AI is right the first time and wrong once
+  // the AI has already failed — which is exactly when this runs as a fallback.
+  const giveUp = note => allowAI ? routeAI(q, note)
+    : botMsg(esc(note) + `<br><span style="font-size:10.5px;color:var(--mut)">Try the name as it reads on the map, or drop the state filter to search every indexed state.</span>`);
+  const found = await siteGazSearch(f.nameq, f.states, 12);
+  if (!found.available){
+    // No index to consult. Say which question went unanswered rather than
+    // answering the statewide one.
+    return void giveUp(`No site-name index is deployed here, so "${f.nameq}" could not be resolved against the baseline archives.`);
+  }
+  if (!found.hits.length){
+    const where = found.searched_states.length===1? ' in '+found.searched_states[0]
+      : found.searched_states.length? ' in '+found.searched_states.join('+') : '';
+    return void giveUp(`No named site matching “${f.nameq}”${where} in the MRDS + state-survey baseline archives`
+      + (found.unindexed_states.length? ` (no gazetteer shard for ${found.unindexed_states.join(', ')})` : '') + '.');
+  }
+  const clusters = siteGazCluster(found.hits);
+  const top = clusters[0];
+  const lead = top.records[0];
+  const agree = top.records.length>1
+    ? ` <span style="color:var(--mut)">· ${top.records.length} archives agree within 1 km</span>` : '';
+  const lines = top.records.map(r=>
+    `· <b>${esc(r.name)}</b> — ${esc(r.record_source==='mrds'?'MRDS':'state survey')} ${esc(r.record_id||'')}`
+    + (r.commodities? `<br>&nbsp;&nbsp;${esc(r.commodities)}` : '')
+    + (r.status? ` <span style="color:var(--mut)">(${esc(r.status)})</span>` : '')
+    + (r.context? `<br>&nbsp;&nbsp;<span style="color:var(--mut)">${esc(r.context)}</span>` : ''));
+  const others = clusters.slice(1, 5);
+  const chips = [{label:'⚡ show on map', fn:()=>{
+    map.flyTo({center:[top.lon, top.lat], zoom:13.5, duration:1100});
+    map.getSource('hl').setData({type:'Feature',properties:{},
+      geometry:{type:'Point',coordinates:[top.lon, top.lat]}});
+    setTimeout(()=>map.getSource('hl').setData(EMPTY), 4000);
+  }}];
+  if (aiAvailable() && AI.on) chips.push({label:'⌁ ask the AI about it',
+    fn:()=>routeAI(`${lead.name} (${lead.state}, ${lead.lat.toFixed(5)}, ${lead.lon.toFixed(5)}) — ${q}`, null)});
+  others.forEach(c=>chips.push({label:'↗ '+c.records[0].name.slice(0,22),
+    fn:()=>{ map.flyTo({center:[c.lon,c.lat], zoom:12.5, duration:1100}); }}));
+  botMsg(`<b>${esc(lead.name)}</b> — ${esc(lead.state)} · ${lead.lat.toFixed(5)}, ${lead.lon.toFixed(5)}${agree}<br>`
+    + lines.join('<br>')
+    + (others.length? `<br><span style="font-size:10.5px;color:var(--mut)">${others.length} other site${others.length===1?'':'s'} in the archives share that name — chips below.</span>` : '')
+    + `<br><span style="font-size:10.5px;color:var(--mut)">Baseline MRDS + state-survey archives; coordinates can slop hundreds of metres. `
+    + (aiAvailable()&&AI.on? 'Ask a follow-up for grades, documents, claims or geology at this point.'
+       : 'The AI answerer is off — turn it on for grades, documents and land status here.') + `</span>`, chips);
+}
 function answer(q){
   q = q.toLowerCase().trim();
   if (/^(help|\?|what can you do)/.test(q)){
@@ -4318,6 +4819,19 @@ function answer(q){
     return routeAI(q, null);
   /* structured query — anything the parser can't ground goes to the AI answerer */
   const f = parseQuery(q);
+  /* A residual proper noun outranks every whole-archive branch below. A state
+     filter is NOT grounding when the question also named a subject: matching
+     "idaho" out of "center star mine in idaho" leaves the actual question
+     unanswered, and the branches below would answer the state instead. */
+  if (f.nameq && !f.wantCount){
+    const local = e=>{
+      if (e) botMsg(`<span style="color:#e07373">AI: ${esc(String(e.message||e))}</span>`
+        + `<br><span style="font-size:10.5px;color:var(--mut)">Answering “${esc(f.nameq)}” from the baseline archives instead.</span>`);
+      nameAnswer(q, f, false).catch(err=>botMsg('Site-name lookup failed: '+esc(String(err.message||err))));
+    };
+    if (aiAvailable() && AI.on) return routeAI(q, null, local);
+    return void local(null);
+  }
   const hasSignal = f.g!=null || f.term || f.states || f.near || f.ex!=null || f.scope!=='sites' || f.wantCount;
   if (!hasSignal) return routeAI(q, null);
   if(f.scope==='claims'&&!f.near&&!f.term&&f.g==null&&f.states&&f.states.length){
@@ -4345,7 +4859,9 @@ function answer(q){
     botMsg(pieces.join('<br>'));
     return;
   }
-  if((f.scope==='sites'||f.scope==='usmin')&&!f.near&&!f.term&&f.g==null&&f.ex==null&&f.states&&f.states.length){
+  /* Whole-archive counts answer "how many sites in ID", never "tell me about
+     <name> in ID" — f.nameq is the guard that keeps those apart. */
+  if((f.scope==='sites'||f.scope==='usmin')&&!f.near&&!f.term&&!f.nameq&&f.g==null&&f.ex==null&&f.states&&f.states.length){
     const count=f.scope==='usmin'?baselineCount('usmin',f.states):baselineCount('mrds',f.states)+baselineCount('stategeo',f.states)+baselineCount('ardf',f.states);
     botMsg(`<b>${fmt(count)}</b> ${f.scope==='usmin'?'USMIN topo-map workings':'MRDS + state-survey + ARDF occurrence records'} in the immutable baseline archives for ${esc(f.states.join('+'))}. Archives may overlap; apply the state filter and zoom in to inspect tiled features.`);
     return;

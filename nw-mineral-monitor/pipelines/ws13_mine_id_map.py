@@ -95,7 +95,31 @@ DOCS_INDEX = os.path.join(REPO_ROOT, 'site', 'data', 'docs', 'index.json')
 DOC_REGISTRY = os.path.join(REPO_ROOT, 'pipelines', 'config',
                             'ws12_documents.json')
 
-METHODS = ('embedded_code', 'prefix_namespace', 'fuzzy_name', 'unmapped')
+METHODS = ('embedded_code', 'prefix_namespace', 'exact_name', 'district_name',
+           'place_name', 'fuzzy_name', 'unmapped')
+# What a mapped row asserts about the front-end mine and the documents it
+# resolves to. The distinction is not cosmetic: an identity row says these
+# documents are ABOUT this mine, and a district row says they are about the
+# district the mine sits in. Nevada's corpus is 17,419 NBMG mining-district
+# files -- the source files them by district, not by mine, and 668 district
+# names carry 18,723 file ids -- so calling that identity would be a claim the
+# data does not make. The retrieval path reports the relation back so a reader
+# can be told which one it is looking at.
+RELATIONS = ('identity', 'district', 'county')
+# The threshold infra/ws13_query_lambda.mine_id_map() admits a row at. Kept
+# here as well because reachability() has to measure what a user would see,
+# and a report that counted rows the reader rejects would be reporting a
+# coverage the product does not have.
+RETRIEVAL_MIN_CONF = 0.8
+# Front-end namespaces whose record ids are a numeric sequence of their own,
+# so an equality against a corpus mine id is a coincidence rather than
+# evidence. MRDS dep_ids are the only ones in the current site files; the
+# corpus's own numeric ids are NBMG mining-district file numbers and no map
+# layer carries those. Kept as a set rather than a blanket ban on numeric
+# codes so a later source whose ids genuinely ARE corpus ids is not blocked
+# for a hazard it does not have -- and a namespace goes in here on evidence,
+# which for 'mrds' is 730 wrong rows.
+NUMERIC_NAMESPACES_BLOCKED = frozenset({'mrds'})
 # Confidence tiers. The two exact tiers are separated from the fuzzy tier by a
 # wide gap on purpose: an operator filtering `confidence >= 0.8` must never
 # pick up a difflib guess, whatever ratio it scored.
@@ -103,6 +127,16 @@ CONF_CODE_IN_MINE_IDS = 1.0
 CONF_CODE_IN_PATH = 0.9
 CONF_PREFIX_IN_MINE_IDS = 0.95
 CONF_PREFIX_IN_PATH = 0.85
+# The place tiers. Above the retrieval path's 0.8 admission threshold because
+# each is an EQUALITY between normalised names inside one state, not a
+# similarity score -- what is uncertain about them is the relation, not the
+# match, and the relation is recorded rather than estimated. Below the exact
+# code tiers because a name is a weaker key than an id: two mines can share
+# one, and the ambiguity guards below are what stand between that and a wrong
+# answer.
+CONF_EXACT_NAME = 0.9
+CONF_DISTRICT_NAME = 0.85
+CONF_PLACE_NAME = 0.8
 FUZZY_CEILING = 0.6
 # Applied when the front-end record has no state, so a name match that could
 # not be state-blocked is visibly weaker than one that could.
@@ -128,12 +162,17 @@ CREATE TABLE IF NOT EXISTS ws13_mine_id_map (
   ws13_mine_id TEXT,
   ws13_mine_id_all TEXT[],
   method TEXT NOT NULL,
+  relation TEXT NOT NULL DEFAULT 'identity',
   confidence REAL NOT NULL,
   verified BOOLEAN NOT NULL,
   evidence JSONB NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
   CONSTRAINT ws13_mine_id_map_method CHECK (
-    method IN ('embedded_code', 'prefix_namespace', 'fuzzy_name', 'unmapped')),
+    method IN ('embedded_code', 'prefix_namespace', 'exact_name',
+               'district_name', 'place_name', 'fuzzy_name', 'unmapped')),
+  CONSTRAINT ws13_mine_id_map_relation CHECK (
+    relation IN ('identity', 'district', 'county')
+    AND (ws13_mine_id IS NOT NULL OR relation = 'identity')),
   CONSTRAINT ws13_mine_id_map_unmapped CHECK (
     (method = 'unmapped') = (ws13_mine_id IS NULL)),
   CONSTRAINT ws13_mine_id_map_spellings CHECK (
@@ -145,6 +184,40 @@ CREATE INDEX IF NOT EXISTS ws13_mine_id_map_ws13
   ON ws13_mine_id_map (ws13_mine_id);
 CREATE INDEX IF NOT EXISTS ws13_mine_id_map_ws13_all
   ON ws13_mine_id_map USING GIN (ws13_mine_id_all);
+"""
+
+# In-place upgrade for the table as it stands in production: 358,808 rows
+# written before `relation` and the place tiers existed. Dropping and
+# rebuilding would work -- this script derives every row from scratch -- but
+# it would leave the retrieval path with no bridge for the length of the run,
+# and it would throw away any verified row a human had confirmed, which the
+# UPSERT guard exists to protect. Each statement is idempotent, so this is
+# safe to run against a table that has already been migrated and against one
+# that was just created by the CREATE above.
+#
+# The method CHECK is dropped and rebuilt rather than widened in place because
+# Postgres has no ALTER CONSTRAINT for a CHECK expression. It is rebuilt NOT
+# VALID and then validated, so the ACCESS EXCLUSIVE lock is held for the
+# catalog write rather than for a scan of the whole table.
+MIGRATE_SQL = """
+ALTER TABLE ws13_mine_id_map
+  ADD COLUMN IF NOT EXISTS relation TEXT NOT NULL DEFAULT 'identity';
+ALTER TABLE ws13_mine_id_map
+  DROP CONSTRAINT IF EXISTS ws13_mine_id_map_method;
+ALTER TABLE ws13_mine_id_map
+  ADD CONSTRAINT ws13_mine_id_map_method CHECK (
+    method IN ('embedded_code', 'prefix_namespace', 'exact_name',
+               'district_name', 'place_name', 'fuzzy_name', 'unmapped'))
+  NOT VALID;
+ALTER TABLE ws13_mine_id_map VALIDATE CONSTRAINT ws13_mine_id_map_method;
+ALTER TABLE ws13_mine_id_map
+  DROP CONSTRAINT IF EXISTS ws13_mine_id_map_relation;
+ALTER TABLE ws13_mine_id_map
+  ADD CONSTRAINT ws13_mine_id_map_relation CHECK (
+    relation IN ('identity', 'district', 'county')
+    AND (ws13_mine_id IS NOT NULL OR relation = 'identity'))
+  NOT VALID;
+ALTER TABLE ws13_mine_id_map VALIDATE CONSTRAINT ws13_mine_id_map_relation;
 """
 
 # The retrieval Lambda reads this table as ws13_reader, SELECT only, to
@@ -175,6 +248,7 @@ EXPECTED_COLUMNS = (
     ('ws13_mine_id', 'text', False),
     ('ws13_mine_id_all', 'text[]', False),
     ('method', 'text', True),
+    ('relation', 'text', True),
     ('confidence', 'real', True),
     ('verified', 'boolean', True),
     ('evidence', 'jsonb', True),
@@ -185,6 +259,7 @@ EXPECTED_COLUMNS = (
 # prevent.
 EXPECTED_CONSTRAINTS = (
     'ws13_mine_id_map_method',
+    'ws13_mine_id_map_relation',
     'ws13_mine_id_map_unmapped',
     'ws13_mine_id_map_spellings',
     'ws13_mine_id_map_fuzzy_unverified',
@@ -198,13 +273,14 @@ EXPECTED_PRIMARY_KEY = 'PRIMARY KEY (front_end_id)'
 # the job last ran".
 UPSERT_SQL = """
 INSERT INTO ws13_mine_id_map (front_end_id, ws13_mine_id, ws13_mine_id_all,
-                              method, confidence, verified, evidence,
-                              updated_at)
-     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                              method, relation, confidence, verified,
+                              evidence, updated_at)
+     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 ON CONFLICT (front_end_id) DO UPDATE
         SET ws13_mine_id = EXCLUDED.ws13_mine_id,
             ws13_mine_id_all = EXCLUDED.ws13_mine_id_all,
             method = EXCLUDED.method,
+            relation = EXCLUDED.relation,
             confidence = EXCLUDED.confidence,
             verified = EXCLUDED.verified,
             evidence = EXCLUDED.evidence,
@@ -215,6 +291,7 @@ ON CONFLICT (front_end_id) DO UPDATE
           OR ws13_mine_id_map.ws13_mine_id_all IS DISTINCT FROM
                  EXCLUDED.ws13_mine_id_all
           OR ws13_mine_id_map.method IS DISTINCT FROM EXCLUDED.method
+          OR ws13_mine_id_map.relation IS DISTINCT FROM EXCLUDED.relation
           OR ws13_mine_id_map.confidence IS DISTINCT FROM EXCLUDED.confidence
           OR ws13_mine_id_map.verified IS DISTINCT FROM EXCLUDED.verified
           OR ws13_mine_id_map.evidence IS DISTINCT FROM EXCLUDED.evidence)
@@ -233,6 +310,39 @@ NON_ALNUM = re.compile(r'[^a-z0-9]+')
 # Documents kept per evidence slot. Small on purpose: the field is a pointer
 # for an operator, not a document list.
 EXAMPLE_DOCUMENTS = 5
+# The words that carry no identity in a mining corpus. Dropped from a name
+# before it is indexed or probed, so 'Anderson Mine' and 'Anderson' are one
+# key and 'Mine' is not a key at all. Deliberately short: every word here is
+# one that cannot distinguish two mines, and a longer list starts discarding
+# words that can ('Copper King' and 'King' are different mines).
+RUN_STOPWORDS = frozenset(
+    'mine mines mining group claim claims prospect prospects property project '
+    'co company the and of no area district unnamed unknown'.split())
+RUN_MAX_TOKENS = 5
+RUN_MIN_LETTERS = 4
+RUN_MIN_LETTERS_SINGLE = 6
+# A token run shared by more corpus names than this is a coincidence, not an
+# identifier.
+RUN_POSTING_CAP = 25
+# How NBMG names a file about a whole county rather than a district in it.
+COUNTYWIDE_SUFFIX = ' county general'
+# ws13_documents.doc_type values that describe a PLACE rather than a mine.
+# NBMG's 25,583 Nevada documents are all 'mining_district_file' and their
+# mine_names are district names, so a name match against one of them is a
+# match on the district -- true, and not the same claim as identity.
+PLACE_DOC_TYPES = frozenset({'mining_district_file'})
+# The most corpus ids one place row may carry. Nevada's districts are the
+# large end and they are measured, not guessed: 683 districts, median 14 file
+# ids, p90 78, and a long tail to Rosebud's 1,584. This clears the tail so no
+# real district is truncated, and still bounds the array the retrieval path
+# has to pass to Postgres on every request. A row that hits it says so in its
+# evidence rather than silently losing the rest.
+PLACE_ID_CAP = 2000
+# The fraction of a front-end name's identifying letters a matched run has to
+# carry. Without it the longest-run probe falls all the way down to any single
+# six-letter token, and 'Gibbons Permit' matched four Arizona collections on
+# the word 'permit'. Half is the line between a name and a word in it.
+RUN_COVER_RATIO = 0.5
 
 
 @dataclasses.dataclass(frozen=True)
@@ -281,6 +391,13 @@ class FrontEndRecord:
     name: str | None
     state: str | None
     id_form: str
+    # The place columns, when the source file carries them. Optional and
+    # defaulted because only the MRDS snapshots have them: mrds_nv.json
+    # records a mining district and mrds_az.json a county, and the corpus's
+    # Nevada and Arizona halves are keyed on exactly those two things. A
+    # source without them simply never reaches the place tiers.
+    district: str | None = None
+    county: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -293,6 +410,19 @@ class NameEntry:
     mine_ids: tuple[str, ...]
     documents: tuple[str, ...]
     doc_count: int
+    # Normalised counties the documents under this name were filed in. The
+    # second key for the name tiers: Arizona's corpus names are document
+    # titles, and county is the only other field both the corpus and the map
+    # carry for them. Empty when no document under this name declared one --
+    # 1,542 of Arizona's 17,156 do not -- and an empty tuple never blocks,
+    # because blocking on a field the corpus did not record would refuse the
+    # match rather than check it.
+    counties: tuple[str, ...] = ()
+    # Whether every document filed under this name is a place-level file. The
+    # signal that keeps a district from being reported as a mine: NBMG's
+    # mine_names ARE district names, so 'Candelaria' matching 'Candelaria'
+    # exactly is a true match and a false identity.
+    is_place: bool = False
 
 
 @dataclasses.dataclass(frozen=True)
@@ -316,11 +446,18 @@ class Mapping:
     # ws13_documents.mine_ids is case-sensitive and the GIN index over it is
     # exact-match, so a consumer that matches only ws13_mine_id loses the rows
     # filed under a different spelling of the same id.
+    #
+    # For the place tiers this array is also where the several corpus ids of
+    # one district live, which is the same column doing a second job. It is
+    # the same job from the reader's side -- every member is a value to match
+    # d.mine_ids against -- and the relation column is what says whether they
+    # are spellings of one mine or the files of one place.
     ws13_mine_id_all: list | None
     method: str
     confidence: float
     verified: bool
     evidence: dict
+    relation: str = 'identity'
 
 
 def front_end_slug(value) -> str:
@@ -337,6 +474,70 @@ def normalize_name(value) -> str:
     """Fold a mine name for comparison: drop parentheticals and punctuation."""
     text = PAREN.sub(' ', str(value or '').lower())
     return NON_ALNUM.sub(' ', text).strip()
+
+
+def normalize_county(value) -> str:
+    """Fold a county for comparison, dropping the word 'county'.
+
+    The two sides spell it differently and neither is wrong: the corpus has
+    ' Maricopa County' with a leading space, 'Mohave (AZ) County' and a
+    'Greelee County' typo; mrds_az.json has 'Maricopa' and, for a record on a
+    line, 'Pima, Santa Cruz'. Only the first county of such a pair is folded
+    here -- see county_keys() for the caller that wants both.
+    """
+    text = PAREN.sub(' ', str(value or '').lower())
+    text = NON_ALNUM.sub(' ', text).strip()
+    if text.endswith(' county'):
+        text = text[:-len(' county')].strip()
+    return text
+
+
+def county_keys(value) -> frozenset:
+    """Every county a source's county string names.
+
+    MRDS puts a record that straddles a line in both: 'Pima, Santa Cruz'. Both
+    are true of the site and either may be the one the corpus recorded, so a
+    match against either is a match.
+    """
+    if not value:
+        return frozenset()
+    parts = [normalize_county(part) for part in str(value).split(',')]
+    return frozenset(part for part in parts if part)
+
+
+def name_runs(norm: str) -> list:
+    """Every distinctive token run inside a normalised name.
+
+    Bounded at both ends. RUN_MAX_TOKENS caps the length because a run longer
+    than a mine name is not a mine name, and the index is O(len^2) in the
+    name without it; the distinctiveness test at the bottom drops the runs
+    that would match everything -- a single short word, or a run made only of
+    the words every mining document contains.
+    """
+    tokens = [token for token in norm.split() if token not in RUN_STOPWORDS]
+    runs = []
+    for length in range(1, min(RUN_MAX_TOKENS, len(tokens)) + 1):
+        for start in range(len(tokens) - length + 1):
+            run = tuple(tokens[start:start + length])
+            if distinctive_run(run):
+                runs.append(run)
+    return runs
+
+
+def distinctive_run(run) -> bool:
+    """Is this token run specific enough to map a mine on?
+
+    Two ways to qualify: several words, or one long one. 'gold' and 'no 2'
+    qualify as neither. The 4-character floor is what separates 'Lida' -- a
+    real Esmeralda County district -- from 'no', and it is a floor on the
+    letters, not on the token count, so a two-token run of two-letter words
+    does not sneak through.
+    """
+    if not run:
+        return False
+    letters = sum(len(token) for token in run)
+    return letters >= (RUN_MIN_LETTERS if len(run) > 1
+                       else RUN_MIN_LETTERS_SINGLE)
 
 
 def looks_like_code(token: str) -> bool:
@@ -468,14 +669,32 @@ def confidence_band(confidence: float) -> str:
 def load_site_id_file(path: str):
     """Front-end ids from one columnar site file.
 
-    Each record is emitted in both spellings the front end actually uses: the
-    stateSurveySafeId slug ('stategeo-igs-dd-1-if0126', which the citation
-    path and tools/test_doc_viewer.js use) and the namespaced raw id
-    ('stategeo:IGS DD-1 IF0126', which site/data/docs/index.json uses as a
-    by_mine key). The bare record id is deliberately not emitted:
-    stategeo_wy.json numbers its sites '1', '2', ..., so bare ids are not
-    unique across sources and could not be a primary key without silently
-    merging two different mines.
+    Each record is emitted in the three spellings the front end actually uses:
+
+      slug        'stategeo-igs-dd-1-if0126' -- stateSurveySafeId(), which the
+                  citation path and tools/test_doc_viewer.js use
+      namespaced  'stategeo:IGS DD-1 IF0126' -- what site/data/docs/index.json
+                  uses as a by_mine key
+      bare        'IGS DD-1 IF0126' -- what ws12MinesNear() in
+                  site/index.html:3175 reads straight off the PMTiles feature
+                  and hands to the model as mine_id, which is then what
+                  docs_for is called with
+
+    The bare spelling used to be withheld, on the grounds that
+    stategeo_wy.json numbers its sites '1', '2', ... so a bare id is not
+    unique across sources and could not be a primary key without merging two
+    mines. The reasoning was right and the conclusion was wrong: the front end
+    emits the bare id whether or not this table has a row for it, and without
+    one it fell through to being matched against ws13_documents.mine_ids as
+    supplied. That is how a click on an MRDS Nevada deposit answered with an
+    unrelated NBMG mining-district file -- the two namespaces are both bare
+    integers and 52 of them collide.
+
+    Uniqueness is enforced rather than assumed. merge_records() already
+    refuses a front_end_id that two different site records claim, writing an
+    unmapped row that names the collision, so the ambiguous bare ids land
+    exactly where the docstring above wanted them: refused, in writing, and
+    not merged.
     """
     source = os.path.relpath(path, REPO_ROOT)
     with open(path, encoding='utf-8') as handle:
@@ -486,24 +705,40 @@ def load_site_id_file(path: str):
     state = str(payload.get('state') or '').strip().upper() or None
     ids = payload.get('id') or []
     names = payload.get('nm') or []
+    # The place columns. 'd' is the mining district (mrds_nv.json has one;
+    # mrds-csv.zip has no district field, so mrds_az.json does not) and
+    # 'county' is the county string as the source wrote it, which may name
+    # two ('Pima, Santa Cruz').
+    districts = payload.get('d') or []
+    counties = payload.get('county') or []
     if not ids:
         # USMIN publishes its points without stable record ids, so the front
         # end cannot address them either. Reported, never silently dropped.
         return [], source
     if names and len(names) != len(ids):
         raise ValueError(f'{source} id and nm columns disagree in length')
+    for column, values in (('d', districts), ('county', counties)):
+        if values and len(values) != len(ids):
+            raise ValueError(f'{source} id and {column} columns disagree in '
+                             'length')
     records = []
     for index, raw_id in enumerate(ids):
         record_id = str(raw_id).strip()
         if not record_id:
             raise ValueError(f'{source} row {index} has an empty id')
         name = (str(names[index]).strip() or None) if names else None
+        district = ((str(districts[index]).strip() or None) if districts
+                    else None)
+        county = ((str(counties[index]).strip() or None) if counties
+                  else None)
         slug = f'{namespace}-{front_end_slug(record_id)}'
-        records.append(FrontEndRecord(slug, source, namespace, record_id,
-                                      name, state, 'slug'))
-        records.append(FrontEndRecord(f'{namespace}:{record_id}', source,
-                                      namespace, record_id, name, state,
-                                      'namespaced'))
+        for front_end_id, id_form in ((slug, 'slug'),
+                                      (f'{namespace}:{record_id}',
+                                       'namespaced'),
+                                      (record_id, 'bare')):
+            records.append(FrontEndRecord(front_end_id, source, namespace,
+                                          record_id, name, state, id_form,
+                                          district, county))
     return records, None
 
 
@@ -726,7 +961,15 @@ class CorpusIndex:
         self.by_key_segment: dict[str, dict] = {}
         self.by_url_segment: dict[str, dict] = {}
         entries: dict[tuple, dict] = {}
-        for sha256, s3_key, state, mine_ids, mine_names, source_url in rows:
+        # One (state, ids) pair per document, kept so reachability can be
+        # measured on documents rather than on rows. 56,282 tuples of a few
+        # short strings; the alternative is a second pass over the table.
+        self.document_index: list = []
+        for row in rows:
+            (sha256, s3_key, state, mine_ids, mine_names,
+             source_url) = row[:6]
+            county = row[6] if len(row) > 6 else None
+            doc_type = row[7] if len(row) > 7 else None
             self.documents += 1
             state = (str(state).strip().upper() or None) if state else None
             ids = [str(value).strip() for value in (mine_ids or [])
@@ -739,6 +982,7 @@ class CorpusIndex:
             # id recorded twice, and counting them as two candidates made an
             # unambiguous name look ambiguous.
             codes = {mine_id.upper() for mine_id in ids}
+            self.document_index.append((state, frozenset(ids)))
             for index, value in ((self.by_key_token, s3_key),
                                  (self.by_url_token, source_url)):
                 for token in path_tokens(value):
@@ -753,9 +997,14 @@ class CorpusIndex:
                     continue
                 entry = entries.setdefault((norm, state), {
                     'raw': None, 'mine_ids': set(), 'documents': [],
-                    'doc_count': 0})
+                    'doc_count': 0, 'counties': set(), 'place_docs': 0})
                 entry['mine_ids'].update(codes)
                 entry['doc_count'] += 1
+                if str(doc_type or '') in PLACE_DOC_TYPES:
+                    entry['place_docs'] += 1
+                county_key = normalize_county(county)
+                if county_key:
+                    entry['counties'].add(county_key)
                 # The lexicographically first spelling, not the first one this
                 # scan happened to see: the raw name is reported as evidence
                 # and evidence is what the ON CONFLICT change test compares.
@@ -772,17 +1021,55 @@ class CorpusIndex:
         self.entry_by_key: dict[tuple, int] = {}
         self.entry_by_norm: dict[str, list] = {}
         self.trigram_by_state: dict = {}
+        # A corpus name indexed by every token run inside it, so a front-end
+        # mine name can be found INSIDE a corpus name rather than only equal
+        # to it. The Arizona corpus needs this and nothing else does: AZGS
+        # files its collections under document titles, so ws13_documents holds
+        # 'Cuprite Mine Area Total Magnetic Intensity Record' where the map
+        # holds 'Cuprite Mine'. Equality finds 2,658 of 17,156 Arizona
+        # documents; containment finds most of the rest.
+        self.name_runs: dict[tuple, list] = {}
+        # (state, county) -> the corpus ids of that county's countywide files.
+        # NBMG names them '<COUNTY> COUNTY GENERAL' and they are 1,018 of the
+        # Nevada corpus: documents about the county rather than any district
+        # in it, which no district match can reach.
+        self.countywide: dict[tuple, tuple] = {}
+        countywide: dict[tuple, set] = {}
         for (norm, state), entry in entries.items():
             index = len(self.name_entries)
+            counties = tuple(sorted(entry['counties']))
             self.name_entries.append(NameEntry(
                 norm, entry['raw'] or norm, state,
                 self.canonical_ids(entry['mine_ids']),
-                tuple(entry['documents']), entry['doc_count']))
+                tuple(entry['documents']), entry['doc_count'], counties,
+                # A name is a place when the documents under it are the
+                # source's place-level files. Every one of them, not most:
+                # this decides whether a row claims 'these documents are
+                # about this mine', and a name carrying one mine document is
+                # not a district however many district files share it.
+                bool(entry['place_docs'])
+                and entry['place_docs'] == entry['doc_count']))
             self.entry_by_key[(norm, state)] = index
             self.entry_by_norm.setdefault(norm, []).append(index)
             postings = self.trigram_by_state.setdefault(state, {})
             for gram in trigrams(norm):
                 postings.setdefault(gram, []).append(index)
+            for run in name_runs(norm):
+                self.name_runs.setdefault((state, run), []).append(index)
+            if norm.endswith(COUNTYWIDE_SUFFIX):
+                key = norm[:-len(COUNTYWIDE_SUFFIX)].strip()
+                for county_key in (counties or ((key,) if key else ())):
+                    countywide.setdefault((state, county_key), set()).update(
+                        entry['mine_ids'])
+        # A run that points at more entries than this carries no signal: it is
+        # a word several unrelated collections happen to share, and mapping on
+        # it would attach one mine to another mine's documents. Dropped
+        # outright rather than ranked, because there is nothing here to rank
+        # with -- containment has no score.
+        self.name_runs = {key: value for key, value in self.name_runs.items()
+                          if len(value) <= RUN_POSTING_CAP}
+        self.countywide = {key: self.canonical_ids(value)
+                           for key, value in countywide.items()}
         self.states_with_names = {state for state in self.trigram_by_state
                                   if state is not None}
         self.entries_without_state = sum(1 for entry in self.name_entries
@@ -822,6 +1109,25 @@ class CorpusIndex:
         """Case-folded corpus codes -> their canonical spellings, sorted."""
         return tuple(sorted({self.resolve_spellings(code)[0] or str(code)
                              for code in codes}))
+
+    def name_entry(self, norm, state):
+        """The one corpus name entry for (norm, state), or None.
+
+        None for a miss AND for an ambiguity, deliberately. A normalised name
+        recorded against several states -- 'copper king' is in AZ, ID and MT --
+        has no single answer when the front-end record does not say which
+        state it is in, and picking one is how a mapping table starts serving
+        the wrong mine. The caller records the refusal and falls through.
+        """
+        if not norm:
+            return None
+        if state is not None:
+            index = self.entry_by_key.get((norm, state))
+            return None if index is None else self.name_entries[index]
+        indexes = self.entry_by_norm.get(norm) or []
+        if len(indexes) != 1:
+            return None
+        return self.name_entries[indexes[0]]
 
     def _postings_for(self, state, cross_state: bool):
         if state is None or cross_state:
@@ -1002,6 +1308,206 @@ def path_hit(corpus: CorpusIndex, code: str, attempts: list):
     return None, None, None, ()
 
 
+def place_mapping(record, corpus, base, attempts):
+    """The three name tiers, or None to fall through to the fuzzy tier.
+
+    WHY THESE EXIST. Two thirds of the corpus is reachable by no identifier at
+    all, and no amount of work on the code tiers changes that, because there
+    is no shared code to find:
+
+      Arizona   13,013 documents, every one of them the licensed-copies
+                admission class. AZGS files them under collection ids
+                ('ADMM-1552448557289-145') that appear in no map layer, and
+                names them with document titles rather than mine names --
+                'Cuprite Mine Area Total Magnetic Intensity Record'. Nothing
+                bridges those but the name and the county.
+      Nevada    17,419 documents, NBMG mining-district files numbered from
+                10000001. MRDS numbers Nevada deposits from 10006806. Same
+                shape, unrelated namespaces, 52 collisions, no relationship.
+                What the two DO share is the district: MRDS records one per
+                deposit and NBMG files its documents under it.
+
+    Precedence, strictest first, and each tier returns on its first hit:
+
+      exact_name     the front-end name IS a corpus name, one entry, same
+                     state. Identity.
+      district_name  the front-end record's district IS a corpus name, same
+                     state -- which for Nevada means the corpus name is that
+                     district's name, because that is how NBMG files. The
+                     county's countywide files come with it, since a document
+                     about Humboldt County is about every district in it.
+                     Relation 'district': these are not documents about this
+                     mine and the row does not claim they are.
+      place_name     the front-end name appears INSIDE a corpus name, county
+                     agreeing where both sides record one. Arizona's tier.
+
+    What every tier refuses: an ambiguous hit. A name that resolves to two
+    corpus entries in the same state, a run over the posting cap, a county
+    that disagrees. Those fall through to the fuzzy tier and, in practice, to
+    'unmapped' -- which is a measurement, and better than a coin flip that
+    serves one mine's documents under another mine's name.
+    """
+    state = record.state
+    front_counties = county_keys(record.county)
+
+    if record.name:
+        norm = normalize_name(record.name)
+        entry = corpus.name_entry(norm, state)
+        if entry is not None and entry.mine_ids:
+            if counties_agree(front_counties, entry.counties):
+                # An exact name match against a district's files is a district
+                # match, not an identity one. NBMG's mine_names ARE district
+                # names, so 'Candelaria' == 'Candelaria' is both true and not
+                # a statement that these documents are about this deposit.
+                relation = 'district' if entry.is_place else 'identity'
+                return place_result(
+                    corpus, entry,
+                    'district_name' if entry.is_place else 'exact_name',
+                    relation,
+                    CONF_DISTRICT_NAME if entry.is_place else CONF_EXACT_NAME,
+                    base, attempts, matched_in='mine_names',
+                    matched_name=entry.raw,
+                    also=countywide_for(corpus, state, entry, front_counties))
+            attempts.append(f'exact_name:{norm}:county_mismatch')
+        elif entry is not None:
+            attempts.append(f'exact_name:{norm}:no_mine_id')
+        else:
+            attempts.append(f'exact_name:{norm}:no_match')
+
+    if record.district:
+        norm = normalize_name(record.district)
+        entry = corpus.name_entry(norm, state)
+        if entry is not None and entry.mine_ids and entry.is_place:
+            return place_result(
+                corpus, entry, 'district_name', 'district',
+                CONF_DISTRICT_NAME, base, attempts, matched_in='mine_names',
+                matched_district=entry.raw,
+                also=countywide_for(corpus, state, entry, front_counties))
+        # A district name that matches a MINE name in the corpus is a
+        # coincidence between two namespaces, not a district: 'Summit' is a
+        # district in Idaho and a mine name in the Idaho corpus, and mapping
+        # on it would file a district's documents under one mine.
+        attempts.append(f'district_name:{norm}:'
+                        + ('not_a_place' if entry is not None else 'no_match'))
+
+    if record.name:
+        # Every distinctive run of the front-end name, longest first, not just
+        # the whole of it. The two sides do not agree on how much of the name
+        # they carry -- the corpus has 'Emerald Isle Mine Assay Map East-West
+        # Sections' and the map has 'Emerald Isle Mine', but it also has
+        # 'Cuprite Mine No. 2' where the corpus has 'Cuprite Mine Area Total
+        # Magnetic Intensity Record'. Requiring the whole front-end name to
+        # appear reached 32.0% of Arizona; the longest agreeing run reaches
+        # 41.0%. Longest first because a longer run is more specific, and the
+        # first hit wins rather than the union of all lengths.
+        norm = normalize_name(record.name)
+        letters = sum(len(token) for token in norm.split()
+                      if token not in RUN_STOPWORDS)
+        for run in sorted(name_runs(norm), key=len, reverse=True):
+            if sum(len(token) for token in run) < letters * RUN_COVER_RATIO:
+                continue
+            indexes = corpus.name_runs.get((state, run)) or []
+            matches = [corpus.name_entries[index] for index in indexes]
+            matches = [entry for entry in matches if entry.mine_ids
+                       and counties_agree(front_counties, entry.counties)]
+            if not matches:
+                continue
+            # Several corpus collections can name the same mine -- an assay
+            # map and a claim map of one property are two collections -- so
+            # this tier unions rather than refusing on count, and records how
+            # many it unioned.
+            mine_ids: list = []
+            for entry in matches:
+                mine_ids.extend(entry.mine_ids)
+            first = min(matches, key=lambda entry: entry.norm)
+            return place_result(
+                corpus, first, 'place_name',
+                'district' if all(entry.is_place for entry in matches)
+                else 'identity',
+                CONF_PLACE_NAME, base, attempts,
+                matched_in='mine_names_contains', matched_run=' '.join(run),
+                matched_names=len(matches), also=mine_ids)
+        attempts.append(f'place_name:{normalize_name(record.name)}:no_match')
+    return None
+
+
+def countywide_for(corpus, state, entry, front_counties) -> list:
+    """The county's countywide files, for a district that sits in it.
+
+    A document about Elko County is about every district in Elko County, and
+    no district match can reach it -- NBMG files it under 'ELKO COUNTY
+    GENERAL', which is not the name of any district. Only reached from a
+    place-level entry: attaching a county's general files to a mine that
+    merely shares a name with something would be a much larger claim.
+    """
+    if not entry.is_place:
+        return []
+    extra: list = []
+    for county_key in (entry.counties or front_counties):
+        extra.extend(corpus.countywide.get((state, county_key)) or ())
+    return extra
+
+
+def counties_agree(front, corpus_counties) -> bool:
+    """Do the two sides' counties overlap, or does one of them not say?
+
+    A missing county on either side is not a disagreement. The corpus leaves
+    it null on 1,542 Arizona documents and the map has none at all for Nevada,
+    and treating silence as a mismatch would refuse most of the matches this
+    tier exists to make. What it does catch is the real error: a Yavapai
+    collection matched to a Pima mine of the same name.
+    """
+    if not front or not corpus_counties:
+        return True
+    return bool(front & set(corpus_counties))
+
+
+def place_result(corpus, entry, method, relation, confidence, base, attempts,
+                 also=(), **evidence_fields):
+    """One place-tier Mapping, with every corpus id it resolves to.
+
+    ws13_mine_id is the canonical spelling of the FIRST id, which is what the
+    ws13_mine_id_map_spellings CHECK requires to be a member of the array, and
+    ws13_mine_id_all is everything the match resolves to. Sorted and capped:
+    sorted because the evidence decides whether a rerun rewrites the row and a
+    set's order does not survive one, capped because a row is a filter
+    predicate the retrieval path sends to Postgres on every request.
+    """
+    resolved: list = []
+    for value in list(entry.mine_ids) + list(also):
+        canonical, spellings, _ = corpus.resolve_spellings(value)
+        for spelling in ([canonical] + list(spellings) if canonical
+                         else [value]):
+            if spelling and spelling not in resolved:
+                resolved.append(spelling)
+    resolved.sort()
+    truncated = len(resolved) > PLACE_ID_CAP
+    resolved = resolved[:PLACE_ID_CAP]
+    primary = corpus.resolve_spellings(entry.mine_ids[0])[0] or resolved[0]
+    if primary not in resolved:
+        # The CHECK requires ws13_mine_id to be a member of the array, and the
+        # cap above can cut it out. Put it back rather than dropping a row.
+        resolved[-1] = primary
+        resolved.sort()
+    payload = dict(base, matched_name_normalized=entry.norm,
+                   corpus_state=entry.state,
+                   matched_name_documents=entry.doc_count,
+                   corpus_counties=list(entry.counties),
+                   ws13_mine_ids_resolved=len(resolved),
+                   example_documents=list(entry.documents),
+                   relation=relation, **evidence_fields)
+    if truncated:
+        payload['ws13_mine_id_all_truncated'] = PLACE_ID_CAP
+    if attempts:
+        payload['attempts'] = list(attempts)
+    # verified=False on every place row. A human has confirmed none of them,
+    # and the CHECK that keeps a difflib guess from being marked verified
+    # exists because 'verified' is the word this table uses for "a person
+    # looked". Confidence is what carries the tier's own strength.
+    return Mapping(primary, resolved, method, confidence, False, payload,
+                   relation)
+
+
 def derive(record, group, collision, corpus, min_ratio, cross_state=False):
     """Map one front-end id, in strict precedence order."""
     base = {'front_end_id': record.front_end_id, 'id_form': record.id_form,
@@ -1025,6 +1531,22 @@ def derive(record, group, collision, corpus, min_ratio, cross_state=False):
     attempts: list[str] = []
 
     for code in code_candidates(record):
+        if code.isdigit() and record.namespace in NUMERIC_NAMESPACES_BLOCKED:
+            # The collision this tier could not see. MRDS numbers deposits
+            # from 10006806 and NBMG numbered its mining-district files from
+            # 10000001: two unrelated integer sequences of the same shape, and
+            # equality between them is a coincidence rather than a match. It
+            # produced 730 rows at confidence 1.0, marked verified, every one
+            # of them wrong -- 'Elk City District' in Idaho resolved to a
+            # Nevada file, 'Blackstone Incline 5 6' to another. The module
+            # header already refused to probe a digits-only code against a
+            # PATH for exactly this reason ("a bare numeric run found
+            # somewhere in a URL is a coincidence as often as an id") and then
+            # exempted mine_ids on the grounds that "an equality against a
+            # stored id validates itself". It does not, when two sources
+            # number different things from the same place.
+            attempts.append(f'mine_ids:{code}:numeric_namespace_blocked')
+            continue
         canonical, spellings, documents = corpus.resolve_spellings(code)
         if canonical:
             evidence = dict(base, matched_in='mine_ids', code=code,
@@ -1085,6 +1607,10 @@ def derive(record, group, collision, corpus, min_ratio, cross_state=False):
                 evidence['ws13_mine_id_spellings'] = list(spellings)
             return Mapping(canonical, list(spellings), 'prefix_namespace',
                            CONF_PREFIX_IN_PATH, False, evidence)
+
+    place = place_mapping(record, corpus, base, attempts)
+    if place is not None:
+        return place
 
     if not record.name:
         attempts.append('fuzzy_name:front_end_name_missing')
@@ -1167,19 +1693,54 @@ def load_corpus(conn) -> CorpusIndex:
     # well now; this makes the input order fixed too.
     rows = conn.execute(
         'SELECT sha256, s3_key, state, mine_ids, mine_names, '
-        f'       {select_url} '
+        f'       {select_url}, county, doc_type '
         '  FROM ws13_documents '
         ' ORDER BY sha256').fetchall()
     return CorpusIndex(rows, source_url_available)
 
 
 def load_existing(conn) -> dict:
-    """front_end_id -> verified, for rows already in the map."""
+    """front_end_id -> (verified, ws13_mine_id), for rows already in the map.
+
+    The stored mine id comes back as well as the flag because the ON CONFLICT
+    guard cannot be evaluated without it. See retractions().
+    """
     if not conn.execute("SELECT to_regclass('ws13_mine_id_map')"
                         ).fetchone()[0]:
         return {}
-    return {row[0]: bool(row[1]) for row in conn.execute(
-        'SELECT front_end_id, verified FROM ws13_mine_id_map').fetchall()}
+    return {row[0]: (bool(row[1]), row[2]) for row in conn.execute(
+        'SELECT front_end_id, verified, ws13_mine_id '
+        '  FROM ws13_mine_id_map').fetchall()}
+
+
+def retractions(rows, existing) -> list:
+    """Verified rows this run would contradict but cannot overwrite.
+
+    The UPSERT refuses to replace a verified row with an unverified one, which
+    is right when 'verified' means a person confirmed it. In this table it
+    does not: verified is set by the derivation itself, for the two tiers that
+    match a code against a stored id, and no human has ever written a row
+    here. So the guard that protects a confirmation also protects a mistake --
+    and there are 730 of them, MRDS deposit ids that collided with NBMG file
+    numbers and were written at confidence 1.0.
+
+    This lists the front_end_ids where the stored row is verified and this run
+    derives something else. Nothing is deleted unless --retract says so: a
+    silent DELETE of rows a guard exists to protect is exactly what the guard
+    exists to prevent, so the operator has to ask for it and gets a count and
+    a sample first.
+    """
+    retract = []
+    for front_end_id, mapping in rows:
+        stored = existing.get(front_end_id)
+        if not stored or not stored[0]:
+            continue
+        if mapping.verified:
+            continue                       # the UPSERT can replace it itself
+        if stored[1] == mapping.ws13_mine_id:
+            continue                       # the same answer, nothing to undo
+        retract.append(front_end_id)
+    return retract
 
 
 def has_pg_trgm(conn) -> bool:
@@ -1262,6 +1823,12 @@ def ensure_table(conn):
     rows so the refusal costs a connection rather than a full run.
     """
     conn.execute(CREATE_TABLE_SQL)
+    # Then bring an older table up to the same definition. Ordering matters:
+    # CREATE first so a fresh database gets the full shape in one statement,
+    # MIGRATE second so an existing one is altered rather than refused. Both
+    # are idempotent and the shape check below is what decides whether they
+    # worked -- it runs against the catalog, not against the intent.
+    conn.execute(MIGRATE_SQL)
     problems = verify_table_shape(conn)
     if problems:
         refuse_wrong_shape(problems)
@@ -1280,12 +1847,25 @@ def ensure_table(conn):
     return True
 
 
-def write_rows(conn, rows, existing, stamp, batch_size):
-    """Upsert every derived row; the SQL refuses verified downgrades."""
+def write_rows(conn, rows, existing, stamp, batch_size, retract=()):
+    """Upsert every derived row; the SQL refuses verified downgrades.
+
+    `retract` is deleted first, in the same transaction, and is the only way a
+    verified row that this run contradicts can be withdrawn -- see
+    retractions(). It is empty unless --retract was passed.
+    """
     payload = [(front_end_id, mapping.ws13_mine_id, mapping.ws13_mine_id_all,
-                mapping.method, mapping.confidence, mapping.verified,
-                Jsonb(mapping.evidence), stamp)
+                mapping.method, mapping.relation, mapping.confidence,
+                mapping.verified, Jsonb(mapping.evidence), stamp)
                for front_end_id, mapping in rows]
+    retracted = 0
+    if retract:
+        with conn.cursor() as cursor:
+            cursor.execute('DELETE FROM ws13_mine_id_map '
+                           ' WHERE front_end_id = ANY(%s)',
+                           (list(retract),))
+            retracted = cursor.rowcount
+        print(f'  retracted {retracted} contradicted verified row(s)')
     with conn.cursor() as cursor:
         for start in range(0, len(payload), batch_size):
             cursor.executemany(UPSERT_SQL, payload[start:start + batch_size])
@@ -1299,13 +1879,66 @@ def write_rows(conn, rows, existing, stamp, batch_size):
     return {'rows_submitted': len(payload), 'rows_changed': changed,
             'rows_in_table': total,
             'rows_not_in_this_run': total - len(payload),
+            'rows_retracted': retracted,
             'verified_rows_preserved': preserved_count(rows, existing)}
+
+
+def reachability(corpus, rows) -> dict:
+    """Documents a reader could reach by clicking a mine, per state.
+
+    Measured against the SAME admission rule the retrieval path applies --
+    ws13_mine_id IS NOT NULL AND (verified OR confidence >= 0.8) -- so this
+    number is what a user would experience, not what the table contains. A
+    tier below the threshold contributes nothing here and should not: it
+    contributes nothing there either.
+
+    Broken out by relation as well as by state, because 'reachable' means two
+    different things and a single percentage would hide which one you have.
+    An identity document is about the mine that was clicked. A district
+    document is about the district that mine sits in -- true, useful, and not
+    the same claim.
+    """
+    admitted: dict[str, set] = {}
+    for _, mapping in rows:
+        if not mapping.ws13_mine_id:
+            continue
+        if not (mapping.verified or mapping.confidence >= RETRIEVAL_MIN_CONF):
+            continue
+        admitted.setdefault(mapping.relation, set()).update(
+            mapping.ws13_mine_id_all or ())
+    every = set().union(*admitted.values()) if admitted else set()
+    by_state: dict = {}
+    for state, ids in corpus.document_index:
+        key = state or 'unknown'
+        bucket = by_state.setdefault(
+            key, {'documents': 0, 'reachable': 0,
+                  'by_relation': collections.Counter()})
+        bucket['documents'] += 1
+        if not (ids & every):
+            continue
+        bucket['reachable'] += 1
+        # Counted under the STRONGEST relation that reaches it, not under
+        # every one: a document reachable both as an identity and as a
+        # district file is an identity document, and adding it to both would
+        # make the columns sum past the total.
+        for relation in RELATIONS:
+            if ids & admitted.get(relation, set()):
+                bucket['by_relation'][relation] += 1
+                break
+    return {state: {'documents': value['documents'],
+                    'reachable': value['reachable'],
+                    'percent': round(100.0 * value['reachable']
+                                     / value['documents'], 1)
+                    if value['documents'] else 0.0,
+                    'by_relation': dict(sorted(value['by_relation'].items()))}
+            for state, value in sorted(by_state.items())}
 
 
 def preserved_count(rows, existing) -> int:
     """Rows the ON CONFLICT guard refuses to downgrade."""
     return sum(1 for front_end_id, mapping in rows
-               if existing.get(front_end_id) and not mapping.verified)
+               if (existing.get(front_end_id) or (False,))[0]
+               and not mapping.verified)
 
 
 def prepare_report_path(path: str) -> None:
@@ -1390,6 +2023,13 @@ def parse_args(argv=None):
                       help='derive and report without writing (the default)')
     mode.add_argument('--apply', action='store_true',
                       help='create the table if needed and write the rows')
+    parser.add_argument('--retract', action='store_true',
+                        help='DELETE the verified rows this run contradicts '
+                             'before upserting, so a mapping written at '
+                             'confidence 1.0 by a tier that has since been '
+                             'corrected can actually be withdrawn. Without '
+                             'it the UPSERT guard keeps them and the run '
+                             'reports how many it left')
     parser.add_argument('--report', help='write the JSON summary to this path')
     parser.add_argument('--sample', type=int, default=8,
                         help='rows to print per method tier')
@@ -1451,11 +2091,12 @@ def main(argv=None):
     print(f'  pg_trgm extension present: {trgm} '
           '(matching uses stdlib difflib either way)')
     print(f'  existing map rows: {len(existing)} '
-          f'({sum(existing.values())} verified)'
+          f'({sum(1 for value in existing.values() if value[0])} verified)'
           + (' -- not read, table shape differs' if shape_problems else ''))
 
     rows = []
     by_method: collections.Counter = collections.Counter()
+    by_relation: collections.Counter = collections.Counter()
     by_band: collections.Counter = collections.Counter()
     by_unmapped_reason: collections.Counter = collections.Counter()
     for index, (record, group, collision) in enumerate(merged, start=1):
@@ -1463,6 +2104,7 @@ def main(argv=None):
                          args.min_fuzzy_ratio, args.fuzzy_cross_state)
         rows.append((record.front_end_id, mapping))
         by_method[mapping.method] += 1
+        by_relation[mapping.relation if mapping.ws13_mine_id else 'none'] += 1
         by_band[confidence_band(mapping.confidence)] += 1
         if mapping.method == 'unmapped':
             # An id refused for ambiguity is a different thing from an id the
@@ -1505,18 +2147,38 @@ def main(argv=None):
             'matcher': 'stdlib difflib.SequenceMatcher',
         },
         'by_method': dict(sorted(by_method.items())),
+        'by_relation': dict(sorted(by_relation.items())),
         'by_confidence_band': dict(sorted(by_band.items())),
         'by_unmapped_reason': dict(sorted(by_unmapped_reason.items())),
+        # The number this whole module exists to move, measured on the corpus
+        # rather than on the rows: how many documents a reader could arrive at
+        # by clicking a mine, per state, at the confidence the retrieval path
+        # admits. Row counts do not answer that -- 16,490 mapped rows bought
+        # 26,153 reachable documents, and the same rows could have bought 300.
+        'reachable_documents': reachability(corpus, rows),
         'existing_rows': len(existing),
-        'existing_verified_rows': sum(existing.values()),
+        'existing_verified_rows': sum(
+            1 for value in existing.values() if value[0]),
         'table_shape_problems': shape_problems,
     }
+
+    retract = retractions(rows, existing)
+    summary['contradicted_verified_rows'] = {
+        'count': len(retract), 'retracted': bool(args.retract),
+        'sample': sorted(retract)[:20]}
+    if retract:
+        print(f'  {len(retract)} verified row(s) contradict this run '
+              + ('and WILL be deleted (--retract)' if args.retract else
+                 'and will be KEPT: the UPSERT guard refuses to downgrade a '
+                 'verified row. Pass --retract to withdraw them'))
+        print('    e.g. ' + ', '.join(sorted(retract)[:8]))
 
     if args.apply:
         summary['grant_select_to_ws13_reader'] = ensure_table(conn)
         stamp = dt.datetime.now(dt.timezone.utc)
         conn.autocommit = False
-        summary['write'] = write_rows(conn, rows, existing, stamp, args.batch)
+        summary['write'] = write_rows(conn, rows, existing, stamp, args.batch,
+                                      retract if args.retract else ())
         conn.commit()
         print('write:', json.dumps(summary['write'], sort_keys=True))
     else:

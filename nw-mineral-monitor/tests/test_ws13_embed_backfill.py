@@ -17,6 +17,7 @@ import os
 import re
 import sys
 import threading
+import time
 import types
 import unittest
 from pathlib import Path
@@ -46,6 +47,17 @@ import boto3
 
 with mock.patch.object(boto3, "client", return_value=mock.MagicMock()):
     import ws13_embed_backfill as bf
+
+
+# Captured before any test patches `time.sleep`. `RecordingBedrock` paces
+# itself with this, so a `time.sleep` patch that outlives the test that made
+# it cannot silently reduce the concurrency tests below to serial ones.
+_REAL_SLEEP = time.sleep
+
+
+class _Parked(Exception):
+    """Stands in for a worker's park sleep, so a worker that is designed never
+    to return can be run to its parking point and unwound on this thread."""
 
 
 def chunk_text(i):
@@ -219,18 +231,42 @@ class RecordingBedrock:
     than the SELECT that claimed the row. Without it the fake API returns so
     fast that each thread drains the table before the next is scheduled, the
     threads never interleave, and neither the duplication control nor the
-    exactly-once assertions are testing anything.
+    exactly-once assertions are testing anything. It is spent through
+    `_REAL_SLEEP` rather than `time.sleep` precisely because several tests
+    here patch `time.sleep` on the real `time` module: a patch that escapes
+    its test would otherwise disarm every concurrency test downstream of it
+    without any of them failing.
+
+    `rendezvous` makes overlap a property of the harness instead of an
+    outcome of the scheduler: the first call from each of `rendezvous`
+    threads blocks until all of them have arrived, so a test can assert its
+    callers were genuinely in flight together. The wait is bounded, so a
+    shortfall is a failed assertion rather than a hung process.
     """
 
-    def __init__(self, latency=0.002, reject_ids=()):
+    def __init__(self, latency=0.002, reject_ids=(), rendezvous=0):
         self.calls = {}
         self.latency = latency
         self.reject_ids = set(reject_ids)
         self.lock = threading.Lock()
+        self._gate = threading.Barrier(rendezvous) if rendezvous > 1 else None
+        self.rendezvous_met = self._gate is None
+        self._arrival = threading.local()
+
+    def _rendezvous(self):
+        """Called outside self.lock: this blocks, and the counter must not."""
+        if self._gate is None or getattr(self._arrival, "done", False):
+            return
+        self._arrival.done = True
+        try:
+            self._gate.wait(timeout=60)
+            self.rendezvous_met = True
+        except threading.BrokenBarrierError:
+            pass
 
     def invoke_model(self, modelId, body):
         import json as _json
-        import time as _time
+        self._rendezvous()
         payload = _json.loads(body)
         with self.lock:
             if "texts" in payload:                       # Cohere batch
@@ -245,7 +281,7 @@ class RecordingBedrock:
                     raise RuntimeError(f"ValidationException: rejected {rid}")
                 result = {"body": _Body(_json.dumps(
                     {"embedding": [0.1] * 4, "inputTextTokenCount": 60}))}
-        _time.sleep(self.latency)                        # outside the lock
+        _REAL_SLEEP(self.latency)                        # outside the lock
         return result
 
 
@@ -297,7 +333,16 @@ class TitanShardingTest(BackfillTestCase):
                              "shard threads did not finish")
 
     def test_every_chunk_embedded_exactly_once(self):
+        # Hold all twelve shards at their first Bedrock call until every one
+        # of them has arrived. Otherwise "exactly once" is also what a run
+        # that never overlapped would report, and the assertion below would
+        # pass trivially. Ids 1..600 over 12 shards give each thread 50 rows,
+        # so every thread is guaranteed to reach the rendezvous.
+        self.bedrock = RecordingBedrock(rendezvous=12)
         self._run_shards(12)
+        self.assertTrue(self.bedrock.rendezvous_met,
+                        "the shard threads never ran concurrently; an "
+                        "exactly-once result from a serialised run is vacuous")
         self.assertEqual(self.db.remaining("titan_embedding"), 0,
                          "every chunk must end with a titan vector")
         dupes = {i: n for i, n in self.bedrock.calls.items() if n != 1}
@@ -332,17 +377,26 @@ class TitanShardingTest(BackfillTestCase):
         """Control: the pre-fix claim pattern, so this suite can detect a
         regression back to it. Under autocommit the SKIP LOCKED lock was
         released immediately, which is equivalent to no claim at all -- every
-        thread repeatedly reads the same head of the NULL set."""
+        thread repeatedly reads the same head of the NULL set.
+
+        The interleaving is forced, not hoped for: every thread finishes its
+        claim before any thread records a result, which is exactly what the
+        released lock permitted. Left to the scheduler this control failed
+        intermittently -- and a control that only sometimes reproduces the
+        defect certifies nothing on the runs where it does not.
+        """
         db, bedrock = self.db, self.bedrock
-        gate = threading.Barrier(12)
+        threads, batch = 12, 50
+        claimed = threading.Barrier(threads)
 
         def legacy_worker():
             conn = FakeConn(db)
-            gate.wait()
-            while True:
-                rows = db.select("titan_embedding", limit=50)   # no shard, no cursor
-                if not rows:
-                    return
+            # The claim, then the barrier: the released lock's whole meaning
+            # is that a second thread can claim what a first one has not yet
+            # written, so hold every thread here until all of them have.
+            rows = db.select("titan_embedding", limit=batch)  # no shard/cursor
+            claimed.wait(timeout=60)
+            while rows:
                 for rid, text in rows:
                     import json as _json
                     bedrock.invoke_model(modelId=bf.TITAN,
@@ -350,13 +404,26 @@ class TitanShardingTest(BackfillTestCase):
                     conn.execute(
                         "UPDATE ws13_chunks SET titan_embedding=%s WHERE id=%s",
                         ("[0.1]", rid))
+                rows = db.select("titan_embedding", limit=batch)
 
-        workers = [threading.Thread(target=legacy_worker) for _ in range(12)]
+        workers = [threading.Thread(target=legacy_worker) for _ in range(threads)]
         for t in workers:
             t.start()
         for t in workers:
             t.join(timeout=120)
+        self.assertFalse([t for t in workers if t.is_alive()],
+                         "legacy threads did not finish")
 
+        # Every thread claimed the same head batch -- ids 1..batch, the first
+        # `batch` NULL rows in id order -- and embeds all of them before it
+        # looks for more, so each of those ids is billed once per thread and
+        # no thread can revisit them afterwards. That equality is the
+        # duplication the shard partition exists to remove, stated exactly.
+        head = {i: self.bedrock.calls.get(i, 0) for i in range(1, batch + 1)}
+        self.assertEqual(
+            head, {i: threads for i in range(1, batch + 1)},
+            "a claim that releases its lock must bill every thread for the "
+            "same head batch")
         total = sum(self.bedrock.calls.values())
         self.assertGreater(
             total, 600,
@@ -551,7 +618,7 @@ class CohereBudgetTest(BackfillTestCase):
         self.saved = {}
         self.stored = None
 
-    def _run_cohere(self):
+    def _run_cohere(self, sleep=None):
         def fake_save(day, spent):
             self.saved[day.isoformat()] = spent
 
@@ -560,7 +627,7 @@ class CohereBudgetTest(BackfillTestCase):
              mock.patch.object(bf, "save_cohere_spent", fake_save), \
              mock.patch.object(bf, "load_cohere_spent",
                                lambda day: self.stored or 0), \
-             mock.patch.object(bf.time, "sleep"):
+             mock.patch.object(bf.time, "sleep", side_effect=sleep):
             pg.connect.side_effect = lambda *a, **k: FakeConn(self.db)
             bf.cohere_worker()
 
@@ -598,11 +665,15 @@ class CohereBudgetTest(BackfillTestCase):
     def test_restart_resumes_from_the_checkpointed_spend(self):
         self.bedrock = RecordingBedrock()
         self.stored = bf.COHERE_DAILY          # budget already exhausted today
-        done = threading.Event()
-        threading.Thread(target=lambda: (self._run_cohere(), done.set()),
-                         daemon=True).start()
-        # With the budget spent, the worker parks instead of embedding.
-        done.wait(timeout=2)
+        # With the budget spent the worker parks and never returns, so the
+        # park itself is raised and caught here on this thread. Running it in
+        # a daemon thread and waiting two seconds instead left it parked
+        # *inside* `_run_cohere`'s context managers: they never unwound,
+        # `bf.time.sleep` -- which is the real `time.sleep` -- stayed mocked
+        # for the rest of the process, and every later concurrency test
+        # silently lost the call latency it needs in order to interleave.
+        with self.assertRaises(_Parked):
+            self._run_cohere(sleep=_Parked)
         self.assertEqual(bf.stats["cohere"], 0,
                          "a resumed process must respect the day's prior spend")
 

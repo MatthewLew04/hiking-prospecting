@@ -1583,6 +1583,29 @@ def derive(record, group, collision, corpus, min_ratio, cross_state=False):
             attempts.append(f'prefix:{rule.prefix}{remainder}:shape_mismatch')
             continue
         candidate = rule.template.format(code=remainder)
+        # The same coincidence the code tier above refuses, arriving by the
+        # other door. The 'mrds-' rule's template is '{code}', so for a
+        # digits-only remainder this probes the IDENTICAL integer equality
+        # against mine_ids that NUMERIC_NAMESPACES_BLOCKED just rejected --
+        # and returns it at CONF_PREFIX_IN_MINE_IDS, verified=True, which is
+        # above the retrieval path's 0.8 admission gate.
+        #
+        # Closing one tier and not the other is worse than closing neither,
+        # because it reads as fixed. A rebuild would rewrite every one of the
+        # 730 collision rows as prefix_namespace/0.95/verified, and --retract
+        # would not withdraw them: it deletes the verified rows a run
+        # CONTRADICTS, and this run would agree with them.
+        #
+        # Keyed on the rule's own prefix as well as the record namespace,
+        # because the front-end id reaches here in three spellings -- bare,
+        # 'mrds-60000037' and 'mrds:60000037' -- and only the last carries a
+        # namespace the record knows about.
+        if candidate.isdigit() and (
+                record.namespace in NUMERIC_NAMESPACES_BLOCKED
+                or rule.prefix.rstrip('-:') in NUMERIC_NAMESPACES_BLOCKED):
+            attempts.append(f'prefix:{rule.prefix}:{candidate}:'
+                            f'numeric_namespace_blocked')
+            continue
         canonical, spellings, documents = corpus.resolve_spellings(candidate)
         if canonical:
             evidence = dict(base, matched_in='mine_ids',

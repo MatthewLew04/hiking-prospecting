@@ -291,6 +291,49 @@ class DistrictTierTests(unittest.TestCase):
         self.assertIn("mine_ids:60000037:numeric_namespace_blocked",
                       mapping.evidence["attempts"])
 
+    def test_the_collision_is_blocked_in_the_slug_spellings_too(self):
+        """The same equality, arriving through the prefix tier instead.
+
+        The code tier's block was the only one, and the NAMESPACE_RULES loop
+        forty lines below carries NamespaceRule('mrds-', r'^\\d{5,}$',
+        '{code}') -- template '{code}', so for a digits-only remainder it
+        probes the IDENTICAL integer equality against mine_ids and returned it
+        as prefix_namespace at CONF_PREFIX_IN_MINE_IDS 0.95, verified=True,
+        above the retrieval path's 0.8 admission gate.
+
+        That is the spelling that matters. The front-end enumerates every site
+        twice -- 'mrds-60000037' and 'mrds:60000037', which is why 358,808
+        ids cover 179,404 mines -- so the bare form fixed by the code tier is
+        the one form that barely occurs, and closing only that tier left the
+        Nevada collisions mapping exactly as before while reading as fixed.
+
+        Worse than leaving both open: a rebuild would rewrite all 730 rows as
+        prefix_namespace/0.95/verified, and --retract deletes the verified
+        rows a run CONTRADICTS -- this run would agree with them.
+        """
+        for front_end_id in ("mrds-60000037", "mrds:60000037"):
+            with self.subTest(front_end_id=front_end_id):
+                mapping = derive(record(front_end_id,
+                                        name="Sand Springs District"), NEVADA)
+                self.assertEqual(mapping.method, "unmapped")
+                self.assertIsNone(mapping.ws13_mine_id)
+                self.assertFalse(mapping.verified)
+                self.assertTrue(
+                    any("numeric_namespace_blocked" in attempt
+                        for attempt in mapping.evidence["attempts"]),
+                    mapping.evidence["attempts"])
+
+    def test_a_prefixed_non_numeric_code_still_resolves(self):
+        """The prefix block is on the shape of the remainder, not the rule.
+
+        AZGS templates to 'ADMM-{code}', which is never all-digits, so the
+        namespace whose prefix rules do real work is untouched.
+        """
+        corpus = corpus_of(document("7" * 64, "AZ", ["ADMM-42"], ["X"]))
+        mapping = derive(record("azgs-admm-42", state="AZ"), corpus)
+        self.assertEqual(mapping.method, "prefix_namespace")
+        self.assertEqual(mapping.ws13_mine_id, "ADMM-42")
+
     def test_a_non_numeric_code_is_still_matched_for_a_blocked_namespace(self):
         """The block is on the shape of the id, not on the source. A namespace
         that carries a real corpus code still resolves through it."""

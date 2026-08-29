@@ -107,6 +107,7 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
 pipelines/geomodel/          Python twin (stdlib only; numpy used when present)
    model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  kit.py
    narrative.py  resolve.py  agentbuild.py  render2d.py  publish.py   <- prose -> model
+   mapplate.py   assay.py                                             <- plates, grades
    formats/{omf1,omf2,parquet_lite,thrift_compact,surfer,geosoft,arcascii,zmap,irap,cps3,
             ubc,obj,dxf,gocad,lfmsh,tables,segy,las}.py
 pipelines/geomodel_kit.py    CLI: site | export | convert | info | list | mines | narrate
@@ -235,10 +236,18 @@ No front-end change was needed: `model3d.html` already accepts `?project=<url>`.
 ```
 narrative.py   USGS/USBM prose -> typed elements + the questions it leaves open
 resolve.py     mine name -> located, cited CANDIDATES out of grades.json
+mapplate.py    a georeferenced scan + traces -> SURVEYED elements
+assay.py       quoted grades (selected != average) + a stated vein attitude
 agentbuild.py  spec + mine -> Project, using only workings.py primitives
 render2d.py    plan / longitudinal section / isometric as stdlib SVG
 publish.py     content-addressed models/<slug>-<hash8>/ + manifest.json
 ```
+
+Prose can only ever produce `described` geometry. `surveyed` is reachable only
+by tracing a plan or section whose georeference can be checked — `mapplate`
+reports the implied metres-per-pixel and, with three or more control points,
+how far they disagree. A plate that is missing its georeference or its
+elevation is a question, not a plate draped at zero.
 
 Three rules run through all of it, and they are enforced by tests:
 
@@ -271,8 +280,8 @@ python3 pipelines/geomodel_kit.py narrate --file desc.txt --mine-id grades:17 --
 python3 services/minevis/server.py --state-dir /var/lib/minevis                 # the agent's HTTP service
 
 python3 ci/run_tests.py                                        # everything, with the strict-skip check
-python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 297 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
-python3 tests/test_minevis_service.py                          # 46 service tests (in-process, no network)
+python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 365 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
+python3 tests/test_minevis_service.py                          # 60 service tests (in-process, no network)
 node tools/test_gm_formats.mjs      # JS readers/writers vs the Python fixtures (171 checks)
 node tools/test_gm_engine.mjs       # JS numerics vs Python (166 checks)
 node tools/test_model3d.mjs         # headless browser acceptance of the page (28 checks)

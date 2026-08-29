@@ -36,6 +36,7 @@ import os
 import sys
 
 from .model import Project, PointSet, utm_crs, sanitize
+from . import assay
 from . import workings as wk
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -99,8 +100,10 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
     ws.metadata['source_text_sha256'] = spec.get('text_sha256')
 
     ctx = {'collar': collar, 'levels': {}, 'shaft': None, 'adit': None,
-           'by_id': {}, 'level_bearings': {}, 'warnings': []}
+           'by_id': {}, 'level_bearings': {}, 'warnings': [],
+           'zone': zone, 'north': north}
     _seed_levels(ctx, spec, collar)
+    _seed_traced_levels(ctx, spec)
 
     placed, gaps, stopes = [], [], []
     for el in sorted(spec.get('elements', []), key=lambda e: (ORDER.get(e['kind'], 9), e['id'])):
@@ -120,6 +123,13 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
     portals = wk.portals_points(ws)
     if portals.n:
         mine_objects.append(portals)
+
+    grades = assay.grade_points(spec, placed)
+    if grades.n:
+        mine_objects.append(grades)
+    vein = assay.vein_surface(spec.get('vein'), placed, collar)
+    if vein is not None:
+        mine_objects.append(vein)
     for obj in mine_objects:
         proj.add(obj)
     _stabilise(mine_objects, spec)
@@ -145,6 +155,8 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
         'crs': proj.crs,
         'summary': wk.summary(ws),
         'confidence': _tally(spec.get('elements', []), placed),
+        'assays': grades.n,
+        'vein': dict(vein.metadata) if vein is not None else None,
     }
 
 
@@ -157,6 +169,21 @@ def _seed_levels(ctx, spec, collar):
     for el in spec.get('elements', []):
         if el.get('level') and el.get('level_depth_m') is not None:
             ctx['levels'].setdefault(el['level'], collar[2] - float(el['level_depth_m']))
+
+
+def _seed_traced_levels(ctx, spec):
+    """A level whose elevation is written on a surveyed plan beats one derived
+    from the naming convention, so it overwrites rather than defers."""
+    for el in spec.get('elements', []):
+        if el.get('path') and el.get('level') and el.get('elevation_m') is not None:
+            prior = ctx['levels'].get(el['level'])
+            z = float(el['elevation_m'])
+            if prior is not None and abs(prior - z) > 1.0:
+                ctx['warnings'].append(
+                    'the "%s" level is drawn at %.0f m on plate %s but its name puts it at '
+                    '%.0f m below the collar; the surveyed elevation is used'
+                    % (el['level'], z, el.get('plate', '?'), prior))
+            ctx['levels'][el['level']] = z
 
 
 def _level_z(ctx, label):
@@ -192,6 +219,8 @@ def _station(ctx, label):
 def _place(ws, el, ctx, spec, site, stopes):
     kind = el['kind']
     attrs = _attrs(el, spec, site)
+    if el.get('path'):
+        return _place_traced(ws, el, ctx, attrs)
     if kind in ('adit', 'tunnel'):
         return _place_adit(ws, el, ctx, attrs)
     if kind == 'decline':
@@ -207,6 +236,53 @@ def _place(ws, el, ctx, spec, site, stopes):
     if kind in ('portal', 'pit'):
         return _place_point_feature(ws, el, ctx, attrs)
     raise Unplaceable('%r is not a kind this builder can place.' % kind)
+
+
+def _place_traced(ws, el, ctx, attrs):
+    """A working traced off a georeferenced plate already knows where it is;
+    all that can be missing is the elevation of the plan it came from."""
+    z_fill = None
+    pts = []
+    for lon, lat, z in el['path']:
+        x, y = utm_fwd(lon, lat, ctx['zone'], ctx['north'])
+        if z is None:
+            if z_fill is None:
+                if el.get('elevation_m') is not None:
+                    z_fill = float(el['elevation_m'])
+                elif el.get('level'):
+                    z_fill = _level_z(ctx, el['level'])
+                else:
+                    raise Unplaceable('the plan it was traced from has no elevation, and it '
+                                      'is not tied to a level.')
+            z = z_fill
+        pts.append((x, y, float(z)))
+
+    kind = el['kind']
+    feat = {'type': kind, 'name': _label(el), 'level': el.get('level', ''),
+            'level_z': pts[0][2], 'mine': '', 'units_in': 'm',
+            'width_m': wk.TYPES[kind]['width_m'], 'height_m': wk.TYPES[kind]['height_m'],
+            'traced_from': el.get('plate'), 'trace': el.get('trace')}
+    feat.update(attrs)
+    k = ws.add_polyline(pts, feat)
+
+    if kind == 'shaft' and ctx['shaft'] is None and len(pts) >= 2:
+        top, bottom = pts[0], pts[-1]
+        drop = top[2] - bottom[2]
+        run = math.hypot(bottom[0] - top[0], bottom[1] - top[1])
+        ctx['shaft'] = {'x': top[0], 'y': top[1], 'z0': top[2],
+                        'dip': math.degrees(math.atan2(drop, run)) if run > 1e-6 else 90.0,
+                        'azimuth': math.degrees(math.atan2(bottom[0] - top[0],
+                                                           bottom[1] - top[1])) % 360.0,
+                        'vertical': max(drop, 0.0), 'bottom': bottom,
+                        'name': el.get('name', '')}
+    if kind in ('adit', 'tunnel') and ctx['adit'] is None:
+        ctx['adit'] = {'end': pts[-1], 'name': el.get('name', '')}
+    if kind in ('drift', 'crosscut') and el.get('level') and len(pts) >= 2:
+        b = math.degrees(math.atan2(pts[-1][0] - pts[0][0], pts[-1][1] - pts[0][1])) % 360.0
+        ctx['level_bearings'].setdefault(el['level'], b)
+
+    ctx['by_id'][el['id']] = {'start': pts[0], 'end': pts[-1]}
+    return _record(el, k, 'traced off %s' % (el.get('plate') or 'a plate'), pts[0], pts[-1])
 
 
 def _need(el, field, what):

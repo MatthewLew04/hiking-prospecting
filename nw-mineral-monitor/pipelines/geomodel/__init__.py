@@ -34,6 +34,10 @@ model — what services/minevis exposes to an agent as tool calls:
   agentbuild    spec + resolved mine -> a Project, using only the primitives in
                 `workings`; this module decides *placement* and refuses to place
                 what the text does not locate
+  mapplate      the handoff for workings traced off a georeferenced scan — the
+                only path to `surveyed` confidence
+  assay         the grades a description quotes (keeping selected apart from
+                average) and the vein attitude it states
   render2d      plan / longitudinal section / isometric as plain SVG, with the
                 line style carrying the confidence: surveyed solid, described
                 dashed, assumed dotted

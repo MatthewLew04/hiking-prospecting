@@ -82,7 +82,8 @@ it unmodified.
 | tool | sync? | what it does |
 |---|---|---|
 | `mine_lookup` | yes | name → **candidates** from the 3,369-mine grades bundle, with coordinates and citations |
-| `parse_mine_description` | yes | prose → typed elements + the questions the prose leaves open |
+| `parse_mine_description` | yes | prose → typed elements, mentions, quoted grades, vein attitude, and the questions the prose leaves open |
+| `check_map_plate` | yes | check a scan's georeference before building with it |
 | `build_mine_visual` | **no** | → `job_id`; builds, renders and publishes |
 | `get_job` | yes | poll: `queued` \| `running` \| `done` \| `questions` \| `error` |
 | `list_mine_documents` | yes | the scanned sources held for a mine, so the agent can read its own prose |
@@ -139,6 +140,32 @@ span in the input text. Confidence is **per field**:
 
 An element's own confidence is the weakest of its fields, so one assumed
 bearing makes the whole drift dotted.
+
+### Surveyed geometry, and the only way to get it
+
+Prose can never be better than `described`. To get `surveyed`, hand
+`build_mine_visual` a `plates` array: a scan, its pixel size, a georeference
+(≥ 2 control points `[px, py, lon, lat]`, or one anchor plus a scale bar), the
+elevation or level it is drawn at, and the workings traced on it in pixels.
+`check_map_plate` validates one first and reports the implied metres-per-pixel
+plus, with three or more control points, **how far they disagree** — a large
+residual means the plate was tied wrongly, and it is better to know before the
+model is built. A plate missing its georeference or its elevation comes back as
+a question; it is never draped at zero. Re-sending a plate replaces it.
+
+### Grades
+
+Grades quoted in the same prose come back as `assays`, each carrying its
+**basis**: `selected` (picked, bonanza, high-grade), `average`, `shipment`, or
+a plain `assay`. That distinction is kept everywhere — a selected sample plots
+hollow where an average plots filled — because "selected samples assayed 40
+ounces" and "the mill heads averaged 0.4 ounce" are not the same claim about a
+deposit. A width travels with the value when the text gives one, and a figure
+with no metal named becomes an optional question rather than a guess.
+
+A stated strike **and** dip produce a vein surface. One without the other does
+not, and no grade surface is ever interpolated from quoted figures — kriging
+three sentences would manufacture a resource out of an anecdote.
 
 Workings the text *names* without describing — "the mine is developed by two
 adits and a vertical shaft" — come back as **mentions**, not elements. They

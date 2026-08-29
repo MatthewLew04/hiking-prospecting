@@ -26,6 +26,8 @@ PAD = 56
 DASH = {'surveyed': None, 'sketched': '10 5', 'inferred': '2 5',
         'described': '10 5', 'assumed': '2 5'}
 
+ASSAY = '#b8860b'
+VEIN = '#1f9d72'
 INK = '#1b1b1b'
 MUTED = '#7a7a7a'
 PAPER = '#ffffff'
@@ -224,6 +226,78 @@ def _labels(view, parts, gap=13.0):
     return ''.join(out)
 
 
+def _assay_points(built):
+    """[(x, y, z, commodity, value, basis)] for the quoted grades, if any."""
+    for ps in built['project'].by_kind('points'):
+        if (ps.metadata or {}).get('schema') != 'nwmm-assay/1':
+            continue
+        cols = ps.attributes
+        out = []
+        for i in range(ps.n):
+            x, y, z = ps.point(i)
+            out.append((x, y, z, cols.get('commodity', [])[i], cols.get('value', [])[i],
+                        cols.get('basis', [])[i]))
+        return out
+    return []
+
+
+def _assays(built, to_screen):
+    """Grade points.  A selected sample is drawn hollow and a representative
+    one filled, for the same reason a described adit is drawn dashed: the two
+    are different claims and must not look alike."""
+    pts = _assay_points(built)
+    if not pts:
+        return ''
+    out = ['<g class="assays">']
+    for x, y, z, commodity, value, basis in pts:
+        sx, sy = to_screen((x, y, z))
+        picked = basis == 'selected'
+        out.append('<circle cx="%s" cy="%s" r="4" fill="%s" stroke="%s" stroke-width="1.4"%s/>'
+                   % (_n(sx), _n(sy), 'none' if picked else ASSAY, ASSAY,
+                      ' stroke-dasharray="2 2"' if picked else ''))
+        label = '%.4g %s' % (value, (commodity or '?').upper())
+        out.append('<text x="%s" y="%s" font-size="9" fill="%s">%s</text>'
+                   % (_n(sx + 7), _n(sy + 3), ASSAY, _esc(label)))
+    out.append('</g>')
+    return ''.join(out)
+
+
+def _assay_key(built, x, y):
+    if not _assay_points(built):
+        return ''
+    return ('<g class="assay-key">'
+            '<circle cx="%s" cy="%s" r="4" fill="%s"/>'
+            '<text x="%s" y="%s" font-size="10" fill="%s">representative</text>'
+            '<circle cx="%s" cy="%s" r="4" fill="none" stroke="%s" stroke-width="1.4" '
+            'stroke-dasharray="2 2"/>'
+            '<text x="%s" y="%s" font-size="10" fill="%s">selected sample</text></g>'
+            % (_n(x), _n(y), ASSAY, _n(x + 9), _n(y + 3), INK,
+               _n(x + 108), _n(y), ASSAY, _n(x + 117), _n(y + 3), INK))
+
+
+def _vein_trace(built, view):
+    """The described vein attitude as its strike line through the workings."""
+    vein = built.get('vein')
+    if not vein:
+        return ''
+    pts = [p for _, _, _, ps in _parts(built) for p in ps]
+    if not pts:
+        return ''
+    cx = sum(p[0] for p in pts) / len(pts)
+    cy = sum(p[1] for p in pts) / len(pts)
+    half = max(80.0, max(max(p[0] for p in pts) - min(p[0] for p in pts),
+                         max(p[1] for p in pts) - min(p[1] for p in pts)) / 2.0)
+    b = math.radians(vein['strike_deg'])
+    a = view(cx - half * math.sin(b), cy - half * math.cos(b))
+    c = view(cx + half * math.sin(b), cy + half * math.cos(b))
+    return ('<g class="vein"><line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" '
+            'stroke-width="1.6" stroke-dasharray="9 3 2 3"/>'
+            '<text x="%s" y="%s" font-size="10" fill="%s">vein %03.0f\u00b0 / %.0f\u00b0%s</text></g>'
+            % (_n(a[0]), _n(a[1]), _n(c[0]), _n(c[1]), VEIN,
+               _n(c[0] + 5), _n(c[1]), VEIN, vein['strike_deg'], vein['dip_deg'],
+               ' (dip direction assumed)' if vein.get('dip_direction_assumed') else ''))
+
+
 def _flat(ps):
     """True when a part has no horizontal extent worth drawing (< 1 m)."""
     xs = [p[0] for p in ps]
@@ -267,10 +341,13 @@ def plan(built, contours=True):
         else:
             body.append(_polyline([view(p[0], p[1]) for p in ps], kind, conf,
                                   closed=(kind == 'stope')))
+    body.append(_vein_trace(built, view))
+    body.append(_assays(built, lambda p: view(p[0], p[1])))
     body.append(_labels(view, parts))
     body.append(north_arrow(W - PAD, PAD + 6))
     body.append(scale_bar(view, PAD - 24, H - 24))
     body.append(legend(built, W - 190, H - 76))
+    body.append(_assay_key(built, PAD - 24, H - 46))
     return _frame('Plan', _subtitle(built), ''.join(body))
 
 
@@ -295,8 +372,10 @@ def section(built):
     for kind, name, conf, ps in proj:
         body.append(_polyline([view(s, z) for s, z in ps], kind, conf,
                               closed=(kind == 'stope')))
+    body.append(_assays(built, lambda p: view(p[0] * math.sin(a) + p[1] * math.cos(a), p[2])))
     body.append(scale_bar(view, PAD - 24, H - 24))
     body.append(legend(built, W - 190, H - 76))
+    body.append(_assay_key(built, PAD - 24, H - 46))
     return _frame('Longitudinal section', _subtitle(built, 'looking along %03.0f°' % az), ''.join(body))
 
 

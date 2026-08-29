@@ -34,7 +34,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from geomodel import kit  # noqa: E402
-from geomodel import agentbuild, narrative, render2d, resolve  # noqa: E402
+from geomodel import agentbuild, assay, narrative, render2d, resolve  # noqa: E402
 from geomodel.model import Project  # noqa: E402
 from geomodel import formats as F  # noqa: E402
 
@@ -153,7 +153,7 @@ def cmd_mines(args):
 def cmd_narrate(ap, args):
     text = sys.stdin.read() if args.file == '-' else (
         args.text if args.text is not None else open(args.file, encoding='utf-8').read())
-    spec = narrative.parse(text, mine_id=args.mine_id)
+    spec = assay.attach(narrative.parse(text, mine_id=args.mine_id), text)
     if args.answers:
         with open(args.answers, encoding='utf-8') as fh:
             spec = narrative.apply_answers(spec, json.load(fh))
@@ -190,6 +190,7 @@ def cmd_narrate(ap, args):
                'elevation_source', 'source', 'source_url')},
               'out_dir': out_dir, 'files': [n for n, _ in manifest],
               'confidence': built['confidence'], 'levels': built['levels'],
+              'assays': built['assays'], 'vein': built['vein'],
               'summary': built['summary'], 'warnings': built['warnings'],
               'unresolved': narrative.unresolved(spec) + built['gaps'],
               'coverage': spec['coverage'],
@@ -229,6 +230,15 @@ def _print_spec(spec):
         print('  %-4s %-9s %-14s %-11s %s' % (el['id'], el['kind'], (el.get('name') or '')[:14],
                                               el['confidence'], '  '.join(bits)))
         print('       "%s"' % el['quote'][:96])
+    for a in spec.get('assays') or []:
+        print('  %-4s %-5s %-9s %-10s %s' % (a['id'], a['commodity'] or '?',
+                                             '%g %s' % (a['value'], a['unit']), a['basis'],
+                                             ('across %.2f m' % a['width_m']) if a['width_m'] else ''))
+    if spec.get('vein'):
+        v = spec['vein']
+        print('  vein  strike %03.0f deg, dip %.0f deg toward %03.0f deg%s'
+              % (v['strike_deg'], v['dip_deg'], v['dip_direction_deg'],
+                 ' (dip direction assumed)' if v['dip_direction_assumed'] else ''))
     for g in spec['gaps']:
         print('  %-4s %-9s %s' % (g['id'], 'REQUIRED' if g['required'] else 'optional', g['question']))
         for o in g['options']:

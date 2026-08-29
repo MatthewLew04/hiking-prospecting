@@ -419,6 +419,15 @@ class CoverageTests(unittest.TestCase):
         got = narrative.sentences('The No. 2 adit runs N. 45 E. for 900 ft. The shaft is 300 ft deep.')
         self.assertEqual(len(got), 2)
 
+    def test_a_unit_abbreviation_only_ends_a_sentence_when_what_follows_says_so(self):
+        # "20 oz. silver" runs on; "900 ft. The shaft" does not
+        self.assertEqual(len(narrative.sentences(
+            'The ore carried assays of 20 oz. silver to the ton.')), 1)
+        self.assertEqual(len(narrative.sentences(
+            'The vein assayed 40 oz. The adit was driven N45E.')), 2)
+        self.assertEqual(len(narrative.sentences(
+            'An adit was driven N45E 900 ft. The shaft is 300 ft deep.')), 2)
+
     def test_a_bearing_ending_in_a_quadrant_letter_still_ends_the_sentence(self):
         prose = ('On the 300 level a drift was extended 450 feet N 20 W. '
                  'The vein was stoped for 300 feet on the 300 level to a height of 80 feet.')

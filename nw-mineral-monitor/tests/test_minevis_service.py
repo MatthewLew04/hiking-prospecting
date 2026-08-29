@@ -311,6 +311,149 @@ class SyncToolTests(ServiceCase):
         self.assertEqual(code, 400)
 
 
+PLATE = {'plate_id': 'p3', 'image': 'plate3.png', 'width': 1000, 'height': 800,
+         'plane': 'plan',
+         'control': [[100, 700, -116.8700, 36.8760], [900, 700, -116.8600, 36.8760],
+                     [100, 100, -116.8700, 36.8820]],
+         'level': '300', 'elevation_m': 1025.0,
+         'source': {'doc': 'USGS Bulletin 723', 'page': '147', 'figure': 'Plate 3'},
+         'traces': [{'id': 't1', 'kind': 'drift', 'name': '300 level drift',
+                     'points': [[150, 650], [500, 400], [800, 300]]}]}
+
+
+class MapPlateTests(ServiceCase):
+    """Tracing off a georeferenced plate is the only route to `surveyed`."""
+
+    def test_check_map_plate_reports_the_scale_and_says_it_is_usable(self):
+        code, body, _ = self.client.call('check_map_plate', {'plate': PLATE})
+        self.assertEqual(code, 200)
+        self.assertTrue(body['usable'])
+        self.assertAlmostEqual(body['scale']['m_per_px'], 1.11, delta=0.02)
+        self.assertLess(body['scale']['residual_m'], 1e-6)
+        self.assertIn('surveyed', body['note'])
+        self.assertEqual(body['citation'], 'traced from Plate 3, USGS Bulletin 723, p. 147')
+
+    def test_a_plate_missing_its_georeference_comes_back_as_a_question(self):
+        plate = dict(PLATE)
+        plate.pop('control')
+        code, body, _ = self.client.call('check_map_plate', {'plate': plate})
+        self.assertEqual(code, 200)
+        self.assertFalse(body['usable'])
+        self.assertTrue(any(q['required'] for q in body['questions']))
+        self.assertNotIn('scale', body)
+
+    def test_a_malformed_plate_is_a_400_with_a_reason(self):
+        code, body, _ = self.client.call('check_map_plate', {'plate': dict(PLATE, width=0)})
+        self.assertEqual(code, 400)
+        self.assertEqual(body['error'], 'bad_call')
+        self.assertIn('pixel size', body['detail'])
+
+    def test_check_map_plate_needs_a_plate(self):
+        self.assertEqual(self.client.call('check_map_plate', {})[0], 400)
+
+    def test_a_traced_plate_builds_at_surveyed_confidence(self):
+        _, sub, _ = self.client.call('build_mine_visual', {
+            'text': 'The Main shaft was sunk to a depth of 620 feet. '
+                    'An adit driven N45E for 900 feet cuts the vein.',
+            'lon': -116.87, 'lat': 36.877, 'plates': [PLATE]})
+        done = self.client.wait(sub['job_id'])
+        self.assertEqual(done['state'], 'done')
+        self.assertEqual(done['confidence'], {'surveyed': 1, 'described': 2, 'assumed': 0})
+
+        code, man, _ = self.client.get(done['manifest_url'].replace('https://example.invalid', ''))
+        self.assertEqual(code, 200)
+        self.assertEqual(len(man['plates']), 1)
+        self.assertEqual(man['plates'][0]['source']['figure'], 'Plate 3')
+        self.assertEqual(man['plates'][0]['traces'][0]['points'], 3)
+        traced = [e for e in man['elements'] if e['confidence'] == 'surveyed']
+        self.assertEqual([e['id'] for e in traced], ['e-p3-t1'])
+        self.assertIn('traced from Plate 3', traced[0]['quote'])
+
+    def test_resending_a_plate_does_not_trace_it_twice(self):
+        args = {'text': 'The Main shaft was sunk 620 feet.', 'lon': -116.87, 'lat': 36.877,
+                'plates': [PLATE]}
+        first = self.client.wait(self.client.call('build_mine_visual', dict(args))[1]['job_id'])
+        second = self.client.wait(self.client.call('build_mine_visual', dict(args))[1]['job_id'])
+        self.assertEqual(first['state'], 'done')
+        self.assertEqual(second['state'], 'done')
+        self.assertEqual(first['model_url'], second['model_url'])
+        self.assertEqual(second['confidence']['surveyed'], 1)
+
+    def test_a_malformed_plate_fails_the_job_with_a_typed_error(self):
+        _, sub, _ = self.client.call('build_mine_visual', {
+            'text': 'The Main shaft was sunk 620 feet.', 'lon': -116.87, 'lat': 36.877,
+            'plates': [dict(PLATE, plane='oblique')]})
+        rec = self.client.wait(sub['job_id'])
+        self.assertEqual(rec['state'], 'error')
+        self.assertEqual(rec['error'], 'bad_plate')
+
+    def test_plates_must_be_a_list(self):
+        code, body, _ = self.client.call('build_mine_visual', {
+            'text': 'x', 'lon': -1.0, 'lat': 1.0, 'plates': PLATE})
+        self.assertEqual(code, 400)
+        self.assertIn('plates must be a list', body['detail'])
+
+
+ASSAY_PROSE = ('The vein strikes N45E and dips 70 degrees to the northwest. '
+               'The Main shaft was sunk to a depth of 620 feet. '
+               'An adit driven N45E for 900 feet cuts the vein; the ore averaged '
+               '0.5 ounce gold to the ton across 3 feet. '
+               'Selected samples assayed 40 ounces of silver.')
+
+
+class AssayTests(ServiceCase):
+    """Grades quoted in the same prose, with the basis that makes them differ."""
+
+    def test_parse_reports_the_grades_and_the_vein(self):
+        code, body, _ = self.client.call('parse_mine_description', {'text': ASSAY_PROSE})
+        self.assertEqual(code, 200)
+        self.assertEqual([(a['commodity'], a['value'], a['basis']) for a in body['assays']],
+                         [('au', 0.5, 'average'), ('ag', 40.0, 'selected')])
+        self.assertAlmostEqual(body['assays'][0]['width_m'], 3 * 0.3048, places=5)
+        self.assertEqual(body['vein']['strike_deg'], 45.0)
+        self.assertEqual(body['vein']['dip_deg'], 70.0)
+        self.assertFalse(body['vein']['dip_direction_assumed'])
+        self.assertEqual(body['coverage']['assays'], 2)
+
+    def test_an_unnamed_metal_is_an_optional_question(self):
+        code, body, _ = self.client.call('parse_mine_description', {
+            'text': 'An adit was driven N45E 900 feet; assays ran 30 ounces to the ton.'})
+        self.assertEqual(code, 200)
+        gap = [g for g in body['gaps'] if g['kind'] == 'assay'][0]
+        self.assertFalse(gap['required'])
+        self.assertEqual(body['coverage']['unresolved'], 0)
+
+    def test_a_build_reports_the_grade_points_and_the_vein(self):
+        _, sub, _ = self.client.call('build_mine_visual', {
+            'text': ASSAY_PROSE, 'lon': -116.87, 'lat': 36.877})
+        done = self.client.wait(sub['job_id'])
+        self.assertEqual(done['state'], 'done')
+        self.assertEqual(done['assays'], 2)
+        self.assertEqual(done['vein']['strike_deg'], 45.0)
+        self.assertIn('not an interpolated', done['vein']['note'])
+
+    def test_the_manifest_keeps_each_grade_with_its_basis_and_sentence(self):
+        _, sub, _ = self.client.call('build_mine_visual', {
+            'text': ASSAY_PROSE, 'lon': -116.87, 'lat': 36.877})
+        done = self.client.wait(sub['job_id'])
+        code, man, _ = self.client.get(done['manifest_url'].replace('https://example.invalid', ''))
+        self.assertEqual(code, 200)
+        self.assertEqual(len(man['assays']), 2)
+        picked = [a for a in man['assays'] if a['basis'] == 'selected'][0]
+        self.assertEqual(picked['commodity'], 'ag')
+        self.assertIn('Selected samples', picked['quote'])
+        self.assertEqual(man['vein']['strike_deg'], 45.0)
+        self.assertTrue(any('selected sample' in n for n in man['notes']))
+
+    def test_a_different_grade_makes_a_different_model(self):
+        base = {'lon': -116.87, 'lat': 36.877}
+        a = self.client.wait(self.client.call('build_mine_visual', dict(
+            base, text='An adit driven N45E for 900 feet; the ore averaged 0.5 ounce gold.'))[1]['job_id'])
+        b = self.client.wait(self.client.call('build_mine_visual', dict(
+            base, text='An adit driven N45E for 900 feet; the ore averaged 2.5 ounce gold.'))[1]['job_id'])
+        self.assertNotEqual(a['model_url'], b['model_url'])
+
+
 class JobLifecycleTests(ServiceCase):
     def test_the_question_round_trip_ends_in_a_model(self):
         code, sub, _ = self.client.call('build_mine_visual',

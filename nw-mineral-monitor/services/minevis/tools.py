@@ -29,7 +29,7 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 if os.path.join(ROOT, 'pipelines') not in sys.path:
     sys.path.insert(0, os.path.join(ROOT, 'pipelines'))
 
-from geomodel import agentbuild, narrative, publish, render2d, resolve  # noqa: E402
+from geomodel import agentbuild, assay, mapplate, narrative, publish, render2d, resolve  # noqa: E402
 
 DOCS_INDEX = os.path.join(ROOT, 'site', 'data', 'docs', 'index.json')
 
@@ -42,6 +42,59 @@ def _fn(name, description, properties, required=()):
         'parameters': {'type': 'object', 'properties': properties,
                        'required': list(required), 'additionalProperties': False}}}
 
+
+
+#: one scanned plate plus what has been traced on it
+PLATE_PROPERTIES = {
+    'plate_id': {'type': 'string', 'description': 'short id for this plate, e.g. "p3"'},
+    'image': {'type': 'string', 'description': 'URL or path of the scan'},
+    'width': {'type': 'integer', 'description': "the scan's width in pixels"},
+    'height': {'type': 'integer', 'description': "the scan's height in pixels"},
+    'plane': {'type': 'string', 'enum': ['plan', 'section'],
+              'description': 'a level plan / surface map, or a vertical section'},
+    'control': {'type': 'array',
+                'description': 'plan georeference: >= 2 tie points [px, py, lon, lat]',
+                'items': {'type': 'array', 'items': {'type': 'number'},
+                          'minItems': 4, 'maxItems': 4}},
+    'anchor': {'type': 'object',
+               'description': 'plan georeference from one known point and a scale bar',
+               'properties': {
+                   'px': {'type': 'array', 'items': {'type': 'number'},
+                          'description': 'pixel [x, y] of the known point'},
+                   'lonlat': {'type': 'array', 'items': {'type': 'number'},
+                              'description': '[lon, lat] of the known point'},
+                   'scale_m_per_px': {'type': 'number', 'description': 'metres per pixel'},
+                   'rotation_deg': {'type': 'number',
+                                    'description': "image up-direction clockwise from north"}},
+               'additionalProperties': False},
+    'level': {'type': 'string', 'description': 'the level this plan is drawn at, e.g. "300"'},
+    'elevation_m': {'type': 'number',
+                    'description': "the plan's elevation, if it is written on the plate"},
+    'p1': {'type': 'array', 'items': {'type': 'number'},
+           'description': "section: [lon, lat] of the image's top-left corner"},
+    'p2': {'type': 'array', 'items': {'type': 'number'},
+           'description': "section: [lon, lat] of the image's top-right corner"},
+    'z_top': {'type': 'number', 'description': "section: elevation of the image's top edge"},
+    'z_bottom': {'type': 'number', 'description': "section: elevation of the bottom edge"},
+    'source': {'type': 'object', 'description': 'citation: doc, page, figure, url',
+               'properties': {'doc': {'type': 'string', 'description': 'publication title'},
+                              'page': {'type': 'string', 'description': 'page number'},
+                              'figure': {'type': 'string', 'description': 'plate or figure label'},
+                              'url': {'type': 'string', 'description': 'link to the scan'}},
+               'additionalProperties': False},
+    'traces': {'type': 'array', 'description': 'polylines traced on the plate, in pixels',
+               'items': {'type': 'object', 'properties': {
+                   'id': {'type': 'string', 'description': 'short id, e.g. "t1"'},
+                   'kind': {'type': 'string', 'enum': list(mapplate.TRACEABLE),
+                            'description': 'what this working is'},
+                   'name': {'type': 'string', 'description': 'name as written on the plate'},
+                   'level': {'type': 'string',
+                             'description': 'level, when it differs from the plate\'s'},
+                   'points': {'type': 'array', 'description': 'pixel [x, y] along the working',
+                              'items': {'type': 'array', 'items': {'type': 'number'},
+                                        'minItems': 2, 'maxItems': 2}}},
+                   'required': ['kind', 'points'], 'additionalProperties': False}},
+}
 
 TOOLS = [
     _fn('mine_lookup',
@@ -60,7 +113,9 @@ TOOLS = [
         'elements plus the questions the prose does not answer. Deterministic and offline. '
         'Nothing is invented: a missing bearing comes back as a question, never a default. '
         'Workings the text names without describing ("developed by two adits") come back '
-        'as "mentions" rather than elements, because they cannot be built. '
+        'as "mentions" rather than elements, because they cannot be built. Grades quoted in '
+        'the same text come back as "assays", each keeping its basis - a selected sample is '
+        'not an average - and a stated vein strike and dip come back as "vein". '
         'Use this to see what a description will produce before committing to a build.',
         {'text': {'type': 'string', 'description': 'the description, verbatim'},
          'mine_id': {'type': 'string', 'description': 'a mine_id from mine_lookup, e.g. "grades:17"'}},
@@ -89,8 +144,24 @@ TOOLS = [
                    'items': {'type': 'string', 'enum': list(VIEWS)}},
          'context': {'type': 'boolean',
                      'description': 'also build terrain, draped geology and grade points around '
-                                    'the mine; slower, fetches tiles'}},
+                                    'the mine; slower, fetches tiles'},
+         'plates': {'type': 'array',
+                    'description': 'scanned plans or sections with workings traced on them. '
+                                   'These build at surveyed confidence and draw solid, unlike '
+                                   'anything read from prose. Re-sending a plate replaces it.',
+                    'items': {'type': 'object', 'properties': PLATE_PROPERTIES,
+                              'additionalProperties': False}}},
         ()),
+
+    _fn('check_map_plate',
+        'Check the georeference of a scanned level plan or section before building with it, '
+        'and see what it still needs. Returns the implied metres-per-pixel and, with three or '
+        'more control points, how far they disagree - a large residual means the plate was '
+        'tied wrongly. Workings traced off a georeferenced plate are the ONLY way to get '
+        'surveyed confidence; everything read from prose is described at best.',
+        {'plate': {'type': 'object', 'description': 'the plate and its traces',
+                   'properties': PLATE_PROPERTIES, 'additionalProperties': False}},
+        ('plate',)),
 
     _fn('get_job',
         'Poll a build. state is one of queued, running, done, questions, error. '
@@ -108,7 +179,8 @@ TOOLS = [
 
 TOOL_NAMES = [t['function']['name'] for t in TOOLS]
 
-SYNC = ('mine_lookup', 'parse_mine_description', 'get_job', 'list_mine_documents')
+SYNC = ('mine_lookup', 'parse_mine_description', 'check_map_plate', 'get_job',
+        'list_mine_documents')
 ASYNC = ('build_mine_visual',)
 
 
@@ -169,12 +241,33 @@ def _parse_mine_description(args, ctx):
     text = args.get('text')
     if not isinstance(text, str) or not text.strip():
         raise ToolError('parse_mine_description needs some text')
-    spec = narrative.parse(text, mine_id=args.get('mine_id'))
+    spec = assay.attach(narrative.parse(text, mine_id=args.get('mine_id')), text)
     ctx.specs.put(spec)
     return {'spec_id': spec['spec_id'], 'elements': spec['elements'],
             'mentions': spec['mentions'], 'gaps': spec['gaps'],
+            'assays': spec['assays'], 'vein': spec['vein'],
             'coverage': spec['coverage'], 'levels': spec['levels'],
             'parser_version': spec['parser_version']}
+
+
+def _check_map_plate(args, ctx):
+    raw = args.get('plate')
+    if not isinstance(raw, dict):
+        raise ToolError('check_map_plate needs a plate object')
+    try:
+        plate = mapplate.validate_plate(raw)
+        traces = mapplate.validate_traces(plate, raw.get('traces'))
+    except mapplate.PlateError as exc:
+        raise ToolError(str(exc))
+    gaps = mapplate.plate_gaps(plate, traces)
+    out = {'plate_id': plate['plate_id'], 'plane': plate['plane'],
+           'citation': mapplate.citation(plate), 'traces': len(traces),
+           'questions': gaps, 'usable': not any(g['required'] for g in gaps)}
+    if out['usable']:
+        out['scale'] = mapplate.scale_check(plate)
+        out['note'] = ('workings traced off this plate will build at "surveyed" confidence '
+                       'and draw solid')
+    return out
 
 
 def _get_job(args, ctx):
@@ -237,6 +330,7 @@ def _list_mine_documents(args, ctx):
 SYNC_IMPL = {
     'mine_lookup': _mine_lookup,
     'parse_mine_description': _parse_mine_description,
+    'check_map_plate': _check_map_plate,
     'get_job': _get_job,
     'list_mine_documents': _list_mine_documents,
 }
@@ -251,6 +345,8 @@ def _precheck_build(args):
         raise ToolError('give text or spec_id, not both')
     if args.get('answers') is not None and not isinstance(args['answers'], list):
         raise ToolError('answers must be a list of {id, value, because}')
+    if args.get('plates') is not None and not isinstance(args['plates'], list):
+        raise ToolError('plates must be a list of plate objects')
     views = args.get('views')
     if views is not None:
         bad = [v for v in views if v not in VIEWS]
@@ -276,6 +372,14 @@ def run_build(args, ctx):
         return 'questions', {'spec_id': spec['spec_id'],
                              'questions': [_no_mine_question()],
                              'note': 'the mine has not been identified yet'}
+
+    if args.get('plates') is not None:
+        try:
+            spec = mapplate.attach(spec, args['plates'])
+        except mapplate.PlateError as exc:
+            return 'error', {'error': 'bad_plate', 'detail': str(exc),
+                             'spec_id': spec['spec_id']}
+        ctx.specs.put(spec, site)
 
     pending = narrative.unresolved(spec)
     if pending:
@@ -308,6 +412,8 @@ def run_build(args, ctx):
     result['summary'] = built['summary']
     result['levels'] = built['levels']
     result['coverage'] = spec['coverage']
+    result['assays'] = built['assays']
+    result['vein'] = built['vein']
     result['storage'] = ctx.target_kind
     if ctx.target_kind == 'local':
         result['note'] = ('no models bucket is configured on this box, so the model was '
@@ -325,7 +431,7 @@ def _load_spec(args, ctx):
         if args.get('mine_id') or args.get('lon') is not None:
             site = _resolve_site(args, ctx)
         return spec, site
-    spec = narrative.parse(args['text'], mine_id=args.get('mine_id'))
+    spec = assay.attach(narrative.parse(args['text'], mine_id=args.get('mine_id')), args['text'])
     site = _resolve_site(args, ctx)
     ctx.specs.put(spec, site)
     return spec, site

@@ -200,8 +200,10 @@ RE_REF_SUFFIX = re.compile(r'^[\s-]*level\b', re.I)
 #: always a mid-sentence full stop, whatever follows
 RE_ABBREV = re.compile(r'\b(?:No|Nos|Mt|Co|Inc|Ft|St|Sec|Figs?|approx|vol|pp)\.$')
 #: a lone capital is an initial in "N. 45 E. for 900 ft" but a full stop in
-#: "driven N 20 W. The vein was stoped" — what follows decides which
-RE_INITIAL = re.compile(r'(?<![A-Za-z])[A-Z]\.$')
+#: "driven N 20 W. The vein was stoped" — what follows decides which.  The
+#: same applies to a lowercase unit: "20 oz. silver" runs on, "900 ft. The
+#: shaft" does not.
+RE_INITIAL = re.compile(r'(?<![A-Za-z])[A-Z]\.$|\b(?:oz|lb|lbs|in|ft|pct|wt|no|cwt)\.$')
 
 
 # ---------------------------------------------------------------- utilities
@@ -836,6 +838,19 @@ def _level_depth(spec, label):
         return _f(label) * FT
     except (TypeError, ValueError):
         return None
+
+
+def parse_bearing(text):
+    """``(azimuth_deg, precision)`` for the first bearing in ``text``, or None.
+    Public because the assay reader needs the same grammar for vein strikes."""
+    got = _pull_bearing(text, _Mask(), 0)
+    return (got[0], got[1]) if got else None
+
+
+def parse_dip(text):
+    """Dip in degrees below horizontal for the first one stated, or None."""
+    got = _pull_dip(text, _Mask(), 0)
+    return got[0] if got else None
 
 
 def unresolved(spec):

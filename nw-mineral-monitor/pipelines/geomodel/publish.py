@@ -42,6 +42,7 @@ import sys
 import time
 
 from . import agentbuild
+from . import mapplate
 from . import narrative
 from . import render2d
 
@@ -183,6 +184,10 @@ def _normal_spec(spec):
         'text_sha256': spec.get('text_sha256'),
         'elements': spec.get('elements') or [],
         'answers': spec.get('answers') or [],
+        'assays': spec.get('assays') or [],
+        'vein': spec.get('vein'),
+        'plates': [{'plate_id': p.get('plate_id'), 'usable': p.get('usable'),
+                    'traces': p.get('traces')} for p in (spec.get('plates') or [])],
     }
 
 
@@ -238,6 +243,18 @@ def manifest(built, spec, site, files, mid, content_hash, now=None):
         'crs': built.get('crs') or {},
         'summary': built.get('summary') or {},
         'elements': elements,
+        # grades quoted in the text, with the basis kept: a selected sample is
+        # not an average, and flattening the two would misdescribe the deposit
+        'assays': list(spec.get('assays') or []),
+        'vein': built.get('vein'),
+        # the scanned plates any surveyed geometry was traced off, with the
+        # georeference that was used and how well its control points agreed
+        'plates': [{'plate_id': p.get('plate_id'), 'plane': p.get('plane'),
+                    'image': p.get('image'), 'source': p.get('source'),
+                    'usable': p.get('usable'), 'scale': p.get('scale'),
+                    'traces': [{'id': t['id'], 'kind': t['kind'], 'name': t['name'],
+                                'points': len(t['points'])} for t in (p.get('traces') or [])]}
+                   for p in (spec.get('plates') or [])],
         # workings the text named but never described: kept so a reader can see
         # that they were noticed and deliberately not built
         'mentions': [{'id': m['id'], 'kind': m['kind'], 'count': m.get('count'),
@@ -258,6 +275,10 @@ def manifest(built, spec, site, files, mid, content_hash, now=None):
             'Every element carries the sentence it came from and that sentence\'s character '
             'span in the input text.',
             'mentions are workings the text names without describing; they were not built.',
+            'surveyed elements were traced off a georeferenced plate listed under "plates"; '
+            'their geometry is the survey\'s, not this builder\'s.',
+            'assay "basis" separates a selected sample from an average; no grade surface is '
+            'interpolated from quoted figures.',
         ],
     }
 

@@ -96,7 +96,17 @@ def main(argv=None):
 
     sub.add_parser('list', help='list formats')
 
+    a = sub.add_parser('autopopulate',
+                       help='build a model for every mine the document store '
+                            'describes (see AUTOPOPULATE.md)')
+    a.add_argument('rest', nargs=argparse.REMAINDER,
+                   help='arguments for geomodel_autopopulate.py (after --)')
+
     args = ap.parse_args(argv)
+    if args.cmd == 'autopopulate':
+        import geomodel_autopopulate
+        rest = [x for x in args.rest if x != '--']
+        return geomodel_autopopulate.main(rest)
     if args.cmd == 'site':
         if args.grade_index is None and (args.lon is None or args.lat is None):
             ap.error('site needs --lon/--lat or --grade-index')

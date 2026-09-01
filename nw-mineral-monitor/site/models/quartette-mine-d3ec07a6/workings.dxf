@@ -1,0 +1,138 @@
+999
+nw-mineral-monitor geomodel DXF R12 export
+  0
+SECTION
+  2
+HEADER
+  9
+$ACADVER
+  1
+AC1009
+  9
+$INSUNITS
+ 70
+6
+  9
+$EXTMIN
+ 10
+688666.453012434
+ 20
+3925212.3853611397
+ 30
+932.6723288417412
+  9
+$EXTMAX
+ 10
+688666.453012434
+ 20
+3925212.3853611397
+ 30
+1054.5923288417412
+  0
+ENDSEC
+  0
+SECTION
+  2
+TABLES
+  0
+TABLE
+  2
+LTYPE
+ 70
+1
+  0
+LTYPE
+  2
+CONTINUOUS
+ 70
+0
+  3
+Solid line
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+ENDTAB
+  0
+TABLE
+  2
+LAYER
+ 70
+2
+  0
+LAYER
+  2
+0
+ 70
+0
+ 62
+7
+  6
+CONTINUOUS
+  0
+LAYER
+  2
+workings_from_description
+ 70
+0
+ 62
+2
+  6
+CONTINUOUS
+  0
+ENDTAB
+  0
+ENDSEC
+  0
+SECTION
+  2
+ENTITIES
+  0
+POLYLINE
+  8
+workings_from_description
+ 66
+1
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 70
+8
+  0
+VERTEX
+  8
+workings_from_description
+ 10
+688666.453012434
+ 20
+3925212.3853611397
+ 30
+1054.5923288417412
+ 70
+32
+  0
+VERTEX
+  8
+workings_from_description
+ 10
+688666.453012434
+ 20
+3925212.3853611397
+ 30
+932.6723288417412
+ 70
+32
+  0
+SEQEND
+  8
+workings_from_description
+  0
+ENDSEC
+  0
+EOF

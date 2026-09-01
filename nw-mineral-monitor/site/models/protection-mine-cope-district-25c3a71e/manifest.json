@@ -1,0 +1,205 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "bearing_deg",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "level",
+   "gap": "g2",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "assay",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": null,
+   "id": "a1",
+   "quote": "The sorted ore carries $100 a ton in silver and gold.",
+   "span": [
+    26,
+    81
+   ],
+   "unit": "$/ton",
+   "value": 100.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.8452,
+  "lon": -115.97533,
+  "x": 585066.6018126504,
+  "y": 4633096.671261425,
+  "z": 1759.031372356894
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 1,
+  "surveyed": 0
+ },
+ "content_sha256": "9c6739878377a55ce051810e4072a9d57222ae8417f0480b8ed55bd446d6fc0b",
+ "coverage": {
+  "assays": 1,
+  "chars": 1438,
+  "elements": 1,
+  "mentions": 0,
+  "mining_sentences": 5,
+  "parsed_chars": 210,
+  "questions": 3,
+  "sentences": 11,
+  "sentences_with_elements": 2,
+  "unparsed_sentences": 3,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "A shaft is sunk to a depth of 62 feet and a level turned at the bottom.",
+   "span": [
+    289,
+    363
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 326194,
+   "content_type": "application/json",
+   "key": "models/protection-mine-cope-district-25c3a71e/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "00a8be4274aa36eaa324d5cd4544d02be1aa072c79b51fbacea397dc34c32346"
+  },
+  {
+   "bytes": 223490,
+   "content_type": "application/octet-stream",
+   "key": "models/protection-mine-cope-district-25c3a71e/model.omf",
+   "name": "model.omf",
+   "sha256": "db908fb7a788f89a09fdee16ad75c289c95281a09d7508c9a2181c4ac5f3c528"
+  },
+  {
+   "bytes": 1096,
+   "content_type": "application/dxf",
+   "key": "models/protection-mine-cope-district-25c3a71e/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "6448e12659edd336dd30aa20b99715353b7e0f7fd6e186e9ed6ad34483d1c994"
+  },
+  {
+   "bytes": 1018,
+   "content_type": "application/geo+json",
+   "key": "models/protection-mine-cope-district-25c3a71e/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "82c145ec9592073738847f8fa0dd9ee1b7ebd845a9d4f16ee98b88abf2ac5e4e"
+  },
+  {
+   "bytes": 1590,
+   "content_type": "image/svg+xml",
+   "key": "models/protection-mine-cope-district-25c3a71e/plan.svg",
+   "name": "plan.svg",
+   "sha256": "5d9debc8cff55defc7e9ce9c8799e1ad1ceec70dc0614e8ee50fe4175c7421e9"
+  },
+  {
+   "bytes": 1445,
+   "content_type": "image/svg+xml",
+   "key": "models/protection-mine-cope-district-25c3a71e/section.svg",
+   "name": "section.svg",
+   "sha256": "614343c13264d984ef4ac11343e05c3df238f22c6d0b65b9e00c711de07bf943"
+  },
+  {
+   "bytes": 1204,
+   "content_type": "image/svg+xml",
+   "key": "models/protection-mine-cope-district-25c3a71e/iso.svg",
+   "name": "iso.svg",
+   "sha256": "8658d02ea810f1b8764e9e2547089db1f994c05cd57f5f088064edf617d1c345"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:51",
+  "spec_id": "s71904684",
+  "text_sha256": "93c4943b686615b8cd3dd325069522e98e1079412419d067eab2ac86e6bc9d3e"
+ },
+ "levels": {},
+ "mentions": [],
+ "mine": {
+  "basis": "ore shipped",
+  "commodity": null,
+  "county": null,
+  "district": "Mountain City (Cope)",
+  "elevation_m": 1759.031372356894,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.8452,
+  "lon": -115.97533,
+  "mine_id": "grades:51",
+  "name": "Protection mine (Cope district)",
+  "quote": "The sorted ore carries $100 a ton in silver and gold.",
+  "source": "USGS Bulletin 408, A Reconnaissance of Some Mining Camps in Elko, Lander, and Eureka Counties, Nevada (W.H. Emmons, 1910), p. 82",
+  "source_url": "https://pubs.usgs.gov/bul/0408/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1870s; reopened by 1908"
+ },
+ "model_id": "protection-mine-cope-district-25c3a71e",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:46:40Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 18.89760000000001
+  },
+  "by_type": {
+   "shaft": 18.89760000000001
+  },
+  "n_features": 1,
+  "total_m": 18.89760000000001
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

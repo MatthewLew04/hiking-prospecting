@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["nw-mineral-monitor/tools/range_server.py", "8000", "--directory", "nw-mineral-monitor/site"],
+      "port": 8000
+    }
+  ]
+}

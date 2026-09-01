@@ -1,0 +1,247 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "length_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "level",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "dip_deg",
+   "gap": "g3",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e3",
+   "id": "a4",
+   "quote": "Some small bunches of good ore were found, consisting of chalcocite, malachite, azurite, chryso- colla, and cerusite, but an average value of about $6 per ton was the best that could be obtained for any considerable part of the deposit.",
+   "span": [
+    7228,
+    7469
+   ],
+   "unit": "$/ton",
+   "value": 6.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 35.45251,
+  "lon": -114.9211,
+  "x": 688666.453012434,
+  "y": 3925212.3853611397,
+  "z": 1054.5923288417412
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 1,
+  "surveyed": 0
+ },
+ "content_sha256": "09fd7a7ad60fafccc9fa80f325337ea756cecab12a3b4a8b8484e1c917c3473e",
+ "coverage": {
+  "assays": 1,
+  "chars": 7574,
+  "elements": 1,
+  "mentions": 3,
+  "mining_sentences": 8,
+  "parsed_chars": 252,
+  "questions": 7,
+  "sentences": 75,
+  "sentences_with_elements": 2,
+  "unparsed_sentences": 4,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e3",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "There are two shafts on the property, an incline about 300 feet deep and a well- constructed vertical shaft 400 feet deep.",
+   "span": [
+    6754,
+    6881
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 251459,
+   "content_type": "application/json",
+   "key": "models/quartette-mine-d3ec07a6/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "f886f9598590e1e64f1dc00d4689030ed44f76002c810f175f0d2badd07e639c"
+  },
+  {
+   "bytes": 170694,
+   "content_type": "application/octet-stream",
+   "key": "models/quartette-mine-d3ec07a6/model.omf",
+   "name": "model.omf",
+   "sha256": "b9d0eeccddd3c2be32c13412bcdbe5c71a8977f1b4921873f0ae5c116e46e8b5"
+  },
+  {
+   "bytes": 1098,
+   "content_type": "application/dxf",
+   "key": "models/quartette-mine-d3ec07a6/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "c78764d40cfcb2cd8a845a1d16727c22784d5491bca96b1ed2056b82f8b67935"
+  },
+  {
+   "bytes": 1020,
+   "content_type": "application/geo+json",
+   "key": "models/quartette-mine-d3ec07a6/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "1eeac3444da0174ab1afbad5058f2f4481c07c76c1dbb833569adcfea9d0b7d6"
+  },
+  {
+   "bytes": 2070,
+   "content_type": "image/svg+xml",
+   "key": "models/quartette-mine-d3ec07a6/plan.svg",
+   "name": "plan.svg",
+   "sha256": "160010c2cd3dd57f5c6b069cb25304cdc370a942e86182ddf9054d59b46e2bb8"
+  },
+  {
+   "bytes": 2098,
+   "content_type": "image/svg+xml",
+   "key": "models/quartette-mine-d3ec07a6/section.svg",
+   "name": "section.svg",
+   "sha256": "cda833ac2b5fa23929a004ecb4897619907b12159b9d436f84e57f64b6a39572"
+  },
+  {
+   "bytes": 1187,
+   "content_type": "image/svg+xml",
+   "key": "models/quartette-mine-d3ec07a6/iso.svg",
+   "name": "iso.svg",
+   "sha256": "f666da4244cdc777428d972a707cdf4624fed7b3dbd13e90647da7935c3385cc"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:44",
+  "spec_id": "s62e62a99",
+  "text_sha256": "2b3200170516db32cb6915b332498082b9d0ceb6047a00c37376e78f1750afc1"
+ },
+ "levels": {
+  "1100": 719.312
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "crosscut",
+   "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+   "span": [
+    5014,
+    5167
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "stope",
+   "quote": "varied widely, and Ransome states that ore worth $25 to $40 a ton, at the old price of gold, was considered good ore, though some worth $400 a ton was being stoped in 1906.",
+   "span": [
+    5209,
+    5383
+   ]
+  },
+  {
+   "count": 2,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "There are two shafts on the property, an incline about 300 feet deep and a well- constructed vertical shaft 400 feet deep.",
+   "span": [
+    6754,
+    6881
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Searchlight",
+  "elevation_m": 1054.5923288417412,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 35.45251,
+  "lon": -114.9211,
+  "mine_id": "grades:44",
+  "name": "Quartette mine",
+  "quote": "Ransome states that ore worth $25 to $40 a ton, at the old price of gold, was considered good ore, though some worth $400 a ton was being stoped in 1906.",
+  "source": "USGS Bulletin 906-D, Geology of the Searchlight District, Clark County, Nevada (Eugene Callaghan, 1939), p. 163",
+  "source_url": "https://pubs.usgs.gov/bul/0906d/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1906"
+ },
+ "model_id": "quartette-mine-d3ec07a6",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:54:21Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 121.91999999999996
+  },
+  "by_type": {
+   "shaft": 121.91999999999996
+  },
+  "n_features": 1,
+  "total_m": 121.91999999999996
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

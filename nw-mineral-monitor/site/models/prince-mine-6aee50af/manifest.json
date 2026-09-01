@@ -1,0 +1,241 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g1",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.90107,
+  "lon": -114.4739,
+  "x": 722100.2610933648,
+  "y": 4197847.377832395,
+  "z": 1782.9914604965861
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "8d0a8558ac2e954061bb7ff333060cbc288dfd9d4e5a27166c3d2dd185cf0c2d",
+ "coverage": {
+  "assays": 0,
+  "chars": 3653,
+  "elements": 2,
+  "mentions": 4,
+  "mining_sentences": 10,
+  "parsed_chars": 343,
+  "questions": 10,
+  "sentences": 38,
+  "sentences_with_elements": 2,
+  "unparsed_sentences": 6,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "Louise",
+   "placement": "the collar",
+   "quote": "Louise shaft is 5,830 feet, and that of the Prince ver- tical shaft is 5,855 feet.",
+   "span": [
+    0,
+    83
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "Louise shaft is 5,830 feet, and that of the Prince ver- tical shaft is 5,855 feet.",
+   "span": [
+    0,
+    83
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 284137,
+   "content_type": "application/json",
+   "key": "models/prince-mine-6aee50af/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "6a59a07d12a5f1386f94545b8d5cf952333676f43d9e016fdee6cccd8926ca81"
+  },
+  {
+   "bytes": 188526,
+   "content_type": "application/octet-stream",
+   "key": "models/prince-mine-6aee50af/model.omf",
+   "name": "model.omf",
+   "sha256": "6ac394de35942856bac77e7b6e705c1a3ef3677bd43d6e176323aac0686a4f30"
+  },
+  {
+   "bytes": 1493,
+   "content_type": "application/dxf",
+   "key": "models/prince-mine-6aee50af/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "2870ea0a51e9795a85685b1ffb0187b14476f6ec590a8cfcbcf531a03822c760"
+  },
+  {
+   "bytes": 1740,
+   "content_type": "application/geo+json",
+   "key": "models/prince-mine-6aee50af/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "ce0d3f5d396e145594d3100f122e6ceacb5bfe48ce970f77f9fb24b3d7283e80"
+  },
+  {
+   "bytes": 1755,
+   "content_type": "image/svg+xml",
+   "key": "models/prince-mine-6aee50af/plan.svg",
+   "name": "plan.svg",
+   "sha256": "37f3aeac6c6f320d5e8e402d3eae1cec54c76fd9930d9444bcf88a7bee2d6b4a"
+  },
+  {
+   "bytes": 1556,
+   "content_type": "image/svg+xml",
+   "key": "models/prince-mine-6aee50af/section.svg",
+   "name": "section.svg",
+   "sha256": "cd7faa923ba1c9fa03c18a9b5cfa5f95a10aec2953ae8b9f1a8022b1b6293e15"
+  },
+  {
+   "bytes": 1318,
+   "content_type": "image/svg+xml",
+   "key": "models/prince-mine-6aee50af/iso.svg",
+   "name": "iso.svg",
+   "sha256": "dc4ff3725ccd385c0fe83aeafdb60f0a2af1e20d69adb0879d1a271a784f3d69"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:124",
+  "spec_id": "s2f665f3b",
+  "text_sha256": "c6529f7ff3c5ad64fc5e2435ee785f00d3aafbcd4bf16d822bc79c787e7d5b95"
+ },
+ "levels": {},
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "shaft",
+   "quote": "In order to reach these ore bodies a vertical shaft was begun in 1918.",
+   "span": [
+    1077,
+    1150
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "pit",
+   "quote": "In order to obtain all of the ore in the much faulted cen- tral section of the ore body, where it was difficult to sustain the roof, the overburden was removed and two large glory holes were made.",
+   "span": [
+    1405,
+    1606
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "By the beginning of 1920 these ore beds had been largely exhausted, and the bulk of the output in 1920 came from the Davidson ore body, which had been taken over in July, 1918, and principally from a big stope that was 1,000 feet from the hoisting shaft.",
+   "span": [
+    1606,
+    1866
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "shaft",
+   "quote": "It can be traced a short distance north of the Prince incline but not much farther, although exposures of bedrock are excellent.",
+   "span": [
+    2403,
+    2535
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Pioche",
+  "elevation_m": 1782.9914604965861,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.90107,
+  "lon": -114.4739,
+  "mine_id": "grades:124",
+  "name": "Prince mine",
+  "quote": "Gold grade 1 g/mt (Production_detail, yr 1925)",
+  "source": "USGS MRDS Production_detail (dep_id 10008111)",
+  "source_url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10008111",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1925"
+ },
+ "model_id": "prince-mine-6aee50af",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:54:15Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 3561.5879999999997
+  },
+  "by_type": {
+   "shaft": 3561.5879999999997
+  },
+  "n_features": 2,
+  "total_m": 3561.5879999999997
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

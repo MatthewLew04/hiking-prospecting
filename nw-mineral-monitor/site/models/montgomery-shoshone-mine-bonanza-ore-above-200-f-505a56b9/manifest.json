@@ -1,0 +1,354 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "depth_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "bearing_deg",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "depth_m",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "level",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "depth_m",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "bearing_deg",
+   "gap": "g6",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "length_m",
+   "gap": "g7",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 36.91329,
+  "lon": -116.80922,
+  "x": 516994.1188372007,
+  "y": 4085270.411710334,
+  "z": 1227.3395361029568
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "bb1f81676d6067479509decc232c8261094cc59b5a2344f557a7f6b2790e95db",
+ "coverage": {
+  "assays": 0,
+  "chars": 12628,
+  "elements": 2,
+  "mentions": 9,
+  "mining_sentences": 25,
+  "parsed_chars": 1144,
+  "questions": 22,
+  "sentences": 112,
+  "sentences_with_elements": 7,
+  "unparsed_sentences": 13,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "bearing_deg": "described",
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "Montgomery-Shoshone",
+   "placement": "the collar",
+   "quote": "A mile N. 49 \u00b0 E. of the Montgomery-Shoshone shaft there is a group of prominent rock outcrops 800 feet long and 100 feet wide, which trends N. 30 \u00b0 E.",
+   "span": [
+    1508,
+    1662
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e5",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The new shaft is about 870 feet northeast of the main shaft of the Montgomery-Shoshone mine and is in rhyolite No. 10.",
+   "span": [
+    12000,
+    12121
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 285168,
+   "content_type": "application/json",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "481e49751fe436891ca2194cb987a4878b5e379709c9578398d2ef6f6234a88c"
+  },
+  {
+   "bytes": 196167,
+   "content_type": "application/octet-stream",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/model.omf",
+   "name": "model.omf",
+   "sha256": "8f1afaef800d7a79450e062dacb91add63bb66c14ad8deacad3d2e0c2807a347"
+  },
+  {
+   "bytes": 1489,
+   "content_type": "application/dxf",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "d7c67d0669bec200ae2e73a00d06c5a06fb98cebd1494ad5b15b532c49237d89"
+  },
+  {
+   "bytes": 2182,
+   "content_type": "application/geo+json",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "43c5e649566840e941ebd10737acd1ffd7d74492e2f1ceb690e927ca9365f05b"
+  },
+  {
+   "bytes": 1816,
+   "content_type": "image/svg+xml",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/plan.svg",
+   "name": "plan.svg",
+   "sha256": "8e5f4012f944295f550846906ad99486b52470e64cfb5954fa0b598ea49e1812"
+  },
+  {
+   "bytes": 2726,
+   "content_type": "image/svg+xml",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/section.svg",
+   "name": "section.svg",
+   "sha256": "61e6851f82b75cff36c8441058b89845ac2798a0c79e7dd825a92c278e589f2c"
+  },
+  {
+   "bytes": 1366,
+   "content_type": "image/svg+xml",
+   "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/iso.svg",
+   "name": "iso.svg",
+   "sha256": "f9f3361d65d8cb79d7257a64d7675762cd9a1202d8a3383bfd6f483eed05c7ce"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:0",
+  "spec_id": "s405ab08e",
+  "text_sha256": "f45bede377fd045f41c0548f2640b4cf816b66c04acc6a3d61bf4caf36621b36"
+ },
+ "levels": {
+  "200": 1166.38,
+  "300": 1135.9,
+  "400": 1105.42,
+  "50": 1212.1,
+  "500": 1074.94,
+  "600": 1044.46
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "The drifts running southwest from the vicinity of the main shaft to the Polaris shaft are in general parallel with the Montgomery-Shoshone fault and lie on the southeast side of the basalt strip that occupies part of the fault zone.",
+   "span": [
+    3379,
+    3616
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "shaft",
+   "quote": "The drifts running southwest from the vicinity of the main shaft to the Polaris shaft are in general parallel with the Montgomery-Shoshone fault and lie on the southeast side of the basalt strip that occupies part of the fault zone.",
+   "span": [
+    3379,
+    3616
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "The drifts running southwest from the vicinity of the main shaft to the Polaris shaft are in general parallel with the Montgomery-Shoshone fault and lie on the southeast side of the basalt strip that occupies part of the fault zone.",
+   "span": [
+    3379,
+    3616
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "drift",
+   "quote": "The nearly north-south drifts near the",
+   "span": [
+    3616,
+    3659
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "shaft",
+   "quote": "If a continuous vertical section, such as that afforded by the main shaft during sinking and before timbering, could be carefully examined and specimens col- lected at intervals, it might be possible to determine the contact between the two flows.",
+   "span": [
+    8265,
+    8517
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "stope",
+   "quote": "The present levels and accessible stopes, however, are not adequate for this purpose.",
+   "span": [
+    8517,
+    8605
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "shaft",
+   "quote": "In the neighborhood of the main shaft is what may conveniently be designated the Montgomery-Shoshone vein zone.",
+   "span": [
+    9309,
+    9423
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "shaft",
+   "quote": "The new shaft is about 870 feet northeast of the main shaft of the Montgomery-Shoshone mine and is in rhyolite No. 10.",
+   "span": [
+    12000,
+    12121
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m9",
+   "kind": "crosscut",
+   "quote": "In the drift northeast of this crosscut the two rhyolites are separated merely by a seam of gouge which dips 53\u00b0 NW.",
+   "span": [
+    12419,
+    12538
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Bullfrog",
+  "elevation_m": 1227.3395361029568,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 36.91329,
+  "lon": -116.80922,
+  "mine_id": "grades:0",
+  "name": "Montgomery-Shoshone mine (bonanza ore above 200-foot level)",
+  "quote": "Even in the Bonanza ore of the Montgomery-Shoshone mine above the 200-foot level, much of which averaged over 600 ounces of silver to the ton",
+  "source": "USGS Bulletin 407, Geology and Ore Deposits of the Bullfrog District, Nevada (Ransome, Emmons & Garrey, 1910), p. 91",
+  "source_url": "https://pubs.usgs.gov/bul/0407/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1905-1908"
+ },
+ "model_id": "montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:42Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 509.01599999999996
+  },
+  "by_type": {
+   "shaft": 509.01599999999996
+  },
+  "n_features": 2,
+  "total_m": 509.01599999999996
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

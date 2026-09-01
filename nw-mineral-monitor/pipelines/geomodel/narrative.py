@@ -973,3 +973,56 @@ def parse_dip(text):
 
 def unresolved(spec):
     return [g for g in spec['gaps'] if g['required']]
+
+
+def lexicon(text):
+    """The underground vocabulary of a description, counted — words, not geometry.
+
+    ``kinds`` counts every workings phrase by canonical kind with the verbatim
+    surface forms as written ("glory hole", "cross-cut"); referent uses ("from
+    the portal") count too, because this is a census of the words.  ``verbs``
+    counts the mining verbs that mark a sentence as being about workings.
+    ``levels`` lists the level labels the text names, in first-seen order.
+    ``sentences``/``mining_sentences`` size the description.  Deterministic and
+    read-only; parse() is where words become elements and questions.
+    """
+    text = text or ''
+    kinds = {}
+    noun_forms = {re.sub(r'[\s-]+', ' ', w) for w, _ in KIND_WORDS} | {'workings'}
+    for a in _anchors(text):
+        surface = re.sub(r'\s+', ' ', a['surface'].lower())
+        entry = kinds.setdefault(a['kind'], {'count': 0, 'surfaces': {}})
+        entry['count'] += 1
+        entry['surfaces'][surface] = entry['surfaces'].get(surface, 0) + 1
+    verbs = {}
+    for m in MINING_WORDS.finditer(text):
+        w = re.sub(r'\s+', ' ', m.group(0).lower())
+        # MINING_WORDS marks mining sentences with nouns and verbs alike;
+        # the nouns are already the kinds census, so only the verbs count here
+        if re.sub(r'e?s$', '', w) in noun_forms or w in noun_forms:
+            continue
+        verbs[w] = verbs.get(w, 0) + 1
+    levels, taken = [], []
+    for pattern, label in ((RE_LEVEL_NO, lambda m: 'No. %s' % m.group('n')),
+                           (RE_LEVEL_NUM, lambda m: m.group('lv').replace(',', '')),
+                           (RE_LEVEL_NAMED, lambda m: re.sub(r'\s+', ' ', m.group('n').lower()))):
+        for m in pattern.finditer(text):
+            # "No. 3 level" also matches the numeric pattern from "3 level";
+            # the first (most specific) pattern to claim a span keeps it
+            if any(m.start() < b and a < m.end() for a, b in taken):
+                continue
+            taken.append((m.start(), m.end()))
+            name = label(m)
+            if not any(lv['label'] == name for lv in levels):
+                levels.append({'label': name, 'span': [m.start(), m.end()]})
+    sents = sentences(text)
+    mining = [s for s in sents if MINING_WORDS.search(s[2])]
+    return {
+        'schema': 'nwmm-lexicon/1',
+        'kinds': kinds,
+        'verbs': verbs,
+        'levels': levels,
+        'sentences': len(sents),
+        'mining_sentences': len(mining),
+        'chars': len(text),
+    }

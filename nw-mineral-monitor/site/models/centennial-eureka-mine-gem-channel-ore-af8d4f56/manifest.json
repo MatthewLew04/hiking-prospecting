@@ -1,0 +1,241 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "depth_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "length_m",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g3",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.94384,
+  "lon": -112.12246,
+  "x": 404107.6147057505,
+  "y": 4422127.142878411,
+  "z": 2105.0372774434463
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 1,
+  "surveyed": 0
+ },
+ "content_sha256": "efc00a30d8119f7430f5cff8c237efce793c3bae5c272d7cdd23dd615216fa00",
+ "coverage": {
+  "assays": 0,
+  "chars": 2275,
+  "elements": 1,
+  "mentions": 4,
+  "mining_sentences": 11,
+  "parsed_chars": 574,
+  "questions": 11,
+  "sentences": 25,
+  "sentences_with_elements": 3,
+  "unparsed_sentences": 7,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32612,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 12
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "\u00b7The deposit is opened by a vertical shaft having a total depth o~ 2,281 feet, penetrating to an altitude of 4,606 feet.",
+   "span": [
+    736,
+    860
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 284270,
+   "content_type": "application/json",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "f494d01138ba653310013a6d22fa8057319e2a5df4c869df141c9e1a6faf96a3"
+  },
+  {
+   "bytes": 197276,
+   "content_type": "application/octet-stream",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/model.omf",
+   "name": "model.omf",
+   "sha256": "ff32baf15c4d777c4888decaee1744fb04a0dd26651b464c3e709907d0f0d728"
+  },
+  {
+   "bytes": 1100,
+   "content_type": "application/dxf",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "f63e76e6b48988542b74518ece25cb70a6ad58e546cfd8de1d87e9f61ee414f7"
+  },
+  {
+   "bytes": 1099,
+   "content_type": "application/geo+json",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "607d0bbf43546ca60d79ccbaaf07a5aefacc70e75bfcad64783c9741b0daede0"
+  },
+  {
+   "bytes": 1872,
+   "content_type": "image/svg+xml",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/plan.svg",
+   "name": "plan.svg",
+   "sha256": "d9c382c9a627d340b22c8f79e0142bdf64f577faf15bc77f32590028c3efd04a"
+  },
+  {
+   "bytes": 1640,
+   "content_type": "image/svg+xml",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/section.svg",
+   "name": "section.svg",
+   "sha256": "4a3a29168d6dd02be72af42213404769e90fa0329285e0bfa14820b85af61690"
+  },
+  {
+   "bytes": 1213,
+   "content_type": "image/svg+xml",
+   "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/iso.svg",
+   "name": "iso.svg",
+   "sha256": "3ce1f879c8b2f3af2ce7598dfca06b1f02ea82307fb0fcf9af473d809ee01756"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:111",
+  "spec_id": "s13cabc04",
+  "text_sha256": "a92b12000807eaaf4c5175d566a8afda794f786e0766368fdcca4271202b5c4e"
+ },
+ "levels": {
+  "2000": 1495.437
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "The developments comprise at least 20 miles of drifts\u00b7;",
+   "span": [
+    535,
+    593
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "raise",
+   "quote": "raises, and shafts and extend mainly over a zone 400 to 800 feet wide for 2,400 feet south-southeast of the shaft and 400 feet north of it.",
+   "span": [
+    593,
+    736
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "stope",
+   "quote": "most great shoot, which may be called the California column, as it contains the California stope, connects with the Gem\u00b7 stopes on level 6 and then follows the first great easterly cross break downward, though not on its dip of 68 \u00b0 but pitching about 45\u00b0 southeast to the Kan- sas stopes on level14.",
+   "span": [
+    1120,
+    1427
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "stope",
+   "quote": "most great shoot, which may be called the California column, as it contains the California stope, connects with the Gem\u00b7 stopes on level 6 and then follows the first great easterly cross break downward, though not on its dip of 68 \u00b0 but pitching about 45\u00b0 southeast to the Kan- sas stopes on level14.",
+   "span": [
+    1120,
+    1427
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "assay",
+  "commodity": null,
+  "county": null,
+  "district": "Tintic",
+  "elevation_m": 2105.0372774434463,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.94384,
+  "lon": -112.12246,
+  "mine_id": "grades:111",
+  "name": "Centennial Eureka mine (Gem channel ore)",
+  "quote": "The ore was only partly oxidized but contained in places 100 ounces of silver and 1 ounce of gold to the ton.",
+  "source": "USGS Professional Paper 107, Geology and Ore Deposits of the Tintic Mining District, Utah (W. Lindgren & G.F. Loughlin, 1919), p. 201",
+  "source_url": "https://pubs.usgs.gov/pp/0107/report.pdf",
+  "state": "UT",
+  "terrain_zoom": 13,
+  "years": "1890s-1910s"
+ },
+ "model_id": "centennial-eureka-mine-gem-channel-ore-af8d4f56",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:44Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 695.2487999999998
+  },
+  "by_type": {
+   "shaft": 695.2487999999998
+  },
+  "n_features": 1,
+  "total_m": 695.2487999999998
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

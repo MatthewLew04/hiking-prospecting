@@ -1,0 +1,459 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "level",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "level",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "level",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "length_m",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "level",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "depth_m",
+   "gap": "g7",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "level",
+   "gap": "g8",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": null,
+   "id": "a1",
+   "quote": "The metal deposits o~ the district were formed at ores also carry gold, averaging in the better one time, and that the genesis of the ores in grade of ore $10 to $12 a ton, and some silver monzonite is the same as that of the ores in probably averaging 20 ounces to the ton.",
+   "span": [
+    5306,
+    5584
+   ],
+   "unit": "$/ton",
+   "value": 12.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": null,
+   "confidence": "described",
+   "element": null,
+   "id": "a2",
+   "quote": "The metal deposits o~ the district were formed at ores also carry gold, averaging in the better one time, and that the genesis of the ores in grade of ore $10 to $12 a ton, and some silver monzonite is the same as that of the ores in probably averaging 20 ounces to the ton.",
+   "span": [
+    5306,
+    5584
+   ],
+   "unit": "oz/ton",
+   "value": 20.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "pb",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a3",
+   "quote": "A little gold and copper and zinc are cred- ited to the mine, but -the principal output is in lead and silver, and it is probably not an exaggeration to say that all the ore extracted has ussayed on\u00b7 the average about 10 per cent of lead and 40 ounces of silver to the ton.",
+   "span": [
+    7171,
+    7450
+   ],
+   "unit": "%",
+   "value": 10.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a4",
+   "quote": "A little gold and copper and zinc are cred- ited to the mine, but -the principal output is in lead and silver, and it is probably not an exaggeration to say that all the ore extracted has ussayed on\u00b7 the average about 10 per cent of lead and 40 ounces of silver to the ton.",
+   "span": [
+    7171,
+    7450
+   ],
+   "unit": "oz/ton",
+   "value": 40.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.96217,
+  "lon": -112.12385,
+  "x": 404014.4931857057,
+  "y": 4424163.141272274,
+  "z": 2061.357358275894
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 4,
+  "surveyed": 0
+ },
+ "content_sha256": "174e18b942408079fc2d6a21c9f551bd80881f82dfe18d7a98e29d6c765f0174",
+ "coverage": {
+  "assays": 4,
+  "chars": 20896,
+  "elements": 4,
+  "mentions": 10,
+  "mining_sentences": 46,
+  "parsed_chars": 1474,
+  "questions": 42,
+  "sentences": 283,
+  "sentences_with_elements": 8,
+  "unparsed_sentences": 31,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32612,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 12
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "Gemini",
+   "placement": "the collar",
+   "quote": "an altitude of 4,800 feet north of the Gemini shaft to 6,100 feet at the shaft, to 6,400 feet at",
+   "span": [
+    6399,
+    6500
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e3",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "Stope 2,300 feet north of shaft which they follow for 1,000 feet as lenses sepa- and 16 most of the ore bodies Tie from 1,000 rated by barren stretches.",
+   "span": [
+    8001,
+    8158
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e8",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The ore by the writer.1 body found in the new shaft is presumably, Since the writer's last visit to this mine, in like that in the East Tintic Development vein, December, 1916, the new or northern shaft, a replacement vein deposited where solutions having three compartments, has been com- worked their way through a muc;h shattered pleted to a depth of 1,300 feet.",
+   "span": [
+    20242,
+    20614
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e9",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "Raddatz, manager of the mine, the Further developments in this part of the mine upper 525 feet of this shaft is in porphyry (rhy- should afford interesting data regarding the olite), and the remainder in \"",
+   "span": [
+    20688,
+    20896
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 287909,
+   "content_type": "application/json",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "f570e7da5a0bf62e8ad236d6c14cfaa11e8692ce39fb8e9fb124d28a0cbd417e"
+  },
+  {
+   "bytes": 197625,
+   "content_type": "application/octet-stream",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/model.omf",
+   "name": "model.omf",
+   "sha256": "f023071c66a4f3ab9e29e4f8292c5a17ddcf481dfce00b241c1ea04c96db68e5"
+  },
+  {
+   "bytes": 2268,
+   "content_type": "application/dxf",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "2ab9c75a84954d1c7905451777780e90e63b53acaed4ec3c52ca298ba9f569c7"
+  },
+  {
+   "bytes": 4302,
+   "content_type": "application/geo+json",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "27100390ba260fbcd23ae5ff003d37e8ed78e15449ff755e052a535b293ffc8a"
+  },
+  {
+   "bytes": 2805,
+   "content_type": "image/svg+xml",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/plan.svg",
+   "name": "plan.svg",
+   "sha256": "335303e352bfaa3cc8a7ab49d127f59f953863a7629f4281b41a70634d538c97"
+  },
+  {
+   "bytes": 2671,
+   "content_type": "image/svg+xml",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/section.svg",
+   "name": "section.svg",
+   "sha256": "810b2a3aacefdbb8006b6736e12c452378834f91fc11a205fa22deaf53290f50"
+  },
+  {
+   "bytes": 1606,
+   "content_type": "image/svg+xml",
+   "key": "models/gemini-mine-enargite-specimen-c75bc57f/iso.svg",
+   "name": "iso.svg",
+   "sha256": "d42b2cbb7947bb8acf79fed8ed4b92d45bd3267b7a6c9d984158aa27afac3d09"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:110",
+  "spec_id": "s7224a630",
+  "text_sha256": "b3e433989c7c56dff5d9c251bef2b905fc2e1eb242ab79ad05d5c4bbebe05868"
+ },
+ "levels": {
+  "1650": 1558.437
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "shaft",
+   "quote": "Development.-The Gemini vertie11l shaft is sunk on the north bank of",
+   "span": [
+    7065,
+    7137
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "winze",
+   "quote": "After a Winze had been sunk to level 19 the water was held there by electric pumps lifting 300 gallons a minute, or 432,000 gallons in 24 hours.",
+   "span": [
+    7646,
+    7794
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "stope",
+   "quote": "Rich sulphide ore in winze stope on level 16!, Gem channel.",
+   "span": [
+    10917,
+    10977
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "stope",
+   "quote": "Some of the lead stopes are adjoined.",
+   "span": [
+    12660,
+    12699
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "stope",
+   "quote": "The siliceous body just described in part overlies the pr.mcipal stope of the miife, opened just west of the bottom of the winze on the \"1,600-foot\" leveL This stope when visited (Dec.",
+   "span": [
+    14915,
+    15105
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "stope",
+   "quote": ", The orein the main stope consists of alter- nating layers of hig.",
+   "span": [
+    16225,
+    16294
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "stope",
+   "quote": "A little high grade cerusite was ex- posed in the roof of th stope.",
+   "span": [
+    16324,
+    16392
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "stope",
+   "quote": "\" No true porp4yry has b en found in or near this stope.",
+   "span": [
+    18055,
+    18115
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m9",
+   "kind": "stope",
+   "quote": "from this stope up to December 8, 1916, ranged Chief Consolidated, and Gemini mines of the as follows:",
+   "span": [
+    18313,
+    18416
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m10",
+   "kind": "shaft",
+   "quote": "The ore by the writer.1 body found in the new shaft is presumably, Since the writer's last visit to this mine, in like that in the East Tintic Development vein, December, 1916, the new or northern shaft, a replacement vein deposited where solutions having three compartments, has been com- worked their way through a muc;h shattered pleted to a depth of 1,300 feet.",
+   "span": [
+    20242,
+    20614
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "assay",
+  "commodity": null,
+  "county": null,
+  "district": "Tintic",
+  "elevation_m": 2061.357358275894,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.96217,
+  "lon": -112.12385,
+  "mine_id": "grades:110",
+  "name": "Gemini mine (enargite specimen)",
+  "quote": "A specimen of pure enargite from the Gemini mine was found to contain $1.65 in gold and 45.5 ounces of silver to the ton.",
+  "source": "USGS Professional Paper 107, Geology and Ore Deposits of the Tintic Mining District, Utah (W. Lindgren & G.F. Loughlin, 1919), p. 160",
+  "source_url": "https://pubs.usgs.gov/pp/0107/report.pdf",
+  "state": "UT",
+  "terrain_zoom": 13,
+  "years": "ca. 1916"
+ },
+ "model_id": "gemini-mine-enargite-specimen-c75bc57f",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:43Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 2720.3399999999997
+  },
+  "by_type": {
+   "shaft": 2720.3399999999997
+  },
+  "n_features": 4,
+  "total_m": 2720.3399999999997
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

@@ -1,0 +1,355 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "bearing_deg",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "bearing_deg",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "bearing_deg",
+   "gap": "g6",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "bearing_deg",
+   "gap": "g7",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "bearing_deg",
+   "gap": "g8",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e8",
+   "field": "bearing_deg",
+   "gap": "g9",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e9",
+   "field": "bearing_deg",
+   "gap": "g10",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e10",
+   "field": "bearing_deg",
+   "gap": "g11",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e10",
+   "field": "level",
+   "gap": "g12",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a1",
+   "quote": "On the lower level northward for 380 feet from the crosscut tunnel the vein is locally 45 feet in width and in places contained good ore shoots, of which one of the best had a width of 8 feet and averaged $21 to the ton.",
+   "span": [
+    2609,
+    2833
+   ],
+   "unit": "$/ton",
+   "value": 21.0,
+   "width_m": 115.824
+  },
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e2",
+   "id": "a2",
+   "quote": "A considerable percentage of the ore is said to have averaged $40 to the ton.",
+   "span": [
+    2949,
+    3028
+   ],
+   "unit": "$/ton",
+   "value": 40.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.83879,
+  "lon": -115.41119,
+  "x": 631914.9505640828,
+  "y": 4633097.691411306,
+  "z": 2625.7620210003765
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "6751d93296647b1984342ecdfa8c60c1a55a1020a4dc5131965b95407974c99e",
+ "coverage": {
+  "assays": 2,
+  "chars": 6187,
+  "elements": 2,
+  "mentions": 4,
+  "mining_sentences": 18,
+  "parsed_chars": 1376,
+  "questions": 13,
+  "sentences": 63,
+  "sentences_with_elements": 10,
+  "unparsed_sentences": 7,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described",
+    "level": "described",
+    "secondary_m": "described"
+   },
+   "id": "e1",
+   "kind": "tunnel",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "On the lower level northward for 380 feet from the crosscut tunnel the vein is locally 45 feet in width and in places contained good ore shoots, of which one of the best had a width of 8 feet and averaged $21 to the ton.",
+   "span": [
+    2609,
+    2833
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described"
+   },
+   "id": "e2",
+   "kind": "tunnel",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "For 380 feet southward from the crosscut tunnel the vein for the most part has good walls and shows ore in places.",
+   "span": [
+    2833,
+    2949
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 328059,
+   "content_type": "application/json",
+   "key": "models/bluster-mine-addcddac/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "01325672f8b3b8d6f9e06aca2c11a3e093144d5e18e6dcfab54a7161371cc291"
+  },
+  {
+   "bytes": 232153,
+   "content_type": "application/octet-stream",
+   "key": "models/bluster-mine-addcddac/model.omf",
+   "name": "model.omf",
+   "sha256": "d954e843503af5cd5b0ac13c3d6984d5ed72c1fda4ede0d93a9f943d8aad6f77"
+  },
+  {
+   "bytes": 1492,
+   "content_type": "application/dxf",
+   "key": "models/bluster-mine-addcddac/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "4249bc54601017666724eec65c0976b26634df35bd8971f3d50814ddcede1b8d"
+  },
+  {
+   "bytes": 1965,
+   "content_type": "application/geo+json",
+   "key": "models/bluster-mine-addcddac/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "20d7f3d0daddd481a50ce0004d674a012400c4ad38a34fcc92cfddc2cbe1b166"
+  },
+  {
+   "bytes": 6419,
+   "content_type": "image/svg+xml",
+   "key": "models/bluster-mine-addcddac/plan.svg",
+   "name": "plan.svg",
+   "sha256": "182ac6809d33b0d1a59544a2d3b3f4e1cc2645151bc1e9d0841fdd39d85cf5a2"
+  },
+  {
+   "bytes": 2402,
+   "content_type": "image/svg+xml",
+   "key": "models/bluster-mine-addcddac/section.svg",
+   "name": "section.svg",
+   "sha256": "6409655d2ab82c9522e30f5591a047b00a245d084b2b7d98a4673636d0cead5e"
+  },
+  {
+   "bytes": 1327,
+   "content_type": "image/svg+xml",
+   "key": "models/bluster-mine-addcddac/iso.svg",
+   "name": "iso.svg",
+   "sha256": "e1a8733111617ad3e0117b696a1b9b038768c26b16b37db23203aaec04296300"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:33",
+  "spec_id": "sc9fd2575",
+  "text_sha256": "8b11926e57e05449375864baf506118cf3b562b5c6ae099fc0586b4c7d94b2e4"
+ },
+ "levels": {
+  "adit": 2626.341
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "The drift at the time of visit was entering good-looking quartz ore.",
+   "span": [
+    3082,
+    3152
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "tunnel",
+   "quote": "Eich pannings were found in the outcrop at the portal of No. 2 tunnel.",
+   "span": [
+    3670,
+    3742
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "tunnel",
+   "quote": "The mine is developed through a vertical range of 500 feet by about 3,500 feet of workings, consisting mainly of adit tunnels driven from the north (fig.",
+   "span": [
+    4422,
+    4578
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "tunnel",
+   "quote": "The lowest tunnel (No. 5), 300 feet long, with the portal near Bonanza Gulch at an elevation of approximately 8,100 feet, 140 feet lower than tunnel No. 4, has not yet reached the vein.",
+   "span": [
+    4812,
+    5001
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "assay",
+  "commodity": null,
+  "county": null,
+  "district": "Jarbidge",
+  "elevation_m": 2625.7620210003765,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.83879,
+  "lon": -115.41119,
+  "mine_id": "grades:33",
+  "name": "Bluster mine",
+  "quote": "The Bluster vein, 5 feet in width near the surface, was said to average $60 to the ton.",
+  "source": "USGS Bulletin 741, The Jarbidge Mining District, Nevada (F.C. Schrader, 1923), p. 31-32",
+  "source_url": "https://pubs.usgs.gov/bul/0741/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1914"
+ },
+ "model_id": "bluster-mine-addcddac",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:54:19Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 231.65089558194742
+  },
+  "by_type": {
+   "adit": 231.65089558194742
+  },
+  "n_features": 2,
+  "total_m": 231.65089558194742
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

@@ -1,0 +1,493 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "bearing_deg",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "bearing_deg",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "length_m",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "level",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e8",
+   "field": "bearing_deg",
+   "gap": "g7",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e8",
+   "field": "level",
+   "gap": "g8",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e9",
+   "field": "bearing_deg",
+   "gap": "g9",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e9",
+   "field": "level",
+   "gap": "g10",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e10",
+   "field": "level",
+   "gap": "g11",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "assay",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": null,
+   "id": "a1",
+   "quote": "indeed, there has been a drastic downward re- vision of the amount of ore indicated in the Tonopah Divide mine, from 330,000 tons of ore containing 9,000,000 ounces of silver, to 52,000 tons, containing 1,000,000 ounces, and the boom in the",
+   "span": [
+    597,
+    844
+   ],
+   "unit": "oz/ton",
+   "value": 9000000.0,
+   "width_m": null
+  },
+  {
+   "basis": "assay",
+   "commodity": null,
+   "confidence": "described",
+   "element": null,
+   "id": "a2",
+   "quote": "indeed, there has been a drastic downward re- vision of the amount of ore indicated in the Tonopah Divide mine, from 330,000 tons of ore containing 9,000,000 ounces of silver, to 52,000 tons, containing 1,000,000 ounces, and the boom in the",
+   "span": [
+    597,
+    844
+   ],
+   "unit": "oz/ton",
+   "value": 1000000.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a3",
+   "quote": "Julian, 52,000 tons of first-class ore averaging 20 ounces of silver and 0.08 ounce of gold to the ton.",
+   "span": [
+    4054,
+    4159
+   ],
+   "unit": "oz/ton",
+   "value": 20.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "au",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a4",
+   "quote": "Julian, 52,000 tons of first-class ore averaging 20 ounces of silver and 0.08 ounce of gold to the ton.",
+   "span": [
+    4054,
+    4159
+   ],
+   "unit": "oz/ton",
+   "value": 0.08,
+   "width_m": null
+  },
+  {
+   "basis": "assay",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e2",
+   "id": "a5",
+   "quote": "Careful sampling of the outcrop showed it to be barren, except for a narrow streak against the wall of the old prospect shaft, which yielded, according to Super- intendent William Watters, 100 ounces of silver to the ton.",
+   "span": [
+    5435,
+    5660
+   ],
+   "unit": "oz/ton",
+   "value": 100.0,
+   "width_m": null
+  },
+  {
+   "basis": "assay",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e5",
+   "id": "a11",
+   "quote": "The vein is 6 inches thick and is reported to carry in places $40 a ton in gold.",
+   "span": [
+    8466,
+    8548
+   ],
+   "unit": "$/ton",
+   "value": 40.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.99605,
+  "lon": -117.24008,
+  "x": 478920.4718435874,
+  "y": 4205403.9469962595,
+  "z": 1897.5424043344403
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 4,
+  "surveyed": 0
+ },
+ "content_sha256": "34b0dec8706fb32e41bae4ddeeaabd2ae19b78f92f0116c30b30331c3764fbcc",
+ "coverage": {
+  "assays": 6,
+  "chars": 11092,
+  "elements": 4,
+  "mentions": 8,
+  "mining_sentences": 30,
+  "parsed_chars": 1658,
+  "questions": 24,
+  "sentences": 95,
+  "sentences_with_elements": 10,
+  "unparsed_sentences": 14,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "from": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The barrenness of the tops of the lodes in silver has led to the general policy in exploring new lodes to sink shafts to considerable depths as much as 500 feet before crosscutting from the shafts to the lode.",
+   "span": [
+    3169,
+    3382
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "It was then seen that at one place in the outcrop a prospector had sunk a shaft 10 feet deep;",
+   "span": [
+    5111,
+    5206
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e3",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "A rhyolite dike in the Fraction breccia is well shown in an open cut at the end of the dump at the main shaft, and a rhyolite dike has been cut on the 365 and 470 foot levels.",
+   "span": [
+    6195,
+    6374
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described",
+    "level": "described"
+   },
+   "id": "e5",
+   "kind": "crosscut",
+   "name": "",
+   "placement": "the shaft at the 265 level",
+   "quote": "The main crosscut on the 265-foot level after cutting through the silver lode was continued southwestward, penetrating the rhyolite stock of Gold Mountain, and at 450 feet from the silver lode it cut a narrow gold vein, probably the downward extension of the gold vein formerly worked higher on the mountain.",
+   "span": [
+    8017,
+    8330
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 290808,
+   "content_type": "application/json",
+   "key": "models/tonopah-divide-mine-4c141151/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "e0fb14984b666407afa960026439a427eae77b5ac0a63734d3f298958498db08"
+  },
+  {
+   "bytes": 200350,
+   "content_type": "application/octet-stream",
+   "key": "models/tonopah-divide-mine-4c141151/model.omf",
+   "name": "model.omf",
+   "sha256": "fbca909f6bc0333642639085392263457fb607d0bfdb160b615a2ed2bc0e5395"
+  },
+  {
+   "bytes": 2286,
+   "content_type": "application/dxf",
+   "key": "models/tonopah-divide-mine-4c141151/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "5ca5824007412b2a902e36557a3ef80fda4a6ae5ba394927c865f1204a935aac"
+  },
+  {
+   "bytes": 4018,
+   "content_type": "application/geo+json",
+   "key": "models/tonopah-divide-mine-4c141151/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "caf78a45c156defd860315570f9736d7376a7bc177b5cab666fd22b2045e52ae"
+  },
+  {
+   "bytes": 3899,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-divide-mine-4c141151/plan.svg",
+   "name": "plan.svg",
+   "sha256": "3b04e4e93c0d9b439868b57df463fa3fea6c30e23cbf2ca935bb0468a568f260"
+  },
+  {
+   "bytes": 3935,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-divide-mine-4c141151/section.svg",
+   "name": "section.svg",
+   "sha256": "f54d6fa208032f558f1936130a9f1f8f5c6f05ebc699249c58af35b2af968514"
+  },
+  {
+   "bytes": 1597,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-divide-mine-4c141151/iso.svg",
+   "name": "iso.svg",
+   "sha256": "acd9afc546cf6f88395514773b939094fe89253aa4c85566268910bb9af40b61"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:12",
+  "spec_id": "s71f2e9dd",
+  "text_sha256": "eba19e047caac63df431c0e230a1121a76b07b7425e9e17503dd19ebaad86279"
+ },
+ "levels": {
+  "100": 1867.062,
+  "200": 1836.582,
+  "265": 1816.77,
+  "370": 1784.766,
+  "45": 1883.826,
+  "580": 1720.758
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "tunnel",
+   "quote": "The bottom of the glass flow is well shown in a prospect tunnel at an altitude of 6,400 feet south of the Allied",
+   "span": [
+    962,
+    1080
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "crosscut",
+   "quote": "Some rare molybdenum minerals occur in the Tonopah Divide lode at the point where it was cut by the discovery crosscut, but so far they have not been found elsewhere in the lode or elsewhere in 18 Rogers, A.",
+   "span": [
+    1080,
+    1289
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "Careful sampling of the outcrop showed it to be barren, except for a narrow streak against the wall of the old prospect shaft, which yielded, according to Super- intendent William Watters, 100 ounces of silver to the ton.",
+   "span": [
+    5435,
+    5660
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "crosscut",
+   "quote": "168 CONTRIBUTIONS TO ECONOMIC GEOLOGY, 1920, PART I. crosscut was driven southwest, but it reached the side line of the claim without cutting the extension of the Tonopah Divide lode.",
+   "span": [
+    8705,
+    8890
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "shaft",
+   "quote": "A shaft, called the Caldwell shaft, was sunk in the middle of the outcrop of this lode;",
+   "span": [
+    9274,
+    9364
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "shaft",
+   "quote": "A shaft, called the Caldwell shaft, was sunk in the middle of the outcrop of this lode;",
+   "span": [
+    9274,
+    9364
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "crosscut",
+   "quote": "but as crosscuts had not been extended into either wall it is not certain that the full thickness of the mineralized zone has been determined.",
+   "span": [
+    9983,
+    10129
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "crosscut",
+   "quote": "A crosscut was being driven from the bottom of the",
+   "span": [
+    11040,
+    11092
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Divide",
+  "elevation_m": 1897.5424043344403,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.99605,
+  "lon": -117.24008,
+  "mine_id": "grades:12",
+  "name": "Tonopah Divide mine",
+  "quote": "The chief producing mine is the Tonopah Divide, which yields ore averaging 25 ounces of silver and $2.50 in gold to the ton.",
+  "source": "USGS Bulletin 715-K, The Divide Silver District, Nevada (Adolph Knopf, 1921), p. 147",
+  "source_url": "https://pubs.usgs.gov/bul/0715k/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1918-1919"
+ },
+ "model_id": "tonopah-divide-mine-4c141151",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:45Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "265": 137.15999999988807,
+   "unassigned": 298.7040000000002
+  },
+  "by_type": {
+   "crosscut": 137.15999999988807,
+   "shaft": 298.7040000000002
+  },
+  "n_features": 4,
+  "total_m": 435.8639999998883
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

@@ -1,0 +1,441 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "bearing_deg",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "length_m",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "depth_m",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e11",
+   "field": "bearing_deg",
+   "gap": "g6",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e13",
+   "field": "depth_m",
+   "gap": "g7",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "bearing_deg",
+   "gap": "p-e1-bearing_deg",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 35.46001,
+  "lon": -114.92193,
+  "x": 688573.6056031444,
+  "y": 3926042.764218423,
+  "z": 1106.734442972386
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 7,
+  "surveyed": 0
+ },
+ "content_sha256": "51c1c919f5d619c22f744ae5831a817534eb8645f144e0789ab7ec14aa2d6476",
+ "coverage": {
+  "assays": 0,
+  "chars": 11877,
+  "elements": 7,
+  "mentions": 8,
+  "mining_sentences": 17,
+  "parsed_chars": 2175,
+  "questions": 15,
+  "sentences": 145,
+  "sentences_with_elements": 9,
+  "unparsed_sentences": 6,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The vein has been explored by two shafts, one 210 feet deep and the other about 370 feet deep on the incline, together with 1,350 feet of drifts and 920 feet of crosscuts on four levels, shown in plate 47.",
+   "span": [
+    8168,
+    8376
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "length_m": "described",
+    "secondary_m": "described"
+   },
+   "id": "e6",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "The vein has been explored for a length of 340 feet underground, and pits on the surface indicate a length of 1,000 feet.",
+   "span": [
+    8961,
+    9084
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e7",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+   "span": [
+    9084,
+    9321
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e8",
+   "kind": "shaft",
+   "name": "COPPER STAIN\n1 AIR",
+   "placement": "the collar",
+   "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+   "span": [
+    10329,
+    11093
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e9",
+   "kind": "shaft",
+   "name": "Fraction",
+   "placement": "the collar",
+   "quote": "A vein 1,000 feet southeast of the Fraction shaft of the Duplex mine, as revealed by a shaft and pits, strikes N. 58\u00b0 W. and dips 58\u00b0 SW.",
+   "span": [
+    11093,
+    11232
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "dip_deg": "described"
+   },
+   "id": "e10",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "A vein 1,000 feet southeast of the Fraction shaft of the Duplex mine, as revealed by a shaft and pits, strikes N. 58\u00b0 W. and dips 58\u00b0 SW.",
+   "span": [
+    11093,
+    11232
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e12",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "A shaft at the quartz monzonite contact 1,100 feet east-northeast of the Fraction shaft of the Duplex mine reveals a vein trending N. 80\u00b0 E. and dipping 60\u00b0 S.",
+   "span": [
+    11467,
+    11629
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 256664,
+   "content_type": "application/json",
+   "key": "models/duplex-mine-205860ed/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "f2ffdc200b4d758203a06035c8fad10143c26825115bc542cf9bc87bd59ba495"
+  },
+  {
+   "bytes": 168528,
+   "content_type": "application/octet-stream",
+   "key": "models/duplex-mine-205860ed/model.omf",
+   "name": "model.omf",
+   "sha256": "a99fe18b0190840a7912de645fa5955b1986d96608925e230aa432e4c9e6a783"
+  },
+  {
+   "bytes": 3433,
+   "content_type": "application/dxf",
+   "key": "models/duplex-mine-205860ed/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "3aeb59aec0c7bcab785800644e899fc794bdd00642eb8af447e47b03cf34700c"
+  },
+  {
+   "bytes": 7384,
+   "content_type": "application/geo+json",
+   "key": "models/duplex-mine-205860ed/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "25135c5298105b29f7854b9a3ff8d7c704efffd7632b8931b4870af37405c29b"
+  },
+  {
+   "bytes": 3528,
+   "content_type": "image/svg+xml",
+   "key": "models/duplex-mine-205860ed/plan.svg",
+   "name": "plan.svg",
+   "sha256": "2d4019e4b82da00dcaa8533e8ff8a3e83ecf04e3774047de8d47c0f450e64a89"
+  },
+  {
+   "bytes": 3010,
+   "content_type": "image/svg+xml",
+   "key": "models/duplex-mine-205860ed/section.svg",
+   "name": "section.svg",
+   "sha256": "ae0220530380f51a8c38def8772dd3c395a6462c0f334df2924d223e72662fc0"
+  },
+  {
+   "bytes": 2046,
+   "content_type": "image/svg+xml",
+   "key": "models/duplex-mine-205860ed/iso.svg",
+   "name": "iso.svg",
+   "sha256": "14dcceea1d82033e847fc9a00edf208646c269d0198f30a6f2a61e9156c0272f"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:45",
+  "spec_id": "scbf792a9",
+  "text_sha256": "1698567b58997992cb6c9408aa31d0e5307c2e2fb96ebdfe7dcd494bd7f450fd"
+ },
+ "levels": {
+  "200": 1045.774,
+  "300": 1015.294,
+  "60": 1088.446,
+  "700": 893.374
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "shaft",
+   "quote": "the Searchlight shaft of the Duplex mine a dike of quartz monzonite lies parallel to the vein fracture.",
+   "span": [
+    1444,
+    1548
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "crosscut",
+   "quote": "The vein has been explored by two shafts, one 210 feet deep and the other about 370 feet deep on the incline, together with 1,350 feet of drifts and 920 feet of crosscuts on four levels, shown in plate 47.",
+   "span": [
+    8168,
+    8376
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "The two parallel veins, one on each side of the main vein, have been prospected by shafts, inaccessible in 1931, and open cuts.",
+   "span": [
+    9858,
+    9987
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "pit",
+   "quote": "The two parallel veins, one on each side of the main vein, have been prospected by shafts, inaccessible in 1931, and open cuts.",
+   "span": [
+    9858,
+    9987
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "stope",
+   "quote": "Stoped areas approximate, unsurveyed.",
+   "span": [
+    10288,
+    10326
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "shaft",
+   "quote": "A vein 1,000 feet southeast of the Fraction shaft of the Duplex mine, as revealed by a shaft and pits, strikes N. 58\u00b0 W. and dips 58\u00b0 SW.",
+   "span": [
+    11093,
+    11232
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "pit",
+   "quote": "are exposed by pits and an adit on the north side of the lull in the western part of",
+   "span": [
+    11790,
+    11877
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "adit",
+   "quote": "are exposed by pits and an adit on the north side of the lull in the western part of",
+   "span": [
+    11790,
+    11877
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "ore shipped",
+  "commodity": null,
+  "county": null,
+  "district": "Searchlight",
+  "elevation_m": 1106.734442972386,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 35.46001,
+  "lon": -114.92193,
+  "mine_id": "grades:45",
+  "name": "Duplex mine",
+  "quote": "Average metal content per shipment Gold ounces per.ton.. 3. 97 Silver do 6. 92 Lead percent 11. 77",
+  "source": "USGS Bulletin 906-D, Geology of the Searchlight District, Clark County, Nevada (Eugene Callaghan, 1939), p. 170",
+  "source_url": "https://pubs.usgs.gov/bul/0906d/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1926"
+ },
+ "model_id": "duplex-mine-205860ed",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:54:22Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 814.3775999999832
+  },
+  "by_type": {
+   "pit": 106.63199999998324,
+   "shaft": 707.7456
+  },
+  "n_features": 7,
+  "total_m": 814.3775999999832
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

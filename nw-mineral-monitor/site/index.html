@@ -2162,6 +2162,7 @@ function showGrade(i){
     ${g3dButton(GR.x[i], GR.y[i], GR.name[i], {gi:i})}
     ${quadGradeBlock(i)}
     <div class="src">${esc(GR.src[i])}. Bonanza assay-text numbers are hand-picked specimens, not mine averages — the quote is the evidence. Open-ground uses the claims snapshot only: famous old districts are often PATENTED (private land carries no BLM claims — Goldfield is the classic trap), so "no claims" ≠ "open to staking". Verify ownership & withdrawals on the ground.</div>`);
+  fillUnderground3D('grades:'+i);
 }
 function gradeAnswer(q, f){
   if (!GR) return void botMsg('Grade dataset not loaded.');
@@ -2651,6 +2652,7 @@ function openDetail(h, subject){
   MINE_FOCUS = subject || null;
   MINE_DOC_SEQ++;                       // any in-flight fetch belongs to a dead panel
   if (subject) fillMineDocs(subject);
+  if (subject) fillUnderground3DSubject(subject);
 }
 function closeDetail(){ detail.classList.remove('open'); MINE_FOCUS=null; MINE_DOC_SEQ++; }
 function toggleModal(id,on){ $(id).classList.toggle('open',!!on); }
@@ -6125,6 +6127,17 @@ function g3dHandoff(lon, lat, radiusM){
   return {layers, total, at:new Date().toISOString(), note:'viewport snapshot of loaded tiles, not an archive'};
 }
 async function open3D(lon, lat, name, opts={}){
+  if ('project' in opts){
+    // a pregenerated model: the viewer loads the published project directly
+    // and needs nothing from the map (no handoff, no site build). A missing
+    // url must not fall through to a site build at whatever lon/lat we got.
+    if (typeof opts.project === 'string' && opts.project){
+      const q = new URLSearchParams({project: opts.project});
+      if (name) q.set('name', name);
+      window.open('model3d.html?'+q.toString(), '_blank');
+    }
+    return;
+  }
   lon=+lon; lat=+lat; if(!isFinite(lon)||!isFinite(lat)) return;
   const radius = opts.radius || +($('g3dRadius')&&$('g3dRadius').value) || 2500;
   const key = g3dSlug(name||'site')+'-'+lat.toFixed(3)+'_'+lon.toFixed(3);
@@ -6149,6 +6162,102 @@ function g3dButton(lon, lat, name, opts={}){
 }
 function loadGeomodel3D(){
   $('g3dGo').onclick=()=>{ const c=map.getCenter(); if(map.getZoom()<9){ $('g3dNote').textContent='zoom in to a site first (zoom ≥ 9) — the 3-D model is built around the view centre'; return; } open3D(c.lng, c.lat, `site ${c.lat.toFixed(4)} ${c.lng.toFixed(4)}`); };
+}
+
+/* ---------- autopopulated underground models (data/models/index.json) ----
+   pipelines/geomodel_autopopulate.py reads the WS12 document store, carves
+   each mine's own section out of its source documents, parses the prose and
+   publishes a 3-D model per (mine, document) under /models/. The index maps
+   grades:N (and state-survey ids) to those models plus the documents and the
+   underground vocabulary they used. Everything described is drawn dashed in
+   the viewer: a description is never a survey. */
+const UG3D = {};
+let UG_SEQ = 0;
+async function ugIndex(){
+  // the promise is the cache, so concurrent cards share one fetch and a
+  // failure is decided once rather than re-fetched per card
+  if (UG3D.p === undefined)
+    UG3D.p = jget('data/models/index.json').catch(e=>null);
+  UG3D.idx = await UG3D.p;
+  return UG3D.idx;
+}
+function ugEntry(key){
+  const idx = UG3D.idx; if (!idx || !idx.by_mine) return null;
+  // grades:N keys are row indexes into grades.json; if the bundle was
+  // regenerated after this index, the rows may have shifted and a lookup
+  // would attach the wrong mine's model — better nothing than that
+  if (key.startsWith('grades:') && idx.grades_generated && GR && GR.generated
+      && idx.grades_generated !== GR.generated) return null;
+  let e = idx.by_mine[key];
+  if (e && e.alias) e = idx.by_mine[e.alias];
+  return e || null;
+}
+function ugFmtM(m){ return m>=1000 ? (m/1000).toFixed(1)+' km' : Math.round(m)+' m'; }
+function ugHtml(e){
+  const head = t => `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">${t}</h3>`;
+  const note = t => `<div style="font-size:10.5px;color:var(--mut);margin-top:6px">${t}</div>`;
+  let h = '';
+  const primary = (e.models||[]).find(m=>m.primary) || (e.models||[])[0];
+  if (primary){
+    const x = e.extent || {};
+    const kinds = Object.entries((e.lexicon&&e.lexicon.kinds)||{}).filter(([k])=>k!=='level')
+      .sort((a,b)=>b[1].count-a[1].count).slice(0,6)
+      .map(([k,v])=>`${esc(k)} ×${v.count}`).join(' · ');
+    h += head('UNDERGROUND — FROM THE DOCUMENTS');
+    h += kv([
+      ['Minerals', e.minerals && e.minerals.length ? esc(e.minerals.join(', ')) : null],
+      ['Workings', x.by_type && Object.keys(x.by_type).length ?
+         esc(Object.entries(x.by_type).map(([k,v])=>`${k} ${ugFmtM(v)}`).join(' · ')) : null],
+      ['Extent', x.total_m ? ugFmtM(x.total_m)+' of described workings' : null],
+      ['Levels', x.levels && x.levels.length ?
+         esc(x.levels.join(', ')) + (x.deepest_level_m ? ` — deepest ~${Math.round(x.deepest_level_m)} m` : '') : null],
+      ['Vocabulary', kinds || null]]);
+    const conf = primary.confidence || {};
+    // JSON.stringify + esc: quotes, backslashes and angle brackets in index
+    // data can never break out of the attribute or the JS string
+    h += `<button class="dosbtn" onclick="open3D(0,0,${esc(JSON.stringify(String(e.label||'')))},{project:${esc(JSON.stringify(String(primary.project_url||'')))}})" title="open the 3-D model built from this mine's documents (new tab)">⛰ OPEN 3D MODEL — DESCRIBED WORKINGS</button>`;
+    h += note(`Built from the text: ${conf.described||0} described element(s)`
+      + ((primary.omitted|0) ? `, ${primary.omitted} left out where the prose was silent` : '')
+      + `. Dashed means described, never surveyed — the model's manifest carries every sentence it came from.`);
+  }
+  const docs = e.documents || [];
+  if (docs.length){
+    h += head(`SOURCE DOCUMENTS — ${docs.length}`);
+    h += docs.map(d=>{
+      const pg = (d.cited_pages||[]).length ? ` · cited p. ${d.cited_pages.join(', ')}` : '';
+      const yr = d.publication_year ? ` (${d.publication_year})` : '';
+      const t = esc(d.title || String(d.doc_id||'').slice(0,12));
+      return `<div style="font-size:11px;margin:3px 0">${d.source_url?`<a href="${esc(d.source_url)}" target="_blank">${t} ↗</a>`:t}${yr}${esc(pg)}</div>`;
+    }).join('');
+    if (!primary) h += note('Documents are attached, but their text yields no buildable description — nothing is drawn rather than guessed.');
+  }
+  return h;
+}
+/* The card is synchronous; this appends the underground section once the
+   index arrives, exactly as fillMineDocs appends the documents slot. */
+async function fillUnderground3D(key){
+  const seq = ++UG_SEQ;
+  const slot = document.createElement('div');
+  dInner.appendChild(slot);
+  await ugIndex();
+  if (seq !== UG_SEQ || !slot.isConnected) return;
+  const e = ugEntry(key);
+  if (!e){ slot.remove(); return; }
+  slot.innerHTML = ugHtml(e);
+}
+/* Map-feature popups (state-survey records and friends) carry a subject with
+   the namespaced id spellings; the index keys latlon builds by the same
+   'stategeo:<record>' form, so try each spelling the way mineDocsFetch does. */
+async function fillUnderground3DSubject(subject){
+  if (!subject || !Array.isArray(subject.ids) || !subject.ids.length) return;
+  const seq = ++UG_SEQ;
+  const slot = document.createElement('div');
+  dInner.appendChild(slot);
+  await ugIndex();
+  if (seq !== UG_SEQ || !slot.isConnected) return;
+  const e = subject.ids.map(ugEntry).find(Boolean);
+  if (!e){ slot.remove(); return; }
+  slot.innerHTML = ugHtml(e);
 }
 
 /* ---------- county gold-signal ranking ---------- */

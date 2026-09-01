@@ -209,6 +209,19 @@ scene carries a legend and a scale bar. The rest of the plan lives in the
 Leapfrog parity roadmap.
 
 
+**Delivered 2026-09-01** — the corpus autopopulator
+([`AUTOPOPULATE.md`](AUTOPOPULATE.md)): `pipelines/geomodel_corpus.py`
+bridges the WS12 document store's mines to buildable references (per-citation
+quote joins, reviewed-evidence names, state-survey sites; ambiguity parks,
+never guesses) and carves each mine's own text out of its documents;
+`pipelines/geomodel_autopopulate.py` runs every (mine, document) description
+through the minevis build path with an audited omit-answer policy and
+publishes `site/models/<slug>-<hash8>/` plus `site/data/models/index.json`.
+The map's grade cards read that index: minerals, workings by type, levels
+and depth, the underground lexicon (`narrative.lexicon`), the source
+documents, and OPEN 3D MODEL — DESCRIBED WORKINGS opening the pregenerated
+project. This is roadmap item 2 below made batch; item 1 (plates) remains.
+
 The architecture was laid out so the next steps are data, not plumbing:
 
 1. **Plates out of the WS12 document store** — the harvester already stores
@@ -218,7 +231,9 @@ The architecture was laid out so the next steps are data, not plumbing:
 2. **Text → geometry** — an extraction pass over OCR'd text ("adit … N 45° E …
    900 ft", "shaft 300 ft deep", "100-foot level") into `workings` constructors
    (bearing/length/depth/level) with `confidence: 'described'`, reviewed in the
-   viewer.
+   viewer.  *Delivered as the autopopulator above for the stored corpus; the
+   WS13 cloud corpus plugs into the same `assignments()` seam when its text
+   becomes reachable.*
 3. **Soil and rock composition pancakes** — assay / soil / drill tables (CSV,
    LAS) → `drillholes` + `samples` → kriged block models per unit; lithology
    intervals → contact points → the stratigraphy builder. The data model already

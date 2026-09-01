@@ -1,0 +1,276 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "level",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "level",
+   "gap": "g3",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.94828,
+  "lon": -112.12329,
+  "x": 404042.909894711,
+  "y": 4422620.844014048,
+  "z": 1987.0513829764977
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "62dbe51b83fb52b55ae703e0bcd2a86ffeef1cb4beb9697844996ff31dc6be4d",
+ "coverage": {
+  "assays": 0,
+  "chars": 6153,
+  "elements": 2,
+  "mentions": 5,
+  "mining_sentences": 12,
+  "parsed_chars": 839,
+  "questions": 11,
+  "sentences": 70,
+  "sentences_with_elements": 5,
+  "unparsed_sentences": 6,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32612,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 12
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "level": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "it adjoins a mass of limestone de- 200-foot level a out 430 feet north of the tritus, the coarse fragments of which ~re dis- shaft the drift c osses an old depression which tinctly oxidized.",
+   "span": [
+    3788,
+    3981
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "from": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "TetrQ",
+   "placement": "the collar",
+   "quote": "\u00b7 ger and superint ndent of the mine for many .From the 500-foot level there1s a connectiOn years, the wash contained in places float of With the TetrQ shaft, 1,300 feet to the west,.",
+   "span": [
+    4730,
+    4917
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 285003,
+   "content_type": "application/json",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "6124bb432d69244006d00c63d66be8f8241b5a00942071775a911646f8def840"
+  },
+  {
+   "bytes": 196354,
+   "content_type": "application/octet-stream",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/model.omf",
+   "name": "model.omf",
+   "sha256": "2233da1baa74b46fac685193c85763d441fb2836d1c8ed8969dde0163b0c38fe"
+  },
+  {
+   "bytes": 1486,
+   "content_type": "application/dxf",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "72ab1d857f4c4dfcae6f6edafa2662d965d5f1c7e28e3e1f38c15375de365012"
+  },
+  {
+   "bytes": 2265,
+   "content_type": "application/geo+json",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "20f3cd97462399ec639b41be3f907671fb26db05bdedcb777b3836f148893106"
+  },
+  {
+   "bytes": 1790,
+   "content_type": "image/svg+xml",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/plan.svg",
+   "name": "plan.svg",
+   "sha256": "d3e1a8c6f0509c521a6826586918e402db979fe93ce78669c1ebac08beb0b134"
+  },
+  {
+   "bytes": 2156,
+   "content_type": "image/svg+xml",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/section.svg",
+   "name": "section.svg",
+   "sha256": "f90fa2e44854b1d3fa2775e1cea30dc7c8c67b06cb9b5893b59b028614b29f6a"
+  },
+  {
+   "bytes": 1354,
+   "content_type": "image/svg+xml",
+   "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/iso.svg",
+   "name": "iso.svg",
+   "sha256": "4a0a49ab7e96c3316f1374f1165c71ddd25ffca4dd6c24261749c24f01b52168"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:109",
+  "spec_id": "s879c23b9",
+  "text_sha256": "ede25569c859a30e12dc62225edcf3c6d13d246f67eb8189c7c26b156185bc55"
+ },
+ "levels": {
+  "200": 1926.091,
+  "500": 1834.651,
+  "600": 1804.171
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "it adjoins a mass of limestone de- 200-foot level a out 430 feet north of the tritus, the coarse fragments of which ~re dis- shaft the drift c osses an old depression which tinctly oxidized.",
+   "span": [
+    3788,
+    3981
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "drift",
+   "quote": "depression belo the drift is not known;",
+   "span": [
+    4281,
+    4323
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "stope",
+   "quote": "Some stopes of copper ore chanke along the strike to lead ore;",
+   "span": [
+    5595,
+    5660
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "stope",
+   "quote": "elsewhere lead ores and copper ores may be found side by side in the same stope.",
+   "span": [
+    5660,
+    5742
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "shaft",
+   "quote": "been opened on it from the Eureka Hill shaft up to the",
+   "span": [
+    6097,
+    6153
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "ore shipped",
+  "commodity": null,
+  "county": null,
+  "district": "Tintic",
+  "elevation_m": 1987.0513829764977,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.94828,
+  "lon": -112.12329,
+  "mine_id": "grades:109",
+  "name": "Eureka Hill mine (oxidized copper ore shipment)",
+  "quote": "a shipment of such ore from. the Eureka Hill mine. According to Mr. G. W. Riter, it contained 27.16 per cent of copper, 0.012 om:ice of gold, and only 1.67 ounces of silver.",
+  "source": "USGS Professional Paper 107, Geology and Ore Deposits of the Tintic Mining District, Utah (W. Lindgren & G.F. Loughlin, 1919), p. 169-170",
+  "source_url": "https://pubs.usgs.gov/pp/0107/report.pdf",
+  "state": "UT",
+  "terrain_zoom": 13,
+  "years": "ca. 1916"
+ },
+ "model_id": "eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:43Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "200": 131.06400000000008,
+   "unassigned": 396.24
+  },
+  "by_type": {
+   "shaft": 527.3040000000001
+  },
+  "n_features": 2,
+  "total_m": 527.3040000000001
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

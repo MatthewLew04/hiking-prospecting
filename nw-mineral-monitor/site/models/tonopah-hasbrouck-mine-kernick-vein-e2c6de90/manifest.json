@@ -1,0 +1,336 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "bearing_deg",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "length_m",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "bearing_deg",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "bearing_deg",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "length_m",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "bearing_deg",
+   "gap": "g6",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "au",
+   "confidence": "described",
+   "element": null,
+   "id": "a1",
+   "quote": "The ore shipped to date is reported to aggregate 1,000 tons, whose value was chiefly in silver and to a minor extent in gold, the average being 1 ounce of gold to every 100 ounces of silver.",
+   "span": [
+    241,
+    435
+   ],
+   "unit": "oz/ton",
+   "value": 1.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": null,
+   "id": "a2",
+   "quote": "The ore shipped to date is reported to aggregate 1,000 tons, whose value was chiefly in silver and to a minor extent in gold, the average being 1 ounce of gold to every 100 ounces of silver.",
+   "span": [
+    241,
+    435
+   ],
+   "unit": "oz/ton",
+   "value": 100.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": null,
+   "id": "a3",
+   "quote": "Recent shipments to Tonopah averaged about 20 ounces of silver to the ton.",
+   "span": [
+    435,
+    511
+   ],
+   "unit": "oz/ton",
+   "value": 20.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.99133,
+  "lon": -117.27009,
+  "x": 476284.00664881687,
+  "y": 4204887.47404455,
+  "z": 1738.6041167444282
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "4a2a7a64ed6cdcc692571e6db101ebdf5f034eae0714370cb452cde38dab3aa9",
+ "coverage": {
+  "assays": 3,
+  "chars": 3338,
+  "elements": 2,
+  "mentions": 4,
+  "mining_sentences": 10,
+  "parsed_chars": 830,
+  "questions": 5,
+  "sentences": 27,
+  "sentences_with_elements": 6,
+  "unparsed_sentences": 1,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e3",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "Northwest of the portal of the adit a shaft has been sunk to a depth of 230 feet.",
+   "span": [
+    860,
+    943
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "dip_deg": "described",
+    "length_m": "described"
+   },
+   "id": "e5",
+   "kind": "adit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "The Kernick vein, as seen in the upper workings (above the main adit), trends nearly due west, dips 70\u00b0 N., and averages between 3 and 4 feet in width.",
+   "span": [
+    1744,
+    1898
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 285461,
+   "content_type": "application/json",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "5a30edff00842879216a36a7314e73706813bc9e43b976d73c2bdc44757d2f74"
+  },
+  {
+   "bytes": 192566,
+   "content_type": "application/octet-stream",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/model.omf",
+   "name": "model.omf",
+   "sha256": "bf0be3225bde4b95798183eb6aca0ca6bc34a442304fd6acf29dbc19a68938d7"
+  },
+  {
+   "bytes": 1490,
+   "content_type": "application/dxf",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "7eb91ec578630269ba4dad1d5212cd915a4f7decbf15f5ce3d0f767944d768c5"
+  },
+  {
+   "bytes": 1931,
+   "content_type": "application/geo+json",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "d50de5a104f8dae4f75be1cd23e887bfc24cd67856217e80d4100e11ef4fca39"
+  },
+  {
+   "bytes": 1805,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/plan.svg",
+   "name": "plan.svg",
+   "sha256": "ae75a0b63d51367afcaf88505ec5d0839e568595c7727a265d7fc99d7c44932c"
+  },
+  {
+   "bytes": 1962,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/section.svg",
+   "name": "section.svg",
+   "sha256": "0a9e2241588fbcf65bcc9a0227100eab739deac67f54d93f548a3ae5ed388135"
+  },
+  {
+   "bytes": 1355,
+   "content_type": "image/svg+xml",
+   "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/iso.svg",
+   "name": "iso.svg",
+   "sha256": "39064bc94f883904e5d411f8e1f6e12a14454aea546af9a4f07a5f25da00107e"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:15",
+  "spec_id": "s54922b99",
+  "text_sha256": "31d9de3cdc61df9af20d05db56bf8d450fd1e7e7f23b3096f7641c217b326d5e"
+ },
+ "levels": {
+  "200": 1677.644,
+  "adit": 1738.61
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "crosscut",
+   "quote": "From the bottom level the present operators are running crosscuts south and also northeast.",
+   "span": [
+    1238,
+    1332
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "crosscut",
+   "quote": "In the face of the south crosscut at the time of visit was a thin intercalated layer of banded fine gray tuff, whose attitude proves that the formation dips 20\u00b0 W. here, in conformity with the general dip throughout the district.",
+   "span": [
+    1510,
+    1744
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "adit",
+   "quote": "The main adit affords an instructive section across the stratified tuffs, showing their change from comparatively soft strata to ex- tremely hard silicified rocks near the vein.",
+   "span": [
+    2302,
+    2482
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "stope",
+   "quote": "At the intersection of the vein by the adit a fair shoot .of ore 50 feet long was stoped out above the level.",
+   "span": [
+    2482,
+    2594
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "ore shipped",
+  "commodity": null,
+  "county": null,
+  "district": "Divide",
+  "elevation_m": 1738.6041167444282,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 37.99133,
+  "lon": -117.27009,
+  "mine_id": "grades:15",
+  "name": "Tonopah Hasbrouck mine (Kernick vein)",
+  "quote": "The ore shipped to date is reported to aggregate 1,000 tons... Recent shipments to Tonopah averaged about 20 ounces of silver to the ton.",
+  "source": "USGS Bulletin 715-K, The Divide Silver District, Nevada (Adolph Knopf, 1921), p. 169",
+  "source_url": "https://pubs.usgs.gov/bul/0715k/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1902-1919"
+ },
+ "model_id": "tonopah-hasbrouck-mine-kernick-vein-e2c6de90",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:46:27Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 71.32321523989707
+  },
+  "by_type": {
+   "adit": 1.2192152398970217,
+   "shaft": 70.10400000000004
+  },
+  "n_features": 2,
+  "total_m": 71.32321523989707
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

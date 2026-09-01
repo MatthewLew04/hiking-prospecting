@@ -1,0 +1,313 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "length_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "bearing_deg",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "length_m",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "level",
+   "gap": "g6",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e6",
+   "id": "a1",
+   "quote": "The ore from it averaged $8 a ton in",
+   "span": [
+    1637,
+    1676
+   ],
+   "unit": "$/ton",
+   "value": 8.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.26157,
+  "lon": -118.17986,
+  "x": 399671.65470726765,
+  "y": 4457457.246435821,
+  "z": 1687.938375419779
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 3,
+  "surveyed": 0
+ },
+ "content_sha256": "f835aafa44ff64f02a9ed431a0b6194905accc0faa122d477f318ffd84a2b72d",
+ "coverage": {
+  "assays": 1,
+  "chars": 1676,
+  "elements": 3,
+  "mentions": 4,
+  "mining_sentences": 10,
+  "parsed_chars": 779,
+  "questions": 8,
+  "sentences": 20,
+  "sentences_with_elements": 6,
+  "unparsed_sentences": 4,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "In the Nevada Packard water level was cut in a prospect shaft at a depth of 235 feet below the lowest adit, 43",
+   "span": [
+    257,
+    372
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "length_m": "described",
+    "secondary_m": "described"
+   },
+   "id": "e2",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "It is in an ex- tremely hard mottled blue and white massive rhyolite, known locally as the \" hard blue.\" The fact that this rock is ore runs counter to all ideas as to what ore should look like., The pit is 150 feet long and 100 feet wide and attains an extreme depth of about 30 feet.",
+   "span": [
+    602,
+    892
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described"
+   },
+   "id": "e6",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "In 1919 the mainstay of the mine was the Margrave cut, a large elliptical pit trending N. 25\u00b0 E.",
+   "span": [
+    1539,
+    1637
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 286372,
+   "content_type": "application/json",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "4efcb43f2c0dba4cc08b3d802834ce66d84207c0ee3efed44b6a0071d2901394"
+  },
+  {
+   "bytes": 200204,
+   "content_type": "application/octet-stream",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/model.omf",
+   "name": "model.omf",
+   "sha256": "94700f1d2b4bae6d70bc1833bffa609c07a1d05baeec36910daf488d9ca08ea7"
+  },
+  {
+   "bytes": 1884,
+   "content_type": "application/dxf",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "e74031e1c769ab8aa11c235348172dd56a58abc91ddfadd045c2ea6ce6f8539e"
+  },
+  {
+   "bytes": 2923,
+   "content_type": "application/geo+json",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "e30e6fa87293ab1185c8f8030ec8b2bcde7cd8a155020d7456c094b09ef5deaf"
+  },
+  {
+   "bytes": 2690,
+   "content_type": "image/svg+xml",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/plan.svg",
+   "name": "plan.svg",
+   "sha256": "c3d3d9d75e394f52e7b9e2dccf7754cb1906c04af92d8ed01aea009cd02e5083"
+  },
+  {
+   "bytes": 2410,
+   "content_type": "image/svg+xml",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/section.svg",
+   "name": "section.svg",
+   "sha256": "325fa004d6adcdbc5e56a4b438c46d7eb5cd6d5d6308aaa466f08aacd4f10288"
+  },
+  {
+   "bytes": 1501,
+   "content_type": "image/svg+xml",
+   "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/iso.svg",
+   "name": "iso.svg",
+   "sha256": "a23015a53e30a9d1e11c5a6c2fbd19c387d7ac26e7eadcc93dbbfb65e6ad3bef"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:42",
+  "spec_id": "s7a917350",
+  "text_sha256": "93f7832d2e641c9c6f9f0ab310cbb3ce1942a0645d9c6b8298190801f00ff948"
+ },
+ "levels": {
+  "100": 1657.458
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "adit",
+   "quote": "In the Nevada Packard water level was cut in a prospect shaft at a depth of 235 feet below the lowest adit, 43",
+   "span": [
+    257,
+    372
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "portal",
+   "quote": "whose portal is at an altitude of 5,590 feet.",
+   "span": [
+    400,
+    446
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "tunnel",
+   "quote": "The A tunnel was driven under this cut, and a raise was put through to the bottom of the cut, 90 feet above.",
+   "span": [
+    1387,
+    1498
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "raise",
+   "quote": "No ore was found in the tunnel or raise.",
+   "span": [
+    1498,
+    1539
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Rochester",
+  "elevation_m": 1687.938375419779,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.26157,
+  "lon": -118.17986,
+  "mine_id": "grades:42",
+  "name": "Nevada Packard mine (Margrave cut)",
+  "quote": "In 1919 the mainstay of the mine was the Margrave cut, a large elliptical pit trending N. 25\u00b0 E. The ore from it averaged $8 a ton in silver.",
+  "source": "USGS Bulletin 762, Geology and Ore Deposits of the Rochester District, Nevada (Adolph Knopf, 1924), p. 73",
+  "source_url": "https://pubs.usgs.gov/bul/0762/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1919"
+ },
+ "model_id": "nevada-packard-mine-margrave-cut-88ab97dc",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:50Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 120.34799999997199
+  },
+  "by_type": {
+   "pit": 48.71999999997206,
+   "shaft": 71.62799999999993
+  },
+  "n_features": 3,
+  "total_m": 120.34799999997199
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

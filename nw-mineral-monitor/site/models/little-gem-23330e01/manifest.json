@@ -1,0 +1,336 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "depth_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "dip_deg",
+   "gap": "g3",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "shipment",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e2",
+   "id": "a1",
+   "quote": "In 1907 eighteen carloads of ore was shipped and yielded about $30 a ton.",
+   "span": [
+    353,
+    428
+   ],
+   "unit": "$/ton",
+   "value": 30.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e2",
+   "id": "a2",
+   "quote": "The mine is reported to have in sight 7,000 tons of ore, with an average value of $2 in gold and 10 ounces of silver to the ton and 3 per cent of copper.",
+   "span": [
+    2286,
+    2442
+   ],
+   "unit": "oz/ton",
+   "value": 10.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "cu",
+   "confidence": "described",
+   "element": "e2",
+   "id": "a3",
+   "quote": "The mine is reported to have in sight 7,000 tons of ore, with an average value of $2 in gold and 10 ounces of silver to the ton and 3 per cent of copper.",
+   "span": [
+    2286,
+    2442
+   ],
+   "unit": "%",
+   "value": 3.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e3",
+   "id": "a4",
+   "quote": "In a shallow opening near the main shaft some rich gold ore was encountered, From this and from the main shaft a shipment of ore, with an average value of $80 a ton in gold, has been made.",
+   "span": [
+    2735,
+    2928
+   ],
+   "unit": "$/ton",
+   "value": 80.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.31685,
+  "lon": -116.69982,
+  "x": 525504.4700049815,
+  "y": 4462968.662214379,
+  "z": 1722.3758421274738
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 3,
+  "surveyed": 0
+ },
+ "content_sha256": "c7755151087ad6338a55d690ca64e1773a7f1c3f4cb9138f84ac0c0a8f6936a3",
+ "coverage": {
+  "assays": 4,
+  "chars": 3515,
+  "elements": 3,
+  "mentions": 4,
+  "mining_sentences": 13,
+  "parsed_chars": 564,
+  "questions": 10,
+  "sentences": 32,
+  "sentences_with_elements": 5,
+  "unparsed_sentences": 6,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e2",
+   "kind": "shaft",
+   "name": "This",
+   "placement": "the collar",
+   "quote": "This shaft is 400 feet long and on the four levels turned from it there are altogether about 900 feet of drifts.",
+   "span": [
+    238,
+    353
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e3",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "A vertical two-compartment shaft is down 308 feet, with short' levels turned at intervals of 35, 100, 150, and 275 feet",
+   "span": [
+    2456,
+    2580
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e4",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+   "span": [
+    3051,
+    3223
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 287887,
+   "content_type": "application/json",
+   "key": "models/little-gem-23330e01/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "7d0660951047e218f7d12d579c22364385d641cf29dfcc0d2007652ef7f20204"
+  },
+  {
+   "bytes": 199629,
+   "content_type": "application/octet-stream",
+   "key": "models/little-gem-23330e01/model.omf",
+   "name": "model.omf",
+   "sha256": "81ed42b9e2edebaaa08da856f56da6a666110f56ecf5035d28fb9e1c18e3fa15"
+  },
+  {
+   "bytes": 1883,
+   "content_type": "application/dxf",
+   "key": "models/little-gem-23330e01/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "d2cdf7a9cd9ebcf35d8c10070c4c62fec70b5b2f763b838bb1dd590e89d2f416"
+  },
+  {
+   "bytes": 2808,
+   "content_type": "application/geo+json",
+   "key": "models/little-gem-23330e01/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "cfe6fa8540bc12b76c335b1e65d4d9c51abfddf63996a7aad883e3658750f56e"
+  },
+  {
+   "bytes": 2893,
+   "content_type": "image/svg+xml",
+   "key": "models/little-gem-23330e01/plan.svg",
+   "name": "plan.svg",
+   "sha256": "37a14372d7b9cb69462694e783a3aba97623d54f4398f9a56b3d9aff12c3262e"
+  },
+  {
+   "bytes": 2806,
+   "content_type": "image/svg+xml",
+   "key": "models/little-gem-23330e01/section.svg",
+   "name": "section.svg",
+   "sha256": "569142b47631bee1e15a397b39fceb60e68e6735ee559dded49bf96300fc6575"
+  },
+  {
+   "bytes": 1451,
+   "content_type": "image/svg+xml",
+   "key": "models/little-gem-23330e01/iso.svg",
+   "name": "iso.svg",
+   "sha256": "d3c5c8920e369fb3a259f1c06eb9a39d2070eed7394d7979fcdb7ee6b6cb2577"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:2641",
+  "spec_id": "s67249b54",
+  "text_sha256": "bbc7c6a4517966249b4eca84b00ec330799725dad7364383a6a1a32b3987a62c"
+ },
+ "levels": {
+  "100": 1691.896
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "This shaft is 400 feet long and on the four levels turned from it there are altogether about 900 feet of drifts.",
+   "span": [
+    238,
+    353
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "shaft",
+   "quote": "It dips about 30\u00b0 S., a little more steeply than the incline, which is driven on the lode but to the right of the line of steepest dip.",
+   "span": [
+    1448,
+    1586
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "In a shallow opening near the main shaft some rich gold ore was encountered, From this and from the main shaft a shipment of ore, with an average value of $80 a ton in gold, has been made.",
+   "span": [
+    2735,
+    2928
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "shaft",
+   "quote": "In a shallow opening near the main shaft some rich gold ore was encountered, From this and from the main shaft a shipment of ore, with an average value of $80 a ton in gold, has been made.",
+   "span": [
+    2735,
+    2928
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "value-text",
+  "commodity": "Copper, Gold, Silver, Lead, Arsenic",
+  "county": "Lander",
+  "district": null,
+  "elevation_m": 1722.3758421274738,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.31685,
+  "lon": -116.69982,
+  "mine_id": "grades:2641",
+  "name": "Little Gem",
+  "quote": "18 CARLOADS ORE AVERAGING $30/TON WERE SHIPPED IN 1907.  PRODUCTION INCLUDED SOME LEAD AND AR",
+  "source": "USGS MRDS Comments/Production (dep_id 10044891)",
+  "source_url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10044891",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": null
+ },
+ "model_id": "little-gem-23330e01",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:41:51Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 226.46640000000002
+  },
+  "by_type": {
+   "shaft": 226.46640000000002
+  },
+  "n_features": 3,
+  "total_m": 226.46640000000002
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

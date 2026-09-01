@@ -1,0 +1,546 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "depth_m",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "length_m",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "length_m",
+   "gap": "g3",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "average",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e4",
+   "id": "a7",
+   "quote": "The large shoot on the \u00b7west vein at the contact averaged $25 a ton and contained about 20 p.er cent of lead and 20 -ounces of silver and at least 0.05 ounce of gold The lead ore in the big shoot near the con- tact was largely oxidized.",
+   "span": [
+    18457,
+    18698
+   ],
+   "unit": "$/ton",
+   "value": 25.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "au",
+   "confidence": "described",
+   "element": "e4",
+   "id": "a8",
+   "quote": "The large shoot on the \u00b7west vein at the contact averaged $25 a ton and contained about 20 p.er cent of lead and 20 -ounces of silver and at least 0.05 ounce of gold The lead ore in the big shoot near the con- tact was largely oxidized.",
+   "span": [
+    18457,
+    18698
+   ],
+   "unit": "oz/ton",
+   "value": 0.05,
+   "width_m": null
+  },
+  {
+   "basis": "assay",
+   "commodity": "zn",
+   "confidence": "described",
+   "element": "e4",
+   "id": "a9",
+   "quote": "It contained little zinc, but recent examinations have shown that immediately north of this shoot the altered and clayey limestone contains much zinc car- bonate, which in places o.arried as much as 35 per cent of zinc.",
+   "span": [
+    18698,
+    18922
+   ],
+   "unit": "%",
+   "value": 35.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e7",
+   "id": "a10",
+   "quote": "It has yielded from fine-grained massive galena with very\u00b7 some very rich ore, 2 carloads averaging 90cents in gold and 333 ounces of silver to the ton, 10 per cent of copper, and 4 per cent of lead.",
+   "span": [
+    20514,
+    20717
+   ],
+   "unit": "oz/ton",
+   "value": 333.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "cu",
+   "confidence": "described",
+   "element": "e7",
+   "id": "a11",
+   "quote": "It has yielded from fine-grained massive galena with very\u00b7 some very rich ore, 2 carloads averaging 90cents in gold and 333 ounces of silver to the ton, 10 per cent of copper, and 4 per cent of lead.",
+   "span": [
+    20514,
+    20717
+   ],
+   "unit": "%",
+   "value": 10.0,
+   "width_m": null
+  },
+  {
+   "basis": "average",
+   "commodity": "pb",
+   "confidence": "described",
+   "element": "e7",
+   "id": "a12",
+   "quote": "It has yielded from fine-grained massive galena with very\u00b7 some very rich ore, 2 carloads averaging 90cents in gold and 333 ounces of silver to the ton, 10 per cent of copper, and 4 per cent of lead.",
+   "span": [
+    20514,
+    20717
+   ],
+   "unit": "%",
+   "value": 4.0,
+   "width_m": null
+  },
+  {
+   "basis": "selected",
+   "commodity": "au",
+   "confidence": "described",
+   "element": "e7",
+   "id": "a13",
+   "quote": "little pyrite to fine-grained massive pyrite Picked samples have assayed over 1 ounce of gold and 2,000 ounces of ------------------- -silver to the ton.",
+   "span": [
+    20717,
+    20873
+   ],
+   "unit": "oz/ton",
+   "value": 1.0,
+   "width_m": null
+  },
+  {
+   "basis": "selected",
+   "commodity": "ag",
+   "confidence": "described",
+   "element": "e7",
+   "id": "a14",
+   "quote": "little pyrite to fine-grained massive pyrite Picked samples have assayed over 1 ounce of gold and 2,000 ounces of ------------------- -silver to the ton.",
+   "span": [
+    20717,
+    20873
+   ],
+   "unit": "oz/ton",
+   "value": 2000.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.93217,
+  "lon": -112.11218,
+  "x": 404969.7177249322,
+  "y": 4420820.860175369,
+  "z": 2145.095575925212
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 7,
+  "surveyed": 0
+ },
+ "content_sha256": "8f208539c22a424b9939c1fee75192d26656bdc924f4e775154f11eee00ea6e2",
+ "coverage": {
+  "assays": 8,
+  "chars": 22211,
+  "elements": 7,
+  "mentions": 10,
+  "mining_sentences": 37,
+  "parsed_chars": 1618,
+  "questions": 33,
+  "sentences": 222,
+  "sentences_with_elements": 10,
+  "unparsed_sentences": 23,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32612,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 12
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "bearing_deg": "described",
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "ment can not be measured exactly, but jn the thrust is shown by a prospect shaft just south quartzite area it -must at least \u00b7exceed 2,00() of the fault line and nearly due south of the feet, as north of the gulch there is no in-d.i9ation 7,050-foot summit.",
+   "span": [
+    5321,
+    5582
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e4",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "The dimensions, though.irreg- At the time of the earlier report on the dis- u1ar, are about 20 by 20 feet to 60 by 40 feet trict the shaft was only 850 feet deep.",
+   "span": [
+    15490,
+    15654
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e5",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "-A small bunch of ore is was struck in this shaft at a depth of 1,174 feet said to have been found along the quartzite and continued beyond the.",
+   "span": [
+    19564,
+    19711
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "secondary_m": "described"
+   },
+   "id": "e7",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "specimens from a depth of 1,250 feet range level, close by the new shaft, for a length of 60 feet.",
+   "span": [
+    20415,
+    20514
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "length_m": "described"
+   },
+   "id": "e8",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "Tower and Smith \u00b7 state that it was being worked in 1897 as an open cut 200 feet deep, the ore being loaded on teams and hauled out of the open cut to the surface through large tunnels.",
+   "span": [
+    21598,
+    21789
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "level": "described"
+   },
+   "id": "e9",
+   "kind": "pit",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "259 pit was really deeper,'in part, for on the 300- foot level of the shaft a drift opens to daylight into the pit.",
+   "span": [
+    21842,
+    21961
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e10",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "A vertical shaft has been sunk since 1897 to a depth of 1,065 feet for the development of both iron-ore and vein deposits of the property.",
+   "span": [
+    21961,
+    22103
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 291882,
+   "content_type": "application/json",
+   "key": "models/mammoth-mine-94680566/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "d6ca1de01c027f8a426a5cd79879e2f5426715196a02c63ca3e05eedf8af13f4"
+  },
+  {
+   "bytes": 200699,
+   "content_type": "application/octet-stream",
+   "key": "models/mammoth-mine-94680566/model.omf",
+   "name": "model.omf",
+   "sha256": "1782c62cdcf14d55eca0f223bf5b3208e4fdeb7fcf968114cfb24c79ba09c4ce"
+  },
+  {
+   "bytes": 3439,
+   "content_type": "application/dxf",
+   "key": "models/mammoth-mine-94680566/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "e260b97f3dcb7d0db45c1cb255782e0b399406e56ad4c75a0d167217f93f5f8a"
+  },
+  {
+   "bytes": 6346,
+   "content_type": "application/geo+json",
+   "key": "models/mammoth-mine-94680566/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "b63bbf404ccf3993578f683f2dc49499fb3730c690e0a8c72b516531d42f1568"
+  },
+  {
+   "bytes": 4792,
+   "content_type": "image/svg+xml",
+   "key": "models/mammoth-mine-94680566/plan.svg",
+   "name": "plan.svg",
+   "sha256": "80e53f865a8a6f51081247201bf4476ff86a7bcaaffdf0ca29e2e7b6abab9aab"
+  },
+  {
+   "bytes": 4853,
+   "content_type": "image/svg+xml",
+   "key": "models/mammoth-mine-94680566/section.svg",
+   "name": "section.svg",
+   "sha256": "e9874958fcb6aaab5f8c4e2dc4f20f0837be6149ba03d19a099ee674ec2f5764"
+  },
+  {
+   "bytes": 2045,
+   "content_type": "image/svg+xml",
+   "key": "models/mammoth-mine-94680566/iso.svg",
+   "name": "iso.svg",
+   "sha256": "c78772292b22a30d4bd45007f24f7d7e80a48ce6e773fef5b24453bde6d37947"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:112",
+  "spec_id": "s8ac705dc",
+  "text_sha256": "3d6672cf12eeb3742d325125a7566bdbf382670ec29ae8ff3244195b366b3309"
+ },
+ "levels": {
+  "1100": 1809.816,
+  "2000": 1535.496,
+  "300": 2053.656,
+  "700": 1931.736,
+  "800": 1901.256
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "drift",
+   "quote": "The collar of this shaft is of --the strata curving toward the synclinal axis - in quartzite, but the material on the dump is .either on the surface or _on the 2,000-foot level practically all argillaceous _limestone -similar (west drift) of the",
+   "span": [
+    5582,
+    5833
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "shaft",
+   "quote": "The old shaft was sunk and is highly slickensided;",
+   "span": [
+    14822,
+    14873
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "shaft",
+   "quote": "This shoot crosses Geology.-The vertical shaft is sunk in Opo- into",
+   "span": [
+    15684,
+    15756
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "stope",
+   "quote": "Bunches of enargite and pyrite remain, however, ill all the ore bodies at th& surface of theApex shoot, shoot, and in the deepest feet wide and has been stoped between levels 7 and 8.",
+   "span": [
+    16552,
+    16743
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "crosscut",
+   "quote": "a along a cross break on the Dom Pedro Mammoth, the crosscut reaching both veins.",
+   "span": [
+    17401,
+    17482
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "stope",
+   "quote": "In specimens sent to the writer the primary ore 1 The value of shipments from this stope was sufficient to put this minerals are tetrahedrite, enargite, pyrite, and galena;",
+   "span": [
+    20873,
+    21047
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "pit",
+   "quote": "At the surface the mine is an open pit about 200 .",
+   "span": [
+    21533,
+    21585
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "tunnel",
+   "quote": "Tower and Smith \u00b7 state that it was being worked in 1897 as an open cut 200 feet deep, the ore being loaded on teams and hauled out of the open cut to the surface through large tunnels.",
+   "span": [
+    21598,
+    21789
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m9",
+   "kind": "drift",
+   "quote": "259 pit was really deeper,'in part, for on the 300- foot level of the shaft a drift opens to daylight into the pit.",
+   "span": [
+    21842,
+    21961
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m10",
+   "kind": "pit",
+   "quote": "259 pit was really deeper,'in part, for on the 300- foot level of the shaft a drift opens to daylight into the pit.",
+   "span": [
+    21842,
+    21961
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "production average",
+  "commodity": null,
+  "county": null,
+  "district": "Tintic",
+  "elevation_m": 2145.095575925212,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 39.93217,
+  "lon": -112.11218,
+  "mine_id": "grades:112",
+  "name": "Mammoth mine",
+  "quote": "Gold grade 1 g/mt (Production_detail, yr 1977)",
+  "source": "USGS MRDS Production_detail (dep_id 10020237)",
+  "source_url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10020237",
+  "state": "UT",
+  "terrain_zoom": 13,
+  "years": "1977"
+ },
+ "model_id": "mammoth-mine-94680566",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:41:46Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 3282.343200000021
+  },
+  "by_type": {
+   "pit": 63.960000000020955,
+   "shaft": 3218.3832
+  },
+  "n_features": 7,
+  "total_m": 3282.343200000021
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

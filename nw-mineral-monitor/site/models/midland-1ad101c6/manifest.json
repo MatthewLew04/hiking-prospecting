@@ -1,0 +1,270 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e1",
+   "field": "bearing_deg",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "bearing_deg",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "level",
+   "gap": "g4",
+   "value": null
+  }
+ ],
+ "assays": [],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.54966,
+  "lon": -112.1333,
+  "x": 404040.9850870685,
+  "y": 4489384.01959808,
+  "z": 1969.1583783939282
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 2,
+  "surveyed": 0
+ },
+ "content_sha256": "9992ecf227b8914e329140227a49211168ac56fcc6638668e9751944fa6d34ba",
+ "coverage": {
+  "assays": 0,
+  "chars": 2824,
+  "elements": 2,
+  "mentions": 5,
+  "mining_sentences": 7,
+  "parsed_chars": 864,
+  "questions": 8,
+  "sentences": 22,
+  "sentences_with_elements": 4,
+  "unparsed_sentences": 1,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32612,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 12
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described"
+   },
+   "id": "e2",
+   "kind": "tunnel",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "The upper tunnel enters a strong fissure, after passing eastward 525 feet through quartzite.",
+   "span": [
+    269,
+    363
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described",
+    "secondary_m": "described"
+   },
+   "id": "e4",
+   "kind": "tunnel",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "The lower tunnel enters quartzite 550 feet below and 1,350 feet northeast of the upper, strikes a fracture zone, and except for incidental departures follows it southeastward for nearly 800 feet The zone trends N. 10\u00b0 to 20\u00b0 W. and dips westward at angles ranging from 65\u00b0 to 80\u00b0, the average being 70\u00b0, and varies in thickness from a close fissure to 4 feet For the greater portion of its course it lies within quartzite walls and carries stained ocherous material.",
+   "span": [
+    609,
+    1083
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 284495,
+   "content_type": "application/json",
+   "key": "models/midland-1ad101c6/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "712ad12cedf4828acb499dc029bf3e800ca2dac5af137850208270c1f3294ef5"
+  },
+  {
+   "bytes": 194719,
+   "content_type": "application/octet-stream",
+   "key": "models/midland-1ad101c6/model.omf",
+   "name": "model.omf",
+   "sha256": "a7b9e8d3e65b12bb01088294b55f69d313cb35d6a5fe2baeea32e408bcf08aa1"
+  },
+  {
+   "bytes": 1488,
+   "content_type": "application/dxf",
+   "key": "models/midland-1ad101c6/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "0ca9e3ce59d58477565bdab76929afaefab6a0e5e7f1379d9ea3fefa427b7056"
+  },
+  {
+   "bytes": 2123,
+   "content_type": "application/geo+json",
+   "key": "models/midland-1ad101c6/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "711c191f6cb27f6d6046e7ecb5c52d4746cb13d869a46aff0d68442b918954f6"
+  },
+  {
+   "bytes": 3972,
+   "content_type": "image/svg+xml",
+   "key": "models/midland-1ad101c6/plan.svg",
+   "name": "plan.svg",
+   "sha256": "9323804d5c9b54963a0fe047741948ae5e84a034b427b92b828b5fd748a095f7"
+  },
+  {
+   "bytes": 1757,
+   "content_type": "image/svg+xml",
+   "key": "models/midland-1ad101c6/section.svg",
+   "name": "section.svg",
+   "sha256": "935abc36e0d84031578c8b4cc24bd72b38ee46e4f66e8a0cfc3a97fc834dd862"
+  },
+  {
+   "bytes": 1325,
+   "content_type": "image/svg+xml",
+   "key": "models/midland-1ad101c6/iso.svg",
+   "name": "iso.svg",
+   "sha256": "100ff2ba509e58f3fc14d63e2ebc82ee2b9f6adb67c8b95aed689372fdb3326b"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:2032",
+  "spec_id": "sa36b775b",
+  "text_sha256": "fd10a30d213bfa01907aa34c38ba5e7f4d20ad22b6fcf5a97c43089a5ac49412"
+ },
+ "levels": {
+  "adit": 1969.958
+ },
+ "mentions": [
+  {
+   "count": 1,
+   "id": "m1",
+   "kind": "tunnel",
+   "quote": "Above the upper tunnel near the crest of the divide, a strong fracture zone, which has been explored by a series of open cuts, shows a trend and location conformable to that of the m'ain fissure if the vertical dip at the surface be considered to continue down nearly to the upper tunnel.",
+   "span": [
+    1279,
+    1573
+   ]
+  },
+  {
+   "count": null,
+   "id": "m2",
+   "kind": "pit",
+   "quote": "Above the upper tunnel near the crest of the divide, a strong fracture zone, which has been explored by a series of open cuts, shows a trend and location conformable to that of the m'ain fissure if the vertical dip at the surface be considered to continue down nearly to the upper tunnel.",
+   "span": [
+    1279,
+    1573
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "tunnel",
+   "quote": "Above the upper tunnel near the crest of the divide, a strong fracture zone, which has been explored by a series of open cuts, shows a trend and location conformable to that of the m'ain fissure if the vertical dip at the surface be considered to continue down nearly to the upper tunnel.",
+   "span": [
+    1279,
+    1573
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "tunnel",
+   "quote": "The ore is'worked through the upper tunnel.",
+   "span": [
+    1760,
+    1805
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "shaft",
+   "quote": "Energetic and thorough prospecting through shafts on both sides of the canyon have failed to reveal its continuation beyond.",
+   "span": [
+    2314,
+    2441
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "assay-text",
+  "commodity": "Lead, Silver, Gold, Copper",
+  "county": "Salt Lake",
+  "district": null,
+  "elevation_m": 1969.1583783939282,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 40.54966,
+  "lon": -112.1333,
+  "mine_id": "grades:2032",
+  "name": "Midland",
+  "quote": "( 1905 ) NORTHERN SHOOT:  38 % PB, 8 - 10 OZ/TON AG, $3 IN GOLD AND SOME COPPER.  SOUTHERN SHOOT - 50 % PB.",
+  "source": "USGS MRDS Analytical_data (dep_id 10021049)",
+  "source_url": "https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=10021049",
+  "state": "UT",
+  "terrain_zoom": 13,
+  "years": null
+ },
+ "model_id": "midland-1ad101c6",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T04:54:17Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 327.66409572442547
+  },
+  "by_type": {
+   "adit": 327.66409572442547
+  },
+  "n_features": 2,
+  "total_m": 327.66409572442547
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

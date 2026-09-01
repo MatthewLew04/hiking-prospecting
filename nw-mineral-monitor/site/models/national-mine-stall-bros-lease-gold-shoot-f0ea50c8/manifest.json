@@ -1,0 +1,631 @@
+{
+ "access": "app-gate",
+ "answers": [
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e2",
+   "field": "bearing_deg",
+   "gap": "g1",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e3",
+   "field": "bearing_deg",
+   "gap": "g2",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e4",
+   "field": "length_m",
+   "gap": "g3",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e5",
+   "field": "bearing_deg",
+   "gap": "g4",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e6",
+   "field": "level",
+   "gap": "g5",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e7",
+   "field": "bearing_deg",
+   "gap": "g6",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e8",
+   "field": "bearing_deg",
+   "gap": "g7",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e10",
+   "field": "bearing_deg",
+   "gap": "g8",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e10",
+   "field": "level",
+   "gap": "g9",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e11",
+   "field": "depth_m",
+   "gap": "g10",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e12",
+   "field": "length_m",
+   "gap": "g11",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e12",
+   "field": "level",
+   "gap": "g12",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e13",
+   "field": "bearing_deg",
+   "gap": "g14",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e15",
+   "field": "bearing_deg",
+   "gap": "g15",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e17",
+   "field": "bearing_deg",
+   "gap": "g16",
+   "value": null
+  },
+  {
+   "answered_by": "agent",
+   "because": "autopopulate: the source text does not state this; the element is omitted rather than guessed",
+   "effect": "element omitted",
+   "element": "e18",
+   "field": "bearing_deg",
+   "gap": "g17",
+   "value": null
+  }
+ ],
+ "assays": [
+  {
+   "basis": "assay",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a1",
+   "quote": "It is said that it contained metal to the value of $134 per ton, chiefly silver.",
+   "span": [
+    6992,
+    7074
+   ],
+   "unit": "$/ton",
+   "value": 134.0,
+   "width_m": null
+  },
+  {
+   "basis": "assay",
+   "commodity": "usd",
+   "confidence": "described",
+   "element": "e1",
+   "id": "a2",
+   "quote": "This ore contained $117 per ton in silver and $0.80 in gold.",
+   "span": [
+    7244,
+    7306
+   ],
+   "unit": "$/ton",
+   "value": 117.0,
+   "width_m": null
+  }
+ ],
+ "collar": {
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.83806,
+  "lon": -117.57083,
+  "x": 452605.45627014025,
+  "y": 4631953.949871635,
+  "z": 1924.595432916472
+ },
+ "confidence": {
+  "assumed": 0,
+  "described": 5,
+  "surveyed": 0
+ },
+ "content_sha256": "2dd5470ec1578431cedbe7cd3d3d2ca2c7072eded1d536e082782ecc8ed19cd4",
+ "coverage": {
+  "assays": 2,
+  "chars": 29357,
+  "elements": 5,
+  "mentions": 20,
+  "mining_sentences": 55,
+  "parsed_chars": 1951,
+  "questions": 45,
+  "sentences": 332,
+  "sentences_with_elements": 18,
+  "unparsed_sentences": 25,
+  "unresolved": 0
+ },
+ "crs": {
+  "epsg": 32611,
+  "kind": "utm",
+  "north": true,
+  "units": "m",
+  "zone": 11
+ },
+ "elements": [
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e1",
+   "kind": "shaft",
+   "name": "Stall",
+   "placement": "the collar",
+   "quote": "Similar ore was discovered near the surface 30 feet south of the Stall shaft, practically at the outcrops of the National vein.",
+   "span": [
+    6863,
+    6992
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "bearing_deg": "described",
+    "length_m": "described"
+   },
+   "id": "e9",
+   "kind": "tunnel",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "grade +0.5 % for drainage (definitional)",
+   "quote": "The crosscut tunnel trends N. 55\u00b0 W. and encounters a vein at 416 feet.",
+   "span": [
+    21194,
+    21268
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described",
+    "from": "described",
+    "secondary_m": "described"
+   },
+   "id": "e14",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "At a point 320 feet from the portal a shaft was sunk to a depth of 130 feet.",
+   "span": [
+    24222,
+    24300
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [],
+   "fields": {
+    "length_m": "described"
+   },
+   "id": "e16",
+   "kind": "portal",
+   "name": "",
+   "placement": "the collar",
+   "placement_note": "drawn as its stated size in plan; the text gives no outline",
+   "quote": "The portal of the tunnel and the first 200 feet are in rhyolite;",
+   "span": [
+    24883,
+    24949
+   ]
+  },
+  {
+   "built": true,
+   "confidence": "described",
+   "definitional_defaults": [
+    "dip_deg"
+   ],
+   "fields": {
+    "depth_m": "described",
+    "dip_deg": "described"
+   },
+   "id": "e19",
+   "kind": "shaft",
+   "name": "",
+   "placement": "the collar",
+   "quote": "Near the portal a shaft was sunk to a depth of 82 feet, and in this probably the same stringer was cut.",
+   "span": [
+    25639,
+    25745
+   ]
+  }
+ ],
+ "files": [
+  {
+   "bytes": 332242,
+   "content_type": "application/json",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/model.geomodel.json",
+   "name": "model.geomodel.json",
+   "sha256": "af7dd2372c7def97eb3f2efca28e515d35607cf142631bdd53e3182940d1130d"
+  },
+  {
+   "bytes": 231477,
+   "content_type": "application/octet-stream",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/model.omf",
+   "name": "model.omf",
+   "sha256": "512a055c89ba541b475f504b9fd94df1322f20bd35917a0ebe5c97fea6aa0e8a"
+  },
+  {
+   "bytes": 2666,
+   "content_type": "application/dxf",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/workings.dxf",
+   "name": "workings.dxf",
+   "sha256": "d25f23e23da2c2919b0e1ebb1d9cd2da942d6bd8526b8ab9af2217e1f85f70d1"
+  },
+  {
+   "bytes": 4536,
+   "content_type": "application/geo+json",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/workings.geojson",
+   "name": "workings.geojson",
+   "sha256": "3ec8026a857c67c75e5a8e2ee545e12ceb5654332a4af0f62a5d310dc1b2c4dc"
+  },
+  {
+   "bytes": 4740,
+   "content_type": "image/svg+xml",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/plan.svg",
+   "name": "plan.svg",
+   "sha256": "fde419e5b828e02d50df334a9e94f33564b29538916655b25a307ae6cda69502"
+  },
+  {
+   "bytes": 3086,
+   "content_type": "image/svg+xml",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/section.svg",
+   "name": "section.svg",
+   "sha256": "a46d26b8ef4f0e20432db84ccbab164022a01442c1efcb173341aaced5aa56ad"
+  },
+  {
+   "bytes": 1800,
+   "content_type": "image/svg+xml",
+   "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/iso.svg",
+   "name": "iso.svg",
+   "sha256": "95376bdcbe7c1dc756277d9ac66e59934cbc0f251b3943af0ad7b8578ea8ee65"
+  }
+ ],
+ "input": {
+  "mine_id": "grades:9",
+  "spec_id": "seab65071",
+  "text_sha256": "4e2f22ef1374025837514dd30e44f0c97bd65c4451f2e4a623f6bd4f03a1a5a3"
+ },
+ "levels": {
+  "100": 1894.115,
+  "adit": 1925.229
+ },
+ "mentions": [
+  {
+   "count": null,
+   "id": "m1",
+   "kind": "tunnel",
+   "quote": "between Charleston and National gulches, and has been opened by several tunnels below that shaft, all entering on the slope toward",
+   "span": [
+    9285,
+    9419
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m2",
+   "kind": "shaft",
+   "quote": "between Charleston and National gulches, and has been opened by several tunnels below that shaft, all entering on the slope toward",
+   "span": [
+    9285,
+    9419
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m3",
+   "kind": "tunnel",
+   "quote": "The locations of these tunnels are shown on Plates I;",
+   "span": [
+    9517,
+    9572
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m4",
+   "kind": "tunnel",
+   "quote": "Tunnel No. 3 ...........................................................",
+   "span": [
+    9867,
+    9940
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m5",
+   "kind": "crosscut",
+   "quote": "There are no important crosscuts in this part of the mine.",
+   "span": [
+    10786,
+    10846
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m6",
+   "kind": "stope",
+   "quote": "A descent through the rich but narrow stopes is interesting, though the soft claylike vein filling makes observations difficult.",
+   "span": [
+    11325,
+    11455
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m7",
+   "kind": "stope",
+   "quote": "In the rich stopes between levels Nos. 3 and 4\u00a3 the vein is similar through- out, consisting of a few feet of altered rock, soft and white, with good footwall, and is traversed by several gouge walls.",
+   "span": [
+    11595,
+    11799
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m8",
+   "kind": "stope",
+   "quote": "Diagram of National vein in small stope just above tunnel No. 5.",
+   "span": [
+    13340,
+    13406
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m9",
+   "kind": "stope",
+   "quote": "Diagram of quartz seam in National vein in high-grade stopes between levels Nos. 4 and 4J.",
+   "span": [
+    14263,
+    14356
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m10",
+   "kind": "stope",
+   "quote": "At first it was mainly worked close to the south side of the shaft, but later the stopes were materially extended and are now seen on both sides of the shaft.",
+   "span": [
+    14942,
+    15103
+   ]
+  },
+  {
+   "count": 3,
+   "id": "m11",
+   "kind": "tunnel",
+   "quote": "Three tunnels have been driven by the National",
+   "span": [
+    18733,
+    18782
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m12",
+   "kind": "tunnel",
+   "quote": "A tunnel started on the north side of Radiator Hill, close to the National Hotel and at the same elevation, intersected the vein de- scribed above.",
+   "span": [
+    20143,
+    20293
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m13",
+   "kind": "tunnel",
+   "quote": "Unfortunately the tunnel was inaccessible during the writer's stay at National.",
+   "span": [
+    20389,
+    20470
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m14",
+   "kind": "tunnel",
+   "quote": "Some prospect tunnels have been driven at places on the slopes a short distance north of the National Hotel.",
+   "span": [
+    20834,
+    20944
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m15",
+   "kind": "crosscut",
+   "quote": "The crosscut tunnel trends N. 55\u00b0 W. and encounters a vein at 416 feet.",
+   "span": [
+    21194,
+    21268
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m16",
+   "kind": "tunnel",
+   "quote": "The tunnel is driven wholly in decomposed basalt that includes some harder residual bowlders which show that the basalt contained phenocrysts of triclinic feldspar.",
+   "span": [
+    21342,
+    21509
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m17",
+   "kind": "drift",
+   "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+   "span": [
+    21718,
+    21863
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m18",
+   "kind": "tunnel",
+   "quote": "The Edmunds tunnel is 100 feet below the National tunnel No. 5 on the west side of the gulch.",
+   "span": [
+    24069,
+    24163
+   ]
+  },
+  {
+   "count": 1,
+   "id": "m19",
+   "kind": "shaft",
+   "quote": "At the shaft a quartz seam 2 inches wide was cut, which continued .down into the shaft.",
+   "span": [
+    24457,
+    24546
+   ]
+  },
+  {
+   "count": 53,
+   "id": "m20",
+   "kind": "drift",
+   "quote": "53 drifts to their ends;",
+   "span": [
+    26583,
+    26609
+   ]
+  }
+ ],
+ "mine": {
+  "basis": "ore shipped",
+  "commodity": null,
+  "county": null,
+  "district": "National",
+  "elevation_m": 1924.595432916472,
+  "elevation_source": "AWS Terrain Tiles (Mapzen terrarium: 3DEP/SRTM composite), zoom 13",
+  "lat": 41.83806,
+  "lon": -117.57083,
+  "mine_id": "grades:9",
+  "name": "National mine (Stall Bros. lease, gold shoot)",
+  "quote": "A few thousand tons of low-grade ore, assaying about $100 a ton, were thrown on the dump of the National mine, but the ore shipped averaged about $30,000 a ton in gold of a value of $10.60 an ounce.",
+  "source": "USGS Bulletin 601, The National Mining District, Nevada (Waldemar Lindgren, 1915), p. 21",
+  "source_url": "https://pubs.usgs.gov/bul/0601/report.pdf",
+  "state": "NV",
+  "terrain_zoom": 13,
+  "years": "1909-1912"
+ },
+ "model_id": "national-mine-stall-bros-lease-gold-shoot-f0ea50c8",
+ "notes": [
+  "Workings were digitised from a written description, not from a survey.",
+  "confidence: surveyed = traced off a georeferenced plan; described = read off the source text; assumed = supplied in answer to a question the text left open.",
+  "Levels are placed at their named depth below the collar.",
+  "Every element carries the sentence it came from and that sentence's character span in the input text.",
+  "mentions are workings the text names without describing; they were not built.",
+  "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
+  "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
+ ],
+ "plates": [],
+ "published_utc": "2026-09-01T05:38:55Z",
+ "schema": "nwmm-model-manifest/1",
+ "summary": {
+  "by_level": {
+   "unassigned": 319.4319849501558
+  },
+  "by_type": {
+   "adit": 126.79838495013479,
+   "portal": 60.960000000020955,
+   "shaft": 131.67360000000008
+  },
+  "n_features": 5,
+  "total_m": 319.4319849501558
+ },
+ "unresolved": [],
+ "vein": null,
+ "versions": {
+  "builder": "nwmm-agentbuild/1",
+  "parser": "nwmm-narrative/1",
+  "publisher": "nwmm-publish/1",
+  "renderer": "nwmm-render2d/1"
+ },
+ "warnings": []
+}

@@ -164,6 +164,21 @@ class RefusalTests(unittest.TestCase):
         self.assertTrue(built['warnings'])
         self.assertIn('below the bottom', built['warnings'][0])
 
+    def test_a_plate_elevation_that_fights_the_level_name_is_warned_about_in_the_right_units(self):
+        # the levels table holds elevations, so the warning has to convert
+        # before it says "below the collar": a 300 level is 91 m down, not 1809
+        spec = narrative.parse('On the 300 level a drift was extended 450 feet N 20 W.')
+        el = spec['elements'][0]
+        el['path'] = [(-116.87, 36.877, None), (-116.869, 36.8775, None)]
+        el['elevation_m'] = 1750.0
+        el['plate'] = 'p3'
+        built = agentbuild.build(spec, dict(SITE))
+        self.assertEqual(built['warnings'],
+                         ['the "300" level is drawn at 1750 m on plate p3 but its name puts it '
+                          'at 1809 m, 91 m below the collar; the surveyed elevation is used'])
+        # the surveyed elevation still wins; only the sentence was wrong
+        self.assertAlmostEqual(built['levels']['300'], 1750.0, places=3)
+
 
 class ProvenanceTests(unittest.TestCase):
     def test_every_feature_carries_its_quote_span_and_field_confidence(self):

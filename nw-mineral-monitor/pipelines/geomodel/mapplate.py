@@ -291,13 +291,27 @@ def citation(plate):
 
 
 # ----------------------------------------------------------- georeferencing
+def _plan_control(plate):
+    """The control points a plan is actually georeferenced from, or None.
+
+    A single point fixes neither scale nor rotation, so it is not a
+    georeference — which is why :func:`plate_gaps` stops asking as soon as an
+    anchor is given and why its question offers the anchor as the answer.  An
+    agent that takes that offer without deleting its lone point must get the
+    anchor's scale, not a solve that cannot be done.  Everything that has to
+    know which of the two was used asks here, so the zone, the solve and the
+    provenance cannot disagree with the gap check or with each other."""
+    control = plate.get('control') or ()
+    return control if len(control) >= 2 else None
+
+
 def _zone_for(plate):
     """The UTM zone the georeference is solved in.  Taken from the plate's own
     control geometry, so a plate is self-contained and does not depend on which
     mine it is later attached to."""
     if plate['plane'] == 'section':
         lon, lat = plate['p1']
-    elif plate.get('control'):
+    elif _plan_control(plate):
         lon, lat = plate['control'][0][2], plate['control'][0][3]
     else:
         lon, lat = plate['anchor']['lonlat']
@@ -322,6 +336,13 @@ def image_plane(plate):
 
 
 def _image_plane(plate):
+    control = _plan_control(plate)
+    if plate['plane'] == 'plan' and control is None and not plate.get('anchor'):
+        # plate_gaps asks about this rather than erroring, so it only reaches
+        # here when a caller solves a plate it has not checked; say so instead
+        # of failing later inside the affine with a bare ValueError.
+        raise PlateError('plate %s has no georeference to solve: give at least two control '
+                         'points, or an anchor with a scale bar' % plate['plate_id'])
     zone, north = _zone_for(plate)
     fwd = lambda lo, la: utm_fwd(lo, la, zone, north)
     name = plate.get('source', {}).get('figure') or 'plate %s' % plate['plate_id']
@@ -333,17 +354,17 @@ def _image_plane(plate):
     else:
         img = ImagePlane(plate['image'], plate['width'], plate['height'], plane='plan',
                          name=name, elevation=plate.get('elevation_m'))
-        if plate.get('control'):
+        if control:
             img.control = [[px, py] + list(fwd(lon, lat))
-                           for px, py, lon, lat in plate['control']]
+                           for px, py, lon, lat in control]
         else:
             a = plate['anchor']
             wk.georef_plan_from_scale(img, a['px'], fwd(*a['lonlat']),
                                       a['scale_m_per_px'], rotation_deg=a['rotation_deg'],
                                       elevation=plate.get('elevation_m'))
     img.provenance = dict(plate.get('source') or {})
-    img.provenance['georeference'] = ('%d control points' % len(plate.get('control') or ())
-                                      if plate.get('control') else 'anchor + scale bar')
+    img.provenance['georeference'] = ('%d control points' % len(control)
+                                      if control else 'anchor + scale bar')
     return img, zone, north
 
 

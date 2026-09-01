@@ -60,8 +60,16 @@ class View(object):
         ys = [p[1] for p in pts] or [0.0]
         self.minx, self.maxx = min(xs), max(xs)
         self.miny, self.maxy = min(ys), max(ys)
-        dx = max(self.maxx - self.minx, 1e-6)
-        dy = max(self.maxy - self.miny, 1e-6)
+        # "The shaft was sunk 300 feet" is a whole, common description, and in plan
+        # it is a single point.  Flooring a zero span at 1e-6 m made the scale
+        # hundreds of millions of pixels per metre, so the scale bar was drawn a
+        # third of a billion units wide and labelled "1 m".  Give a degenerate
+        # extent a real span around its centre instead, and everything downstream
+        # — bar, placement, centring — comes out at a readable scale.
+        self.minx, self.maxx = _span(self.minx, self.maxx)
+        self.miny, self.maxy = _span(self.miny, self.maxy)
+        dx = self.maxx - self.minx
+        dy = self.maxy - self.miny
         self.k = min((width - 2 * pad) / dx, (height - 2 * pad) / dy)
         self.ox = pad + ((width - 2 * pad) - dx * self.k) / 2.0
         self.oy = pad + ((height - 2 * pad) - dy * self.k) / 2.0
@@ -116,6 +124,19 @@ def _tally(built):
 
 
 # --------------------------------------------------------------- decorations
+#: a plan with no horizontal extent still has to be drawn at some scale; 20 m
+#: puts a lone collar in the middle of a sheet you can measure off.
+DEGENERATE_SPAN_M = 20.0
+
+
+def _span(lo, hi):
+    """Widen a degenerate extent about its centre so the scale stays finite."""
+    if hi - lo >= 1e-3:
+        return lo, hi
+    mid = (lo + hi) / 2.0
+    return mid - DEGENERATE_SPAN_M / 2.0, mid + DEGENERATE_SPAN_M / 2.0
+
+
 def _nice(span):
     """A 1/2/5 × 10ⁿ bar length that fits comfortably inside the drawing."""
     target = span / 4.0

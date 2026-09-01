@@ -208,6 +208,16 @@ class MentionTests(unittest.TestCase):
         spec = narrative.parse('The mine is developed by two adits.')
         self.assertEqual([g['kind'] for g in spec['gaps']], ['mention'])
 
+    def test_answering_something_else_leaves_the_mention_questions_standing(self):
+        spec = narrative.parse('The mine is developed by two adits and a vertical shaft. '
+                               'A drift was run 450 feet on the 300 level.')
+        asked = [g['id'] for g in spec['gaps'] if g['kind'] == 'mention']
+        self.assertEqual(len(asked), 2)
+        bearing = [g for g in spec['gaps'] if g['field'] == 'bearing_deg'][0]
+        after = narrative.apply_answers(spec, [{'id': bearing['id'], 'value': 45.0}])
+        self.assertEqual([g['id'] for g in after['gaps'] if g['kind'] == 'mention'], asked)
+        self.assertEqual(after['coverage']['questions'], 2)
+
     def test_anything_measured_at_all_stays_an_element(self):
         for text in ('A shaft was sunk 300 feet.',
                      'A drift runs N45E 100 feet on the 400 level.',
@@ -302,6 +312,22 @@ class NoInventionTests(unittest.TestCase):
         self.assertIn(round(400 * FT, 4), values)
         self.assertIn(round(500 * FT, 4), values)
         self.assertIn(None, values)               # "omit" is always available
+
+    def test_a_range_on_the_second_measurement_is_a_question_too(self):
+        spec = narrative.parse('A stope 400 feet long bearing 072 degrees and '
+                               '30 to 40 feet high on the 300 level.')
+        el = spec['elements'][0]
+        self.assertIsNone(el.get('height_m'))
+        self.assertNotIn('height_m', el['fields'])   # the low figure is not "described"
+        gap = [g for g in spec['gaps'] if g['field'] == 'height_m'][0]
+        self.assertEqual(gap['kind'], 'range')
+        self.assertTrue(gap['required'])             # the prism's vertical extent hangs on it
+        values = [o['value'] for o in gap['options']]
+        self.assertIn(round(30 * FT, 4), values)
+        self.assertIn(round(40 * FT, 4), values)
+        after = narrative.apply_answers(spec, [{'id': gap['id'], 'value': round(40 * FT, 4)}])
+        self.assertAlmostEqual(after['elements'][0]['height_m'], 40 * FT, places=4)
+        self.assertEqual(after['elements'][0]['fields']['height_m'], 'assumed')
 
     def test_every_element_carries_a_verbatim_quote_and_a_real_span(self):
         prose = ('The Main shaft was sunk to a depth of 620 feet. '

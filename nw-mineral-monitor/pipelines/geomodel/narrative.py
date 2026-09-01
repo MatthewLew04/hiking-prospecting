@@ -140,7 +140,12 @@ RE_DIP = re.compile(
 
 # "sunk 420 feet at 45 degrees" — the cue and the angle sit far apart, so this
 # form is matched on its own rather than by widening RE_DIP's window.
-RE_DIP_AT = re.compile(r'\bat\s+(?P<deg>' + _NUM + r')\s*(?:°|deg\.?|degrees?)\b', re.I)
+# The trailing \b used to sit after the alternation, and '°' is not a word
+# character, so it demanded a word character *after* the degree sign: 'at 45°.'
+# and 'at 45° ' both failed while the nonsense 'at 45°x' matched.  An incline
+# written with the degree sign then lost its dip and was silently taken as
+# vertical.  The boundary belongs only on the spelled-out forms.
+RE_DIP_AT = re.compile(r'\bat\s+(?P<deg>' + _NUM + r')\s*(?:°|deg\.?\B|deg\b|degrees?\b)', re.I)
 
 RE_DIP_POST = re.compile(r'(?P<deg>' + _NUM + r')\s*(?:°|deg\.?|degrees?)\s*(?:incline|from\s+the\s+horizontal|dip)', re.I)
 
@@ -468,19 +473,24 @@ def parse(text, mine_id=None):
 
     levels = dict((e['level'], e['level_depth_m']) for e in elements
                   if e.get('level') and e.get('level_depth_m') is not None)
+    for m in RE_LEVEL_NUM.finditer(text):
+        lv = m.group('lv').replace(',', '')
+        val = _f(lv)
+        levels.setdefault(lv, val if re.search(r'\b(m|metre|meter)\b', m.group(0), re.I) else val * FT)
     # "connects the 400 and 300 levels" names two levels that no other pattern
-    # sees, because only the second one is followed by the word "level".
+    # sees, because only the second one is followed by the word "level".  A level
+    # name is a depth below the collar in feet by the US convention this module
+    # documents; it is not in whatever unit the *raise* happened to be measured
+    # in, which is what reading e['units_in'] here used to do — "a raise 30 m
+    # long connects the 200 and 300 levels" put those levels 200 and 300 metres
+    # down.  This runs after the scan above so an explicit "300 m level" still wins.
     for e in elements:
         for label in (e.get('connects') or ()):
             try:
                 depth = _f(label)
             except (TypeError, ValueError):
                 continue
-            levels.setdefault(label, depth if e.get('units_in') == 'm' else depth * FT)
-    for m in RE_LEVEL_NUM.finditer(text):
-        lv = m.group('lv').replace(',', '')
-        val = _f(lv)
-        levels.setdefault(lv, val if re.search(r'\b(m|metre|meter)\b', m.group(0), re.I) else val * FT)
+            levels.setdefault(label, depth * FT)
 
     gaps = []
     for el in elements:
@@ -519,7 +529,7 @@ MEASURED = ('bearing_deg', 'length_m', 'depth_m', 'height_m', 'level', 'from', '
 
 def _is_mention(el):
     """True when nothing about this working was actually stated."""
-    if el.get('_range'):
+    if el.get('_ranges'):
         return False
     return not any(el.get(f) is not None for f in MEASURED)
 
@@ -602,13 +612,27 @@ def _element(text, a, lo, hi, n, mask):
                 el['measure_precision'] = 'approximate'
         else:
             # "400 to 500 feet" — a range is a question, not a number
-            el['_range'] = {'field': field, 'low_m': round(primary['m'], 4),
-                            'high_m': round(primary['high_m'], 4)}
+            el.setdefault('_ranges', []).append(
+                {'field': field, 'low_m': round(primary['m'], 4),
+                 'high_m': round(primary['high_m'], 4), 'required': True})
         if len(measures) > 1:
             # a stope's second figure is its back height; an incline's is the
             # vertical it gained.  Both are recorded, neither is guessed at.
-            el['height_m' if kind == 'stope' else 'secondary_m'] = round(measures[1]['m'], 4)
-            el['fields']['height_m' if kind == 'stope' else 'secondary_m'] = 'described'
+            second = 'height_m' if kind == 'stope' else 'secondary_m'
+            if measures[1]['high_m'] is None:
+                el[second] = round(measures[1]['m'], 4)
+                el['fields'][second] = 'described'
+            else:
+                # "30 to 40 feet high" is a range like any other: keeping the low
+                # figure and tagging it 'described' would put a number in the model
+                # that the text never states.  A stope's back height is the vertical
+                # extent the prism is built from, so that one has to be settled
+                # before anything can be drawn; any other second figure is carried
+                # as an open question but blocks nothing.
+                el.setdefault('_ranges', []).append(
+                    {'field': second, 'low_m': round(measures[1]['m'], 4),
+                     'high_m': round(measures[1]['high_m'], 4),
+                     'required': second == 'height_m'})
 
     if kind in VERTICAL and 'dip_deg' not in el and 'incline' not in a['surface'].lower():
         el['dip_deg'] = 90.0                      # definitional, not invented
@@ -650,16 +674,25 @@ def _confidence(el):
 
 
 # ------------------------------------------------------------------- gaps
+#: what to call each measurement when quoting a range back, so that "400 feet
+#: long and 30 to 40 feet high" does not ask the same words twice.
+MEASURE_NOUN = {'length_m': 'length', 'depth_m': 'depth', 'height_m': 'back height',
+                'secondary_m': 'second measurement'}
+
+
 def _gaps_for(el, elements, levels):
     out = []
     kind = el['kind']
 
-    rng = el.pop('_range', None)
-    if rng:
-        out.append({'element': el['id'], 'field': rng['field'], 'required': True,
+    ranged = set()
+    for rng in el.pop('_ranges', None) or ():
+        ranged.add(rng['field'])
+        out.append({'element': el['id'], 'field': rng['field'], 'required': rng['required'],
                     'kind': 'range',
-                    'question': 'The %s is given as a range (%.4g–%.4g m). Which value should be modelled?'
-                                % (kind, rng['low_m'], rng['high_m']),
+                    'question': 'The %s of the %s is given as a range (%.4g–%.4g m). '
+                                'Which value should be modelled?'
+                                % (MEASURE_NOUN.get(rng['field'], rng['field']), kind,
+                                   rng['low_m'], rng['high_m']),
                     'quote': el['quote'], 'span': el['span'],
                     'options': [{'value': rng['low_m'], 'label': 'the lower figure'},
                                 {'value': rng['high_m'], 'label': 'the upper figure'},
@@ -680,10 +713,8 @@ def _gaps_for(el, elements, levels):
             continue
         if field == 'length_m' and el.get('connects'):
             continue                              # the two levels fix the length
-        if field == 'length_m' and rng and rng['field'] == 'length_m':
-            continue
-        if field == 'depth_m' and rng and rng['field'] == 'depth_m':
-            continue
+        if field in ranged:
+            continue                              # already asked as a range
         out.append({'element': el['id'], 'field': field, 'required': True, 'kind': 'missing',
                     'question': _question(el, field),
                     'quote': el['quote'], 'span': el['span'],
@@ -775,6 +806,28 @@ def _coverage(text, sents, elements, gaps, mentions=()):
 
 
 # ------------------------------------------------------------------ answers
+def merge_gaps(spec, gaps):
+    """Fold gaps raised outside the parser — the placement questions
+    :mod:`geomodel.agentbuild` discovers — into the spec, so an answer to one
+    can be looked up by :func:`apply_answers` like any other.
+
+    A gap already recorded as answered is not re-added: the builder re-raises a
+    question every time it cannot place an element, and re-adding one the agent
+    has already settled would ask it forever.
+    """
+    spec = json.loads(json.dumps(spec))
+    known = set(g['id'] for g in spec['gaps'])
+    settled = set(a['gap'] for a in (spec.get('answers') or []))
+    for gap in gaps or []:
+        if gap['id'] in known or gap['id'] in settled:
+            continue
+        spec['gaps'].append(json.loads(json.dumps(gap)))
+        known.add(gap['id'])
+    spec['coverage']['unresolved'] = sum(1 for g in spec['gaps'] if g['required'])
+    spec['coverage']['questions'] = len(spec['gaps'])
+    return spec
+
+
 def apply_answers(spec, answers):
     """Return a new spec with agent/operator answers folded in.  Answered
     fields are tagged ``assumed`` and the justification is kept verbatim."""
@@ -835,6 +888,17 @@ def apply_answers(spec, answers):
         elif value is None:
             dropped.add(el['id'])
             record['effect'] = 'element omitted'
+        elif g['field'] == 'placement':
+            # A placement answer names what to hang the element off, which is
+            # the builder's ``from`` reference — storing it under 'placement'
+            # would read back as answered while the builder still could not
+            # place it, and the same question would be asked forever.
+            el['from'] = _from_ref(value)
+            el.setdefault('fields', {})['from'] = 'assumed'
+            if el['from'].get('ref') == 'level':
+                el['level'] = el['from']['level']
+                el['fields']['level'] = 'assumed'
+            record['effect'] = 'attached to %s' % (value,)
         else:
             el[g['field']] = value
             el['fields'][g['field']] = 'assumed'
@@ -846,7 +910,13 @@ def apply_answers(spec, answers):
         applied.append(record)
     answered = set(a['gap'] for a in applied)
     spec['elements'] = [e for e in spec['elements'] if e['id'] not in dropped]
-    kept = set(e['id'] for e in spec['elements'])
+    # A mention gap points at an ``m*`` id in spec['mentions'], not at an element,
+    # and mentions are never dropped by an answer.  Building this set from the
+    # elements alone made every unanswered mention question look like it belonged
+    # to a deleted element, so the parser's "named but never described" questions
+    # disappeared the first time anything at all was answered.
+    kept = set(e['id'] for e in spec['elements']) | \
+        set(m['id'] for m in (spec.get('mentions') or []))
     if spec.get('assays') is not None:
         # a grade quoted for a working that has been dropped goes with it
         spec['assays'] = [a for a in spec['assays']
@@ -863,6 +933,19 @@ def apply_answers(spec, answers):
     spec['coverage']['questions'] = len(spec['gaps'])
     spec['coverage']['elements'] = len(spec['elements'])
     return spec
+
+
+def _from_ref(value):
+    """A placement answer -> the ``from`` reference the builder understands."""
+    text = str(value).strip()
+    low = text.lower()
+    if low in ('shaft', 'collar', 'shaft collar'):
+        return {'ref': 'shaft'}
+    if low in ('shaft_bottom', 'shaft bottom'):
+        return {'ref': 'shaft_bottom'}
+    if low in ('adit', 'tunnel', 'portal'):
+        return {'ref': 'adit'}
+    return {'ref': 'level', 'level': text}
 
 
 def _level_depth(spec, label):

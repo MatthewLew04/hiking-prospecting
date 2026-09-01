@@ -8,6 +8,7 @@ import * as F from './gm-formats.js';
 import * as E from './gm-engine.js';
 import * as SITE from './gm-site.js';
 import { Renderer, canvasTexture, THREE } from './gm-render.js';
+import * as GMR from './gm-render.js';
 import { h, clear, row, num, txt, sel, btn, range, note, kv, section, toast, modal, menu, colorInput, fmtNum } from './gm-ui.js';
 import { Tools } from './gm-tools.js';
 import * as ST from './gm-structural.js';
@@ -59,6 +60,15 @@ async function loadProjectUrl(url) {
   await importBytes(name, bytes, { asProject: true });
 }
 
+/* The start screen can be dismissed and has no reopen path, so the header
+   buttons have to cope with there being no project rather than throwing on a
+   null dereference — a menu that silently does nothing reads as a dead button. */
+function needProject() {
+  if (app.project) return true;
+  showStart();
+  return false;
+}
+
 async function showStart() {
   const list = await GM.store.listProjects().catch(() => []);
   const body = h('div', {},
@@ -80,8 +90,8 @@ export function setProject(p, key) {
   if (savedDisplay) for (const [k, v] of Object.entries(savedDisplay)) if (v && typeof v === 'object') app.display.set(k, Object.assign({}, v));
   const topo = p.byKind('grid2d').find(g => g.role === 'topography'); app.topoId = topo ? topo.id : null;
   for (const o of p.objects) syncObject(o);
-  p.on((type, obj) => { if (type === 'add') { syncObject(obj); } else if (type === 'remove') { app.R.remove(obj.id); app.display.delete(obj.id); if (app.selected === obj.id) select(null); } renderLayers(); markDirty(); });
-  renderLayers(); renderHeader();
+  p.on((type, obj) => { if (type === 'add') { syncObject(obj); } else if (type === 'remove') { app.R.remove(obj.id); app.display.delete(obj.id); if (app.selected === obj.id) select(null); } renderLayers(); renderConfidence(); markDirty(); });
+  renderLayers(); renderHeader(); renderConfidence();
   const b = p.bounds(); if (b) app.R.fitTo(b);
   if (topo) applyImagery(app.imagery);
   status(`${p.name} — ${p.objects.length} objects · UTM ${p.crs.zone || ''}${p.crs.north === false ? 'S' : 'N'}`);
@@ -102,7 +112,11 @@ function defaultDisplay(o) {
   return {};
 }
 export function topoGrid() { return app.topoId ? app.project.get(app.topoId) : app.project.byKind('grid2d').find(g => g.role === 'topography') || null; }
-export function refresh(o) { syncObject(o); renderLayers(); markDirty(); }
+// renderConfidence() belongs here, not only on add/remove: the workings tools
+// mutate an existing lineset in place and then call refresh(), so a working
+// digitised by hand fires no project event at all.  Without this the "not a
+// survey" banner never appears for the very workings the user drew.
+export function refresh(o) { syncObject(o); renderLayers(); renderConfidence(); markDirty(); }
 export function markDirty() { app.dirty = true; clearTimeout(app.saveTimer); app.saveTimer = setTimeout(saveProject, 2500); $('saveBtn').classList.add('dirty'); }
 export async function saveProject(explicit = false) {
   if (!app.project) return;
@@ -222,10 +236,12 @@ function inspectorFor(o) {
   ctl.appendChild(row('opacity', range(o.opacity == null ? 1 : o.opacity, 0, 1, 0.05, e => { o.opacity = +e.target.value; app.R.setOpacity(o.id, o.opacity); markDirty(); })));
   if (o.kind === 'grid2d') {
     if (o.role === 'property') {
-      ctl.appendChild(row('mode', sel([['draped', 'drape on topography'], ['flat', 'flat at elevation'], ['surface', 'as surface (Z = value)']], d.mode || 'draped', { onchange: e => { d.mode = e.target.value; syncObject(o); } })));
+      // the mode decides which colormap a grid falls back to, so redraw the
+      // panel — otherwise the dropdown keeps naming the previous mode's ramp
+      ctl.appendChild(row('mode', sel([['draped', 'drape on topography'], ['flat', 'flat at elevation'], ['surface', 'as surface (Z = value)']], d.mode || 'draped', { onchange: e => { d.mode = e.target.value; syncObject(o); select(o.id); } })));
       ctl.appendChild(row('elevation', num(d.elevation == null ? '' : d.elevation, { placeholder: 'for flat mode', onchange: e => { d.elevation = e.target.value === '' ? null : +e.target.value; syncObject(o); } })));
     } else ctl.appendChild(row('colour by', sel([['flat', 'flat colour'], ['elevation', 'elevation']], d.colorBy || (o.role === 'topography' ? 'elevation' : 'flat'), { onchange: e => { d.colorBy = e.target.value; syncObject(o); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'terrain', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     ctl.appendChild(row('wireframe', h('input', { type: 'checkbox', checked: !!d.wireframe, onchange: e => { d.wireframe = e.target.checked; syncObject(o); } })));
     const L = app.R.layers.get(o.id); if (L && L.range) ctl.appendChild(note(`range ${fmtNum(L.range[0])} – ${fmtNum(L.range[1])} ${o.units || ''}`));
     const zr = o.zrange(); ctl.appendChild(kv([['Cell', `${o.dx} × ${o.dy} m`], ['Rotation', o.rotation ? o.rotation + '°' : null], ['Values', `${fmtNum(zr[0])} – ${fmtNum(zr[1])}`], ['No-data', `${[...o.values].filter(v => v !== v).length} nodes`]]));
@@ -233,7 +249,7 @@ function inspectorFor(o) {
   if (o.kind === 'mesh') {
     const attrs = Object.keys(o.attributes);
     if (attrs.length) ctl.appendChild(row('colour by', sel([['', 'flat colour'], ...attrs], d.attribute || '', { onchange: e => { d.attribute = e.target.value || null; syncObject(o); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'viridis', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     ctl.appendChild(row('wireframe', h('input', { type: 'checkbox', checked: !!d.wireframe, onchange: e => { d.wireframe = e.target.checked; syncObject(o); } })));
     ctl.appendChild(row('edges', h('input', { type: 'checkbox', checked: !!d.edges, onchange: e => { d.edges = e.target.checked; syncObject(o); } })));
     ctl.appendChild(kv([['Vertices', o.nVertices], ['Triangles', o.nTriangles]]));
@@ -241,7 +257,7 @@ function inspectorFor(o) {
   if (o.kind === 'points' && (o.role === 'structural' || o.role === 'trend')) {
     const cols = Object.keys(o.attributes).filter(k => !['dip', 'dip_azimuth', 'polarity', 'z_original'].includes(k));
     ctl.appendChild(row('colour by', sel([['', 'layer colour'], ['dip', 'dip'], ['dip_azimuth', 'dip azimuth'], ['polarity', 'polarity'], ...cols], d.attribute || '', { onchange: e => { d.attribute = e.target.value || null; syncObject(o); select(o.id); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'turbo', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     ctl.appendChild(row('disc size m', num(d.radius == null ? '' : d.radius, { placeholder: 'auto', onchange: e => { d.radius = e.target.value === '' ? null : +e.target.value; syncObject(o); } })));
     ctl.appendChild(row('disc sides', sel([[3, '3 \u2014 triangle (apex down dip)'], [6, '6'], [16, '16 \u2014 disc'], [32, '32']], d.sides || 16, { onchange: e => { d.sides = +e.target.value; syncObject(o); } })));
     if (o.role !== 'trend') ctl.appendChild(row('down-dip ticks', h('input', { type: 'checkbox', checked: d.tick !== false, onchange: e => { d.tick = e.target.checked; syncObject(o); } })));
@@ -261,7 +277,7 @@ function inspectorFor(o) {
   else if (o.kind === 'points') {
     const nums = Object.keys(o.attributes).filter(k => o.isNumeric(k)); const texts = Object.keys(o.attributes).filter(k => !o.isNumeric(k));
     ctl.appendChild(row('colour by', sel([['', 'layer colour'], ...nums], d.attribute || '', { onchange: e => { d.attribute = e.target.value || null; syncObject(o); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'viridis', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     ctl.appendChild(row('size', range(d.size || 10, 3, 30, 1, e => { d.size = +e.target.value; syncObject(o); })));
     ctl.appendChild(row('labels', h('input', { type: 'checkbox', checked: !!d.labels, onchange: e => { d.labels = e.target.checked; syncObject(o); } }), sel(['name', ...texts.filter(t => t !== 'name'), ...nums], d.labelField || 'name', { onchange: e => { d.labelField = e.target.value; syncObject(o); } })));
     const L = app.R.layers.get(o.id); if (L && L.range) ctl.appendChild(note(`range ${fmtNum(L.range[0])} – ${fmtNum(L.range[1])}`));
@@ -275,7 +291,7 @@ function inspectorFor(o) {
   if (o.kind === 'blockmodel') {
     const attrs = Object.keys(o.attributes); const L = app.R.layers.get(o.id);
     ctl.appendChild(row('attribute', sel(attrs, d.attribute || attrs[0], { onchange: e => { d.attribute = e.target.value; d.cutoff = null; d.cutoffHi = null; syncObject(o); select(o.id); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'turbo', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d, !!(L && L.categories)), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     if (L && L.range) { const [lo, hi] = L.range; const cutoffIn = num(d.cutoff == null ? lo : d.cutoff, { onchange: e => { d.cutoff = +e.target.value; syncObject(o); select(o.id); } }); const hiIn = num(d.cutoffHi == null ? hi : d.cutoffHi, { onchange: e => { d.cutoffHi = +e.target.value; syncObject(o); select(o.id); } }); ctl.appendChild(row('cut-off ≥', cutoffIn)); ctl.appendChild(row('≤', hiIn)); ctl.appendChild(note(`range ${fmtNum(lo)} – ${fmtNum(hi)} · showing ${L.shownBlocks} of ${L.totalBlocks} blocks${L.shownBlocks < L.totalBlocks ? ' (decimated)' : ''}`)); }
     if (L && L.categories) ctl.appendChild(row('category', sel([['', 'all'], ...L.categories], d.category || '', { onchange: e => { d.category = e.target.value || null; syncObject(o); } })));
     ctl.appendChild(row('block shrink', range(d.shrink || 0.92, 0.3, 1, 0.02, e => { d.shrink = +e.target.value; syncObject(o); })));
@@ -287,8 +303,9 @@ function inspectorFor(o) {
     const tables = Object.keys(o.intervals); const cols = d.table && o.intervals[d.table] && o.intervals[d.table][0] ? Object.keys(o.intervals[d.table][0]).filter(k => !['hole', 'from', 'to'].includes(k)) : [];
     ctl.appendChild(row('table', sel([['', '—'], ...tables], d.table || '', { onchange: e => { d.table = e.target.value || null; d.column = null; syncObject(o); select(o.id); } })));
     if (cols.length) ctl.appendChild(row('colour by', sel([['', '—'], ...cols], d.column || '', { onchange: e => { d.column = e.target.value || null; syncObject(o); } })));
-    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), d.colormap || 'turbo', { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
+    ctl.appendChild(row('colormap', sel(Object.keys(GM.COLORMAPS), GMR.defaultColormap(o, d), { onchange: e => { d.colormap = e.target.value; syncObject(o); } })));
     ctl.appendChild(kv([['Holes', o.collars.length], ['Surveys', o.surveys.length], ['Tables', tables.map(t => `${t} (${o.intervals[t].length})`).join(', ') || '—']]));
+    ctl.appendChild(btn('ADD SURVEY / INTERVAL CSV…', () => addDrillholeTable(o)));
     ctl.appendChild(btn('SAMPLES → POINTS (for kriging)', () => { if (!d.table || !d.column) return toast('choose a table + column first', 'warn'); const ps = o.intervalPoints(d.table, d.column); ps.group = 'Imports'; ps.color = [255, 200, 80]; app.project.add(ps); select(ps.id); }));
   }
   if (o.kind === 'imageplane') {
@@ -311,6 +328,20 @@ function inspectorFor(o) {
 }
 
 /* ------------------------------------------------------------- picking */
+/* A working's citation lives in a nested `source` object, and the key/value
+   loop below skips objects — so the document a working was read out of never
+   reached the panel that shows the working.  Provenance the model carries but
+   never displays is provenance the reader cannot check. */
+function sourceLines(src) {
+  if (!src || typeof src !== 'object') return [];
+  const out = [];
+  const doc = src.doc || src.document || src.title;
+  if (doc) out.push(`source: ${String(doc).slice(0, 160)}${src.page ? `, p. ${src.page}` : ''}`);
+  else if (src.page) out.push(`page: ${src.page}`);
+  if (src.url) out.push(`url: ${String(src.url).slice(0, 160)}`);
+  return out;
+}
+
 export function describePick(p) {
   if (!p || !p.obj) return null;
   const o = p.obj; const lines = [];
@@ -322,7 +353,7 @@ export function describePick(p) {
     for (const [k, col] of Object.entries(o.attributes)) { if (['dip', 'dip_azimuth', 'polarity', 'z_original'].includes(k)) continue; const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 60)}`); if (lines.length > 12) break; }
   }
   else if (o.kind === 'points' && p.index != null) { const i = p.index; lines.push(`${o.name} #${i}`); for (const [k, col] of Object.entries(o.attributes)) { const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 80)}`); if (lines.length > 14) break; } }
-  else if (o.kind === 'lineset') { const sp = p.object.userData.segPart; const k = sp && p.index != null ? sp[Math.floor(p.index / 2)] : -1; const f = k >= 0 ? o.features[k] : null; lines.push(o.name + (k >= 0 ? ` · part ${k}` : '')); if (f) for (const [kk, v] of Object.entries(f)) if (v != null && v !== '' && typeof v !== 'object') lines.push(`${kk}: ${v}`); if (k >= 0) lines.push(`length: ${fmtNum(o.length(k), 1)} m`); }
+  else if (o.kind === 'lineset') { const sp = p.object.userData.segPart; const k = sp && p.index != null ? sp[Math.floor(p.index / 2)] : -1; const f = k >= 0 ? o.features[k] : null; lines.push(o.name + (k >= 0 ? ` · part ${k}` : '')); if (f) for (const [kk, v] of Object.entries(f)) if (v != null && v !== '' && typeof v !== 'object') lines.push(`${kk}: ${v}`); if (k >= 0) lines.push(`length: ${fmtNum(o.length(k), 1)} m`); if (f) lines.push(...sourceLines(f.source)); }
   else if (o.kind === 'blockmodel' && p.instanceId != null) { const ids = p.object.userData.blockIds; const idx = ids ? ids[p.instanceId] : null; if (idx != null) { const [i, j, k] = o.ijk(idx); lines.push(`${o.name} block (${i},${j},${k})`); for (const [kk, a] of Object.entries(o.attributes)) { const v = a.values[idx]; if (v == null || v !== v) continue; lines.push(`${kk}: ${typeof v === 'number' ? fmtNum(v, 3) : v}`); } } }
   else if (o.kind === 'mesh') { lines.push(o.name); for (const k of ['unit', 'lithology', 'age', 'description']) if (o.metadata[k]) lines.push(`${k}: ${String(o.metadata[k]).slice(0, 120)}`); }
   else if (o.kind === 'grid2d') { const z = o.sample(p.world[0], p.world[1]); lines.push(o.name); lines.push(`value: ${fmtNum(z, 2)} ${o.units || ''}`); }
@@ -353,13 +384,17 @@ function wireChrome() {
   $('btnImport').onclick = () => $('fileIn').click();
   $('fileIn').onchange = async e => { for (const f of e.target.files) await importFile(f); e.target.value = ''; };
   document.addEventListener('dragover', e => { e.preventDefault(); $('drop').style.display = 'flex'; });
-  $('drop').addEventListener('dragleave', () => { $('drop').style.display = 'none'; });
+  // #drop is pointer-events:none, so a dragleave listener on it can never fire
+  // and the overlay stayed up over the viewport after any drag that did not end
+  // in a drop.  Watch the document and hide when the pointer leaves the window.
+  document.addEventListener('dragleave', e => { if (!e.relatedTarget) $('drop').style.display = 'none'; });
+  document.addEventListener('dragend', () => { $('drop').style.display = 'none'; });
   document.addEventListener('drop', async e => { e.preventDefault(); $('drop').style.display = 'none'; for (const f of e.dataTransfer.files) await importFile(f); });
-  $('btnExport').onclick = e => exportMenu(e.currentTarget);
-  $('saveBtn').onclick = () => saveProject(true);
+  $('btnExport').onclick = e => { if (needProject()) exportMenu(e.currentTarget); };
+  $('saveBtn').onclick = () => { if (needProject()) saveProject(true); };
   $('btnProjects').onclick = e => projectsMenu(e.currentTarget);
-  $('btnView').onclick = e => viewMenu(e.currentTarget);
-  $('btnTools').onclick = e => app.tools.menu(e.currentTarget);
+  $('btnView').onclick = e => { if (needProject()) viewMenu(e.currentTarget); };
+  $('btnTools').onclick = e => { if (needProject()) app.tools.menu(e.currentTarget); };
   $('btnHelp').onclick = () => helpModal();
   $('btnMap').onclick = () => { const s = app.project && app.project.site; location.href = s && s.lon != null ? `index.html#12/${s.lat}/${s.lon}` : 'index.html'; };
   $('veRange').oninput = e => { R.setVE(+e.target.value); $('veLbl').textContent = `VE ×${(+e.target.value).toFixed(1)}`; };
@@ -384,6 +419,28 @@ function niceLength(v) {
 /** Legend for the selected layer plus a scale bar.  Leapfrog only draws a
     scale bar in orthographic because perspective foreshortens it; we say so
     rather than drawing a number that is quietly wrong. */
+/* The honesty banner.  A model built from old prose is a digitising bridge,
+   not new evidence, and the failure mode to design against is a hand-drawn
+   adit being read as a survey.  So whenever a project carries any working that
+   was not surveyed, the viewport says so in words — the dashed linework alone
+   is too easy to miss. */
+export function renderConfidence() {
+  const host = $('confbar'); if (!host) return;
+  clear(host);
+  const t = app.project ? GMR.confidenceTally(app.project) : { surveyed: 0, described: 0, assumed: 0 };
+  const soft = t.described + t.assumed;
+  if (!soft || app.confBarDismissed) { host.style.display = 'none'; return; }
+  const parts = [];
+  if (t.described) parts.push(`${t.described} read off a written description`);
+  if (t.assumed) parts.push(`${t.assumed} supplied in answer to a gap`);
+  if (t.surveyed) parts.push(`${t.surveyed} traced off a georeferenced plan`);
+  host.style.display = 'flex';
+  host.appendChild(h('span', {}, h('b', {}, 'NOT A SURVEY — '),
+    `${soft} of ${soft + t.surveyed} workings ${soft === 1 ? 'is' : 'are'} digitised, not surveyed: `,
+    parts.join('; '), '. Dashed is described, dotted is assumed. Never enter old workings.'));
+  host.appendChild(h('button', { class: 'x', title: 'hide for this session', onclick: () => { app.confBarDismissed = true; renderConfidence(); } }, '✕'));
+}
+
 export function renderLegend() {
   const host = $('legend'); if (!host) return;
   clear(host);
@@ -398,6 +455,18 @@ export function renderLegend() {
   host.appendChild(h('div', { class: 'lgd-scale' },
     h('div', { class: 'bar', style: { width: px.toFixed(0) + 'px' } }),
     h('span', {}, unit + (R.projection === 'ortho' ? '' : ' (nominal)'))));
+  // what the line styles mean, whenever more than one confidence is on screen
+  const tally = GMR.confidenceTally(app.project);
+  const shown = GMR.CONF_CLASSES.filter(c => tally[c.key]);
+  if (shown.length > 1) {
+    const box = h('div', { class: 'lgd-key' }, h('div', { class: 'ttl' }, 'workings'));
+    for (const c of shown) {
+      box.appendChild(h('div', { class: 'sw-row', title: c.hint },
+        h('i', { class: 'ln', style: { borderTopStyle: c.dash ? (c.dash[0] > 5 ? 'dashed' : 'dotted') : 'solid' } }),
+        `${c.label} · ${tally[c.key]}`));
+    }
+    host.appendChild(box);
+  }
   // colour legend for the selected layer
   const o = app.selected ? app.project.get(app.selected) : null;
   const L = o ? R.layers.get(o.id) : null;
@@ -407,12 +476,12 @@ export function renderLegend() {
     if (L.categories) {
       const cols = L.categoryColors || [];
       for (let i = 0; i < Math.min(L.categories.length, 12); i++) {
-        const c = cols[i] || GM.colormap(d.colormap || 'geology', L.categories.length > 1 ? i / (L.categories.length - 1) : 0);
+        const c = cols[i] || GM.colormap(GMR.defaultColormap(o, d, true), L.categories.length > 1 ? i / (L.categories.length - 1) : 0);
         box.appendChild(h('div', { class: 'sw-row' }, h('i', { style: { background: `rgb(${c[0]},${c[1]},${c[2]})` } }), String(L.categories[i]).slice(0, 24)));
       }
       if (L.categories.length > 12) box.appendChild(h('div', { class: 'sw-row more' }, `+${L.categories.length - 12} more`));
     } else {
-      const cm = d.colormap || 'viridis';
+      const cm = GMR.defaultColormap(o, d);
       const cv = h('canvas', { width: 140, height: 10, class: 'ramp' });
       const cx = cv.getContext('2d');
       for (let i = 0; i < 140; i++) { const c = GM.colormap(cm, i / 139); cx.fillStyle = `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; cx.fillRect(i, 0, 1, 10); }
@@ -457,20 +526,40 @@ export async function importFile(file) {
   try { const bytes = new Uint8Array(await file.arrayBuffer()); await importBytes(file.name, bytes, {}); }
   catch (e) { console.error(e); toast(`${file.name}: ${e.message}`, 'err', 8000); status(`import failed: ${e.message}`); }
 }
+/* A drop onto the opening screen has no project to land in.  Make one, in the
+   UTM zone the data itself sits in when the file says — an empty project forced
+   to zone 12 would misproject anything from a neighbouring state. */
+function ensureProject(name, lonlat) {
+  if (app.project) return;
+  const z = lonlat ? GM.utm.zone(lonlat[0], lonlat[1]) : { zone: 12, north: true };
+  setProject(new GM.Project({ name: name.replace(/\.[^.]+$/, ''), crs: GM.utm.crs(z.zone, z.north) }), GM.slug(name));
+}
+function firstLonLat(j) {
+  const feats = j.type === 'Feature' ? [j] : (j.features || []);
+  for (const f of feats) {
+    let c = f && f.geometry && f.geometry.coordinates;
+    while (Array.isArray(c) && Array.isArray(c[0])) c = c[0];
+    if (Array.isArray(c) && GM.utm.looksLonLat(c[0], c[1])) return [c[0], c[1]];
+  }
+  return null;
+}
 async function importBytes(name, bytes, opts) {
   const ext = name.split('.').pop().toLowerCase();
   if (ext === 'json' || ext === 'geojson') {
     const text = new TextDecoder().decode(bytes); const j = JSON.parse(text);
     if (j.schema === GM.SCHEMA) { const p = GM.Project.fromJSON(j); if (!app.project || opts.asProject || confirm('Replace the current project with this one? (Cancel = merge its layers into the current project)')) setProject(p, p.site && p.site.key); else for (const o of p.objects) app.project.add(o); toast(`loaded project ${p.name}`, 'ok'); return; }
-    if (j.type === 'FeatureCollection' || j.type === 'Feature') { importGeoJSON(j, name); return; }
+    if (j.type === 'FeatureCollection' || j.type === 'Feature') { ensureProject(name, firstLonLat(j)); importGeoJSON(j, name); return; }
     throw new Error('unrecognised JSON (not a geomodel project or GeoJSON)');
   }
+  // Everything below needs somewhere to put what it reads.  This has to sit
+  // *after* the geomodel-project branch above, which installs its own project —
+  // creating an empty one first would turn a first load into a merge prompt.
+  ensureProject(name);
   if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'tif', 'tiff'].includes(ext)) { await app.tools.georef.fromImageBytes(name, bytes); return; }
   if (ext === 'pdf') { await app.tools.georef.fromPdf(name, bytes); return; }
   if (ext === 'csv' || ext === 'txt' || ext === 'xyz' || ext === 'dat') { await importTableDialog(name, bytes); return; }
   const fmt = F.sniff(name, bytes);
   if (!fmt) throw new Error(`cannot detect the format of ${name}`);
-  if (!app.project) setProject(new GM.Project({ name: name.replace(/\.[^.]+$/, ''), crs: GM.utm.crs(12, true) }), GM.slug(name));
   const res = await F.readAny({ name, bytes }, { crs: app.project.crs, format: fmt });
   await placeImported(res, name);
 }
@@ -526,7 +615,7 @@ async function importTableDialog(name, bytes) {
         const opts = { crs: app.project.crs, assumeLonLat: lonlat.checked, x: xs.value || undefined, y: ys.value || undefined, z: zs.value || undefined };
         let res;
         if (kind.value === 'xyz') res = await F.readAny({ name, bytes }, Object.assign(opts, { format: 'geosoft_xyz' }));
-        else if (kind.value === 'collar') { res = await F.readAny({ name, bytes }, Object.assign(opts, { format: 'csv_drillholes' })); toast('collars loaded — import survey.csv and interval CSVs from the drillhole layer properties', 'info', 6000); }
+        else if (kind.value === 'collar') { res = await F.readAny({ name, bytes }, Object.assign(opts, { format: 'csv_drillholes' })); toast('collars loaded — the holes are vertical until a survey is added: select the layer and use ADD SURVEY / INTERVAL CSV…', 'info', 6000); }
         else res = await F.readAny({ name, bytes }, Object.assign(opts, { table: kind.value }));
         if (kind.value === 'structural') for (const o of res.objects) if (o.kind === 'points') { try { ST.normaliseStructural(o); } catch (err) { toast('structural columns: ' + err.message, 'warn', 7000); } }
         for (const o of res.objects) if (o.kind === 'points' && !zs.value) { const topo = topoGrid(); if (topo) for (let i = 0; i < o.n; i++) { if (o.xyz[3 * i + 2] === 0 || o.xyz[3 * i + 2] !== o.xyz[3 * i + 2]) { const t = topo.sample(o.xyz[3 * i], o.xyz[3 * i + 1]); if (t === t) o.xyz[3 * i + 2] = t + 2; } } }
@@ -534,6 +623,49 @@ async function importTableDialog(name, bytes) {
       } catch (e) { toast(`${name}: ${e.message}`, 'err', 8000); }
     }), btn('cancel', () => m.close())));
   const m = modal('IMPORT TABLE', body, { sticky: true });
+}
+
+/* A collar CSV imports on its own, so the survey and the assay / lithology
+   tables have to be attachable afterwards — this is the control the collar
+   import sends the user to.  Each table is read back through readDrillholes
+   against the collars we already hold, so it gets exactly the column-synonym
+   matching and orphan-hole checking a whole CSV set would have got. */
+function addDrillholeTable(dh) {
+  const fileIn = h('input', { type: 'file', accept: '.csv,.txt,.tsv' });
+  const kind = sel([['intervals', 'interval table (hole, from, to, assay / lithology…)'], ['survey', 'survey (hole, depth, azimuth, dip)']], 'intervals');
+  const nameIn = txt('', { placeholder: 'from the file name' });
+  const body = h('div', {},
+    h('p', {}, `${dh.name}: ${dh.collars.length} collars, ${dh.surveys.length} survey rows, ${Object.keys(dh.intervals).length} interval table(s).`),
+    row('CSV file', fileIn), row('table type', kind), row('table name', nameIn),
+    note('The survey deviates the holes; an interval table becomes an entry in the layer\u2019s "table" dropdown and can be sampled to points for kriging. Hole ids have to match the collar table — any that do not are reported.'),
+    h('div', { class: 'frow' }, btn('ADD', async () => {
+      const f = fileIn.files && fileIn.files[0];
+      if (!f) return toast('choose a CSV first', 'warn');
+      const table = (nameIn.value || f.name.replace(/\.[^.]+$/, '')).trim() || 'intervals';
+      m.close();
+      try {
+        const bytes = new Uint8Array(await f.arrayBuffer());
+        // only the collars go back out to CSV: re-serialising the intervals we
+        // already hold would cost more than reading the new table
+        const collar = F.writeDrillholes(new GM.Drillholes({ collars: dh.collars }))['collar.csv'];
+        const read = F.readDrillholes(kind.value === 'survey' ? { collar, survey: bytes } : { collar, intervals: { [table]: bytes } }, { name: dh.name });
+        const prefix = kind.value === 'survey' ? 'survey:' : table + ':';
+        for (const w of (read.metadata.warnings || []).filter(w => w.startsWith(prefix)).slice(0, 4)) toast(w, 'warn', 7000);
+        if (kind.value === 'survey') {
+          dh.surveys = read.surveys;
+          // the collar-only import stamped "holes are treated as vertical"; it
+          // stops being true the moment a survey lands, so it must not persist
+          dh.metadata.warnings = (dh.metadata.warnings || []).filter(w => !/no survey table/.test(w));
+          toast(`${f.name}: ${read.surveys.length} survey rows — holes desurveyed`, 'ok');
+        } else {
+          dh.intervals[table] = read.intervals[table];
+          const d = app.display.get(dh.id) || {}; if (!d.table) { d.table = table; app.display.set(dh.id, d); }
+          toast(`${f.name}: ${read.intervals[table].length} rows as "${table}"`, 'ok');
+        }
+        refresh(dh); select(dh.id);
+      } catch (e) { toast(`${f.name}: ${e.message}`, 'err', 8000); }
+    }), btn('cancel', () => m.close())));
+  const m = modal('ADD DRILLHOLE TABLE', body, { sticky: true });
 }
 
 /* --------------------------------------------------------------- export */
@@ -575,17 +707,24 @@ export async function exportObjects(fmt, objs) {
 async function exportKit() {
   try {
     status('building kit…'); const p = app.project; const zip = new F.ZipWriter(); const base = GM.slug(p.name); const manifest = [];
-    const add = async (fmt, objs, label) => { try { const files = await F.writeAs(fmt, objs, { name: p.name, basename: base, crs: `EPSG:${p.crs.epsg}` }); for (const [n, v] of Object.entries(files)) { zip.add(n, typeof v === 'string' ? new TextEncoder().encode(v) : v); manifest.push(`- \`${n}\` — ${label}`); } } catch (e) { manifest.push(`- (${fmt} skipped: ${e.message})`); } };
+    // Every per-layer writer was handed the *project* basename, so all the grids
+    // landed on one `<project>.grd` and only the last survived the zip.  Each
+    // single-object export gets its own basename, and any residual collision is
+    // suffixed rather than silently overwritten.
+    const used = new Set();
+    const uniq = n => { if (!used.has(n)) { used.add(n); return n; } const dot = n.indexOf('.', n.lastIndexOf('/') + 1); const stem = dot < 0 ? n : n.slice(0, dot), ext = dot < 0 ? '' : n.slice(dot); for (let i = 2; ; i++) { const c = `${stem}-${i}${ext}`; if (!used.has(c)) { used.add(c); return c; } } };
+    const add = async (fmt, objs, label, basename) => { try { const files = await F.writeAs(fmt, objs, { name: p.name, basename: basename || base, crs: `EPSG:${p.crs.epsg}` }); for (const [n, v] of Object.entries(files)) { const key = uniq(n); zip.add(key, typeof v === 'string' ? new TextEncoder().encode(v) : v); manifest.push(`- \`${key}\` — ${label}`); } } catch (e) { manifest.push(`- (${fmt} skipped: ${e.message})`); } };
+    const layerBase = o => `${base}-${GM.slug(o.name || o.kind)}`;
     await add('omf2', p.objects, 'OMF v2.0 — Leapfrog Geo 2025.1+ (Leapfrog menu > OMF > Import)');
     await add('omf1', p.objects, 'OMF v0.9 — Leapfrog Geo ≤ 2024.1');
-    zip.add(`${base}.geomodel.json`, new TextEncoder().encode(p.serialize())); manifest.push(`- \`${base}.geomodel.json\` — this viewer's project (drop on model3d.html)`);
-    for (const g of p.byKind('grid2d')) { await add('surfer_grd', g, `Surfer 7 grid — ${g.name}`); await add('gxf', g, `Geosoft GXF — ${g.name}`); if (Math.abs(g.dx - g.dy) < 1e-9 && !g.rotation) await add('arc_ascii', g, `Arc/Info ASCII — ${g.name}`); }
+    zip.add(uniq(`${base}.geomodel.json`), new TextEncoder().encode(p.serialize())); manifest.push(`- \`${base}.geomodel.json\` — this viewer's project (drop on model3d.html)`);
+    for (const g of p.byKind('grid2d')) { await add('surfer_grd', g, `Surfer 7 grid — ${g.name}`, layerBase(g)); await add('gxf', g, `Geosoft GXF — ${g.name}`, layerBase(g)); if (Math.abs(g.dx - g.dy) < 1e-9 && !g.rotation) await add('arc_ascii', g, `Arc/Info ASCII — ${g.name}`, layerBase(g)); }
     const ml = p.objects.filter(o => o.kind === 'mesh' || o.kind === 'lineset' || o.kind === 'points'); if (ml.length) await add('dxf', ml, 'DXF R12 — meshes as 3DFACE, lines as 3-D POLYLINE');
-    for (const ps of p.byKind('points')) await add('csv_points', ps, `points CSV (East,North,Elev + columns) — ${ps.name}`);
-    for (const bm of p.byKind('blockmodel')) { await add('csv_blockmodel', bm, `block model CSV — ${bm.name}`); await add('ubc', bm, `UBC mesh/model — ${bm.name}`); }
-    for (const dh of p.byKind('drillholes')) await add('csv_drillholes', dh, `drillhole CSVs — ${dh.name}`);
+    for (const ps of p.byKind('points')) await add('csv_points', ps, `points CSV (East,North,Elev + columns) — ${ps.name}`, layerBase(ps));
+    for (const bm of p.byKind('blockmodel')) { await add('csv_blockmodel', bm, `block model CSV — ${bm.name}`, layerBase(bm)); await add('ubc', bm, `UBC mesh/model — ${bm.name}`, layerBase(bm)); }
+    for (const dh of p.byKind('drillholes')) await add('csv_drillholes', dh, `drillhole CSVs — ${dh.name}`, layerBase(dh));
     const readme = `# ${p.name} — 3-D model kit\n\nExported ${new Date().toISOString().slice(0, 10)} from the NW Mineral Monitor 3-D modeller (build ${BUILD}).\nCRS: **WGS84 / UTM zone ${p.crs.zone}${p.crs.north ? 'N' : 'S'} (EPSG:${p.crs.epsg}), metres, Z = elevation** — set exactly that when a package asks.\n\n## Files\n\n${manifest.join('\n')}\n\n## Import click-paths\n\n- Leapfrog Geo 2025.1+: Leapfrog menu > OMF > Import > \`${base}.omf\` (one shot; OMF objects cannot be reloaded). Older Leapfrog: \`${base}-omf09.omf\`.\n- Refreshable route: Topographies > New Topography > Import Elevation Grid (.grd/.asc); Meshes > Import Mesh (.dxf/.obj); Points > Import Points (.csv); Block Models > Import (.csv).\n- Oasis montaj / Target: Grid and Image > Import > .gxf / .grd; XYZ/CSV for points.\n- Surfer: File > Open > .grd (Surfer 7 binary).\n- Kingdom: grids via ZMAP+ (export a grid layer as ZMAP+ from the layer menu).\n\n## Honesty notes\n\n${(p.metadata.notes || []).map(n => '- ' + n).join('\n')}\n- Draped geology meshes follow terrain; they are map polygons, not modelled volumes. Workings digitised from historic maps carry their source and confidence in each feature.\n`;
-    zip.add('README-GEOMODEL.md', new TextEncoder().encode(readme));
+    zip.add(uniq('README-GEOMODEL.md'), new TextEncoder().encode(readme));
     GM.downloadBlob(new Blob([zip.finish()]), `${base}-geomodel-kit.zip`); status('kit exported');
   } catch (e) { console.error(e); toast('kit failed: ' + e.message, 'err'); }
 }
@@ -607,5 +746,5 @@ function helpModal() {
     h('p', { class: 'note' }, 'Coordinates are WGS84/UTM metres, Z = elevation. Grades are cited historic figures, claims are BLM centroids, geology is map-scale, terrain is a ~30 m public composite. Never enter adits or shafts.')));
 }
 
-Object.assign(app, { renderLayers, refresh, select, status, topoGrid, exportObjects, exportDialog, syncObject, markDirty, saveProject, applyImagery, importFile, setProject, setProjection, renderLegend });
+Object.assign(app, { renderLayers, refresh, select, status, topoGrid, exportObjects, exportDialog, syncObject, markDirty, saveProject, applyImagery, importFile, setProject, setProjection, renderLegend, renderConfidence });
 boot();

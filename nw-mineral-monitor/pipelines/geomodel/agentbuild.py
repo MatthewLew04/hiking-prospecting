@@ -58,7 +58,19 @@ ORDER = {'portal': 0, 'shaft': 1, 'adit': 2, 'tunnel': 2, 'decline': 3,
 
 
 class Unplaceable(Exception):
-    """Raised inside a placement rule; becomes a gap, never a guess."""
+    """Raised inside a placement rule; becomes a gap, never a guess.
+
+    ``field`` names the thing the prose did not say, so the gap this becomes
+    asks for *that* rather than for a generic attachment point.  A gap whose
+    field is answerable is applied by :func:`narrative.apply_answers` exactly
+    like a parse gap, which is what lets the question loop converge; a gap with
+    no field (``placement``) can only be answered by naming something to hang
+    the element off, or by omitting it.
+    """
+
+    def __init__(self, message, field=None):
+        super().__init__(message)
+        self.field = field
 
 
 def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, log=print):
@@ -110,12 +122,7 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
         try:
             record = _place(ws, el, ctx, spec, site, stopes)
         except Unplaceable as exc:
-            gaps.append({'id': 'p%d' % (len(gaps) + 1), 'element': el['id'], 'field': 'placement',
-                         'required': True, 'kind': 'placement',
-                         'question': 'The %s (%s) cannot be placed: %s What should it be attached to?'
-                                     % (el['kind'], el['id'], exc),
-                         'quote': el.get('quote', ''), 'span': el.get('span'),
-                         'options': _placement_options(ctx)})
+            gaps.append(_build_gap(el, exc, ctx))
             continue
         placed.append(record)
 
@@ -179,10 +186,13 @@ def _seed_traced_levels(ctx, spec):
             prior = ctx['levels'].get(el['level'])
             z = float(el['elevation_m'])
             if prior is not None and abs(prior - z) > 1.0:
+                # ctx['levels'] holds elevations, not depths, so the depth the
+                # name implies has to be measured back off the collar; quoting
+                # both keeps the two figures in the sentence comparable.
                 ctx['warnings'].append(
                     'the "%s" level is drawn at %.0f m on plate %s but its name puts it at '
-                    '%.0f m below the collar; the surveyed elevation is used'
-                    % (el['level'], z, el.get('plate', '?'), prior))
+                    '%.0f m, %.0f m below the collar; the surveyed elevation is used'
+                    % (el['level'], z, el.get('plate', '?'), prior, ctx['collar'][2] - prior))
             ctx['levels'][el['level']] = z
 
 
@@ -191,7 +201,8 @@ def _level_z(ctx, label):
         return ctx['levels'][label]
     if label in ('adit', 'tunnel', 'surface', 'main haulage', 'haulage') and ctx['adit']:
         return ctx['adit']['end'][2]
-    raise Unplaceable('the elevation of the "%s" level is not stated and no adit fixes it.' % label)
+    raise Unplaceable('the elevation of the "%s" level is not stated and no adit fixes it.' % label,
+                      field='level_depth_m')
 
 
 def _station(ctx, label):
@@ -206,6 +217,14 @@ def _station(ctx, label):
             if dv - sh['vertical'] > 1.0:
                 ctx['warnings'].append('the "%s" level lies %.0f m below the bottom of the %s'
                                        % (label, dv - sh['vertical'], sh['name'] or 'shaft'))
+            # A dip at or below the horizontal has no station geometry — tan()
+            # is zero there and the offset is infinite.  Refuse rather than
+            # crash the whole build on a ZeroDivisionError the caller cannot
+            # turn into a question.
+            if sh['dip'] <= 0.001:
+                raise Unplaceable('the %s has no inclination, so where the "%s" level '
+                                  'meets it cannot be worked out.'
+                                  % (sh['name'] or 'shaft', label))
             h = dv / math.tan(math.radians(sh['dip'])) if sh['dip'] < 89.999 else 0.0
             a = math.radians(sh['azimuth'])
             return (sh['x'] + h * math.sin(a), sh['y'] + h * math.cos(a), z), \
@@ -269,8 +288,21 @@ def _place_traced(ws, el, ctx, attrs):
         top, bottom = pts[0], pts[-1]
         drop = top[2] - bottom[2]
         run = math.hypot(bottom[0] - top[0], bottom[1] - top[1])
+        # A trace off a *plan* plate is flat by construction, so drop is 0 and the
+        # arctangent reads the shaft as horizontal.  A plan view says nothing about
+        # a shaft's inclination; the definitional reading is vertical.  Leaving the
+        # 0 in place put tan(0) in the denominator of every level station below.
+        if drop <= 1e-6:
+            dip = 90.0
+            if run > 1e-6:
+                ctx['warnings'].append(
+                    'the %s is traced flat on plate %s, which fixes where it is but not how '
+                    'it is inclined; it is taken as vertical'
+                    % (el.get('name') or 'shaft', el.get('plate') or 'a plan'))
+        else:
+            dip = math.degrees(math.atan2(drop, run)) if run > 1e-6 else 90.0
         ctx['shaft'] = {'x': top[0], 'y': top[1], 'z0': top[2],
-                        'dip': math.degrees(math.atan2(drop, run)) if run > 1e-6 else 90.0,
+                        'dip': dip,
                         'azimuth': math.degrees(math.atan2(bottom[0] - top[0],
                                                            bottom[1] - top[1])) % 360.0,
                         'vertical': max(drop, 0.0), 'bottom': bottom,
@@ -288,7 +320,7 @@ def _place_traced(ws, el, ctx, attrs):
 def _need(el, field, what):
     v = el.get(field)
     if v is None:
-        raise Unplaceable('%s is not stated.' % what)
+        raise Unplaceable('%s is not stated.' % what, field=field)
     return v
 
 
@@ -352,9 +384,9 @@ def _place_shaft(ws, el, ctx, attrs):
     depth = _need(el, 'depth_m', 'a depth')
     dip = el.get('dip_deg')
     if dip is None:
-        raise Unplaceable('it is an incline with no stated angle.')
+        raise Unplaceable('it is an incline with no stated angle.', field='dip_deg')
     if dip < 89.999 and el.get('bearing_deg') is None:
-        raise Unplaceable('it is an incline with no stated direction.')
+        raise Unplaceable('it is an incline with no stated direction.', field='bearing_deg')
     azimuth = el.get('bearing_deg') or 0.0
     if el['kind'] == 'winze':
         start, how = _origin(el, ctx)
@@ -419,16 +451,18 @@ def _place_raise(ws, el, ctx, attrs):
 def _place_stope(el, ctx, attrs, stopes):
     length = _need(el, 'length_m', 'a length')
     if not el.get('level'):
-        raise Unplaceable('it has no level, so its elevation is unknown.')
+        raise Unplaceable('it has no level, so its elevation is unknown.', field='level')
     start, how = _station(ctx, el['level'])
     bearing = el.get('bearing_deg')
     if bearing is None:
         bearing = _dominant_bearing(ctx, el['level'])
     if bearing is None:
-        raise Unplaceable('no bearing is stated and no drift on that level gives one.')
+        raise Unplaceable('no bearing is stated and no drift on that level gives one.',
+                          field='bearing_deg')
     height = el.get('height_m')
     if height is None:
-        raise Unplaceable('no back height is stated, so it has no vertical extent.')
+        raise Unplaceable('no back height is stated, so it has no vertical extent.',
+                          field='height_m')
     width = wk.TYPES['stope']['width_m']
     b = math.radians(bearing)
     ux, uy = math.sin(b), math.cos(b)
@@ -519,6 +553,62 @@ def _tally(elements, placed):
         if el['id'] in ids:
             out[el.get('confidence', 'described')] = out.get(el.get('confidence', 'described'), 0) + 1
     return out
+
+
+#: what to call each answerable field when asking for it, and the unit the
+#: answer is expected in.  A field that is not here can only be answered by
+#: naming an attachment point, so it stays a plain ``placement`` question.
+_ASKABLE = {
+    'bearing_deg': ('a bearing', 'degrees clockwise from true north'),
+    'dip_deg': ('a dip', 'degrees below horizontal'),
+    'length_m': ('a length', 'metres'),
+    'depth_m': ('a depth', 'metres'),
+    'height_m': ('a back height', 'metres'),
+    'level_depth_m': ('the depth of that level below the collar', 'metres'),
+    'level': ('a level', 'the level label, e.g. "300"'),
+}
+
+
+def _build_gap(el, exc, ctx):
+    """An :class:`Unplaceable` becomes a typed question.
+
+    The id is derived from *(element, field)* rather than counted, so the same
+    unanswered question keeps the same id across rebuilds.  A counter would
+    hand a different element the id of a question already recorded as answered,
+    and :func:`narrative.apply_answers` would then silently treat the new
+    answer as a duplicate — the loop would never converge.
+    """
+    field = getattr(exc, 'field', None)
+    ask = _ASKABLE.get(field)
+    if ask:
+        what, unit = ask
+        question = ('The %s (%s) cannot be placed: %s Give %s for it (%s), or null to omit it.'
+                    % (el['kind'], el['id'], exc, what, unit))
+        options = _field_options(field, ctx)
+    else:
+        field = 'placement'
+        question = ('The %s (%s) cannot be placed: %s What should it be attached to?'
+                    % (el['kind'], el['id'], exc))
+        options = _placement_options(ctx)
+    return {'id': 'p-%s-%s' % (el['id'], field), 'element': el['id'], 'field': field,
+            'required': True, 'kind': 'placement',
+            'question': question,
+            'quote': el.get('quote', ''), 'span': el.get('span'),
+            'options': options}
+
+
+def _field_options(field, ctx):
+    """Suggestions for an answerable field — never a default, only a shortlist
+    the agent may pick from, plus the standing option to omit the element."""
+    opts = []
+    if field == 'bearing_deg':
+        for label, bearing in sorted(ctx['level_bearings'].items()):
+            opts.append({'value': round(bearing, 1),
+                         'label': 'the bearing of the %s level (%03.0f°)' % (label, bearing)})
+    elif field == 'level':
+        opts.extend({'value': lv, 'label': 'the %s level' % lv} for lv in sorted(ctx['levels']))
+    opts.append({'value': None, 'label': 'unknown — omit this element'})
+    return opts
 
 
 def _placement_options(ctx):

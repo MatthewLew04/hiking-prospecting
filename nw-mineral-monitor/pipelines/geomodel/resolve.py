@@ -34,8 +34,13 @@ if PIPELINES not in sys.path:
 INDEX_VERSION = 'nwmm-resolve/1'
 
 #: grade columns carried through verbatim; units are per column, as stated in
-#: the bundle's own ``note`` (echoed into every result).
-GRADE_COLUMNS = ('au', 'ag', 'pb', 'zn', 'cu', 'sb', 'wo3', 'usd')
+#: the bundle's own ``note`` (echoed into every result).  ``hgf`` (quicksilver
+#: in 76-lb flasks) and ``yd3`` ($/yd3) are not per-ton tenors like the rest,
+#: but they are the *only* value figure a mercury or placer row carries — drop
+#: them and 74 mines resolve with an empty ``grades`` dict while the note above
+#: them still advertises the columns.  Keep this list in step with the bundle's
+#: multi-commodity fields (pipelines/validate_national.py ``grade_fields``).
+GRADE_COLUMNS = ('au', 'ag', 'pb', 'zn', 'cu', 'sb', 'wo3', 'hgf', 'usd', 'yd3')
 
 #: words that describe *what kind of thing* a property is, not which one it is
 SUFFIXES = ('mine', 'mines', 'mining', 'company', 'co', 'group', 'claim', 'claims',
@@ -141,7 +146,7 @@ class Index(object):
             row['match'] = how
             out.append(row)
         out.sort(key=lambda r: (-r['score'], parse_mine_id(r['mine_id'])))
-        return out[:limit]
+        return out if limit is None else out[:limit]
 
 
 def _narrow(row, state, district, county):
@@ -185,11 +190,17 @@ def load_index(path=GRADES):
 def lookup(name, state=None, district=None, county=None, limit=8, index=None):
     """``{'query', 'candidates', 'ambiguous', 'note'}`` — the tool-shaped result."""
     idx = index or load_index()
-    cands = idx.lookup(name, state, district, county, limit)
+    # Ambiguity is a property of the *matches*, not of how many the caller asked
+    # to see.  Deciding it after truncation let `--limit 1` turn four "Blue
+    # Bird"s in four states into one confident answer — silently georeferencing
+    # the wrong hole in the ground, which is the one thing this module exists to
+    # refuse.  Rank everything, judge, then truncate.
+    every = idx.lookup(name, state, district, county, limit=None)
+    cands = every if limit is None else every[:limit]
     # Only a single exact name match is unambiguous.  "Bluebird" pulling in
     # three "Blue Bird"s in three states is exactly the case that must reach a
     # human or an agent rather than being resolved by score.
-    unambiguous = len(cands) == 1 and cands[0]['match'] == 'exact'
+    unambiguous = len(every) == 1 and every[0]['match'] == 'exact'
     return {
         'query': {'name': name, 'state': state, 'district': district, 'county': county},
         'candidates': cands,

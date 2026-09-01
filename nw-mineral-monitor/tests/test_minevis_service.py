@@ -262,6 +262,122 @@ class ErrorEnvelopeTests(ServiceCase):
         self.assertEqual(rec['error'], 'bad_answer')
 
 
+class KeepAliveTests(ServiceCase):
+    """The service speaks HTTP/1.1, so an error reply that leaves the request
+    body in the socket makes the *next* request on that connection fail."""
+
+    def _conn(self):
+        import http.client
+        return http.client.HTTPConnection('127.0.0.1', self.port, timeout=30)
+
+    def _post(self, conn, path, payload):
+        body = json.dumps(payload).encode()
+        headers = {'Content-Type': 'application/json'}
+        tok = getattr(self.client, 'token', None)
+        if tok:
+            headers['X-MineVis-Token'] = tok
+        conn.request('POST', path, body=body, headers=headers)
+        resp = conn.getresponse()
+        return resp.status, resp.read()
+
+    def test_a_404_does_not_poison_the_connection(self):
+        conn = self._conn()
+        try:
+            code, _ = self._post(conn, '/nope', {'name': 'mine_lookup', 'arguments': {'name': 'x'}})
+            self.assertEqual(code, 404)
+            code, body = self._post(conn, '/call', {'name': 'mine_lookup', 'arguments': {'name': 'Bluebird'}})
+            self.assertEqual(code, 200, body[:200])
+            self.assertIn('candidates', json.loads(body.decode()))
+        finally:
+            conn.close()
+
+    def test_a_bad_content_length_does_not_poison_the_connection(self):
+        import http.client
+        conn = self._conn()
+        try:
+            conn.putrequest('POST', '/call')
+            conn.putheader('Content-Type', 'application/json')
+            conn.putheader('Content-Length', 'banana')
+            tok = getattr(self.client, 'token', None)
+            if tok:
+                conn.putheader('X-MineVis-Token', tok)
+            conn.endheaders()
+            conn.send(b'{"name": "mine_lookup", "arguments": {"name": "x"}}')
+            resp = conn.getresponse()
+            self.assertEqual(resp.status, 400)
+            resp.read()
+        except http.client.HTTPException:
+            pass
+        finally:
+            conn.close()
+        # a fresh connection must still be served — the service is not wedged
+        code, body, _ = self.client.call('mine_lookup', {'name': 'Bluebird'})
+        self.assertEqual(code, 200)
+
+
+#: the stope reaches the builder with neither a bearing nor a back height, so
+#: it is refused twice — the two questions only the *builder* can raise.
+STOPE_PROSE = ('The Main shaft was sunk to a depth of 620 feet. '
+               'Stopes above the 200 level extend 350 feet along the strike.')
+
+
+class PlacementQuestionTests(ServiceCase):
+    """A question the builder raises has to be answerable by the agent it was
+    asked of.  These questions are not in the parsed spec — they are discovered
+    during placement — so answering one used to come back 'unknown gap id'."""
+
+    def _ask(self, **args):
+        _, sub, _ = self.client.call('build_mine_visual', args)
+        return self.client.wait(sub['job_id'])
+
+    def test_a_placement_question_names_the_field_it_is_missing(self):
+        asked = self._ask(text=STOPE_PROSE, lon=-116.87, lat=36.877)
+        self.assertEqual(asked['state'], 'questions')
+        gap = asked['questions'][0]
+        self.assertEqual(gap['kind'], 'placement')
+        self.assertEqual(gap['field'], 'bearing_deg')
+        self.assertIn(None, [o['value'] for o in gap['options']])
+
+    def test_answering_a_placement_question_is_accepted(self):
+        asked = self._ask(text=STOPE_PROSE, lon=-116.87, lat=36.877)
+        gap = asked['questions'][0]
+        again = self._ask(spec_id=asked['spec_id'],
+                          answers=[{'id': gap['id'], 'value': 45.0, 'because': 'the vein strike'}])
+        self.assertNotEqual(again.get('error'), 'bad_answer')
+
+    def test_the_question_loop_converges_on_a_model(self):
+        asked = self._ask(text=STOPE_PROSE, lon=-116.87, lat=36.877)
+        spec_id, seen = asked['spec_id'], []
+        for _ in range(6):
+            if asked['state'] != 'questions':
+                break
+            gap = asked['questions'][0]
+            self.assertNotIn(gap['id'], seen, 'the same question was asked twice')
+            seen.append(gap['id'])
+            value = 45.0 if gap['field'] == 'bearing_deg' else 30.0
+            asked = self._ask(spec_id=spec_id, answers=[{'id': gap['id'], 'value': value}])
+        self.assertEqual(asked['state'], 'done', asked.get('detail', ''))
+        self.assertEqual(sorted(seen), ['p-e2-bearing_deg', 'p-e2-height_m'])
+        self.assertEqual(asked['confidence']['assumed'], 1)
+        self.assertIn('model3d.html?project=', asked['model_url'])
+
+    def test_a_placement_answer_of_null_omits_the_element(self):
+        asked = self._ask(text=STOPE_PROSE, lon=-116.87, lat=36.877)
+        gap = asked['questions'][0]
+        done = self._ask(spec_id=asked['spec_id'],
+                         answers=[{'id': gap['id'], 'value': None, 'because': 'not stated'}])
+        self.assertEqual(done['state'], 'done', done.get('detail', ''))
+        self.assertEqual(done['summary']['by_type'].get('stope'), None)
+
+    def test_resending_the_same_answer_is_not_an_error(self):
+        asked = self._ask(text=STOPE_PROSE, lon=-116.87, lat=36.877)
+        gap = asked['questions'][0]
+        first = self._ask(spec_id=asked['spec_id'], answers=[{'id': gap['id'], 'value': 45.0}])
+        again = self._ask(spec_id=asked['spec_id'], answers=[{'id': gap['id'], 'value': 45.0}])
+        self.assertNotEqual(again.get('error'), 'bad_answer')
+        self.assertEqual(first['state'], again['state'])
+
+
 class SyncToolTests(ServiceCase):
     def test_mine_lookup_returns_candidates_and_a_question_when_ambiguous(self):
         code, body, _ = self.client.call('mine_lookup', {'name': 'Bluebird'})
@@ -580,8 +696,38 @@ class JobLifecycleTests(ServiceCase):
             done['views']['plan'].replace('https://example.invalid', ''))[2]['Content-Type'],
             'image/svg+xml')
 
+    def test_asking_a_built_model_for_more_views_renders_them(self):
+        args = {'text': 'An adit driven due east for 480 feet.',
+                'lon': -116.87, 'lat': 36.877, 'views': ['plan']}
+        first = self.client.wait(self.client.call('build_mine_visual', dict(args))[1]['job_id'])
+        self.assertEqual(first['state'], 'done')
+        self.assertEqual(sorted(first['views']), ['plan'])
+
+        args['views'] = ['plan', 'section', 'iso']
+        second = self.client.wait(self.client.call('build_mine_visual', dict(args))[1]['job_id'])
+        self.assertEqual(second['state'], 'done')
+        self.assertEqual(second['model_url'], first['model_url'])
+        self.assertEqual(sorted(second['views']), ['iso', 'plan', 'section'])
+        for url in second['views'].values():
+            path = url.replace('https://example.invalid', '')
+            self.assertEqual(self.client.get(path)[0], 200, path)
+
+    def test_a_private_model_on_a_bucketless_box_is_reachable_through_it(self):
+        _, sub, _ = self.client.call('build_mine_visual', {
+            'text': 'An adit driven due west for 360 feet.', 'lon': -116.87, 'lat': 36.877,
+            'private': True, 'expires_in': 600})
+        done = self.client.wait(sub['job_id'])
+        self.assertEqual(done['state'], 'done')
+        self.assertTrue(done['key_prefix'].startswith('private/models/'))
+        self.assertIn('only reachable through this service', done['note'])
+        for url in ([done['project_url'], done['manifest_url']]
+                    + list(done['views'].values()) + list(done['exports'].values())):
+            self.assertTrue(url.startswith('/private/models/'), url)
+            self.assertEqual(self.client.get(url)[0], 200, url)
+
     def test_a_path_outside_the_model_store_is_refused(self):
-        for path in ('/models/../../etc/passwd', '/models/..%2f..%2fetc/passwd'):
+        for path in ('/models/../../etc/passwd', '/models/..%2f..%2fetc/passwd',
+                     '/private/models/../../../etc/passwd', '/private/models/../jobs'):
             code, _, _ = self.client.get(path)
             self.assertIn(code, (400, 404), path)
 

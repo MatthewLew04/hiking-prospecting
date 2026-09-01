@@ -9,7 +9,55 @@ import * as GM from './gm-core.js';
 import * as E from './gm-engine.js';
 
 const DEG = Math.PI / 180;
+
+/* How sure we are of a working, and how that has to look.  A model built from
+   old prose is a digitising bridge, not new evidence, so an element read off a
+   sentence must never be drawn the way a surveyed one is: surveyed solid,
+   described dashed, assumed/sketched dotted.  `gm-viewer` reuses these for the
+   viewport banner and the legend so the three surfaces cannot drift apart. */
+export const CONF_CLASSES = [
+  { key: 'surveyed', label: 'surveyed', hint: 'traced off a georeferenced plan', dash: null },
+  { key: 'described', label: 'described', hint: 'parsed from a written description', dash: [14, 8] },
+  { key: 'assumed', label: 'assumed', hint: 'supplied in answer to a gap', dash: [2.5, 5] },
+];
+export function confClass(f) {
+  const c = String((f && f.confidence) || 'described').toLowerCase();
+  if (c === 'surveyed' || c === 'traced') return 'surveyed';
+  if (c === 'assumed' || c === 'sketched') return 'assumed';
+  return 'described';
+}
+/** `{surveyed, described, assumed}` counts over every working in a project.
+    Stopes are meshes carrying role 'stope' rather than 'workings', and they are
+    exactly the elements most often placed from an answer, so leaving them out
+    would under-report the assumed count the banner exists to declare. */
+export function confidenceTally(project) {
+  const t = { surveyed: 0, described: 0, assumed: 0 };
+  for (const o of (project ? project.objects : [])) {
+    if (o.kind === 'lineset' && o.role === 'workings') for (const f of o.features) t[confClass(f)]++;
+    else if (o.kind === 'mesh' && (o.role === 'workings' || o.role === 'stope')) t[confClass(o.metadata)]++;
+  }
+  return t;
+}
+
 export const CATEGORY_PALETTE = [[104, 176, 255], [244, 162, 97], [138, 201, 38], [231, 111, 81], [187, 148, 255], [42, 196, 179], [255, 209, 102], [148, 163, 184], [214, 93, 177], [125, 211, 252]];
+
+/* Which ramp a layer gets when the user has not chosen one.  The default
+   depends on what is being coloured (a draped property grid is not read like
+   a topographic surface), and it is applied in three places: the builders
+   below, the inspector's colormap dropdown and the legend the grade is read
+   off.  They must name the same ramp — a legend describing a ramp the
+   geometry never used is a wrong number, not a cosmetic slip — so the
+   fallback lives here and nowhere else. */
+export function defaultColormap(obj, d = {}, categorical = false) {
+  if (d.colormap) return d.colormap;
+  if (categorical) return 'geology';
+  switch (obj.kind) {
+    case 'grid2d': { const mode = d.mode || (obj.role === 'property' ? 'draped' : 'surface'); return (mode === 'draped' || mode === 'flat') ? 'turbo' : 'terrain'; }
+    case 'blockmodel': case 'drillholes': return 'turbo';
+    case 'points': return (obj.role === 'structural' || obj.role === 'trend') && d.attribute === 'dip' ? 'turbo' : 'viridis';
+    default: return 'viridis';
+  }
+}
 
 export class Renderer {
   constructor(canvas, opts = {}) {
@@ -223,7 +271,7 @@ export class Renderer {
       mesh = heights.toMesh(stride);
       const vals = new Float32Array(mesh.nVertices); // colour attribute per vertex (rebuild mapping)
       let k = 0; for (let j = 0; j < g.ny; j += stride) for (let i = 0; i < g.nx; i += stride) { if (heights.get(i, j) !== heights.get(i, j)) continue; vals[k++] = g.get(i, j); }
-      const { colors, range } = this.colorsForAttribute(vals.subarray(0, mesh.nVertices), d.colormap || 'turbo', d.range);
+      const { colors, range } = this.colorsForAttribute(vals.subarray(0, mesh.nVertices), defaultColormap(g, d), d.range);
       L.range = range;
       const geo = this.geomFromMesh(mesh, colors);
       const m = new THREE.Mesh(geo, this.material([255, 255, 255], { vertexColors: true, transparent: true, opacity: d.opacity == null ? 0.85 : d.opacity }));
@@ -233,7 +281,7 @@ export class Renderer {
     const stride = Math.max(1, Math.ceil(Math.sqrt(g.nx * g.ny / 1.2e6)));
     mesh = g.toMesh(stride);
     let colors = null;
-    if (d.colorBy === 'elevation' || (g.role === 'topography' && !d.texture && d.colorBy !== 'flat')) { const zs = new Float32Array(mesh.nVertices); for (let i = 0; i < zs.length; i++) zs[i] = mesh.vertices[3 * i + 2]; const r = this.colorsForAttribute(zs, d.colormap || 'terrain', d.range); colors = r.colors; L.range = r.range; }
+    if (d.colorBy === 'elevation' || (g.role === 'topography' && !d.texture && d.colorBy !== 'flat')) { const zs = new Float32Array(mesh.nVertices); for (let i = 0; i < zs.length; i++) zs[i] = mesh.vertices[3 * i + 2]; const r = this.colorsForAttribute(zs, defaultColormap(g, d), d.range); colors = r.colors; L.range = r.range; }
     const geo = this.geomFromMesh(mesh, colors);
     const mat = this.material(g.color, { vertexColors: !!colors, map: d.texture || null, wireframe: !!d.wireframe, transparent: g.opacity < 1, opacity: g.opacity });
     if (d.texture) { // planar UVs from the grid bounds (texture covers grid bbox exactly)
@@ -246,7 +294,7 @@ export class Renderer {
   }
   buildMesh(mesh, L) {
     const d = L.display; let colors = null;
-    if (d.attribute && mesh.attributes[d.attribute] && mesh.attributes[d.attribute].location === 'vertices') { const r = this.colorsForAttribute(mesh.attributes[d.attribute].values, d.colormap || 'viridis', d.range); colors = r.colors; L.range = r.range; }
+    if (d.attribute && mesh.attributes[d.attribute] && mesh.attributes[d.attribute].location === 'vertices') { const r = this.colorsForAttribute(mesh.attributes[d.attribute].values, defaultColormap(mesh, d), d.range); colors = r.colors; L.range = r.range; }
     const geo = this.geomFromMesh(mesh, colors);
     const mat = this.material(mesh.color, { vertexColors: !!colors, wireframe: !!d.wireframe, flat: mesh.role === 'stope' || mesh.role === 'unit', transparent: mesh.opacity < 1, opacity: mesh.opacity });
     const m = new THREE.Mesh(geo, mat); L.group.add(m);
@@ -257,35 +305,78 @@ export class Renderer {
     const byType = ls.role === 'workings';
     const tubes = d.tubes != null ? d.tubes : (ls.role === 'workings' || ls.role === 'drillhole-traces');
     if (tubes && ls.parts.length <= 4000) {
-      const mats = new Map(); // color key -> {positions, indices}
+      // A tube cannot be dashed, so confidence rides on solidity instead: a
+      // surveyed working is a solid tube, a described or assumed one is
+      // translucent and carries its dashed centreline (added below).
+      const TUBE_OPACITY = { surveyed: 1, described: 0.72, assumed: 0.5 };
+      const mats = new Map(); // color+confidence key -> {positions, indices}
       for (let k = 0; k < ls.parts.length; k++) {
         const f = ls.features[k] || {}; const color = byType ? ((E.WORKING_TYPES[f.type] || E.WORKING_TYPES.unknown).color) : ls.color;
         const radius = Math.max(0.3, (f.width_m || d.radius || 1.5) / 2) * (d.tubeScale || 1);
-        const key = color.join(','); if (!mats.has(key)) mats.set(key, { color, pos: [], idx: [] });
+        const conf = byType ? confClass(f) : 'surveyed';
+        const key = color.join(',') + '|' + conf; if (!mats.has(key)) mats.set(key, { color, conf, pos: [], idx: [] });
         const acc = mats.get(key); const pts = ls.partXYZ(k).map(p => [p[0] - ox, p[2] - oz, -(p[1] - oy)]);
         appendTube(acc, pts, radius, 8, k);
       }
       for (const acc of mats.values()) {
         const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(acc.pos, 3)); geo.setIndex(acc.idx); geo.computeVertexNormals();
-        const m = new THREE.Mesh(geo, this.material(acc.color, { flat: false, emissive: byType ? 0x221100 : 0x000000 })); m.userData.partIndex = acc.partIndex; L.group.add(m);
+        const op = TUBE_OPACITY[acc.conf] == null ? 1 : TUBE_OPACITY[acc.conf];
+        const m = new THREE.Mesh(geo, this.material(acc.color, { flat: false, emissive: byType ? 0x221100 : 0x000000, transparent: op < 1 || ls.opacity < 1, opacity: op * ls.opacity })); m.userData.partIndex = acc.partIndex; m.userData.confidence = acc.conf; L.group.add(m);
+      }
+      if (byType) for (const cls of CONF_CLASSES) {
+        if (!cls.dash || !ls.features.some(f => confClass(f) === cls.key)) continue;
+        const cseg = this.linesGeometry(ls, null, false, (k, f) => confClass(f) === cls.key);
+        if (!cseg.segPart.length) continue;
+        const cm = new THREE.LineSegments(cseg.geo, new THREE.LineDashedMaterial({ vertexColors: true, dashSize: cls.dash[0], gapSize: cls.dash[1] }));
+        cm.userData.segPart = cseg.segPart; cm.userData.confidence = cls.key; L.group.add(cm);
       }
       // also thin lines for picking part indices
       const seg = this.linesGeometry(ls, ls.role === 'workings' ? null : ls.color, true); const lm = new THREE.LineSegments(seg.geo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.0, depthWrite: false })); lm.userData.segPart = seg.segPart; lm.userData.pickOnly = true; lm.visible = true; L.group.add(lm);
       return;
     }
-    const seg = this.linesGeometry(ls, ls.role === 'workings' ? null : (d.color || ls.color));
+    const base = ls.role === 'workings' ? null : (d.color || ls.color);
+    // Workings carry a per-feature confidence, and a line drawn from a written
+    // description must not be readable as a survey.  Surveyed draws solid,
+    // described dashed, anything assumed dotted — the same convention the SVG
+    // plan/section sheets use.
+    if (ls.role === 'workings' && CONF_CLASSES.some(c => c.key !== 'surveyed' && ls.features.some(f => confClass(f) === c.key))) {
+      for (const cls of CONF_CLASSES) {
+        const seg = this.linesGeometry(ls, base, false, (k, f) => confClass(f) === cls.key);
+        if (!seg.segPart.length) continue;
+        const m = new THREE.LineSegments(seg.geo, cls.dash
+          ? new THREE.LineDashedMaterial({ vertexColors: true, dashSize: cls.dash[0], gapSize: cls.dash[1], transparent: ls.opacity < 1, opacity: ls.opacity })
+          : new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1, transparent: ls.opacity < 1, opacity: ls.opacity }));
+        m.userData.segPart = seg.segPart; m.userData.confidence = cls.key; L.group.add(m);
+      }
+      return;
+    }
+    const seg = this.linesGeometry(ls, base);
     const m = new THREE.LineSegments(seg.geo, new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1, transparent: ls.opacity < 1, opacity: ls.opacity })); m.userData.segPart = seg.segPart; L.group.add(m);
   }
-  linesGeometry(ls, color, lift = false) {
-    const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2]; const nseg = ls.segments.length / 2;
-    const pos = new Float32Array(nseg * 6), col = new Float32Array(nseg * 6), segPart = new Int32Array(nseg).fill(-1);
+  linesGeometry(ls, color, lift = false, keep = null) {
+    const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2];
     const partOfVertex = new Int32Array(ls.nVertices).fill(-1); ls.parts.forEach((p, k) => { for (const i of p) partOfVertex[i] = k; });
-    for (let s = 0; s < nseg; s++) {
-      const a = ls.segments[2 * s], b = ls.segments[2 * s + 1]; const k = partOfVertex[a]; segPart[s] = k;
-      const f = k >= 0 ? (ls.features[k] || {}) : {}; const c = color || (E.WORKING_TYPES[f.type] || E.WORKING_TYPES.unknown).color;
-      for (const [q, i] of [[0, a], [1, b]]) { const V = ls.vertices; pos[6 * s + 3 * q] = V[3 * i] - ox; pos[6 * s + 3 * q + 1] = V[3 * i + 2] - oz; pos[6 * s + 3 * q + 2] = -(V[3 * i + 1] - oy); col[6 * s + 3 * q] = c[0] / 255; col[6 * s + 3 * q + 1] = c[1] / 255; col[6 * s + 3 * q + 2] = c[2] / 255; }
+    // distance travelled along each part, so a dash pattern runs continuously
+    // down a polyline instead of restarting at every vertex.
+    const distOfVertex = new Float32Array(ls.nVertices); const V = ls.vertices;
+    for (const part of ls.parts) {
+      let run = 0;
+      for (let i = 0; i < part.length; i++) {
+        const v = part[i];
+        if (i) { const u = part[i - 1]; run += Math.hypot(V[3 * v] - V[3 * u], V[3 * v + 1] - V[3 * u + 1], V[3 * v + 2] - V[3 * u + 2]); }
+        distOfVertex[v] = run;
+      }
     }
-    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.computeBoundingSphere();
+    const all = ls.segments.length / 2; const idx = [];
+    for (let s = 0; s < all; s++) { const k = partOfVertex[ls.segments[2 * s]]; if (!keep || keep(k, k >= 0 ? (ls.features[k] || {}) : {})) idx.push(s); }
+    const nseg = idx.length;
+    const pos = new Float32Array(nseg * 6), col = new Float32Array(nseg * 6), dist = new Float32Array(nseg * 2), segPart = new Int32Array(nseg).fill(-1);
+    for (let n = 0; n < nseg; n++) {
+      const s = idx[n]; const a = ls.segments[2 * s], b = ls.segments[2 * s + 1]; const k = partOfVertex[a]; segPart[n] = k;
+      const f = k >= 0 ? (ls.features[k] || {}) : {}; const c = color || (E.WORKING_TYPES[f.type] || E.WORKING_TYPES.unknown).color;
+      for (const [q, i] of [[0, a], [1, b]]) { pos[6 * n + 3 * q] = V[3 * i] - ox; pos[6 * n + 3 * q + 1] = V[3 * i + 2] - oz; pos[6 * n + 3 * q + 2] = -(V[3 * i + 1] - oy); col[6 * n + 3 * q] = c[0] / 255; col[6 * n + 3 * q + 1] = c[1] / 255; col[6 * n + 3 * q + 2] = c[2] / 255; dist[2 * n + q] = distOfVertex[i]; }
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('lineDistance', new THREE.BufferAttribute(dist, 1)); geo.computeBoundingSphere();
     return { geo, segPart };
   }
   pointTexture() {
@@ -298,7 +389,7 @@ export class Renderer {
     const d = L.display; const n = ps.n; const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2];
     const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
     let vals = null, range = null;
-    if (d.attribute && ps.isNumeric(d.attribute)) { vals = ps.numeric(d.attribute); const r = this.colorsForAttribute(vals, d.colormap || 'viridis', d.range); col.set(r.colors); range = r.range; L.range = range; }
+    if (d.attribute && ps.isNumeric(d.attribute)) { vals = ps.numeric(d.attribute); const r = this.colorsForAttribute(vals, defaultColormap(ps, d), d.range); col.set(r.colors); range = r.range; L.range = range; }
     for (let i = 0; i < n; i++) {
       const z = ps.xyz[3 * i + 2]; pos[3 * i] = ps.xyz[3 * i] - ox; pos[3 * i + 1] = (z === z ? z : 0) - oz + (d.lift || 0); pos[3 * i + 2] = -(ps.xyz[3 * i + 1] - oy);
       if (!vals) { let c = ps.color; if (ps.role === 'claims' && ps.attributes.status) c = String(ps.attributes.status[i]).toUpperCase() === 'ACTIVE' ? [255, 80, 80] : [120, 120, 160]; if (ps.attributes.is_site && +ps.attributes.is_site[i] === 1) c = [45, 212, 191]; col[3 * i] = c[0] / 255; col[3 * i + 1] = c[1] / 255; col[3 * i + 2] = c[2] / 255; }
@@ -325,7 +416,7 @@ export class Renderer {
     const sides = Math.max(3, Math.round(d.sides || 16));
     const by = d.attribute || null;
     let cols = null;
-    if (by && by !== 'polarity' && ps.isNumeric(by)) { const r = this.colorsForAttribute(ps.numeric(by), d.colormap || (by === 'dip' ? 'turbo' : 'viridis'), d.range); cols = r.colors; L.range = r.range; }
+    if (by && by !== 'polarity' && ps.isNumeric(by)) { const r = this.colorsForAttribute(ps.numeric(by), defaultColormap(ps, d), d.range); cols = r.colors; L.range = r.range; }
     else if (by === 'polarity') { cols = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const up = (pols[i] == null ? 1 : +pols[i]) >= 0; cols[3 * i] = up ? 0.41 : 0.85; cols[3 * i + 1] = up ? 0.69 : 0.45; cols[3 * i + 2] = up ? 1 : 0.18; } L.range = null; L.categories = ['right way up', 'overturned']; L.categoryColors = [[104, 176, 255], [217, 112, 45]]; }
     else if (by && ps.attributes[by]) {
       const col = ps.attributes[by]; const cats = [...new Set(col.filter(v => v != null && v !== '').map(String))].sort();
@@ -409,6 +500,7 @@ export class Renderer {
     if (cat) { for (const v of vals) if (v != null && v !== '') catIndex.set(v, catIndex.has(v) ? catIndex.get(v) : catIndex.size); }
     else for (const v of vals) { if (v !== v) continue; if (v < lo) lo = v; if (v > hi) hi = v; }
     const range = d.range || [lo, hi]; L.range = cat ? null : range; L.categories = cat ? [...catIndex.keys()] : null;
+    const cmap = defaultColormap(bm, d, cat);
     const cut = d.cutoff != null ? d.cutoff : -Infinity, cutHi = d.cutoffHi != null ? d.cutoffHi : Infinity;
     const keep = []; for (let i = 0; i < n; i++) { const v = vals[i]; if (cat) { if (v == null || v === '' ) continue; if (d.category && v !== d.category) continue; } else { if (v !== v || v < cut || v > cutHi) continue; } keep.push(i); }
     const maxInst = 400000; const stride = keep.length > maxInst ? Math.ceil(keep.length / maxInst) : 1;
@@ -420,7 +512,7 @@ export class Renderer {
     for (let q2 = 0; q2 < shown.length; q2++) {
       const idx = shown[q2]; const [i, j, k] = bm.ijk(idx); const [x, y, z] = bm.centroid(i, j, k);
       m4.compose(new THREE.Vector3(x - this.origin[0], z - this.origin[2], -(y - this.origin[1])), q, s1); inst.setMatrixAt(q2, m4);
-      let c; if (cat) c = GM.colormap(d.colormap || 'geology', catIndex.size > 1 ? catIndex.get(vals[idx]) / (catIndex.size - 1) : 0.5); else c = GM.colormap(d.colormap || 'turbo', range[1] > range[0] ? (vals[idx] - range[0]) / (range[1] - range[0]) : 0.5);
+      let c; if (cat) c = GM.colormap(cmap, catIndex.size > 1 ? catIndex.get(vals[idx]) / (catIndex.size - 1) : 0.5); else c = GM.colormap(cmap, range[1] > range[0] ? (vals[idx] - range[0]) / (range[1] - range[0]) : 0.5);
       inst.setColorAt(q2, c3.setRGB(c[0] / 255, c[1] / 255, c[2] / 255));
     }
     inst.instanceMatrix.needsUpdate = true; if (inst.instanceColor) inst.instanceColor.needsUpdate = true; inst.userData.blockIds = shown; inst.userData.kind = 'blocks'; inst.userData.attribute = attr; L.group.add(inst);
@@ -436,7 +528,7 @@ export class Renderer {
     this.buildLines(ls, { display: Object.assign({ tubes: true, radius: 1.0 }, d), group: L.group, obj: ls });
     // colour-coded intervals for a chosen table/column
     if (d.table && d.column && dh.intervals[d.table]) {
-      const rows = dh.intervals[d.table]; const vals = rows.map(r => +r[d.column]); const r = this.colorsForAttribute(Float64Array.from(vals), d.colormap || 'turbo', d.range); L.range = r.range;
+      const rows = dh.intervals[d.table]; const vals = rows.map(r => +r[d.column]); const r = this.colorsForAttribute(Float64Array.from(vals), defaultColormap(dh, d), d.range); L.range = r.range;
       const acc = { color: [255, 255, 255], pos: [], idx: [], colors: [] };
       rows.forEach((row, q) => { const f = +row.from, t = +row.to; if (!(f === f && t === t) || vals[q] !== vals[q]) return; const pts = []; const steps = Math.max(1, Math.ceil((t - f) / 2)); for (let s = 0; s <= steps; s++) { const p = dh.locate(row.hole, f + (t - f) * s / steps, traces); if (p) pts.push([p[0] - this.origin[0], p[2] - this.origin[2], -(p[1] - this.origin[1])]); } if (pts.length < 2) return; const before = acc.pos.length / 3; appendTube(acc, pts, (d.radius || 1.0) * 1.8, 8, q); const after = acc.pos.length / 3; for (let v = before; v < after; v++) acc.colors.push(r.colors[3 * q], r.colors[3 * q + 1], r.colors[3 * q + 2]); });
       if (acc.pos.length) { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(acc.pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(acc.colors, 3)); geo.setIndex(acc.idx); geo.computeVertexNormals(); L.group.add(new THREE.Mesh(geo, this.material([255, 255, 255], { vertexColors: true }))); }

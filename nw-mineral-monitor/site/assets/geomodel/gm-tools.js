@@ -148,7 +148,12 @@ export class SectionTool {
   saveProducts() { let n = 0; for (const pr of this.products) { if (pr.kind === 'line' || pr.kind === 'near') { pr.ls.name = `${this.sec.name} · ${pr.obj.name}`; pr.ls.group = 'Sections'; pr.ls.role = 'section'; this.app.project.add(pr.ls); n++; } if (pr.kind === 'ribbon') { pr.mesh.group = 'Sections'; pr.mesh.name = `${this.sec.name} · ${pr.mesh.name}`; this.app.project.add(pr.mesh); n++; } } toast(`${n} section layers saved`, 'ok'); }
   async exportDxf() { const objs = []; for (const pr of this.products) { if (pr.ls) objs.push(pr.ls); if (pr.mesh) objs.push(pr.mesh); } if (!objs.length) return toast('nothing to export', 'warn'); const files = await F.writeAs('dxf', objs, { basename: GM.slug(this.sec.name) }); for (const [n, v] of Object.entries(files)) GM.downloadBlob(new Blob([v]), n); }
   /* 2-D panel */
-  togglePanel() { this.panelOpen = !this.panelOpen; $('sec2d').style.display = this.panelOpen ? 'flex' : 'none'; this.app.R.resize(); this.draw2d(); }
+  togglePanel() { this.setPanel(!this.panelOpen); }
+  // The panel's own ✕ used to hide the element directly, which left panelOpen
+  // true; the next click on 2-D SECTION PANEL then toggled it back to false and
+  // hid an already-hidden panel, so the button looked dead until pressed twice.
+  closePanel() { this.setPanel(false); }
+  setPanel(open) { this.panelOpen = !!open; $('sec2d').style.display = this.panelOpen ? 'flex' : 'none'; this.app.R.resize(); this.draw2d(); }
   clear2d() { const c = $('sec2dCanvas'); if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height); }
   draw2d() {
     if (!this.panelOpen) return; const c = $('sec2dCanvas'); const box = c.parentElement; c.width = box.clientWidth * (window.devicePixelRatio || 1); c.height = box.clientHeight * (window.devicePixelRatio || 1); const ctx = c.getContext('2d'); ctx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0); const W = box.clientWidth, H = box.clientHeight; ctx.fillStyle = '#0b0e13'; ctx.fillRect(0, 0, W, H);
@@ -159,12 +164,30 @@ export class SectionTool {
     const along = p => (p[0] - pl.start[0]) * u[0] + (p[1] - pl.start[1]) * u[1];
     // grid + axes
     ctx.strokeStyle = '#1e2630'; ctx.lineWidth = 1; ctx.font = '10px ui-monospace, monospace'; ctx.fillStyle = '#8a97a6';
-    const zstep = niceStep((zmax - zmin) / 6); for (let z = Math.ceil(zmin / zstep) * zstep; z <= zmax; z += zstep) { ctx.beginPath(); ctx.moveTo(pad.l, Y(z)); ctx.lineTo(X(L), Y(z)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmtNum(z, 0), pad.l - 6, Y(z) + 3); }
-    const dstep = niceStep(L / 8); for (let d = 0; d <= L; d += dstep) { ctx.beginPath(); ctx.moveTo(X(d), pad.t); ctx.lineTo(X(d), Y(zmin)); ctx.stroke(); ctx.textAlign = 'center'; ctx.fillText(fmtNum(d, 0), X(d), Y(zmin) + 14); }
+    // Tick spacing has to come from the pixels available, not from the data
+    // extent: a section that is tall relative to its length is fitted on its
+    // height, so its plotted width can be a fraction of the panel and eight
+    // distance labels then overprint each other into a smear.
+    const zticks = Math.max(2, Math.min(6, Math.floor(ph / 34)));
+    const dticks = Math.max(2, Math.min(8, Math.floor((L * scale) / 54)));
+    const zstep = niceStep((zmax - zmin) / zticks); for (let z = Math.ceil(zmin / zstep) * zstep; z <= zmax; z += zstep) { ctx.beginPath(); ctx.moveTo(pad.l, Y(z)); ctx.lineTo(X(L), Y(z)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(fmtNum(z, 0), pad.l - 6, Y(z) + 3); }
+    const dstep = niceStep(L / dticks); for (let d = 0; d <= L; d += dstep) { ctx.beginPath(); ctx.moveTo(X(d), pad.t); ctx.lineTo(X(d), Y(zmin)); ctx.stroke(); ctx.textAlign = 'center'; ctx.fillText(fmtNum(d, 0), X(d), Y(zmin) + 14); }
     ctx.textAlign = 'left'; ctx.fillStyle = '#c9d1d9'; ctx.fillText(`${s.name}${this.offset ? ` (offset ${this.offset} m)` : ''} — ${fmtNum(L, 0)} m, VE ×${ve.toFixed(1)}, looking ${lookDir(u)}`, pad.l + 6, 12);
     ctx.save(); ctx.beginPath(); ctx.rect(pad.l, pad.t, pw, ph); ctx.clip();
     for (const pr of this.products) {
-      if (pr.kind === 'blocks' && pr.canvas) { const c4 = pr.smp.corners; const d0 = along(c4[0]), d1 = along(c4[1]); const z0 = c4[0][2], z1 = c4[3][2]; ctx.globalAlpha = 0.9; ctx.drawImage(pr.canvas, X(Math.min(d0, d1)), Y(Math.max(z0, z1)), Math.abs(X(d1) - X(d0)), Math.abs(Y(z1) - Y(z0))); ctx.globalAlpha = 1; }
+      // Column 0 of the sampled raster belongs at corners[0] — that is how the
+      // 3-D plane is textured (uv 0 at c4[0]).  When corners[0] is the far end of
+      // the section the bitmap has to be mirrored to land the same way round;
+      // drawing it unflipped put the grades at the wrong distance along the line.
+      if (pr.kind === 'blocks' && pr.canvas) {
+        const c4 = pr.smp.corners; const d0 = along(c4[0]), d1 = along(c4[1]); const z0 = c4[0][2], z1 = c4[3][2];
+        const x0 = X(Math.min(d0, d1)), yTop = Y(Math.max(z0, z1));
+        const w = Math.abs(X(d1) - X(d0)), hgt = Math.abs(Y(z1) - Y(z0));
+        ctx.save(); ctx.globalAlpha = 0.9;
+        if (d0 > d1) { ctx.translate(x0 + w, 0); ctx.scale(-1, 1); ctx.drawImage(pr.canvas, 0, yTop, w, hgt); }
+        else ctx.drawImage(pr.canvas, x0, yTop, w, hgt);
+        ctx.restore();
+      }
     }
     for (const pr of this.products) if (pr.kind === 'ribbon') { const m = pr.mesh; ctx.fillStyle = rgba(m.color, 0.85); ctx.beginPath(); for (let t = 0; t < m.nTriangles; t++) { const [a, b, c2] = [m.triangles[3 * t], m.triangles[3 * t + 1], m.triangles[3 * t + 2]]; const pa = m.vertex(a), pb = m.vertex(b), pc = m.vertex(c2); ctx.moveTo(X(along(pa)), Y(pa[2])); ctx.lineTo(X(along(pb)), Y(pb[2])); ctx.lineTo(X(along(pc)), Y(pc[2])); ctx.closePath(); } ctx.fill(); }
     for (const pr of this.products) if (pr.kind === 'line' || pr.kind === 'near') { const ls = pr.ls; for (let k = 0; k < ls.parts.length; k++) { const f = ls.features[k] || {}; const col = pr.kind === 'near' && pr.obj.role === 'workings' ? (E.WORKING_TYPES[f.type] || E.WORKING_TYPES.unknown).color : (pr.color || pr.obj.color); ctx.strokeStyle = rgba(col, 1); ctx.lineWidth = pr.width || (pr.kind === 'near' ? 2.5 : 1.3); ctx.beginPath(); const pts = ls.partXYZ(k); pts.forEach((p, i) => { if (i) ctx.lineTo(X(along(p)), Y(p[2])); else ctx.moveTo(X(along(p)), Y(p[2])); }); ctx.stroke(); if (pr.kind === 'near' && f.name) { ctx.fillStyle = '#e6edf3'; ctx.fillText(f.name, X(along(pts[0])) + 4, Y(pts[0][2]) - 4); } } }
@@ -230,7 +253,11 @@ export class WorkingsTool {
   onClick(e) {
     if (!this.mode) return false; const w = this.pickPoint(e); if (!w) return true;
     const f = this.form; const ws = this.ensureLayer(); const topo = this.app.topoGrid();
-    const common = { name: f.name, level: f.level, level_z: f.level_z === '' ? null : +f.level_z, mine: this.app.project.name, source: f.doc ? { doc: f.doc, page: f.page } : {}, confidence: f.confidence, units_in: f.units_in, width_m: f.width_m === '' ? undefined : +f.width_m };
+    // `name` deliberately does NOT live in `common`: every branch below passes
+    // `common` as the *source* of Object.assign, so a common.name of '' (the
+    // form default until the user types) overwrote each branch's `|| 'adit'`
+    // fallback and every unnamed working was stored nameless.
+    const common = { level: f.level, level_z: f.level_z === '' ? null : +f.level_z, mine: this.app.project.name, source: f.doc ? { doc: f.doc, page: f.page } : {}, confidence: f.confidence, units_in: f.units_in, width_m: f.width_m === '' ? undefined : +f.width_m };
     if (this.mode === 'adit') { E.addAdit(ws, w, f.bearing, f.length, Object.assign({ gradePct: f.grade, unitsIn: f.units_in, terrain: topo, name: f.name || 'adit' }, common)); this.done(); return true; }
     if (this.mode === 'shaft') { E.addShaft(ws, w, f.depth, Object.assign({ dipDeg: f.dip, azimuthDeg: f.azimuth, unitsIn: f.units_in, terrain: f.type === 'winze' ? null : topo, name: f.name || (f.type === 'winze' ? 'winze' : 'shaft'), kind: f.type === 'winze' ? 'winze' : 'shaft' }, common)); this.done(); return true; }
     this.pts.push(w); this.preview();
@@ -259,15 +286,21 @@ export class WorkingsTool {
 
 /* ============================================================ GEOREF */
 export class GeorefTool {
-  constructor(T) { this.T = T; this.img = null; this.markers = []; this.mode = null; this.pending = null; this.plane = 'plan'; this.zTop = ''; this.zBottom = ''; this.elev = ''; this.name = ''; }
+  constructor(T) { this.T = T; this.img = null; this.markers = []; this.mode = null; this.pending = null; this.plane = 'plan'; this.zTop = ''; this.zBottom = ''; this.elev = ''; this.name = ''; this.existing = null; }
   get app() { return this.T.app; }
-  onProject() { this.img = null; this.markers = []; }
+  onProject() { this.img = null; this.markers = []; this.existing = null; }
   async fromImageBytes(name, bytes) { const blob = new Blob([bytes]); const url = URL.createObjectURL(blob); const bmp = await createImageBitmap(blob); const c = document.createElement('canvas'); const scale = Math.min(1, 4096 / Math.max(bmp.width, bmp.height)); c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale); c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height); URL.revokeObjectURL(url); this.setImage(name, c); }
   async fromPdf(name, bytes) {
     try { const pdfjs = await import('../pdfjs/pdf.min.mjs'); pdfjs.GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.mjs'; const doc = await pdfjs.getDocument({ data: bytes }).promise; const pageNo = Math.max(1, Math.min(doc.numPages, +(prompt(`PDF has ${doc.numPages} pages — which page holds the map?`, '1') || 1))); const page = await doc.getPage(pageNo); const vp = page.getViewport({ scale: 1 }); const scale = Math.min(3, 3000 / Math.max(vp.width, vp.height)); const v2 = page.getViewport({ scale }); const c = document.createElement('canvas'); c.width = Math.round(v2.width); c.height = Math.round(v2.height); await page.render({ canvasContext: c.getContext('2d'), viewport: v2 }).promise; this.setImage(`${name} p${pageNo}`, c); }
     catch (e) { toast('PDF render failed (is assets/pdfjs present?): ' + e.message, 'err', 8000); }
   }
-  setImage(name, canvas) { this.img = { name, canvas, dataUrl: canvas.toDataURL('image/jpeg', 0.85), width: canvas.width, height: canvas.height }; this.markers = []; this.name = name.replace(/\.[^.]+$/, ''); this.T.open('georef'); }
+  // `existing` binds the panel to a plane opened for editing, and only commit()
+  // or cancel clears it: panel() is re-entered with no argument on every
+  // re-render, so it cannot do the clearing.  A newly loaded image is always a
+  // *new* plane, so it has to be released here — otherwise commit() rewrites the
+  // previously opened plane with this plate's control points while keeping its
+  // old raster and pixel size, and this image is never added at all.
+  setImage(name, canvas) { this.img = { name, canvas, dataUrl: canvas.toDataURL('image/jpeg', 0.85), width: canvas.width, height: canvas.height }; this.markers = []; this.existing = null; this.name = name.replace(/\.[^.]+$/, ''); this.T.open('georef'); }
   panel(existing) {
     if (existing) { this.existing = existing; this.img = { name: existing.name, dataUrl: existing.image, width: existing.width, height: existing.height, canvas: null }; this.plane = existing.plane; this.elev = existing.elevation == null ? '' : existing.elevation; this.zTop = existing.zTop == null ? '' : existing.zTop; this.zBottom = existing.zBottom == null ? '' : existing.zBottom; this.name = existing.name; this.markers = existing.plane === 'plan' ? existing.control.map(c => ({ px: c[0], py: c[1], X: c[2], Y: c[3] })) : [{ px: 0, py: 0, X: existing.p1[0], Y: existing.p1[1] }, { px: existing.width, py: 0, X: existing.p2[0], Y: existing.p2[1] }]; }
     const P = h('div', { class: 'tool' }, h('h2', {}, 'GEOREFERENCE AN IMAGE'));
@@ -347,7 +380,15 @@ export class StratTool {
     return P;
   }
   digitise() { const ps = new GM.PointSet({ name: `contact points ${this.app.project.byKind('points').length + 1}`, role: 'contacts', group: 'Stratigraphy', color: [255, 120, 200] }); this.app.project.add(ps); this.mode = 'digitise'; this.target = ps; $('gl').style.cursor = 'crosshair'; this.app.status('click contact points on the terrain / section images / surfaces (Esc to stop); set the base of a unit to this layer'); }
-  onClick(e) { if (this.mode !== 'digitise') return false; const w = groundPick(this.app.R, e); if (!w) return true; this.target.add(w[0], w[1], w[2], { n: this.target.n + 1 }); this.app.refresh(this.target); this.app.status(`${this.target.n} contact points`); return true; }
+  // Both of this tool's click modes live here on the prototype.  virtualHole()
+  // used to install its own `onClick` on the instance, which shadowed this one
+  // for good — after one virtual drillhole, digitising contacts was dead.
+  onClick(e) {
+    if (this.mode === 'vhole') { const w = groundPick(this.app.R, e); if (!w) return true; this.showColumn(w); return true; }
+    if (this.mode !== 'digitise') return false;
+    const w = groundPick(this.app.R, e); if (!w) return true;
+    this.target.add(w[0], w[1], w[2], { n: this.target.n + 1 }); this.app.refresh(this.target); this.app.status(`${this.target.n} contact points`); return true;
+  }
   onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; $('gl').style.cursor = ''; this.T.showPanel(this.panel()); return true; } return false; }
   stop() { this.mode = null; }
   async build() {
@@ -379,7 +420,7 @@ export class StratTool {
     } catch (e) { console.error(e); toast('build failed: ' + e.message, 'err', 8000); }
     this.busy = false; this.T.showPanel(this.panel());
   }
-  virtualHole() { this.mode = 'vhole'; $('gl').style.cursor = 'crosshair'; this.app.status('click the ground for a virtual drillhole column'); this.T.active = this; const T = this; this.onClick = e => { if (T.mode !== 'vhole') return false; const w = groundPick(T.app.R, e); if (!w) return true; T.showColumn(w); return true; }; }
+  virtualHole() { this.mode = 'vhole'; $('gl').style.cursor = 'crosshair'; this.app.status('click the ground for a virtual drillhole column'); this.T.active = this; }
   showColumn(w) {
     const S = this.ensure(); const topo = this.app.topoGrid(); const grids = {}; for (const u of S.units) if (u.base) { const g = this.app.project.get(u.base); if (g) grids[u.base] = g; }
     const col = Object.keys(grids).length ? E.columnAt(S, grids, w[0], w[1], topo) : [];

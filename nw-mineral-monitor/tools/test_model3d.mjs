@@ -90,6 +90,36 @@ try {
   check('workings: feet converted to metres (900 ft adit ≈ 274 m, 300 ft shaft ≈ 91 m)', Math.abs(wk.aditLen - 274.3) < 1 && Math.abs(wk.shaftDz - 91.44) < 0.01, `adit ${wk.aditLen.toFixed(1)} shaft ${wk.shaftDz.toFixed(2)}`);
   check('workings: GeoJSON footprint in WGS84', wk.gj === 4 && wk.lon < -113 && wk.lon > -114, `lon ${wk.lon}`);
 
+  // confidence has to be legible: a working read off a sentence must not be
+  // drawn, counted or described the way a surveyed one is
+  const conf = await page.evaluate(async () => {
+    const app = window.gmApp, R = await import('./assets/geomodel/gm-render.js'), V = await import('./assets/geomodel/gm-viewer.js');
+    const ws = app.project.byKind('lineset').find(l => l.role === 'workings');
+    ws.features[1].confidence = 'surveyed';           // the Main shaft, off a plan
+    ws.features[0].confidence = 'described';          // the adit, off a sentence
+    app.refresh(ws); app.renderConfidence(); app.showLegend = true; app.select(ws.id); app.renderLegend();
+    const L = app.R.layers.get(ws.id); const mats = [];
+    L.group.traverse(n => { if (n.material) mats.push({ t: n.material.type, conf: n.userData.confidence || null, dash: n.material.dashSize || null, ld: !!(n.geometry.getAttribute && n.geometry.getAttribute('lineDistance')) }); });
+    let pick = null; L.group.traverse(n => { if (!pick && n.type === 'LineSegments' && n.userData.segPart) pick = n; });
+    return { tally: R.confidenceTally(app.project), mats,
+             banner: document.getElementById('confbar').innerText,
+             legend: document.getElementById('legend').innerText,
+             pick: V.describePick({ obj: ws, object: pick, index: 0 }) };
+  });
+  check('confidence: tally counts described, surveyed and the assumed stope separately',
+        conf.tally.surveyed === 1 && conf.tally.described > 0,
+        JSON.stringify(conf.tally));
+  check('confidence: a described working is drawn dashed, not solid',
+        conf.mats.some(m => m.t === 'LineDashedMaterial' && m.conf === 'described' && m.dash > 0 && m.ld),
+        JSON.stringify(conf.mats.filter(m => m.conf)));
+  check('confidence: the viewport says the model is not a survey',
+        /NOT A SURVEY/.test(conf.banner) && /digitised/.test(conf.banner), conf.banner.slice(0, 90));
+  check('confidence: the legend decodes the line styles',
+        /surveyed/.test(conf.legend) && /described/.test(conf.legend), conf.legend.replace(/\n/g, ' | ').slice(0, 90));
+  check('provenance: picking a working shows the document it was read out of',
+        conf.pick.some(l => l.startsWith('source:') && /USGS Bull 1/.test(l)),
+        (conf.pick.find(l => l.startsWith('source:')) || conf.pick.join(' | ')).slice(0, 90));
+
   // image plane (plan) + trace through its georeference
   const ip = await page.evaluate(() => {
     const app = window.gmApp; const o = app.project.origin;

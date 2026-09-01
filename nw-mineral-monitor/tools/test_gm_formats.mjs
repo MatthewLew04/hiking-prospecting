@@ -796,6 +796,22 @@ out = res
     assert(r3.format === 'csv_blockmodel' && r3.objects[0].kind === 'blockmodel' && r3.objects[0].n === 12, 'blockmodel routing');
     const r4 = await F.readAny({ name: 'collar.csv', bytes: rd('tables/collar.csv') }, { table: 'drillholes', survey: rd('tables/survey.csv'), intervals: { assay: rd('tables/assay.csv') }, negativeDipDown: true });
     assert(r4.objects[0].kind === 'drillholes' && r4.objects[0].collars.length === 2 && r4.objects[0].surveys[0].dip === 60, 'drillholes routing');
+    // The import dialog's table kind must beat an extension-only guess (a delimited
+    // .txt/.dat sniffs to nothing, every .xyz sniffs to geosoft_xyz) but must NOT
+    // beat sniff()'s magic-byte detection — the dialog defaults its kind to
+    // 'points', and a Surfer grid named .dat leads with DSAA.
+    const enc = t => new TextEncoder().encode(t);
+    const tbl = 'x,y,z,au\n500000,4200000,1500,1.2\n500010,4200010,1502,0.8\n';
+    for (const nm of ['pts.txt', 'pts.dat', 'pts.xyz', 'pts.csv']) {
+      const rt = await F.readAny({ name: nm, bytes: enc(tbl) }, { table: 'points' });
+      assert(rt.format === 'csv_points' && rt.objects[0].n === 2, `table kind wins over the extension guess for ${nm}`);
+    }
+    const rg = await F.readAny({ name: 'topo.dat', bytes: enc('DSAA\n2 2\n0 1\n0 1\n0 1\n1 2\n3 4\n') }, { table: 'points' });
+    assert(rg.format === 'surfer_grd', 'a sniffed Surfer grid is not forced through the CSV reader');
+    const rx = await F.readAny({ name: 'x.xyz', bytes: enc(tbl) }, { format: 'csv_points', table: 'blockmodel' });
+    assert(rx.format === 'csv_points', 'an explicit format still outranks the table kind');
+    assert(F.sniff('pts.xyz', enc(tbl)) === 'geosoft_xyz', 'no table kind leaves .xyz sniffing as geosoft_xyz');
+
     const sg = await F.readAny({ name: 'a.sgy', bytes: rd('seismic/a.sgy') });
     const [plane, tp] = sg.objects;
     assert(plane.kind === 'imageplane' && plane.plane === 'section' && plane.width === 7 && plane.height === 50 && plane.image.startsWith('data:image/png;base64,'), 'image plane');

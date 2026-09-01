@@ -222,6 +222,36 @@ try {
   });
   check('export: structural CSV round-trips through gm-formats', /dip/i.test(exp.head) && exp.rows > 3, `${exp.name}: ${exp.head}`);
 
+  // The tool objects are built once at boot and outlive every project, so anything
+  // onProject() forgets to reset leaks into the next project's panel — a selection
+  // of positional row indices, a cached density grid, a trace-layer id, an image
+  // plane, or a derive summary that all belong to a model no longer on screen.
+  const leak = await page.evaluate(async () => {
+    const app = window.gmApp, T = app.tools;
+    const GM = await import('./assets/geomodel/gm-core.js');
+    const net = T.stereonet, str = T.structure, geo = T.georef;
+    // dirty every piece of cross-project state the tools hold
+    net.rows = [{ obj: { id: 'gone' }, row: 0 }, { obj: { id: 'gone' }, row: 1 }];
+    net.picked = new Set([0, 1]); net.sel = new Set(['gone']);
+    net.dg = { fake: true }; net.dgKey = 'stale-key'; net.stats = { fake: true };
+    str.derSel = 'a-layer-from-the-old-project'; str.derStats = { windows: 7 }; str.layer = { id: 'gone' };
+    geo.existing = { id: 'plane-from-the-old-project' };
+    app.setProject(new GM.Project({ name: 'another model', crs: GM.utm.crs(12, true), origin: [0, 0, 0] }), 'another-model');
+    return {
+      picked: net.picked.size, rows: net.rows.length, dg: net.dg, dgKey: net.dgKey, stats: net.stats,
+      derSel: str.derSel, derStats: str.derStats, layer: str.layer, existing: geo.existing,
+      project: app.project.name,
+    };
+  });
+  check('project switch: the stereonet drops the previous project\'s rows and selection',
+        leak.picked === 0 && leak.rows === 0 && leak.dg === null && leak.dgKey === null && leak.stats === null,
+        JSON.stringify({ picked: leak.picked, rows: leak.rows, dg: leak.dg, dgKey: leak.dgKey }));
+  check('project switch: the structure tool drops its trace layer, derive summary and selection',
+        leak.derSel === null && leak.derStats === null && leak.layer === null,
+        JSON.stringify({ derSel: leak.derSel, derStats: leak.derStats, layer: leak.layer }));
+  check('project switch: georeference forgets the image plane it was editing',
+        leak.existing === null, JSON.stringify({ existing: leak.existing, project: leak.project }));
+
   check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 } catch (e) {
   check('test harness', false, String(e && e.message || e));

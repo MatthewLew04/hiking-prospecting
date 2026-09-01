@@ -35,7 +35,7 @@ function bearing(a, b) { const d = Math.atan2(b[0] - a[0], b[1] - a[1]) * 180 / 
 export class StructureTool {
   constructor(T) { this.T = T; this.layer = null; this.mode = null; this.pending = null; this.form = { dip: 30, dipaz: 90, polarity: 1, type: 'bedding', confidence: 'sketched', source: '', page: '' }; }
   get app() { return this.T.app; }
-  onProject() { this.layer = null; this.mode = null; this.pending = null; }
+  onProject() { this.layer = null; this.mode = null; this.pending = null; this.derSel = null; this.derStats = null; }
   stop() { this.mode = null; this.pending = null; this.T.R.clearOverlay(); $('gl').style.cursor = ''; }
 
   panel(layer) {
@@ -70,7 +70,10 @@ export class StructureTool {
     if (!traces.length) der.appendChild(note('No mapped contact or fault traces in this project yet.'));
     else {
       der.appendChild(note('Fits a plane through each window of a contact or fault trace where it crosses terrain \u2014 the three-point problem, run along the whole line, growing the window until the plane is resolvable. Windows without relief, straight in map view, or with a poor fit are rejected, never guessed. A genuinely vertical structure also traces a straight line, so it comes back indeterminate rather than as 90\u00b0.'));
-      this.derSel = this.derSel || traces[0].id;
+      // A trace id left over from another project is truthy, so `||` would keep it
+      // while the select silently displayed option 0 — validate it against this
+      // project's traces, the way this.layer is validated above.
+      if (!this.derSel || !traces.some(t => t.id === this.derSel)) this.derSel = traces[0].id;
       der.appendChild(row('trace layer', sel(traces.map(o => [o.id, `${o.name} (${o.parts.length})`]), this.derSel, { onchange: e => { this.derSel = e.target.value; } })));
       this.der = this.der || Object.assign({}, S.DERIVE_DEFAULTS);
       der.appendChild(row('window m', num(this.der.window, { onchange: e => { this.der.window = +e.target.value; } }), h('span', { class: 'mono' }, 'step'), num(this.der.step, { onchange: e => { this.der.step = +e.target.value; } })));
@@ -230,10 +233,13 @@ export class StereonetTool {
   constructor(T) {
     this.T = T; this.sel = new Set(); this.canvas = null;
     this.opt = { net: 'equatorial', projection: 'equal_area', desample: 0.5, poles: true, planes: false, contours: true, method: 'kamb', sigma: 3, levels: 6, showMean: true, showGirdle: true, showCone: false, colorBy: '' };
-    this.picking = null; this.poly = []; this.picked = new Set(); this.dg = null; this.stats = null; this.rect = null;
+    this.picking = null; this.poly = []; this.picked = new Set(); this.rows = []; this.dg = null; this.dgKey = null; this.stats = null; this.rect = null;
   }
   get app() { return this.T.app; }
-  onProject() { this.sel.clear(); this.dg = null; this.stats = null; }
+  /* picked holds positions into this.rows, so it means nothing once the rows come
+     from a different project — left behind, ASSIGN TO CATEGORY would tag whatever
+     now happens to sit at those positions. */
+  onProject() { this.sel.clear(); this.picked.clear(); this.rows = []; this.dg = null; this.dgKey = null; this.stats = null; }
   stop() { this.picking = null; this.poly = []; this.removeRect(); $('gl').style.cursor = ''; }
 
   panel(layer) {
@@ -245,7 +251,7 @@ export class StereonetTool {
 
     const ds = section('DATASETS');
     for (const o of list) ds.appendChild(h('label', { class: 'chk' },
-      h('input', { type: 'checkbox', checked: this.sel.has(o.id), onchange: e => { e.target.checked ? this.sel.add(o.id) : this.sel.delete(o.id); this.redraw(); } }),
+      h('input', { type: 'checkbox', checked: this.sel.has(o.id), onchange: e => { e.target.checked ? this.sel.add(o.id) : this.sel.delete(o.id); this.redraw(); this.repanel(); } }),
       `${o.name} (${o.n})`));
     el.appendChild(ds);
 
@@ -312,15 +318,45 @@ export class StereonetTool {
     return rows;
   }
 
+  /** A signature of everything the density grid depends on: the poles themselves,
+      n — which sizes the counting circle and the σ scale, so the contours are
+      wrong the moment the count changes — and the two contour options. Poles are
+      unit vectors, so quantising to 1e-6 notices any measurement that moved. */
+  densityKey(poles, n) {
+    let k = 2166136261;
+    for (let i = 0; i < poles.length; i++) k = (Math.imul(k, 16777619) ^ (poles[i] * 1e6 | 0)) >>> 0;
+    return `${this.opt.method}:${this.opt.projection}:${n}:${k}`;
+  }
+
+  /** picked holds positions into this.rows, and gather() renumbers those every time
+      a dataset is ticked or measurements are added behind the panel. Carry the
+      selection across by identity (layer + row) so it keeps meaning the same
+      measurements; anything that has gone away simply drops out. */
+  repick(rows) {
+    if (!this.picked.size) return;
+    const keys = new Set();
+    for (const i of this.picked) { const r = this.rows[i]; if (r) keys.add(r.obj.id + '#' + r.row); }
+    const out = new Set();
+    rows.forEach((r, i) => { if (keys.has(r.obj.id + '#' + r.row)) out.add(i); });
+    this.picked = out;
+  }
+
   redraw() {
     if (!this.canvas) return;
     const rows = this.gather();
+    this.repick(rows);
     this.rows = rows;
     const poles = new Float64Array(rows.length * 3);
     rows.forEach((r, i) => { poles[3 * i] = r.pole[0]; poles[3 * i + 1] = r.pole[1]; poles[3 * i + 2] = r.pole[2]; });
     this.stats = rows.length >= 2 ? { bingham: S.binghamStats(poles, rows.length), fisher: S.fisherStats(poles, rows.length) } : null;
-    if (this.opt.contours && rows.length >= 5 && !this.dg) this.dg = S.densityGrid(poles, rows.length, { method: this.opt.method, projection: this.opt.projection, size: rows.length > 3000 ? 72 : 96 });
-    if (!this.opt.contours) this.dg = null;
+    // The grid is expensive, so it is cached across redraws — but it is a function
+    // of the data, not just of the contour options, so key the cache on the data
+    // rather than trusting whoever changes the data to clear it.
+    const key = this.opt.contours && rows.length >= 5 ? this.densityKey(poles, rows.length) : null;
+    if (key !== this.dgKey || (key && !this.dg)) {
+      this.dg = key ? S.densityGrid(poles, rows.length, { method: this.opt.method, projection: this.opt.projection, size: rows.length > 3000 ? 72 : 96 }) : null;
+      this.dgKey = key;
+    }
     drawStereonet(this.canvas, { rows, opt: this.opt, dg: this.dg, stats: this.stats, picked: this.picked, poly: this.poly, colors: this.colorFor.bind(this) });
     if (this.statsHost) { clear(this.statsHost); this.statsHost.appendChild(this.statsTable()); }
     if (this.readout) this.readout.textContent = `${rows.length} measurement(s)` + (this.dg ? ` · peak ${this.dg.max.toFixed(1)} ${this.dg.unit_label}` : '');
@@ -433,7 +469,9 @@ export class StereonetTool {
         const val = nameIn.value || 'Set 1';
         const touched = new Set();
         for (const i of this.picked) {
-          const r = this.rows[i]; const o = r.obj;
+          // picked holds positions into rows; repick keeps them consistent, but a
+          // tag written through a stale index would land on the wrong measurement.
+          const r = this.rows[i]; if (!r) continue; const o = r.obj;
           if (!o.attributes[col]) o.attributes[col] = new Array(o.n).fill(null);
           while (o.attributes[col].length < o.n) o.attributes[col].push(null);
           o.attributes[col][r.row] = val; touched.add(o);
@@ -614,8 +652,17 @@ export class FormTool {
     for (const o of list) inp.appendChild(h('label', { class: 'chk' },
       h('input', { type: 'checkbox', checked: this.sel.has(o.id), onchange: e => { e.target.checked ? this.sel.add(o.id) : this.sel.delete(o.id); this.repanel(); } }), `${o.name} (${o.n})`));
     const cols = this.filterColumns();
+    // A select displays option 0 when no option matches its value, and fires no
+    // event for it, so both halves of the filter have to be re-synced to what the
+    // panel actually shows — otherwise merged() filters on a category no row
+    // carries and comes back empty.
+    if (this.opt.filterCol && !cols.includes(this.opt.filterCol)) { this.opt.filterCol = ''; this.opt.filterVal = ''; }
     inp.appendChild(row('filter', sel([['', 'all data'], ...cols.map(c => [c, c])], this.opt.filterCol, { onchange: e => { this.opt.filterCol = e.target.value; this.opt.filterVal = ''; this.repanel(); } })));
-    if (this.opt.filterCol) inp.appendChild(row('value', sel(this.filterValues(), this.opt.filterVal, { onchange: e => { this.opt.filterVal = e.target.value; } })));
+    if (this.opt.filterCol) {
+      const vals = this.filterValues();
+      if (!vals.includes(this.opt.filterVal)) this.opt.filterVal = vals[0] || '';
+      inp.appendChild(row('value', sel(vals, this.opt.filterVal, { onchange: e => { this.opt.filterVal = e.target.value; } })));
+    }
     inp.appendChild(row('max points', num(this.opt.max_points, { onchange: e => { this.opt.max_points = Math.max(3, +e.target.value); } })));
     inp.appendChild(note('The solve is O(n³) in the browser — 250 measurements is about a second, 500 is about ten. Declustering is the right way to get under the cap.'));
     inp.appendChild(row('smoothing', num(this.opt.smoothing, { step: 'any', onchange: e => { this.opt.smoothing = +e.target.value; } })));

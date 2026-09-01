@@ -6031,15 +6031,27 @@ export async function segyToObjects(d, opts = {}) {
   return out;
 }
 
+const TABLE_FORMATS = { points: 'csv_points', drillholes: 'csv_drillholes', structural: 'csv_structural', blockmodel: 'csv_blockmodel' };
 /** Read any supported file -> {format, objects, warnings, project?}.  `file` is a File or {name, bytes}.
-    opts: format (override sniffing), table 'points'|'drillholes'|'structural'|'blockmodel' for CSV, x/y/z column overrides,
+    opts: format (override sniffing), table 'points'|'drillholes'|'structural'|'blockmodel' for any delimited table, x/y/z column overrides,
     survey / intervals (drillhole side tables), models (UBC), crs {kind:'utm', zone, north} + assumeLonLat, zTop/zBottom/clipPct (SEG-Y). */
 export async function readAny(file, opts = {}) {
   const name = (file && file.name) || opts.name || '';
   const bytes = await fileBytes(file);
-  let format = opts.format || sniff(name, bytes);
+  // opts.table is the table kind the import dialog was *told* by the user, so it
+  // outranks a sniff() result that came only from the extension: sniff returns null
+  // for a delimited .txt/.dat and 'geosoft_xyz' for every .xyz, and gating the
+  // override on the guess threw those files out before they were read.
+  // It must NOT outrank a sniff() that recognised the *content*.  Surfer, GOCAD,
+  // GXF, Irap, CPS3, LAS and DXF are all identified by their leading bytes whatever
+  // they are named, and the dialog's kind selector defaults to 'points' — so a
+  // Surfer grid called topo.dat would otherwise be forced through the CSV reader and
+  // die on "no X / Y columns found in ['DSAA']" when it used to import cleanly.
+  // An explicit opts.format still beats both: it names a reader outright.
+  const sniffed = sniff(name, bytes);
+  const guessedFromExtensionOnly = sniffed === null || sniffed === 'csv_points' || sniffed === 'geosoft_xyz';
+  let format = opts.format || (guessedFromExtensionOnly && opts.table && TABLE_FORMATS[opts.table]) || sniffed;
   if (!format) throw new FormatError(`cannot determine the format of ${name || 'the file'}`);
-  if (format === 'csv_points' && opts.table) format = { points: 'csv_points', drillholes: 'csv_drillholes', structural: 'csv_structural', blockmodel: 'csv_blockmodel' }[opts.table] || format;
   const ro = Object.assign({}, opts, { file: name });
   let objects = [], project = null;
   const warnings = [];

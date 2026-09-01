@@ -179,6 +179,25 @@ class GeoreferenceTests(unittest.TestCase):
         els = mapplate.traces_to_elements(p, mapplate.validate_traces(p, [dict(TRACE, level='300')]))
         self.assertEqual(len(els[0]['path']), 3)
 
+    def test_one_control_point_plus_an_anchor_is_solved_from_the_anchor(self):
+        # the one-control-point question offers the anchor as the answer, so an
+        # agent that adds one without deleting its lone point must get the
+        # anchor's scale rather than a solve that cannot be done
+        p = mapplate.validate_plate(plan(control=[PLAN['control'][0]], anchor={
+            'px': [500, 400], 'lonlat': [-116.8650, 36.8790],
+            'scale_m_per_px': 1.25, 'rotation_deg': 0.0}))
+        self.assertFalse([g for g in mapplate.plate_gaps(p, [TRACE]) if g['field'] == 'control'])
+        self.assertAlmostEqual(mapplate.scale_check(p)['m_per_px'], 1.25, places=6)
+        img, _, _ = mapplate.image_plane(p)
+        self.assertEqual(img.provenance['georeference'], 'anchor + scale bar')
+
+    def test_solving_a_plate_with_no_georeference_at_all_is_a_plate_error(self):
+        # plate_gaps asks about this rather than erroring, so it only happens to
+        # a caller that solves a plate it never checked — still a PlateError
+        with self.assertRaises(mapplate.PlateError) as ctx:
+            mapplate.image_plane(mapplate.validate_plate(plan(control=None)))
+        self.assertIn('no georeference', str(ctx.exception))
+
     def test_a_traced_plan_lands_where_the_control_points_say(self):
         p = mapplate.validate_plate(PLAN)
         traces = mapplate.validate_traces(p, [{'kind': 'drift', 'points': [[100, 700], [900, 700]]}])
@@ -241,6 +260,16 @@ class AttachTests(unittest.TestCase):
         self.assertEqual(got['coverage']['traced_elements'], 0)
         self.assertFalse(got['plates'][0]['usable'])
         self.assertGreater(got['coverage']['unresolved'], 0)
+
+    def test_answering_the_one_control_point_question_with_an_anchor_builds(self):
+        # the plate the question invites: the lone point kept, an anchor added
+        p = plan(control=[PLAN['control'][0]],
+                 anchor={'px': [100, 700], 'lonlat': [-116.8700, 36.8760],
+                         'scale_m_per_px': 1.1, 'rotation_deg': 0.0})
+        got = mapplate.attach(self.spec(), [dict(p, traces=[TRACE])])
+        self.assertTrue(got['plates'][0]['usable'])
+        self.assertEqual(got['coverage']['traced_elements'], 1)
+        self.assertAlmostEqual(got['plates'][0]['scale']['m_per_px'], 1.1, places=6)
 
     def test_gap_ids_stay_contiguous_after_attaching(self):
         got = mapplate.attach(self.spec(), [dict(plan(control=None), traces=[TRACE])])

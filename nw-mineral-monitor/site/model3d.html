@@ -59,6 +59,11 @@ aside.right{border-right:none;border-left:1px solid var(--line);flex:0 0 340px}
 #legend .lgd-key .sw-row.rng{justify-content:space-between;gap:8px;color:var(--mut);margin-top:2px}
 #legend .lgd-key .ramp{display:block;border-radius:2px;width:140px;height:10px}
 canvas.stereo{display:block;background:#0f1318;cursor:crosshair;width:100%;max-width:316px;margin:0 auto}
+#confbar{position:absolute;left:50%;top:10px;transform:translateX(-50%);display:none;align-items:center;gap:8px;max-width:min(620px,72%);background:rgba(28,20,8,.92);border:1px solid var(--gold);border-left-width:3px;border-radius:6px;padding:6px 10px;font:11px var(--sans);color:#f1c27b;z-index:25;line-height:1.35}
+#confbar b{color:#ffd27a;font-weight:600}
+#confbar .x{margin-left:auto;background:none;border:none;color:#b08a4a;cursor:pointer;font-size:13px;line-height:1;padding:0 2px}
+#confbar .x:hover{color:#ffd27a}
+#legend .lgd-key .sw-row i.ln{height:0;border:none;border-top:2px solid currentColor;border-radius:0;width:16px}
 #status{position:absolute;left:12px;bottom:10px;font:11px var(--mono);color:var(--mut);background:rgba(11,14,19,.7);padding:3px 8px;border-radius:5px;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #coords{position:absolute;right:12px;bottom:10px;font:11px var(--mono);color:var(--ink2);background:rgba(11,14,19,.7);padding:3px 8px;border-radius:5px}
 #drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(45,212,191,.12);border:2px dashed var(--accent);font:600 14px var(--mono);letter-spacing:.1em;color:var(--accent);z-index:40;pointer-events:none}
@@ -153,6 +158,7 @@ canvas.stereo{display:block;background:#0f1318;cursor:crosshair;width:100%;max-w
       <canvas id="gl" tabindex="0"></canvas>
       <div id="hud"><span id="veLbl">VE ×1.5</span><input type="range" id="veRange" min="1" max="5" step="0.1" value="1.5"></div>
       <svg id="north" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="rgba(11,14,19,.6)" stroke="#2a3340"/><path d="M22 5 L28 24 L22 20 L16 24 Z" fill="#2dd4bf"/><path d="M22 39 L28 24 L22 28 L16 24 Z" fill="#3a4656"/><text x="22" y="16" font-size="8" font-family="monospace" text-anchor="middle" fill="#0b0e13" font-weight="700">N</text></svg>
+      <div id="confbar"></div>
       <div id="legend"></div>
       <div id="status">starting…</div>
       <div id="coords">—</div>
@@ -160,7 +166,7 @@ canvas.stereo{display:block;background:#0f1318;cursor:crosshair;width:100%;max-w
     </div>
     <aside class="right"><div id="inspector"><div class="note">select a layer, pick something in the scene, or open TOOLS ▾</div></div></aside>
   </main>
-  <div id="sec2d"><div class="head">2-D SECTION<span class="sp" style="flex:1"></span><button class="b x" onclick="document.getElementById('sec2d').style.display='none';window.gmApp.R.resize()">✕</button></div><div class="body"><canvas id="sec2dCanvas"></canvas></div></div>
+  <div id="sec2d"><div class="head">2-D SECTION<span class="sp" style="flex:1"></span><button class="b x" onclick="window.gmApp.tools.section.closePanel()">✕</button></div><div class="body"><canvas id="sec2dCanvas"></canvas></div></div>
 </div>
 <div id="tip"></div>
 <input type="file" id="fileIn" multiple style="display:none">

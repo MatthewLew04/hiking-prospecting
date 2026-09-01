@@ -11,7 +11,7 @@ from geomodel import resolve  # noqa: E402
 BUNDLE = ROOT / 'site' / 'data' / 'grades' / 'grades.json'
 
 
-def fake_index(names, states=None, districts=None, xs=None, ys=None):
+def fake_index(names, states=None, districts=None, xs=None, ys=None, grades=None):
     n = len(names)
     bundle = {'n': n, 'name': list(names),
               'st': list(states or ['NV'] * n),
@@ -24,7 +24,9 @@ def fake_index(names, states=None, districts=None, xs=None, ys=None):
               'basis': ['b'] * n, 'yrs': [None] * n, 'ton': [None] * n, 'dep': [None] * n,
               'au': [None] * n, 'ag': [None] * n, 'pb': [None] * n, 'zn': [None] * n,
               'cu': [None] * n, 'sb': [None] * n, 'wo3': [None] * n, 'usd': [None] * n,
+              'hgf': [None] * n, 'yd3': [None] * n,
               'note': 'test bundle', 'generated': '2026-01-01'}
+    bundle.update(grades or {})
     return resolve.Index(bundle, path='<test>')
 
 
@@ -114,6 +116,18 @@ class LookupTests(unittest.TestCase):
             idx.get('grades:99')
 
 
+class GradeColumnTests(unittest.TestCase):
+    """For a quicksilver or placer mine every per-ton column is null, so a
+    column missing from GRADE_COLUMNS is not a missing number — it is the
+    whole grade."""
+
+    def test_quicksilver_flasks_and_placer_dollars_reach_the_row(self):
+        idx = fake_index(['Cinnabar mine', 'Gravel Bar placer'],
+                         grades={'hgf': [120.0, None], 'yd3': [None, 1.75]})
+        self.assertEqual(idx.row(0)['grades'], {'hgf': 120.0})
+        self.assertEqual(idx.row(1)['grades'], {'yd3': 1.75})
+
+
 class RealBundleTests(unittest.TestCase):
     """The shipped bundle is the index the tool actually queries."""
 
@@ -144,6 +158,22 @@ class RealBundleTests(unittest.TestCase):
         a = resolve.Index(self.idx.bundle)._keys
         b = resolve.Index(self.idx.bundle)._keys
         self.assertEqual(a, b)
+
+    def test_every_multi_commodity_field_the_note_names_is_carried(self):
+        # the bundle's note (echoed into every result) advertises units for
+        # pb/zn/cu/sb/wo3/hgf/yd3 — a column the note names but GRADE_COLUMNS
+        # omits makes the result claim units for a field it never emits
+        for col in ('pb', 'zn', 'cu', 'sb', 'wo3', 'hgf', 'yd3'):
+            self.assertIn(col, resolve.GRADE_COLUMNS)
+            i = next(k for k in range(self.idx.n) if self.idx.bundle[col][k] is not None)
+            self.assertEqual(self.idx.row(i)['grades'].get(col), self.idx.bundle[col][i])
+
+    def test_no_mercury_or_placer_mine_resolves_as_ungraded(self):
+        blank = [i for i in range(self.idx.n)
+                 if not self.idx.row(i)['grades']
+                 and (self.idx.bundle['hgf'][i] is not None
+                      or self.idx.bundle['yd3'][i] is not None)]
+        self.assertEqual(blank, [], '%d valued mines report no grade at all' % len(blank))
 
     def test_site_reports_an_unavailable_elevation_rather_than_zero(self):
         row = resolve.site('grades:17', offline=True, index=self.idx)

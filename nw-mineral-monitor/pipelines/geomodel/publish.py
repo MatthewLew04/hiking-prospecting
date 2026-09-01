@@ -238,8 +238,15 @@ def _normal_spec(spec):
     }
 
 
-def model_id(spec, site, builder_version=agentbuild.BUILDER_VERSION):
-    """``silver-king-9f2c1e0a`` — stable for one description of one mine."""
+def model_id(spec, site, builder_version=agentbuild.BUILDER_VERSION, options=None):
+    """``silver-king-9f2c1e0a`` — stable for one description of one mine.
+
+    ``options`` carries the build switches that change what the model *contains*
+    rather than what it says — ``context`` in particular, which adds terrain,
+    draped geology and grade points.  They belong in the id: without them a
+    context build and a bare build of the same sentence claim the same URL, and
+    whichever ran last silently replaced the other at a link already handed out.
+    """
     payload = {
         'spec': _normal_spec(spec),
         'mine': {'mine_id': site.get('mine_id'), 'lon': site.get('lon'), 'lat': site.get('lat'),
@@ -247,6 +254,8 @@ def model_id(spec, site, builder_version=agentbuild.BUILDER_VERSION):
         'builder': builder_version,
         'publisher': PUBLISHER_VERSION,
     }
+    if options:
+        payload['options'] = dict(sorted((k, v) for k, v in options.items() if v))
     blob = json.dumps(payload, sort_keys=True, separators=(',', ':'), default=str)
     return '%s-%s' % (slugify(site.get('name') or site.get('mine_id')),
                       hashlib.sha256(blob.encode('utf-8')).hexdigest()[:8])
@@ -336,12 +345,14 @@ def manifest(built, spec, site, files, mid, content_hash, now=None, access='app-
 
 # ------------------------------------------------------------------- publish
 def publish(built, spec, site, views=None, target=None, base_url=None, prefix=None,
-            force=False, private=False, expires_in=None, log=print):
+            force=False, private=False, expires_in=None, options=None, log=print):
     """Write the model and return the link the agent hands back.
 
     Republishing the same description is a no-op: the model id is derived from
     the content, so an unchanged rebuild finds its own manifest already in
-    place and returns the same URL with ``republished: False``.
+    place and returns the same URL with ``republished: False``.  Asking that
+    same model for a view it does not yet have is not a no-op: the set of views
+    at one key only ever grows.
     """
     target = target or target_from_env()
     base_url = base_url_from_env(base_url)
@@ -350,25 +361,44 @@ def publish(built, spec, site, views=None, target=None, base_url=None, prefix=No
         prefix = PRIVATE_PREFIX if private else PREFIX
     expires_in = clamp_ttl(expires_in) if private else None
 
-    mid = model_id(spec, site)
+    mid = model_id(spec, site, options=options)
     key_root = '%s/%s' % (prefix.rstrip('/'), mid)
     content_hash = agentbuild.content_sha256(built['project'])
 
     existing = target.get('%s/manifest.json' % key_root)
-    if existing and not force:
+    prior = {}
+    if existing:
         try:
             prior = json.loads(existing.decode('utf-8'))
         except ValueError:
             prior = {}
-        if prior.get('content_sha256') == content_hash:
+
+    # The content hash is taken over the 3-D project alone, so it says nothing
+    # about which 2-D views were rendered: an unchanged rebuild is a no-op only
+    # when every view now being asked for is already at the key.  Without that
+    # second test a first build narrowed to one view froze the set forever —
+    # the extra SVGs were rendered, short-circuited past, and silently missing
+    # from the result.
+    unchanged = prior.get('content_sha256') == content_hash
+    prior_files = dict((f['name'], f) for f in (prior.get('files') or [])) if unchanged else {}
+    if unchanged and not force:
+        wanted = set('%s.svg' % v for v in (views or {})) & set(FILE_ORDER)
+        missing = sorted(wanted - set(prior_files))
+        if not missing:
             log('%s already published, unchanged' % mid)
             return _result(mid, key_root, base_url, prior, republished=False,
                            target=target, private=private, expires_in=expires_in)
+        log('%s already published; adding %s' % (mid, ', '.join(missing)))
 
     payloads = _payloads(built, views)
     files = []
     for name in FILE_ORDER:
         if name not in payloads:
+            # A view an earlier publish of this same content wrote but this
+            # call did not render is still there and still current, so it keeps
+            # its manifest entry: widening the view set must never drop one.
+            if name in prior_files:
+                files.append(prior_files[name])
             continue
         data = payloads[name]
         files.append({'name': name, 'key': '%s/%s' % (key_root, name), 'bytes': len(data),

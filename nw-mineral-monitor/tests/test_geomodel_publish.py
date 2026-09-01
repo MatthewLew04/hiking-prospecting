@@ -188,7 +188,7 @@ class PublishTests(unittest.TestCase):
         shutil.rmtree(self.dir, ignore_errors=True)
 
     def go(self, target=None, **kw):
-        return publish.publish(self.built, self.spec, SITE, views=self.views,
+        return publish.publish(self.built, self.spec, SITE, views=kw.pop('views', self.views),
                                target=target or publish.LocalTarget(self.dir),
                                base_url='https://cdn.invalid', log=lambda *a: None, **kw)
 
@@ -233,6 +233,32 @@ class PublishTests(unittest.TestCase):
         self.assertEqual(first['model_url'], second['model_url'])
         self.assertEqual(first['exports'], second['exports'])
         self.assertEqual(first['views'], second['views'])
+
+    def test_asking_for_a_view_the_model_lacks_republishes_it(self):
+        t = publish.LocalTarget(self.dir)
+        first = self.go(t, views=render2d.render(self.built, views=('plan',)))
+        self.assertEqual(sorted(first['views']), ['plan'])
+        second = self.go(t)
+        self.assertTrue(second['republished'], 'a widened view set is not a no-op')
+        self.assertEqual(sorted(second['views']), ['iso', 'plan', 'section'])
+        for name in ('plan.svg', 'section.svg', 'iso.svg'):
+            self.assertTrue(Path(self.dir, *second['key_prefix'].split('/'), name).exists(), name)
+
+    def test_asking_for_fewer_views_than_are_published_writes_nothing(self):
+        t = publish.LocalTarget(self.dir)
+        self.go(t)
+        writes = len(t.puts)
+        second = self.go(t, views=render2d.render(self.built, views=('plan',)))
+        self.assertFalse(second['republished'])
+        self.assertEqual(len(t.puts), writes)
+        self.assertEqual(sorted(second['views']), ['iso', 'plan', 'section'])
+
+    def test_a_view_published_earlier_keeps_its_manifest_entry(self):
+        t = publish.LocalTarget(self.dir)
+        self.go(t, views=render2d.render(self.built, views=('plan',)))
+        second = self.go(t, views=render2d.render(self.built, views=('section',)))
+        self.assertTrue(second['republished'])
+        self.assertEqual(sorted(second['views']), ['plan', 'section'])
 
     def test_force_republishes_even_when_unchanged(self):
         t = publish.LocalTarget(self.dir)

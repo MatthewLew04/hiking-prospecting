@@ -207,6 +207,14 @@ class ToolError(ValueError):
     """A bad call.  Becomes a 400 with a message the agent can act on."""
 
 
+#: the key prefixes the server serves off local disk when no bucket is
+#: configured.  The private one belongs here too: nothing on a bucketless box
+#: can mint the signed link that is otherwise a private model's only way in, so
+#: this service — loopback, and token-gated when it is not — is the gate, and
+#: the note run_build attaches says exactly that.
+LOCAL_PREFIXES = (publish.PREFIX, publish.PRIVATE_PREFIX)
+
+
 # --------------------------------------------------------------- the context
 class Context(object):
     """Everything the tools need that is not an argument: the stores, where
@@ -229,9 +237,12 @@ class Context(object):
             # No bucket configured: publish to disk and say so.  This is what
             # makes the service provable end to end with no AWS at all.
             # LocalTarget mirrors the bucket layout, so its root is the state
-            # directory and the keys it writes start with "models/"
+            # directory and the keys it writes start with "models/" — or with
+            # "private/models/" for a private build, which is why the server
+            # serves a whole key from this root rather than the public prefix
+            # alone.
             self.target, self.target_kind = publish.LocalTarget(jobs.root), 'local'
-            self.local_models = os.path.join(jobs.root, publish.PREFIX)
+            self.local_root = os.path.abspath(jobs.root)
 
 
 def dispatch(name, arguments, ctx):
@@ -431,6 +442,11 @@ def run_build(args, ctx):
                          'spec_id': spec['spec_id'], 'mine': _mine_brief(site)}
 
     if built['gaps']:
+        # The placement gaps are discovered here, not by the parser, so they
+        # have to be folded back into the held spec: apply_answers looks the
+        # answer's id up in spec['gaps'], and without this the agent's reply to
+        # a question this service just asked comes back "unknown gap id".
+        spec = narrative.merge_gaps(spec, built['gaps'])
         ctx.specs.put(spec, site)
         return 'questions', {'spec_id': spec['spec_id'], 'questions': built['gaps'],
                              'mine': _mine_brief(site), 'placed': len(built['placed']),
@@ -438,9 +454,13 @@ def run_build(args, ctx):
                                      'answering attaches them to something'}
 
     views = render2d.render(built, views=tuple(args.get('views') or VIEWS))
+    # `context` changes what the model contains, so it has to be part of the
+    # model id — otherwise a context build and a bare build of the same
+    # sentence share a URL and overwrite each other.
     result = publish.publish(built, spec, site, views=views, target=ctx.target,
                              base_url=ctx.base_url, private=bool(args.get('private')),
-                             expires_in=args.get('expires_in'), log=ctx.log)
+                             expires_in=args.get('expires_in'),
+                             options={'context': bool(args.get('context'))}, log=ctx.log)
     result['spec_id'] = spec['spec_id']
     result['mine'] = _mine_brief(site)
     result['summary'] = built['summary']
@@ -462,7 +482,13 @@ def run_build(args, ctx):
 
 def _load_spec(args, ctx):
     if args.get('spec_id'):
-        held = ctx.specs.get(args['spec_id'])
+        # SpecStore._path raises KeyError for a malformed id, which is not one of
+        # the errors SpecStore.get swallows — without this the agent gets back a
+        # bare 'KeyError' instead of the message two lines below.
+        try:
+            held = ctx.specs.get(args['spec_id'])
+        except KeyError:
+            held = None
         if held is None:
             raise ToolError('no spec %r is held; parse the description again'
                             % (args['spec_id'],))

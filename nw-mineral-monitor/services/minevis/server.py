@@ -8,8 +8,12 @@
     GET  /jobs/<id>    {"state": queued|running|done|questions|error, ...}
     GET  /healthz      liveness, for systemd
     GET  /models/...   only when no bucket is configured: serves the models
+    GET  /private/models/...
                        this service wrote to local disk, so the whole loop is
-                       provable with no AWS at all
+                       provable with no AWS at all.  A private build lands under
+                       private/ and is served here too, because on a bucketless
+                       box there is nothing to mint the signed link that would
+                       otherwise be its only way in
 
 Binding to 127.0.0.1 is the default and is the security model: the agent runs
 on the same box.  Set ``MINEVIS_TOKEN`` when the agent lives in a different
@@ -103,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, tools_mod.TOOLS)
         if path.startswith('/jobs/'):
             return self._call({'name': 'get_job', 'arguments': {'job_id': path[len('/jobs/'):]}})
-        if path.startswith('/models/'):
+        if any(path.startswith('/%s/' % p) for p in tools_mod.LOCAL_PREFIXES):
             return self._serve_model(path)
         return self._error(404, 'not_found', '%s is not a route; try /tools' % path)
 
@@ -111,14 +115,26 @@ class Handler(BaseHTTPRequestHandler):
         return self.do_GET()
 
     def do_POST(self):                                  # noqa: N802
+        # Every exit below has to either read the body or close the connection.
+        # This is a keep-alive server (protocol_version is HTTP/1.1), so a body
+        # left sitting in the socket gets parsed as the *next* request's request
+        # line, and an agent on a pooled client (requests.Session, httpx,
+        # aiohttp) sees a bogus 400 in place of its next answer.
         if not self._authorised():
+            # An unauthenticated body is not worth reading off the wire at all.
+            self.close_connection = True
             return self._error(401, 'unauthorised', 'send the X-MineVis-Token header')
-        if self.path.split('?', 1)[0].rstrip('/') != '/call':
-            return self._error(404, 'not_found', 'POST /call is the only POST route')
         try:
             length = int(self.headers.get('Content-Length') or 0)
         except ValueError:
+            self.close_connection = True
             return self._error(400, 'bad_request', 'Content-Length is not a number')
+        if self.path.split('?', 1)[0].rstrip('/') != '/call':
+            if 0 < length <= MAX_BODY:
+                self._drain(length)
+            elif length:
+                self.close_connection = True
+            return self._error(404, 'not_found', 'POST /call is the only POST route')
         if length > MAX_BODY:
             # An over-long body still has to be taken off the socket, or the
             # client sees a broken pipe instead of the 413 explaining itself.
@@ -161,18 +177,22 @@ class Handler(BaseHTTPRequestHandler):
         if self.service.ctx.target_kind != 'local':
             return self._error(404, 'not_found',
                                'models are served from the bucket, not from this service')
-        rel = posixpath.normpath(path.lstrip('/'))
-        if rel.startswith('..') or os.path.isabs(rel):
-            return self._error(400, 'bad_path', 'no')
-        full = os.path.join(self.service.ctx.local_models, *rel.split('/')[1:])
-        root = os.path.abspath(self.service.ctx.local_models)
-        if os.path.commonpath([root, os.path.abspath(full)]) != root:
+        # The whole key is resolved against the target root, not the public
+        # prefix, so private/models/... lands where LocalTarget actually wrote
+        # it.  Normalising can walk a path back out of the prefix it was routed
+        # on (/models/../jobs/x), so the prefix is tested again here, after
+        # normpath, and not only in do_GET.
+        key = posixpath.normpath(path.lstrip('/'))
+        root = self.service.ctx.local_root
+        full = os.path.abspath(os.path.join(root, *key.split('/')))
+        if (not any(key.startswith('%s/' % p) for p in tools_mod.LOCAL_PREFIXES)
+                or os.path.commonpath([root, full]) != root):
             return self._error(400, 'bad_path', 'no')
         try:
             with open(full, 'rb') as fh:
                 data = fh.read()
         except (OSError, IOError):
-            return self._error(404, 'not_found', rel)
+            return self._error(404, 'not_found', key)
         return self._send(200, None, SERVE_TYPES.get(os.path.splitext(full)[1],
                                                      'application/octet-stream'), raw=data)
 

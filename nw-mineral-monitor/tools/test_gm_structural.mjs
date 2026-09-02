@@ -304,5 +304,19 @@ const angClose = (name, a, b, tol) => { let d = Math.abs(((a - b) % 360 + 540) %
   ok('evaluateOnto writes point columns', pp.attributes.v[0] === 6);
 }
 
+/* --------------------------------------- 13. row removal (PointSet) */
+{
+  const ps = S.newStructural('rm');
+  for (let i = 0; i < 5; i++) S.addMeasurement(ps, i, i * 10, i * 100, 10 + i, 100 + i, { confidence: i === 2 ? 'surveyed' : 'sketched', tag: 't' + i });
+  ps.attributes.z_original = [1, 2];                       // a short column, as set-elevation can leave behind
+  ok('removeRow drops one row', ps.removeRow(2) === 1 && ps.n === 4);
+  ok('removeRow keeps xyz in step', ps.xyz[6] === 3 && ps.xyz[7] === 30 && ps.xyz[8] === 300);
+  ok('removeRow shifts every column', ps.attributes.dip.join() === '10,11,13,14' && ps.attributes.tag.join() === 't0,t1,t3,t4' && ps.attributes.confidence.every(c => c === 'sketched'));
+  ok('removeRow pads short columns to n first', Object.values(ps.attributes).every(c => c.length === ps.n) && ps.attributes.z_original.join() === '1,2,,');
+  ok('removeRows drops several at once and ignores bad indices', ps.removeRows([0, 3, 99, -1, 0]) === 2 && ps.n === 2 && ps.attributes.dip.join() === '11,13');
+  ok('removeRow ignores an out-of-range index', ps.removeRow(7) === 0 && ps.n === 2);
+  ok('a removed row survives the JSON round-trip', GM.PointSet.fromJSON(JSON.parse(JSON.stringify(ps.toJSON()))).attributes.tag.join() === 't1,t3');
+}
+
 console.log(`\ngm-structural: ${pass} passed, ${fail} failed`);
 if (fail) { console.log('\nFAILURES:'); for (const f of fails) console.log('  ✗ ' + f); process.exit(1); }

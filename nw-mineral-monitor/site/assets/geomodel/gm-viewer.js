@@ -43,6 +43,11 @@ async function boot() {
   app.engine = new E.EngineClient(new URL('./gm-worker.js', import.meta.url).href);
   app.R = new Renderer($('gl'), { origin: [0, 0, 0], ve: 1.5 });
   app.tools = new Tools(app);
+  // Optional tool modules register themselves; a missing or broken one must
+  // not take the page down with it.
+  for (const [mod, fn] of [['./gm-more-tools.js', 'installMoreTools'], ['./gm-geom-tools.js', 'installGeomTools']]) {
+    try { const M = await import(mod); if (M[fn]) M[fn](app.tools); } catch (e) { console.warn(`${mod}: ${e.message}`); }
+  }
   wireChrome();
   const q = new URLSearchParams(location.search);
   status('starting…');
@@ -397,7 +402,9 @@ function pickCard() {
   const acts = h('div', { class: 'frow' });
   acts.appendChild(btn('ZOOM TO FEATURE', () => { const b = p.bounds || (o.bounds && o.bounds()); if (b) app.R.fitTo(b, 1.3); }, { class: 'x' }));
   if (o.kind === 'lineset' && o.role === 'workings') acts.appendChild(btn('EDIT', () => app.tools.open('workings', o), { class: 'x' }));
+  if (o.kind === 'lineset' && p.index != null && p.index >= 0 && app.tools.all.extrude) acts.appendChild(btn('PROJECT DOWN DIP', () => app.tools.open('extrude', o, p.index), { class: 'x', title: 'a vein or fault sheet from this trace and a stated dip' }));
   if (o.kind === 'points' && o.role === 'structural') acts.appendChild(btn('STEREONET', () => app.tools.open('stereonet', o), { class: 'x' }));
+  if (o.kind === 'points' && o.role === 'structural' && p.index != null && app.tools.all.plane) acts.appendChild(btn('MAKE A PLANE', () => app.tools.open('plane', o, p.index), { class: 'x', title: 'a finite plane with this measurement\'s attitude — a statement of attitude, not a modelled surface' }));
   acts.appendChild(btn('CLEAR', () => { app.picked = null; app.R.highlight(null); renderInspector(); }, { class: 'x' }));
   card.appendChild(acts);
   return card;
@@ -426,7 +433,10 @@ function inspectorFor(o) {
     ctl.appendChild(row('wireframe', h('input', { type: 'checkbox', checked: !!d.wireframe, onchange: e => { d.wireframe = e.target.checked; syncObject(o); } })));
     const L = app.R.layers.get(o.id); if (L && L.range) ctl.appendChild(note(`range ${fmtNum(L.range[0])} – ${fmtNum(L.range[1])} ${o.units || ''}`));
     const zr = o.zrange(); ctl.appendChild(kv([['Cell', `${o.dx} × ${o.dy} m`], ['Rotation', o.rotation ? o.rotation + '°' : null], ['Values', `${fmtNum(zr[0])} – ${fmtNum(zr[1])}`], ['No-data', `${[...o.values].filter(v => v !== v).length} nodes`]]));
-    if (o.role === 'topography') ctl.appendChild(h('div', { class: 'frow' }, btn(app.seeThrough ? 'SOLID GROUND' : 'SEE-THROUGH GROUND', () => { setSeeThrough(!app.seeThrough); select(o.id); }, { class: 'x', title: 'thin the ground so workings below it read' })));
+    const acts = h('div', { class: 'frow' });
+    if (o.role === 'topography') acts.appendChild(btn(app.seeThrough ? 'SOLID GROUND' : 'SEE-THROUGH GROUND', () => { setSeeThrough(!app.seeThrough); select(o.id); }, { class: 'x', title: 'thin the ground so workings below it read' }));
+    acts.appendChild(btn('CONTOURS…', () => { if (app.tools.all.contours) app.tools.open('contours', o); else toast('the contour tool is not in this build', 'warn'); }, { class: 'x', title: 'contour lines from this grid at an interval you choose' }));
+    ctl.appendChild(acts);
   }
   if (o.kind === 'mesh') {
     const attrs = Object.keys(o.attributes);
@@ -672,20 +682,29 @@ function wireChrome() {
   });
   // toolbar
   $('btnImport').onclick = () => $('fileIn').click();
-  $('fileIn').onchange = async e => { for (const f of e.target.files) await importFile(f); e.target.value = ''; app.importGroup = null; };
+  $('fileIn').onchange = async e => { await importFiles([...e.target.files]); e.target.value = ''; app.importGroup = null; };
   document.addEventListener('dragover', e => { e.preventDefault(); $('drop').style.display = 'flex'; });
   // #drop is pointer-events:none, so a dragleave listener on it can never fire
   // and the overlay stayed up over the viewport after any drag that did not end
   // in a drop.  Watch the document and hide when the pointer leaves the window.
   document.addEventListener('dragleave', e => { if (!e.relatedTarget) $('drop').style.display = 'none'; });
   document.addEventListener('dragend', () => { $('drop').style.display = 'none'; });
-  document.addEventListener('drop', async e => { e.preventDefault(); $('drop').style.display = 'none'; for (const f of e.dataTransfer.files) await importFile(f); });
+  document.addEventListener('drop', async e => { e.preventDefault(); $('drop').style.display = 'none'; await importFiles([...e.dataTransfer.files]); });
   $('btnExport').onclick = e => { if (needProject()) exportMenu(e.currentTarget); };
   $('saveBtn').onclick = () => { if (needProject()) saveProject(true); };
   $('btnProjects').onclick = e => projectsMenu(e.currentTarget);
   $('btnView').onclick = e => { if (needProject()) viewMenu(e.currentTarget); };
   $('btnTools').onclick = e => { if (needProject()) app.tools.menu(e.currentTarget); };
   $('btnHelp').onclick = () => helpModal();
+  // below 900 px the secondary header buttons fold into one menu
+  $('btnMenu').onclick = e => menu(e.currentTarget, [
+    { label: 'Import files…', onclick: () => $('fileIn').click() },
+    { label: 'Export…', disabled: !app.project, onclick: () => exportMenu($('btnMenu')) },
+    { label: 'Save now', disabled: !app.project, onclick: () => saveProject(true) },
+    { label: 'Projects…', onclick: () => projectsMenu($('btnMenu')) },
+    '-',
+    { label: 'Help', onclick: () => helpModal() },
+  ]);
   $('brand').onclick = () => showStart();
   $('siteName').onclick = async () => { if (!needProject()) return; const n = await promptModal('RENAME PROJECT', 'name', app.project.name); if (n && n.trim()) { app.project.name = n.trim(); renderHeader(); markDirty(); } };
   // the map tab is usually still open behind this one: go back to it rather
@@ -922,6 +941,39 @@ export async function importFile(file) {
   status(`reading ${file.name}…`);
   try { const bytes = new Uint8Array(await file.arrayBuffer()); await importBytes(file.name, bytes, {}); }
   catch (e) { console.error(e); toast(`${file.name}: ${e.message}`, 'err', 8000); status(`import failed: ${e.message}`); }
+}
+/* A drop of several files: an image dropped together with its world file
+   (.tfw / .pgw / .jgw / .wld — the six affine terms GIS packages write beside
+   a georeferenced raster) is placed straight away, without the manual tie
+   points.  Everything else goes through importFile one by one. */
+const WORLD_EXT = new Set(['tfw', 'pgw', 'jgw', 'wld', 'gfw', 'bpw']);
+const IMAGE_EXT = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'tif', 'tiff']);
+export async function importFiles(files) {
+  const stem = n => n.replace(/\.[^.]+$/, '').toLowerCase(), ext = n => n.split('.').pop().toLowerCase();
+  const worlds = new Map(); for (const f of files) if (WORLD_EXT.has(ext(f.name))) worlds.set(stem(f.name), f);
+  const used = new Set();
+  for (const f of files) {
+    if (WORLD_EXT.has(ext(f.name))) continue;
+    const w = IMAGE_EXT.has(ext(f.name)) ? worlds.get(stem(f.name)) : null;
+    if (w) { used.add(w); try { await importWorldImage(f, w); } catch (e) { console.error(e); toast(`${f.name}: ${e.message}`, 'err', 8000); } }
+    else await importFile(f);
+  }
+  for (const [s, w] of worlds) if (!used.has(w)) toast(`${w.name}: a world file needs its image (${s}.png / .jpg / .tif) dropped with it`, 'warn', 7000);
+}
+async function importWorldImage(imgFile, worldFile) {
+  const nums = (await worldFile.text()).split(/\s+/).filter(Boolean).map(Number);
+  if (nums.length < 6 || nums.some(v => v !== v)) throw new Error(`${worldFile.name} is not a six-line world file`);
+  const [A, D, B, C, E0, F0] = nums;   // x = A·col + B·row + E, y = D·col + C·row + F (pixel centres)
+  ensureProject(imgFile.name, GM.utm.looksLonLat(E0, F0) ? [E0, F0] : null);
+  const bytes = new Uint8Array(await imgFile.arrayBuffer()); const blob = new Blob([bytes]); const bmp = await createImageBitmap(blob);
+  const scale = Math.min(1, 4096 / Math.max(bmp.width, bmp.height)); const c = document.createElement('canvas'); c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale); c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const crs = app.project.crs; const toW = (px, py) => { const col = px / scale - 0.5, row = py / scale - 0.5; let x = A * col + B * row + E0, y = D * col + C * row + F0; if (GM.utm.looksLonLat(x, y) && crs.kind === 'utm') [x, y] = GM.utm.fwd(x, y, crs.zone, crs.north); return [x, y]; };
+  const control = [[0, 0], [c.width, 0], [0, c.height], [c.width, c.height]].map(([px, py]) => { const [x, y] = toW(px, py); return [px, py, x, y]; });
+  const ip = new GM.ImagePlane({ image: c.toDataURL('image/jpeg', 0.85), width: c.width, height: c.height, plane: 'plan', control, name: imgFile.name.replace(/\.[^.]+$/, '') });
+  ip.group = app.importGroup || 'Images'; ip.opacity = 0.9; ip.provenance = { source: `${imgFile.name} + ${worldFile.name}`, method: 'world file (affine, pixel centres)', mpp: Math.hypot(A, D) };
+  const topo = topoGrid(); if (topo) { const zs = ip.corners().map(q => topo.sample(q[0], q[1])).filter(z => z === z); ip.elevation = zs.length ? Math.max(...zs) + 5 : 0; ip.warn('placed 5 m above the terrain: a world file has no elevation — set the level elevation in GEOREFERENCE… if this is a level plan'); } else ip.elevation = 0;
+  app.project.add(ip); const b = ip.bounds(); if (b) app.R.fitTo(b); select(ip.id);
+  toast(`${imgFile.name} placed from ${worldFile.name} (${fmtNum(Math.hypot(A, D), 2)} m/px)${topo ? ' — 5 m above the terrain; set its level elevation to place it at a level' : ''}`, 'ok', 8000);
 }
 /* A drop onto the opening screen has no project to land in.  Make one, in the
    UTM zone the data itself sits in when the file says — an empty project forced

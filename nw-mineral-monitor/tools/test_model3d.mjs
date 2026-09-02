@@ -76,7 +76,9 @@ try {
   // workings: programmatic adit + shaft + trace + stope, then summary + geojson
   const wk = await page.evaluate(async () => {
     const app = window.gmApp, E = await import('./assets/geomodel/gm-engine.js');
-    const ws = app.project.byKind('lineset').find(l => l.role === 'workings'); const topo = app.topoGrid(); const o = app.project.origin;
+    // the workings layer is created on the first committed feature, never by
+    // the site builder or by opening the panel
+    const ws = app.tools.workings.ensureLayer(); const topo = app.topoGrid(); const o = app.project.origin;
     E.addAdit(ws, [o[0] - 200, o[1] - 100, 0], 45, 900, { gradePct: 0.5, unitsIn: 'ft', terrain: topo, name: 'No. 1 adit', confidence: 'sketched', source: { doc: 'USGS Bull 1', page: 12 } });
     E.addShaft(ws, [o[0], o[1], 0], 300, { dipDeg: 90, unitsIn: 'ft', terrain: topo, name: 'Main shaft' });
     E.addLevelWorking(ws, [[o[0] - 50, o[1]], [o[0] + 120, o[1] + 30], [o[0] + 200, o[1] - 40]], 1450, { kind: 'drift', name: '100 level', level: '100' });

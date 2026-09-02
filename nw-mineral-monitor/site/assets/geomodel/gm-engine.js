@@ -633,7 +633,13 @@ export class RBF {
     let span = -INF;
     for (let a = 0; a < this.dim; a++) span = Math.max(span, mx[a] - mn[a]);
     if (!span) span = 1;
-    this.scale = span; this.scaleAniso = 1;
+    this.scale = span;
+    // One length unit for both paths (G-44): the isotropic kernel sees
+    // |Δ| / span, so the ellipsoid distance (|Δ| / range along each axis) is
+    // rescaled by the major range so that a 1:1:1 anisotropy reproduces the
+    // isotropic fit exactly and the normalised epsilon / spheroidal range mean
+    // the same thing whichever path is taken.
+    this.scaleAniso = this.anisotropy ? Math.max(...this.anisotropy.ranges) / span : 1;
     let eps = this.epsilon;
     if (eps == null) eps = (this.kernel === 'gaussian' || this.kernel === 'multiquadric') ? 0.25 : 1;
     else eps = eps / span;
@@ -1729,6 +1735,376 @@ export function earClip(ring) {
   return tris;
 }
 
+/* ================================================= geometry: projection */
+/** Strike of a polyline in plan: azimuth (degrees clockwise from north, folded
+    into 0..180) of its principal direction — the major eigenvector of the xy
+    covariance, so a wiggly trace gets its overall trend, not its last leg. */
+export function polylineStrike(xyz) {
+  const n = xyz.length;
+  if (n < 2) return NaN;
+  let cx = 0, cy = 0;
+  for (const p of xyz) { cx += p[0]; cy += p[1]; }
+  cx /= n; cy /= n;
+  let xx = 0, xy = 0, yy = 0;
+  for (const p of xyz) { const dx = p[0] - cx, dy = p[1] - cy; xx += dx * dx; xy += dx * dy; yy += dy * dy; }
+  const theta = 0.5 * Math.atan2(2 * xy, xx - yy);      // major axis, from +E toward +N
+  return pymod(Math.atan2(Math.cos(theta), Math.sin(theta)) * RAD2DEG, 180);
+}
+const deg1 = v => String(Math.round(v * 10) / 10);
+
+export const EXTRUDE_SCHEMA = 'nwmm-extrude/1';
+export const EXTRUDE_COLORS = { vein: [120, 255, 190], fault: [230, 90, 90], wall: [200, 200, 200] };
+/** Project a polyline down dip: every vertex is pushed t·dipVector(dip, dipAz)
+    (t = depth / sin dip, or per vertex (z − zBottom) / sin dip so the bottom
+    ring lies on a level) and the two rings are stitched into a ribbon; a
+    closed outline is capped top and bottom so a vertical extrusion of a flat
+    outline reproduces stopePrism's vertex and triangle order exactly.
+      opts: { dip (deg below horizontal), dipAzimuth / dip_azimuth (deg clockwise
+      from north, DOWN-dip — the project's structural contract), depth (vertical
+      m) | zBottom, closed, name, color, role: 'vein'|'fault'|'wall', confidence,
+      source (the part this came from), metadata }
+    Refuses (throws) a dip outside (0, 90], an open trace's dip azimuth within
+    20° of its strike (the ribbon would collapse onto the trace; the message
+    prints the strike — a closed outline has no single strike and its prism
+    cannot collapse, so it is not gated), fewer than 2 vertices, and a trace whose z are all 0 or
+    NaN — a plan-view trace has to be draped before it can be projected. */
+export function extrudePolyline(xyz, opts = {}) {
+  const [o] = splitOpts(opts, [['dip', null, null], ['dip_azimuth', 'dipAzimuth', null], ['depth', null, null], ['z_bottom', 'zBottom', null], ['closed', null, false], ['name', null, null], ['color', null, null], ['role', null, 'wall'], ['confidence', null, 'described'], ['metadata', null, null], ['source', null, null]]);
+  const dip = +o.dip, dipAz = o.dip_azimuth == null ? NaN : +o.dip_azimuth;
+  if (!(dip > 0) || dip > 90) throw new Error(`dip must be > 0 and <= 90 degrees below horizontal (got ${o.dip})`);
+  if (dipAz !== dipAz) throw new Error('a dip azimuth is required (degrees clockwise from north, in the down-dip direction)');
+  let pts = Array.from(xyz || [], p => [+p[0], +p[1], p.length > 2 && p[2] != null ? +p[2] : NaN]);
+  let closed = !!o.closed;
+  if (pts.length > 2 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) { pts = pts.slice(0, -1); closed = true; }
+  if (pts.length < 2) throw new Error('a trace needs at least 2 vertices');
+  if (closed && pts.length < 3) throw new Error('a closed outline needs at least 3 vertices');
+  if (!pts.some(p => p[2] === p[2] && p[2] !== 0)) throw new Error('the trace has no elevation — drape it on the topography first');
+  const noZ = pts.filter(p => p[2] !== p[2]).length;
+  if (noZ) throw new Error(`${noZ} vertex(es) of the trace have no elevation — drape it on the topography first`);
+  if (o.depth == null && o.z_bottom == null) throw new Error('give a depth (vertical metres) or a bottom elevation (zBottom)');
+  const strike = polylineStrike(pts);
+  if (dip < 90 && !closed) {                 // a closed outline has no single strike and its prism cannot collapse
+    const off = Math.abs(pymod(dipAz - strike + 90, 180) - 90);   // acute angle between the dip direction and the strike axis
+    if (off < 20) throw new Error(`dip azimuth ${deg1(dipAz)}° is within 20° of the trace's strike (${deg1(strike)}° / ${deg1(strike + 180)}°) — the ribbon would collapse onto the trace; a down-dip azimuth near ${deg1(pymod(strike + 90, 360))}° or ${deg1(pymod(strike + 270, 360))}° is perpendicular to it`);
+  }
+  if (closed && signedArea(pts) < 0) pts.reverse();
+  const n = pts.length, role = ['vein', 'fault', 'wall'].includes(o.role) ? o.role : 'wall';
+  const d = dip * DEG, a = dipAz * DEG, sd = Math.sin(d);
+  const dv = dip === 90 ? [0, 0, -1] : [Math.sin(a) * Math.cos(d), Math.cos(a) * Math.cos(d), -sd];
+  const verts = new Float64Array(n * 6);
+  let zsum = 0;
+  for (let i = 0; i < n; i++) {
+    const [x, y, z] = pts[i]; zsum += z;
+    const t = o.depth != null ? +o.depth / sd : (z - +o.z_bottom) / sd;
+    verts[3 * (n + i)] = x; verts[3 * (n + i) + 1] = y; verts[3 * (n + i) + 2] = z;                   // the trace (top ring)
+    verts[3 * i] = x + t * dv[0]; verts[3 * i + 1] = y + t * dv[1]; verts[3 * i + 2] = z + t * dv[2];   // projected (bottom ring)
+  }
+  const tris = [];
+  if (closed) for (const [p, q, r] of earClip(pts.map(v => [v[0], v[1]]))) { tris.push(p + n, q + n, r + n); tris.push(p, r, q); }
+  const nseg = closed ? n : n - 1;
+  for (let i = 0; i < nseg; i++) { const j = (i + 1) % n; tris.push(i, j, j + n, i, j + n, i + n); }
+  const m = new GM.Mesh({ vertices: verts, triangles: Uint32Array.from(tris), name: o.name || `${role} projected ${deg1(dip)}° → ${deg1(dipAz)}°`, color: o.color || EXTRUDE_COLORS[role], role });
+  Object.assign(m.metadata, o.metadata || {}, {
+    schema: EXTRUDE_SCHEMA, dip, dip_azimuth: dipAz,
+    depth_m: o.depth != null ? +o.depth : zsum / n - +o.z_bottom, z_bottom: o.z_bottom == null ? null : +o.z_bottom,
+    strike_deg: strike, closed, n_trace: n, source: o.source == null ? null : o.source, confidence: o.confidence,
+    note: 'a mapped trace projected down dip by a distance the user chose — the depth is a projection distance, not a modelled fact',
+  });
+  m.provenance = { method: 'polyline projected down dip (extrudePolyline)', dip, dip_azimuth: dipAz };
+  return m;
+}
+
+/* =================================================== geometry: contours */
+/** Marching squares on any lattice: at(i, j) is the node value (NaN = no data,
+    cells touching one are skipped), xy(i, j) its position; returns the
+    [[x, y], [x, y]] segments of one level.  Saddle cells (cases 5 and 10) are
+    resolved by the cell mean, so both languages and every caller (the
+    stereonet density contours included) split them the same way. */
+export function marchingSquares(nx, ny, at, xy, lv) {
+  const segs = [];
+  for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+    const v = [at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)];
+    if (v[0] !== v[0] || v[1] !== v[1] || v[2] !== v[2] || v[3] !== v[3]) continue;
+    let code = 0;
+    for (let k = 0; k < 4; k++) if (v[k] >= lv) code |= (1 << k);
+    if (code === 0 || code === 15) continue;
+    const P = [xy(i, j), xy(i + 1, j), xy(i + 1, j + 1), xy(i, j + 1)];
+    const pt = e => { const p = e, q = (e + 1) % 4; const t = (lv - v[p]) / (v[q] - v[p]); return [P[p][0] + (P[q][0] - P[p][0]) * t, P[p][1] + (P[q][1] - P[p][1]) * t]; };
+    if (code === 5 || code === 10) {
+      const centreHigh = (v[0] + v[1] + v[2] + v[3]) / 4 >= lv;
+      if ((code === 5) === centreHigh) { segs.push([pt(0), pt(1)]); segs.push([pt(2), pt(3)]); }   // wrap corners 1 and 3
+      else { segs.push([pt(3), pt(0)]); segs.push([pt(1), pt(2)]); }                                // wrap corners 0 and 2
+      continue;
+    }
+    const edges = [];
+    for (let e = 0; e < 4; e++) if ((v[e] >= lv) !== (v[(e + 1) % 4] >= lv)) edges.push(e);
+    segs.push([pt(edges[0]), pt(edges[1])]);
+  }
+  return segs;
+}
+
+/** 1 / 2 / 5 × 10ⁿ nearest to span / target (a contour interval a map would use). */
+export function niceInterval(span, target = 8) {
+  const raw = Math.abs(span) / Math.max(1, target);
+  if (!(raw > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p;
+}
+
+/** Level list base + m·interval covering the grid's value range. */
+export function contourLevels(grid, interval, base = 0) {
+  const g = asObject(grid);
+  interval = +interval; base = base == null ? 0 : +base;
+  if (!(interval > 0)) throw new Error('contour interval must be > 0');
+  const [zmin, zmax] = g.zrange();
+  if (zmin !== zmin || zmax !== zmax) return [];
+  const m0 = Math.ceil((zmin - base) / interval - 1e-9), m1 = Math.floor((zmax - base) / interval + 1e-9);
+  if (m1 - m0 + 1 > 5000) throw new Error(`${m1 - m0 + 1} levels at an interval of ${interval} — choose a coarser interval`);
+  const out = [];
+  for (let m = m0; m <= m1; m++) out.push(base + m * interval);
+  return out;
+}
+
+/** Contour a Grid2D -> LineSet (role 'contours'), one part per chained
+    polyline, features { level, units, source, source_id, index }.
+      opts: { interval, base (used when levels is null, and for the index
+      rhythm), index: N (every Nth level is an index contour), drape: Grid2D
+      (property grids: put the lines on this surface), lift (m above it),
+      z (constant elevation when there is nothing to drape on), name, color }
+    A heightfield's lines sit at their own level; a property grid's at the
+    draped surface, else at opts.z (default 0). */
+export function contourGrid(grid, levels, opts = {}) {
+  const g = asObject(grid);
+  const interval = opt(opts, 'interval', null, null), base = opt(opts, 'base', null, 0) || 0;
+  const lv = levels == null ? contourLevels(g, interval, base) : Array.from(levels, Number);
+  const drape = opts.drape ? asObject(opts.drape) : null, lift = opts.lift == null ? 0 : +opts.lift;
+  const N = opt(opts, 'index', null, 0) | 0, heightfield = g.role !== 'property';
+  const ls = new GM.LineSet({ name: opts.name || `${g.name} contours`, role: 'contours', color: opts.color || [90, 70, 40] });
+  const at = (i, j) => g.values[j * g.nx + i], xy = (i, j) => g.nodeXY(i, j);
+  const zOf = (x, y, level) => {
+    if (drape) { const zt = drape.sample(x, y); if (zt === zt) return zt + lift; }
+    if (opts.z != null) return +opts.z;
+    return heightfield ? level + lift : 0;
+  };
+  let nseg = 0;
+  lv.forEach((level, k) => {
+    const segs = marchingSquares(g.nx, g.ny, at, xy, level).map(([p, q]) => [[p[0], p[1], zOf(p[0], p[1], level)], [q[0], q[1], zOf(q[0], q[1], level)]]);
+    nseg += segs.length;
+    const isIndex = N > 0 && (interval ? pymod(pyRound((level - base) / interval), N) === 0 : k % N === 0);
+    for (const chain of chainSegments(segs)) ls.addPolyline(chain, { level, units: g.units || 'm', source: g.name, source_id: g.id, index: isIndex });
+  });
+  ls.metadata.contours = { levels: lv, n_levels: lv.length, n_segments: nseg, interval: interval == null ? null : +interval, base, index_every: N || null, draped_on: drape ? drape.name : null, lift };
+  ls.provenance = { method: 'marching squares over the grid nodes (gridContours)', source_layer: g.name, source_id: g.id };
+  return ls;
+}
+
+/* ================================================== geometry: elevation */
+/** Plan-view index of a mesh: a GridIndex of triangle centroids plus the
+    largest centroid-to-vertex reach, enough to find every triangle that can
+    cover a point. */
+export function meshXYIndex(mesh) {
+  const m = asObject(mesh), nt = m.nTriangles, V = m.vertices, C = new Float64Array(nt * 3);
+  let reach = 0;
+  for (let t = 0; t < nt; t++) {
+    const a = m.triangles[3 * t], b = m.triangles[3 * t + 1], c = m.triangles[3 * t + 2];
+    const cx = (V[3 * a] + V[3 * b] + V[3 * c]) / 3, cy = (V[3 * a + 1] + V[3 * b + 1] + V[3 * c + 1]) / 3;
+    C[3 * t] = cx; C[3 * t + 1] = cy;
+    for (const i of [a, b, c]) reach = Math.max(reach, dist2(cx, cy, V[3 * i], V[3 * i + 1]));
+  }
+  return { mesh: m, index: new GridIndex(C, 2), reach: reach * (1 + 1e-9) + 1e-9, k: Math.min(Math.max(nt, 1), 512) };
+}
+/** z of a mesh under / over (x, y) — the highest triangle covering the point
+    in plan (vertical ray); NaN where nothing does. */
+export function meshZAt(mesh, x, y, index = null) {
+  const ix = index || meshXYIndex(mesh), m = ix.mesh, V = m.vertices;
+  const found = ix.index.nearest(x, y, 0, ix.k, ix.reach);
+  let best = NaN;
+  for (let q = 0; q < found; q++) {
+    const t = ix.index.resI[q];
+    const a = m.triangles[3 * t], b = m.triangles[3 * t + 1], c = m.triangles[3 * t + 2];
+    const ax = V[3 * a], ay = V[3 * a + 1], bx = V[3 * b], by = V[3 * b + 1], cx = V[3 * c], cy = V[3 * c + 1];
+    if (!inTri([x, y], [ax, ay], [bx, by], [cx, cy])) continue;
+    const det = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+    if (Math.abs(det) < 1e-300) continue;
+    const l1 = ((bx - x) * (cy - y) - (cx - x) * (by - y)) / det, l2 = ((cx - x) * (ay - y) - (ax - x) * (cy - y)) / det, l3 = 1 - l1 - l2;
+    const z = l1 * V[3 * a + 2] + l2 * V[3 * b + 2] + l3 * V[3 * c + 2];
+    if (best !== best || z > best) best = z;
+  }
+  return best;
+}
+export const ELEVATION_SCOPES = ['missing', 'all', 'not-surveyed'];
+/** Leapfrog's Set Elevation, generalised.  target: PointSet (xyz), LineSet
+    (every vertex) or Drillholes (collars); surface: Grid2D (bilinear sample)
+    or Mesh (vertical ray).  opts: { offset (m, default 0), only: 'missing'
+    (z NaN or 0) | 'all' | 'not-surveyed' (rows / parts / collars whose
+    confidence is not 'surveyed') }.  The original z is kept (a z_original
+    column, a per-feature z_original list, a collar z_original) so
+    restoreElevation() can put it back.  Returns { moved, outside, skipped }. */
+export function setElevationFrom(target, surface, opts = {}) {
+  const T = asObject(target), Sf = asObject(surface);
+  const off = opts.offset == null ? 0 : +opts.offset, only = opts.only || 'all';
+  if (!ELEVATION_SCOPES.includes(only)) throw new Error(`only must be one of ${ELEVATION_SCOPES.join(' | ')}`);
+  let zAt;
+  if (Sf.kind === 'grid2d') zAt = (x, y) => Sf.sample(x, y);
+  else if (Sf.kind === 'mesh') { const ix = meshXYIndex(Sf); zAt = (x, y) => meshZAt(Sf, x, y, ix); }
+  else throw new Error(`cannot take elevations from a ${Sf.kind}`);
+  const stats = { moved: 0, outside: 0, skipped: 0 };
+  const missing = z => z !== z || z === 0;
+  const label = Sf.name + (off ? ` (+${off} m)` : '');
+  if (T.kind === 'points') {
+    const keep = T.attributes.z_original || [], conf = T.attributes.confidence || [];
+    for (let i = 0; i < T.n; i++) {
+      const z0 = T.xyz[3 * i + 2];
+      if ((only === 'missing' && !missing(z0)) || (only === 'not-surveyed' && conf[i] === 'surveyed')) { stats.skipped++; continue; }
+      const z = zAt(T.xyz[3 * i], T.xyz[3 * i + 1]);
+      if (z !== z) { stats.outside++; continue; }
+      if (keep[i] == null) keep[i] = z0;
+      T.xyz[3 * i + 2] = z + off; stats.moved++;
+    }
+    for (let i = 0; i < T.n; i++) if (keep[i] === undefined) keep[i] = null;
+    T.attributes.z_original = keep;
+  } else if (T.kind === 'lineset') {
+    for (let k = 0; k < T.parts.length; k++) {
+      const f = T.features[k] || (T.features[k] = {}), idx = T.parts[k];
+      if (only === 'not-surveyed' && f.confidence === 'surveyed') { stats.skipped += idx.length; continue; }
+      const keep = Array.isArray(f.z_original) ? f.z_original.slice() : new Array(idx.length).fill(null);
+      let touched = false;
+      idx.forEach((vi, q) => {
+        const z0 = T.vertices[3 * vi + 2];
+        if (only === 'missing' && !missing(z0)) { stats.skipped++; return; }
+        const z = zAt(T.vertices[3 * vi], T.vertices[3 * vi + 1]);
+        if (z !== z) { stats.outside++; return; }
+        if (keep[q] == null) keep[q] = z0;
+        T.vertices[3 * vi + 2] = z + off; stats.moved++; touched = true;
+      });
+      if (touched) f.z_original = keep;
+    }
+  } else if (T.kind === 'drillholes') {
+    for (const c of T.collars) {
+      const z0 = c.z == null || c.z === '' ? NaN : +c.z;
+      if ((only === 'missing' && !missing(z0)) || (only === 'not-surveyed' && c.confidence === 'surveyed')) { stats.skipped++; continue; }
+      const z = zAt(+c.x, +c.y);
+      if (z !== z) { stats.outside++; continue; }
+      if (c.z_original == null) c.z_original = z0 === z0 ? z0 : null;
+      c.z = z + off; stats.moved++;
+    }
+    T._traces = null;
+  } else throw new Error(`cannot set the elevation of a ${T.kind}`);
+  T.metadata.elevation_from = label;
+  if (stats.outside) T.warn(`${stats.outside} point(s) fell outside ${Sf.name} and kept their original elevation`);
+  return stats;
+}
+/** Undo setElevationFrom: put the kept original z back and drop the record. */
+export function restoreElevation(target) {
+  const T = asObject(target);
+  let restored = 0;
+  if (T.kind === 'points') {
+    const keep = T.attributes.z_original;
+    if (keep) { for (let i = 0; i < T.n; i++) if (keep[i] != null) { T.xyz[3 * i + 2] = +keep[i]; restored++; } delete T.attributes.z_original; }
+  } else if (T.kind === 'lineset') {
+    T.parts.forEach((idx, k) => { const f = T.features[k]; if (!f || !Array.isArray(f.z_original)) return; idx.forEach((vi, q) => { if (f.z_original[q] != null) { T.vertices[3 * vi + 2] = +f.z_original[q]; restored++; } }); delete f.z_original; });
+  } else if (T.kind === 'drillholes') {
+    for (const c of T.collars) if (c.z_original !== undefined) { if (c.z_original != null) { c.z = +c.z_original; restored++; } delete c.z_original; }
+    T._traces = null;
+  } else throw new Error(`cannot restore the elevation of a ${T.kind}`);
+  delete T.metadata.elevation_from;
+  return restored;
+}
+
+/* ============================================ geometry: clip to ground */
+function clipCore(mesh, topo, eps) {
+  const m = asObject(mesh), g = asObject(topo);
+  let zAt;
+  if (g.kind === 'grid2d') zAt = (x, y) => g.sample(x, y);
+  else if (g.kind === 'mesh') { const ix = meshXYIndex(g); zAt = (x, y) => meshZAt(g, x, y, ix); }
+  else throw new Error(`the ground must be a Grid2D or a Mesh, not a ${g.kind}`);
+  const nv = m.nVertices, V = m.vertices, depth = new Float64Array(nv);
+  for (let i = 0; i < nv; i++) { const zg = zAt(V[3 * i], V[3 * i + 1]); depth[i] = zg === zg ? V[3 * i + 2] - zg : NaN; }
+  const vKeys = [], fKeys = [];
+  for (const [k, a] of Object.entries(m.attributes)) (a.location === 'faces' ? fKeys : vKeys).push(k);
+  const outV = [], outT = [], outVA = {}, outFA = {}, segments = [];
+  for (const k of vKeys) outVA[k] = [];
+  for (const k of fKeys) outFA[k] = [];
+  const vmap = new Int32Array(nv).fill(-1), edge = new Map();
+  const useVertex = i => {
+    if (vmap[i] < 0) { vmap[i] = outV.length / 3; outV.push(V[3 * i], V[3 * i + 1], V[3 * i + 2]); for (const k of vKeys) outVA[k].push(m.attributes[k].values[i]); }
+    return vmap[i];
+  };
+  const crossing = (p, q) => {              // where the edge p-q meets the ground (computed low index -> high index so shared edges share the vertex)
+    const lo = Math.min(p, q), hi = Math.max(p, q), key = lo + ',' + hi;
+    let id = edge.get(key);
+    if (id != null) return id;
+    const t = depth[lo] / (depth[lo] - depth[hi]);
+    id = outV.length / 3;
+    for (let a = 0; a < 3; a++) outV.push(V[3 * lo + a] + (V[3 * hi + a] - V[3 * lo + a]) * t);
+    for (const k of vKeys) { const va = m.attributes[k].values; outVA[k].push(va[lo] + (va[hi] - va[lo]) * t); }
+    edge.set(key, id);
+    return id;
+  };
+  const at = id => [outV[3 * id], outV[3 * id + 1], outV[3 * id + 2]];
+  const stats = { kept: 0, dropped: 0, split: 0, unknown_ground: 0 };
+  for (let t = 0; t < m.nTriangles; t++) {
+    const I = [m.triangles[3 * t], m.triangles[3 * t + 1], m.triangles[3 * t + 2]];
+    const D = I.map(i => depth[i]);
+    const emitWhole = () => { outT.push(useVertex(I[0]), useVertex(I[1]), useVertex(I[2])); for (const k of fKeys) outFA[k].push(m.attributes[k].values[t]); };
+    if (D[0] !== D[0] || D[1] !== D[1] || D[2] !== D[2]) { stats.unknown_ground++; emitWhole(); continue; }
+    const below = D.map(d => d <= eps), nb = below.filter(Boolean).length;
+    if (nb === 3) { stats.kept++; emitWhole(); continue; }
+    if (nb === 0) { stats.dropped++; continue; }
+    stats.split++;
+    // rotate so vertex 0 is the odd one out (the single below, or the single above)
+    let s = 0;
+    for (let q = 0; q < 3; q++) if (below[q] === (nb === 1)) { s = q; break; }
+    const p = I[s], q = I[(s + 1) % 3], r = I[(s + 2) % 3];
+    if (nb === 1) {                           // p below: keep its corner
+      const cq = crossing(p, q), cr = crossing(p, r);
+      outT.push(useVertex(p), cq, cr);
+      for (const k of fKeys) outFA[k].push(m.attributes[k].values[t]);
+      segments.push([at(cq), at(cr)]);
+    } else {                                  // p above: keep the quad q, r, r-p crossing, p-q crossing
+      const cpq = crossing(p, q), crp = crossing(r, p);
+      outT.push(useVertex(q), useVertex(r), crp);
+      outT.push(useVertex(q), crp, cpq);
+      for (const k of fKeys) { outFA[k].push(m.attributes[k].values[t]); outFA[k].push(m.attributes[k].values[t]); }
+      segments.push([at(cpq), at(crp)]);
+    }
+  }
+  const attributes = {};
+  for (const k of vKeys) attributes[k] = { location: 'vertices', values: Float32Array.from(outVA[k]) };
+  for (const k of fKeys) attributes[k] = { location: 'faces', values: Float32Array.from(outFA[k]) };
+  return { mesh: m, ground: g, vertices: Float64Array.from(outV), triangles: Uint32Array.from(outT), attributes, segments, stats };
+}
+/** Keep the part of a mesh that lies below the ground: triangles wholly above
+    it are dropped, wholly below kept, mixed ones split where their edges
+    cross the ground (linear interpolation).  Returns a new Mesh with the
+    same attributes; opts: { eps (m, default 1e-6), name }. */
+export function clipMeshToTopography(mesh, topo, opts = {}) {
+  const c = clipCore(mesh, topo, opts.eps == null ? 1e-6 : +opts.eps), m = c.mesh;
+  const out = new GM.Mesh({ name: opts.name || `${m.name} (below ${c.ground.name})`, color: m.color, role: m.role, opacity: m.opacity, group: m.group, vertices: c.vertices, triangles: c.triangles, attributes: c.attributes, provenance: Object.assign({}, m.provenance), metadata: Object.assign({}, m.metadata) });
+  out.metadata.clipped_to = c.ground.name;
+  out.metadata.clip = Object.assign({ source_id: m.id, ground_id: c.ground.id }, c.stats);
+  return out;
+}
+/** Where a surface (Mesh or Grid2D) meets the ground: a LineSet (role
+    'interpretation') named '<name> daylight (computed)'. */
+export function daylightTrace(source, topo, opts = {}) {
+  const s = asObject(source), g = asObject(topo);
+  let segs;
+  if (s.kind === 'mesh') segs = clipCore(s, g, opts.eps == null ? 1e-6 : +opts.eps).segments;
+  else if (s.kind === 'grid2d') {
+    if (g.kind !== 'grid2d') throw new Error('a grid surface needs a grid topography');
+    const at = (i, j) => { const v = s.values[j * s.nx + i]; if (v !== v) return NaN; const [x, y] = s.nodeXY(i, j); const zg = g.sample(x, y); return zg === zg ? v - zg : NaN; };
+    const zOn = p => { const z = g.sample(p[0], p[1]); return z === z ? z : s.sample(p[0], p[1]); };
+    segs = marchingSquares(s.nx, s.ny, at, (i, j) => s.nodeXY(i, j), 0).map(([p, q]) => [[p[0], p[1], zOn(p)], [q[0], q[1], zOn(q)]]);
+  } else throw new Error(`cannot daylight a ${s.kind}`);
+  const ls = new GM.LineSet({ name: `${s.name} daylight (computed)`, role: 'interpretation', color: opts.color || [255, 200, 60] });
+  for (const chain of chainSegments(segs)) ls.addPolyline(chain, { source: s.name, source_id: s.id, ground: g.name, method: 'surface ∩ topography', confidence: 'inferred' });
+  ls.metadata.derived_from = [s.id, g.id];
+  ls.metadata.note = 'computed intersection of a modelled surface with the topography — it inherits every error of both';
+  ls.provenance = { method: 'surface / topography intersection (daylightTrace)', source_layer: s.name, ground: g.name };
+  return ls;
+}
+
 /** Map traced pixel coordinates through an ImagePlane's georeference -> [[x, y, z], ...]. */
 export function traceToWorld(image, pixelPoints, levelZ = null) {
   image = asObject(image);
@@ -1939,6 +2315,14 @@ export const OPS = {
   workingsToGeoJSON: a => workingsToGeoJSON(a.workings || a.ws, a.crs),
   workingsSummary: a => workingsSummary(a.workings || a.ws),
   portalsPoints: a => portalsPoints(a.workings || a.ws),
+  // geometry: projection / contours / elevation / ground clip
+  extrudePolyline: a => extrudePolyline(a.xyz || a.points || a.polyline, a),
+  gridContours: a => contourGrid(a.grid, a.levels == null ? null : a.levels, a),
+  contourLevels: a => contourLevels(a.grid, a.interval, a.base),
+  setElevationFrom: a => { const t = asObject(a.target); const stats = setElevationFrom(t, a.surface || a.grid || a.topo, a); return { target: t, stats }; },
+  restoreElevation: a => { const t = asObject(a.target); const restored = restoreElevation(t); return { target: t, restored }; },
+  clipMeshToTopography: a => clipMeshToTopography(a.mesh, a.topo || a.topography || a.ground, a),
+  daylightTrace: a => daylightTrace(a.source || a.mesh || a.grid, a.topo || a.topography || a.ground, a),
 };
 
 /** Run one op on live objects (used by the worker and by the main-thread fallback). */

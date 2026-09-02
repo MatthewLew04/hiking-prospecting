@@ -431,3 +431,153 @@ def scalar_field_from_rbf(rbf, bounds, spacing):
 def grid_to_points_on_line(grid, start, end, n=100):
     """Convenience: (x, y, z) along a section where the grid has data."""
     return [(x, y, z) for _d, x, y, z in grid_profile(grid, start, end, n) if z == z]
+
+
+# ---------------------------------------------------------- ground clip
+def _clip_core(mesh, topo, eps):
+    from .interp import _surface_sampler
+    z_at = _surface_sampler(topo)
+    nv = mesh.n_vertices
+    V = mesh.vertices
+    depth = [NAN] * nv
+    for i in range(nv):
+        zg = z_at(V[3 * i], V[3 * i + 1])
+        depth[i] = V[3 * i + 2] - zg if zg == zg else NAN
+    v_keys = [k for k, a in mesh.attributes.items() if a.get('location', 'vertices') != 'faces']
+    f_keys = [k for k, a in mesh.attributes.items() if a.get('location', 'vertices') == 'faces']
+    out_v, out_t, segments = [], [], []
+    out_va = dict((k, []) for k in v_keys)
+    out_fa = dict((k, []) for k in f_keys)
+    vmap = [-1] * nv
+    edge = {}
+
+    def use_vertex(i):
+        if vmap[i] < 0:
+            vmap[i] = len(out_v) // 3
+            out_v.extend((V[3 * i], V[3 * i + 1], V[3 * i + 2]))
+            for k in v_keys:
+                out_va[k].append(mesh.attributes[k]['values'][i])
+        return vmap[i]
+
+    def crossing(p, q):
+        lo, hi = min(p, q), max(p, q)
+        key = (lo, hi)
+        if key in edge:
+            return edge[key]
+        t = depth[lo] / (depth[lo] - depth[hi])
+        vid = len(out_v) // 3
+        for a in range(3):
+            out_v.append(V[3 * lo + a] + (V[3 * hi + a] - V[3 * lo + a]) * t)
+        for k in v_keys:
+            va = mesh.attributes[k]['values']
+            out_va[k].append(va[lo] + (va[hi] - va[lo]) * t)
+        edge[key] = vid
+        return vid
+
+    def at(vid):
+        return (out_v[3 * vid], out_v[3 * vid + 1], out_v[3 * vid + 2])
+
+    stats = {'kept': 0, 'dropped': 0, 'split': 0, 'unknown_ground': 0}
+    for t in range(mesh.n_triangles):
+        I = mesh.triangle(t)
+        D = [depth[i] for i in I]
+
+        def emit_whole():
+            out_t.extend((use_vertex(I[0]), use_vertex(I[1]), use_vertex(I[2])))
+            for k in f_keys:
+                out_fa[k].append(mesh.attributes[k]['values'][t])
+
+        if D[0] != D[0] or D[1] != D[1] or D[2] != D[2]:
+            stats['unknown_ground'] += 1
+            emit_whole()
+            continue
+        below = [d <= eps for d in D]
+        nb = sum(1 for b in below if b)
+        if nb == 3:
+            stats['kept'] += 1
+            emit_whole()
+            continue
+        if nb == 0:
+            stats['dropped'] += 1
+            continue
+        stats['split'] += 1
+        s = 0
+        for q in range(3):
+            if below[q] == (nb == 1):
+                s = q
+                break
+        p, q, r = I[s], I[(s + 1) % 3], I[(s + 2) % 3]
+        if nb == 1:
+            cq, cr = crossing(p, q), crossing(p, r)
+            out_t.extend((use_vertex(p), cq, cr))
+            for k in f_keys:
+                out_fa[k].append(mesh.attributes[k]['values'][t])
+            segments.append((at(cq), at(cr)))
+        else:
+            cpq, crp = crossing(p, q), crossing(r, p)
+            out_t.extend((use_vertex(q), use_vertex(r), crp))
+            out_t.extend((use_vertex(q), crp, cpq))
+            for k in f_keys:
+                out_fa[k].append(mesh.attributes[k]['values'][t])
+                out_fa[k].append(mesh.attributes[k]['values'][t])
+            segments.append((at(cpq), at(crp)))
+    attributes = {}
+    for k in v_keys:
+        attributes[k] = {'location': 'vertices', 'values': farray(out_va[k])}
+    for k in f_keys:
+        attributes[k] = {'location': 'faces', 'values': farray(out_fa[k])}
+    return {'vertices': farray(out_v), 'triangles': iarray(out_t), 'attributes': attributes,
+            'segments': segments, 'stats': stats}
+
+
+def clip_mesh_to_topography(mesh, topo, eps=1e-6, name=None):
+    """Keep the part of a mesh below the ground (a Grid2D or a Mesh): triangles
+    wholly above are dropped, wholly below kept, mixed ones split where their
+    edges cross the ground (linear interpolation).  The JS
+    ``clipMeshToTopography``: same vertex and triangle order."""
+    c = _clip_core(mesh, topo, float(eps))
+    out = Mesh(c['vertices'], c['triangles'], attributes=c['attributes'], role=mesh.role,
+               name=name or '%s (below %s)' % (mesh.name, topo.name), color=mesh.color, opacity=mesh.opacity,
+               group=mesh.group, provenance=dict(mesh.provenance), metadata=dict(mesh.metadata))
+    out.metadata['clipped_to'] = topo.name
+    clip = {'source_id': mesh.id, 'ground_id': topo.id}
+    clip.update(c['stats'])
+    out.metadata['clip'] = clip
+    return out
+
+
+def daylight_trace(source, topo, eps=1e-6, color=None):
+    """Where a surface (Mesh or Grid2D) meets the ground: a LineSet (role
+    'interpretation') named '<name> daylight (computed)'."""
+    if source.kind == 'mesh':
+        segs = _clip_core(source, topo, float(eps))['segments']
+    elif source.kind == 'grid2d':
+        from .contours import marching_squares
+        if topo.kind != 'grid2d':
+            raise ValueError('a grid surface needs a grid topography')
+
+        def at(i, j):
+            v = source.values[j * source.nx + i]
+            if v != v:
+                return NAN
+            x, y = source.node_xy(i, j)
+            zg = topo.sample(x, y)
+            return v - zg if zg == zg else NAN
+
+        def z_on(p):
+            z = topo.sample(p[0], p[1])
+            return z if z == z else source.sample(p[0], p[1])
+
+        segs = [((p[0], p[1], z_on(p)), (q[0], q[1], z_on(q)))
+                for p, q in marching_squares(source.nx, source.ny, at, source.node_xy, 0.0)]
+    else:
+        raise ValueError('cannot daylight a %s' % source.kind)
+    ls = LineSet(name='%s daylight (computed)' % source.name, role='interpretation', color=color or [255, 200, 60])
+    for chain in chain_segments(segs):
+        ls.add_polyline(chain, {'source': source.name, 'source_id': source.id, 'ground': topo.name,
+                                'method': 'surface ∩ topography', 'confidence': 'inferred'})
+    ls.metadata['derived_from'] = [source.id, topo.id]
+    ls.metadata['note'] = 'computed intersection of a modelled surface with the topography — it inherits every error of both'
+    ls.provenance = {'method': 'surface / topography intersection (daylight_trace)', 'source_layer': source.name,
+                     'ground': topo.name}
+    return ls

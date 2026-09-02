@@ -758,6 +758,211 @@ async function bench() {
   record(`mesh_plane_intersection of that mesh: ${msSec.toFixed(0)} ms`, true, '', msSec);
 }
 
+/* ============================================================ 9. geometry */
+async function testGeometry() {
+  section('9. geometry (extrude / contours / plane / set elevation / clip to ground / anisotropy unit)');
+  const trace = [[0, 0, 1500], [100, 20, 1510], [200, 10, 1520], [300, 40, 1530], [400, 15, 1545]];
+  const outline = [[0, 0, 1425], [50, 0, 1425], [50, 40, 1425], [20, 20, 1425], [0, 40, 1425]];
+  const sheared = outline.map((p, i) => [p[0], p[1], 1420 + 3 * i]);
+  const grid = new GM.Grid2D({ nx: 11, ny: 9, x0: 1000, y0: 2000, dx: 10, dy: 10, name: 'plane', role: 'surface' });
+  for (let j = 0; j < 9; j++) for (let i = 0; i < 11; i++) grid.set(i, j, 100 + 2 * i + j + 0.7 * Math.sin(i * 1.3 + j * 0.7));
+  const hole = new GM.Grid2D({ nx: 11, ny: 9, x0: 1000, y0: 2000, dx: 10, dy: 10, name: 'holed', role: 'surface', values: grid.values.slice() });
+  hole.set(5, 4, NaN); hole.set(6, 4, NaN); hole.set(5, 5, NaN);
+  const prop = new GM.Grid2D({ nx: 11, ny: 9, x0: 1000, y0: 2000, dx: 10, dy: 10, name: 'mag', role: 'property', units: 'nT', values: grid.values.map(v => (v - 100) * 3) });
+  const saddle = new GM.Grid2D({ nx: 2, ny: 2, x0: 0, y0: 0, dx: 1, dy: 1, name: 'saddle', values: [1, 0, 0, 1] });   // nodes (0,0) and (1,1) high -> case 5
+  const topo = new GM.Grid2D({ nx: 5, ny: 5, x0: 950, y0: 1950, dx: 50, dy: 50, name: 'ground', role: 'topography', values: new Float64Array(25).fill(100) });
+  const tilt = new GM.Mesh({ name: 'tilt', vertices: [1000, 2000, 80, 1100, 2000, 120, 1100, 2100, 120, 1000, 2100, 80, 1000, 2000, 60], triangles: [0, 1, 2, 0, 2, 3, 3, 0, 4], attributes: { v: { location: 'vertices', values: [1, 2, 3, 4, 5] }, f: { location: 'faces', values: [10, 20, 30] } } });
+  const ls = new GM.LineSet({ name: 'traces' });
+  ls.addPolyline([[1005, 2005, 0], [1015, 2015, NaN], [1025, 2025, 777]], { confidence: 'sketched' });
+  ls.addPolyline([[1035, 2035, 0], [1045, 2045, 0]], { confidence: 'surveyed' });
+  ls.addPolyline([[1055, 2055, 0], [10, 10, 0]], { confidence: 'inferred' });          // second vertex outside the grid
+  const ps = new GM.PointSet({ name: 'pts' });
+  ps.add(1005, 2005, 0, { confidence: 'sketched' }); ps.add(1015, 2015, NaN, { confidence: 'surveyed' }); ps.add(1025, 2025, 500, { confidence: 'surveyed' }); ps.add(1035, 2035, 12, { confidence: 'described' });
+  const dh = new GM.Drillholes({ name: 'dh', collars: [{ hole: 'A', x: 1005, y: 2005, z: 0, depth: 50 }, { hole: 'B', x: 1050, y: 2050, z: 300, depth: 50, confidence: 'surveyed' }] });
+  const [P, pyMs] = await timed(() => py(`
+from geomodel import contours, assay
+out = {}
+def meshj(m):
+    return {'verts': list(m.vertices), 'tris': list(m.triangles), 'role': m.role, 'color': m.color, 'name': m.name, 'meta': m.metadata, 'opacity': m.opacity}
+def lsj(l):
+    return {'verts': list(l.vertices), 'parts': l.parts, 'features': l.features, 'role': l.role, 'name': l.name}
+tr, ol, sh = D['trace'], D['outline'], D['sheared']
+out['open'] = meshj(workings.extrude_polyline(tr, 60.0, 175.0, depth=100.0, role='fault', confidence='inferred', name='rib', source={'layer': 'L', 'part': 2}))
+out['open_zb'] = meshj(workings.extrude_polyline(tr, 35.0, 350.0, z_bottom=1400.0, role='vein', name='rib2'))
+out['sheared'] = meshj(workings.extrude_polyline(sh, 60.0, 90.0, depth=30.0, closed=True, name='prism'))
+out['vertical'] = meshj(workings.extrude_polyline(ol, 90.0, 0.0, depth=25.0, closed=True, name='wall'))
+out['stope'] = meshj(workings.stope_prism([p[:2] for p in ol], 1400.0, 1425.0, name='wall'))
+out['strike'] = workings._polyline_strike(tr)
+def err(fn):
+    try:
+        fn(); return None
+    except ValueError as e:
+        return str(e)
+out['err_az'] = err(lambda: workings.extrude_polyline(tr, 60.0, 84.0, depth=100.0))
+out['err_flat'] = err(lambda: workings.extrude_polyline([[p[0], p[1], 0.0] for p in tr], 60.0, 175.0, depth=100.0))
+out['err_nan'] = err(lambda: workings.extrude_polyline([[p[0], p[1]] for p in tr], 60.0, 175.0, depth=100.0))
+out['err_dip'] = err(lambda: workings.extrude_polyline(tr, 0.0, 175.0, depth=100.0))
+out['err_few'] = err(lambda: workings.extrude_polyline(tr[:1], 60.0, 175.0, depth=100.0))
+g, h, pg, sd, tp = grid(D['grid']), grid(D['hole']), grid(D['prop']), grid(D['saddle']), grid(D['topo'])
+pg.units = 'nT'
+out['levels'] = contours.contour_levels(g, 5.0)
+out['levels_b'] = contours.contour_levels(g, 4.0, base=1.5)
+out['nice'] = [contours.nice_interval(v) for v in (210.0, 37.0, 0.9, 1e4)]
+out['contours'] = lsj(contours.contour_grid(g, interval=5.0, index=2, name='c'))
+out['contours'].update({'meta': contours.contour_grid(g, interval=5.0, index=2, name='c').metadata['contours']})
+out['contours_hole'] = lsj(contours.contour_grid(h, levels=out['levels'], interval=5.0, index=2, name='ch'))
+out['contours_prop'] = lsj(contours.contour_grid(pg, levels=[0.0, 30.0, 60.0], drape=tp, lift=2.0, name='cp'))
+out['contours_prop_z'] = lsj(contours.contour_grid(pg, levels=[0.0, 30.0], z=1234.0, name='cz'))
+out['saddle'] = contours.marching_squares(2, 2, lambda i, j: sd.values[j * 2 + i], sd.node_xy, 0.5)
+cx, cy, cz, half, dip, az = 5000.0, 6000.0, 1400.0, 120.0, 55.0, 300.0
+vein = {'strike_deg': az - 90.0, 'dip_deg': dip, 'dip_direction_deg': az, 'dip_direction_assumed': False, 'confidence': 'described', 'quote': ''}
+placed = [{'start': (cx - 10.0, cy - 5.0, cz - 2.0), 'end': (cx + 10.0, cy + 5.0, cz + 2.0)}]
+out['vein'] = list(assay.vein_surface(vein, placed, None, extent=half).vertices)
+out['plane'] = meshj(assay.plane_mesh(cx, cy, cz, dip, az, half, 80.0, role='vein', name='pl', from_measurement={'layer': 'S', 'row': 3}))
+l = lineset(D['ls'])
+st = interp.set_elevation_from(l, g, only='missing')
+out['ls_missing'] = {'stats': st, 'verts': list(l.vertices), 'features': [dict(f) for f in l.features], 'meta': dict(l.metadata)}
+out['ls_restore'] = {'n': interp.restore_elevation(l), 'verts': list(l.vertices), 'features': [dict(f) for f in l.features]}
+l2 = lineset(D['ls'])
+out['ls_ns'] = {'stats': interp.set_elevation_from(l2, g, offset=2.0, only='not-surveyed'), 'verts': list(l2.vertices)}
+p = pset(D['ps'])
+out['ps_ns'] = {'stats': interp.set_elevation_from(p, g, only='not-surveyed'), 'xyz': list(p.xyz), 'zo': p.attributes['z_original'], 'meta': p.metadata}
+p2 = pset(D['ps'])
+out['ps_all'] = {'stats': interp.set_elevation_from(p2, g), 'xyz': list(p2.xyz), 'zo': p2.attributes['z_original']}
+tm = Mesh(D['tilt']['vertices'], D['tilt']['triangles'], attributes={'v': {'location': 'vertices', 'values': farray(D['tilt']['v'])}, 'f': {'location': 'faces', 'values': farray(D['tilt']['f'])}}, name='tilt', oid=D['tilt']['id'])
+gm = g.to_mesh()
+out['mesh_z'] = [interp.mesh_z_at(gm, x, y) for x, y in ((1012.5, 2007.5), (1000.0, 2000.0), (1099.9, 2079.9), (900.0, 2000.0))]
+out['mesh_z_grid'] = [g.sample(x, y) for x, y in ((1012.5, 2007.5), (1000.0, 2000.0), (1099.9, 2079.9))]
+p3 = pset(D['ps'])
+out['ps_mesh'] = {'stats': interp.set_elevation_from(p3, gm), 'xyz': list(p3.xyz)}
+from geomodel.model import Drillholes
+d = Drillholes(D['dh']['collars'], [], {}, name='dh')
+out['dh'] = {'stats': interp.set_elevation_from(d, g, only='not-surveyed'), 'collars': [dict(c) for c in d.collars]}
+out['dh_restore'] = {'n': interp.restore_elevation(d), 'collars': [dict(c) for c in d.collars]}
+c = slicing.clip_mesh_to_topography(tm, tp, name='clip')
+out['clip'] = {'verts': list(c.vertices), 'tris': list(c.triangles), 'v': list(c.attributes['v']['values']), 'f': list(c.attributes['f']['values']), 'clip': c.metadata['clip'], 'role': c.role}
+out['daylight'] = lsj(slicing.daylight_trace(tm, tp))
+hi = g.copy_empty(); hi.values = farray(v + 5.0 for v in g.values); hi.name = 'hi'
+out['daylight_grid'] = lsj(slicing.daylight_trace(g, hi))
+pts, vals, tg = D['rbf']['pts'], D['rbf']['vals'], D['rbf']['tg']
+out['rbf_iso'] = {}
+for k in interp.RBF_KERNELS:
+    a = interp.RBF(kernel=k, epsilon=200.0 if k in ('gaussian', 'multiquadric') else None).fit(pts, vals).predict(tg)
+    b = interp.RBF(kernel=k, epsilon=200.0 if k in ('gaussian', 'multiquadric') else None, anisotropy=interp.Anisotropy([1, 1, 1])).fit(pts, vals).predict(tg)
+    out['rbf_iso'][k] = max(abs(x - y) for x, y in zip(a, b))
+`, { trace, outline, sheared, grid: gridJSON(grid), hole: gridJSON(hole), prop: gridJSON(prop), saddle: gridJSON(saddle), topo: gridJSON(topo), tilt: { id: tilt.id, vertices: Array.from(tilt.vertices), triangles: Array.from(tilt.triangles), v: [1, 2, 3, 4, 5], f: [10, 20, 30] }, ls: lsJSON(ls), ps: psetJSON(ps), dh: { collars: dh.collars }, rbf: rbfData() }));
+  console.log(`   python reference: ${pyMs.toFixed(0)} ms`);
+  const meshJ = m => ({ verts: m.vertices, tris: m.triangles, role: m.role, color: m.color, name: m.name, meta: m.metadata, opacity: m.opacity });
+  const lsJ = l => ({ verts: l.vertices, parts: l.parts, features: l.features, role: l.role, name: l.name });
+  // -- extrude
+  const rib = E.extrudePolyline(trace, { dip: 60, dipAzimuth: 175, depth: 100, role: 'fault', confidence: 'inferred', name: 'rib', source: { layer: 'L', part: 2 } });
+  cmp('extrude_polyline open ribbon: vertices / triangles / metadata', meshJ(rib), P.open, 1e-9);
+  record('extrude_polyline: schema + honesty note + strike recorded', rib.metadata.schema === 'nwmm-extrude/1' && /projection distance/.test(rib.metadata.note) && Math.abs(rib.metadata.strike_deg - P.strike) < 1e-9, `strike ${rib.metadata.strike_deg.toFixed(2)}°`);
+  record('extrude_polyline: bottom ring is trace + (depth / sin dip)·dipVector', (() => { const t = 100 / Math.sin(60 * Math.PI / 180); const dv = [Math.sin(175 * Math.PI / 180) * Math.cos(60 * Math.PI / 180), Math.cos(175 * Math.PI / 180) * Math.cos(60 * Math.PI / 180), -Math.sin(60 * Math.PI / 180)]; let worst = 0; for (let i = 0; i < 5; i++) for (let a = 0; a < 3; a++) worst = Math.max(worst, Math.abs(rib.vertices[3 * i + a] - (trace[i][a] + t * dv[a]))); return worst < 1e-9; })());
+  cmp('extrude_polyline with zBottom (bottom ring on a level)', meshJ(E.extrudePolyline(trace, { dip: 35, dipAzimuth: 350, zBottom: 1400, role: 'vein', name: 'rib2' })), P.open_zb, 1e-9);
+  cmp('extrude_polyline closed sheared prism (caps + sides)', meshJ(E.extrudePolyline(sheared, { dip: 60, dipAzimuth: 90, depth: 30, closed: true, name: 'prism' })), P.sheared, 1e-9);
+  const wall = E.extrudePolyline(outline, { dip: 90, dipAzimuth: 0, depth: 25, closed: true, name: 'wall' });
+  cmp('extrude_polyline dip 90 closed: vertical wall matches Python', meshJ(wall), P.vertical, 1e-9);
+  const stope = E.stopePrism(outline.map(p => [p[0], p[1]]), 1400, 1425, { name: 'wall' });
+  record('extrude_polyline dip 90 closed reproduces stopePrism vertex + triangle order exactly', stope.nVertices === wall.nVertices && stope.nTriangles === wall.nTriangles && stope.vertices.every((v, i) => v === wall.vertices[i]) && stope.triangles.every((v, i) => v === wall.triangles[i]), `${wall.nVertices} verts, ${wall.nTriangles} tris`);
+  const thrown = fn => { try { fn(); return null; } catch (e) { return e.message; } };
+  const eAz = thrown(() => E.extrudePolyline(trace, { dip: 60, dipAzimuth: 84, depth: 100 }));
+  record('extrude_polyline refuses a dip azimuth along strike and prints the strike', !!eAz && /within 20°/.test(eAz) && eAz.includes(P.strike.toFixed(1)) && P.err_az && P.err_az.includes(P.strike.toFixed(1)), eAz);
+  const eFlat = thrown(() => E.extrudePolyline(trace.map(p => [p[0], p[1], 0]), { dip: 60, dipAzimuth: 175, depth: 100 }));
+  record('extrude_polyline refuses a trace with no elevation (all z = 0)', eFlat === 'the trace has no elevation — drape it on the topography first' && P.err_flat === eFlat, eFlat);
+  const eNan = thrown(() => E.extrudePolyline(trace.map(p => [p[0], p[1]]), { dip: 60, dipAzimuth: 175, depth: 100 }));
+  record('extrude_polyline refuses a trace with no elevation (all z NaN)', eNan === P.err_flat, eNan);
+  record('extrude_polyline refuses dip 0 and a single vertex (both languages)', /dip must be/.test(thrown(() => E.extrudePolyline(trace, { dip: 0, dipAzimuth: 175, depth: 100 })) || '') && /dip must be/.test(P.err_dip || '') && /at least 2/.test(thrown(() => E.extrudePolyline(trace.slice(0, 1), { dip: 60, dipAzimuth: 175, depth: 100 })) || '') && /at least 2/.test(P.err_few || ''));
+  // -- contours
+  const lv = E.contourLevels(grid, 5);
+  cmp('contour_levels (interval, and with a base)', [lv, E.contourLevels(grid, 4, 1.5)], [P.levels, P.levels_b], 0);
+  cmp('nice_interval (1/2/5 ladder)', [210, 37, 0.9, 1e4].map(v => E.niceInterval(v)), P.nice, 1e-12);
+  const cs = E.contourGrid(grid, null, { interval: 5, index: 2, name: 'c' });
+  cmp('contour_grid on a synthetic plane: vertices / parts / features / metadata', Object.assign(lsJ(cs), { meta: cs.metadata.contours }), P.contours, 1e-9);
+  const drawn = lv.filter(l => l > grid.zrange()[0]);                 // a level at the minimum has nothing below it
+  record('contour_grid: every requested level present, parts carry level / units / source / index', drawn.every(l => cs.features.some(f => f.level === l)) && cs.features.every(f => f.units === 'm' && f.source === 'plane' && typeof f.index === 'boolean') && cs.features.some(f => f.index) && cs.features.some(f => !f.index), `${cs.parts.length} parts for ${lv.length} levels (${drawn.length} above the minimum)`);
+  record('contour_grid: a plane gives one open part per level with z = level', cs.parts.length === drawn.length && cs.parts.every((p, k) => p.every(i => cs.vertices[3 * i + 2] === cs.features[k].level)), `${cs.parts.length} parts`);
+  const ch = E.contourGrid(hole, lv, { interval: 5, index: 2, name: 'ch' });
+  cmp('contour_grid with a NaN hole', lsJ(ch), P.contours_hole, 1e-9);
+  record('contour_grid: the hole breaks lines and shortens them, no vertex inside the hole', ch.metadata.contours.n_segments < cs.metadata.contours.n_segments && ch.parts.length >= cs.parts.length && !Array.from({ length: ch.nVertices }, (_, i) => ch.vertex(i)).some(v => v[0] > 1050 && v[0] < 1060 && v[1] > 2040 && v[1] < 2050), `${cs.metadata.contours.n_segments} -> ${ch.metadata.contours.n_segments} segments, ${cs.parts.length} -> ${ch.parts.length} parts`);
+  const cp = E.contourGrid(prop, [0, 30, 60], { drape: topo, lift: 2, name: 'cp' });
+  cmp('contour_grid of a property grid draped on topography (+2 m)', lsJ(cp), P.contours_prop, 1e-9);
+  record('contour_grid: draped property contours sit 2 m above the ground, units from the grid', cp.nVertices > 0 && Array.from({ length: cp.nVertices }, (_, i) => cp.vertices[3 * i + 2]).every(z => Math.abs(z - 102) < 1e-9) && cp.features[0].units === 'nT');
+  cmp('contour_grid of a property grid at a constant z', lsJ(E.contourGrid(prop, [0, 30], { z: 1234, name: 'cz' })), P.contours_prop_z, 1e-9);
+  cmp('marching squares saddle (case 5) split by the cell mean', E.marchingSquares(2, 2, (i, j) => saddle.values[j * 2 + i], (i, j) => saddle.nodeXY(i, j), 0.5), P.saddle, 1e-12);
+  // -- plane from a measurement
+  const S = await import('../site/assets/geomodel/gm-structural.js');
+  const pl = S.planeMesh(5000, 6000, 1400, 55, 300, 120, 80, { name: 'pl', from_measurement: { layer: 'S', row: 3 } });
+  cmp('plane_mesh: vertices / triangles / metadata match Python', meshJ(pl), P.plane, 1e-9);
+  cmp('planeMesh corners equal assay.vein_surface (strike = dip azimuth - 90, same half extent)', S.planeMesh(5000, 6000, 1400, 55, 300, 120, 120).vertices, P.vein, 1e-9);
+  record('planeMesh: two triangles, role vein, opacity 0.35, schema + honesty note', pl.nTriangles === 2 && pl.role === 'vein' && pl.opacity === 0.35 && pl.metadata.schema === 'nwmm-assay-vein/1' && pl.metadata.note === 'statement of attitude, not a modelled surface' && pl.metadata.confidence === 'described' && pl.metadata.from_measurement.row === 3);
+  record('planeMesh: the plane contains its centre and has the stated pole', (() => { const v = pl.vertices; const e1 = [v[3] - v[0], v[4] - v[1], v[5] - v[2]], e2 = [v[9] - v[0], v[10] - v[1], v[11] - v[2]]; const n = S.unit(S.cross(e1, e2)); const pole = S.poleFromDipAz(55, 300); return S.axialAngle(n, pole) < 1e-9 && Math.abs((v[0] + v[6]) / 2 - 5000) < 1e-9; })());
+  record('planeMesh registered as a worker op', typeof E.OPS.planeMesh === 'function' && E.runOp('planeMesh', { x: 1, y: 2, z: 3, dip: 30, dipAzimuth: 90 }).nTriangles === 2);
+  // -- set elevation
+  // a deep clone the way the worker makes one, with its own typed arrays
+  const cloneObj = o => { const c = GM.unpackObject(GM.packObject(o)); for (const k of ['vertices', 'xyz']) if (c[k]) c[k] = Float64Array.from(c[k]); return c; };
+  const l1 = cloneObj(ls);
+  const st = E.setElevationFrom(l1, grid, { only: 'missing' });
+  cmp('set_elevation_from lineset (missing scope): stats / vertices / z_original / metadata', { stats: st, verts: l1.vertices, features: l1.features, meta: l1.metadata }, P.ls_missing, 1e-9);
+  record('set_elevation_from lineset (missing): a real z is left alone, 0 and NaN are draped, outside counted', l1.vertices[8] === 777 && l1.vertices[2] !== 0 && l1.vertices[5] === l1.vertices[5] && st.skipped === 1 && st.outside === 1 && st.moved === 5 && Array.isArray(l1.features[0].z_original) && l1.features[0].z_original[2] === null, JSON.stringify(st));
+  const back = E.restoreElevation(l1);
+  cmp('restore_elevation lineset', { n: back, verts: l1.vertices, features: l1.features }, P.ls_restore, 1e-9);
+  const l2 = cloneObj(ls);
+  cmp('set_elevation_from lineset (not-surveyed, +2 m)', { stats: E.setElevationFrom(l2, grid, { offset: 2, only: 'not-surveyed' }), verts: l2.vertices }, P.ls_ns, 1e-9);
+  record('set_elevation_from: a surveyed part keeps its z', l2.vertices[3 * 3 + 2] === 0 && l2.vertices[3 * 4 + 2] === 0);
+  const p1 = cloneObj(ps);
+  cmp('set_elevation_from points (not-surveyed)', { stats: E.setElevationFrom(p1, grid, { only: 'not-surveyed' }), xyz: p1.xyz, zo: p1.attributes.z_original, meta: p1.metadata }, P.ps_ns, 1e-9);
+  const p2 = cloneObj(ps);
+  cmp('set_elevation_from points (all) == setElevationFromGrid', { stats: (r => ({ moved: r.moved, outside: r.outside, skipped: r.skipped }))(S.setElevationFromGrid(p2, grid)), xyz: p2.xyz, zo: p2.attributes.z_original }, P.ps_all, 1e-9);
+  const gm = grid.toMesh();
+  cmp('mesh_z_at (vertical ray over centroid index) == grid sample', [[1012.5, 2007.5], [1000, 2000], [1099.9, 2079.9], [900, 2000]].map(([x, y]) => E.meshZAt(gm, x, y)), P.mesh_z, 1e-9);
+  record('mesh_z_at equals the grid at a node, tracks it inside a cell, and is NaN off the mesh', Math.abs(P.mesh_z[1] - P.mesh_z_grid[1]) < 1e-9 && P.mesh_z.slice(0, 3).every((z, i) => Math.abs(z - P.mesh_z_grid[i]) < 1) && P.mesh_z[3] == null && E.meshZAt(gm, 900, 2000) !== E.meshZAt(gm, 900, 2000));
+  const p3 = cloneObj(ps);
+  cmp('set_elevation_from points onto a Mesh surface', { stats: E.setElevationFrom(p3, gm), xyz: p3.xyz }, P.ps_mesh, 1e-9);
+  const d1 = new GM.Drillholes({ name: 'dh', collars: dh.collars.map(c => Object.assign({}, c)) });
+  cmp('set_elevation_from drillhole collars (not-surveyed)', { stats: E.setElevationFrom(d1, grid, { only: 'not-surveyed' }), collars: d1.collars }, P.dh, 1e-9);
+  cmp('restore_elevation drillholes', { n: E.restoreElevation(d1), collars: d1.collars }, P.dh_restore, 1e-9);
+  // -- clip to ground
+  const clip = E.clipMeshToTopography(tilt, topo, { name: 'clip' });
+  cmp('clip_mesh_to_topography: vertices / triangles / attributes / stats', { verts: clip.vertices, tris: clip.triangles, v: clip.attributes.v.values, f: clip.attributes.f.values, clip: clip.metadata.clip, role: clip.role }, P.clip, 1e-6);
+  record('clip_mesh_to_topography: every vertex at or below the ground (+1e-6), mixed triangles split, whole ones kept', Array.from({ length: clip.nVertices }, (_, i) => clip.vertices[3 * i + 2] <= topo.sample(clip.vertices[3 * i], clip.vertices[3 * i + 1]) + 1e-6).every(Boolean) && clip.metadata.clip.split === 2 && clip.metadata.clip.kept === 1 && clip.nTriangles === 4, JSON.stringify(clip.metadata.clip));
+  record('clip_mesh_to_topography: the cut is where z = ground (x = 50 % across the 80 -> 120 tilt)', Array.from({ length: clip.nVertices }, (_, i) => clip.vertex(i)).filter(v => Math.abs(v[2] - 100) < 1e-9).every(v => Math.abs(v[0] - 1050) < 1e-9));
+  const dl = E.daylightTrace(tilt, topo);
+  cmp('daylight_trace of a mesh (chained crossing segments)', lsJ(dl), P.daylight, 1e-9);
+  record('daylight_trace: role interpretation, named "<name> daylight (computed)", one chain along x = 1050', dl.role === 'interpretation' && dl.name === 'tilt daylight (computed)' && dl.parts.length === 1 && Array.from({ length: dl.nVertices }, (_, i) => dl.vertices[3 * i]).every(x => Math.abs(x - 1050) < 1e-9), `${dl.parts.length} part(s)`);
+  const hi = grid.copyEmpty(); hi.values = grid.values.map(v => v + 5); hi.name = 'hi';
+  cmp('daylight_trace of a grid against a grid (zero contour of the difference)', lsJ(E.daylightTrace(grid, hi)), P.daylight_grid, 1e-9);
+  // -- one length unit for anisotropic and isotropic RBFs (G-44)
+  const { pts, vals, tg } = rbfData();
+  for (const k of E.RBF_KERNELS) {
+    const eps = (k === 'gaussian' || k === 'multiquadric') ? 200 : null;
+    const a = new E.RBF({ kernel: k, epsilon: eps }).fit(pts, vals).predict(tg), b = new E.RBF({ kernel: k, epsilon: eps, anisotropy: { ranges: [1, 1, 1] } }).fit(pts, vals).predict(tg);
+    let worst = 0; for (let i = 0; i < tg.length; i++) worst = Math.max(worst, Math.abs(a[i] - b[i]));
+    record(`RBF ${k}: a 1:1:1 anisotropy reproduces the isotropic fit (JS ${worst.toExponential(1)}, py ${P.rbf_iso[k].toExponential(1)})`, worst < 1e-6 && P.rbf_iso[k] < 1e-6);
+  }
+  const rIso = new E.RBF({ kernel: 'spheroidal', range: 300 }).fit(pts, vals), rAn = new E.RBF({ kernel: 'spheroidal', range: 300, anisotropy: { ranges: [200, 200, 200] } }).fit(pts, vals);
+  record('RBF scaleAniso = major range / span, so the ellipsoid distance and the normalised epsilon share a unit', Math.abs(rAn.scaleAniso - 200 / rIso.scale) < 1e-12 && rIso.scaleAniso === 1 && Math.abs(E.RBF.fromJSON(rAn.toJSON()).scaleAniso - rAn.scaleAniso) === 0, `scaleAniso ${rAn.scaleAniso.toExponential(3)} span ${rIso.scale.toFixed(1)}`);
+  // -- the new ops through the worker and the main-thread fallback
+  const client = new E.EngineClient(WORKER_URL);
+  try {
+    const wm = await client.call('extrudePolyline', { xyz: trace, dip: 60, dipAzimuth: 175, depth: 100, role: 'fault', name: 'rib' });
+    record('worker extrudePolyline round-trips a Mesh with its metadata', wm instanceof GM.Mesh && wm.vertices.every((v, i) => v === rib.vertices[i]) && wm.metadata.schema === 'nwmm-extrude/1' && wm.metadata.dip === 60, `${wm && wm.nTriangles} tris`);
+    const wc = await client.call('gridContours', { grid, interval: 5, index: 2, name: 'c' });
+    record('worker gridContours round-trips the LineSet', wc instanceof GM.LineSet && wc.role === 'contours' && wc.parts.length === cs.parts.length && wc.vertices.every((v, i) => v === cs.vertices[i]) && wc.features[1].level === cs.features[1].level, `${wc && wc.parts.length} parts`);
+    let err = null; try { await client.call('extrudePolyline', { xyz: trace, dip: 60, dipAzimuth: 84, depth: 100 }); } catch (e) { err = e; }
+    record('worker forwards the strike refusal verbatim', err instanceof Error && err.message.includes(P.strike.toFixed(1)), err && err.message);
+    const we = await client.call('setElevationFrom', { target: cloneObj(ls), surface: grid, only: 'missing' });
+    record('worker setElevationFrom returns the moved target + stats', we && we.target instanceof GM.LineSet && we.stats.moved === 5 && we.target.vertices[2] === P.ls_missing.verts[2], JSON.stringify(we && we.stats));
+    const wcl = await client.call('clipMeshToTopography', { mesh: tilt, topo });
+    record('worker clipMeshToTopography / daylightTrace', wcl instanceof GM.Mesh && wcl.nTriangles === 4 && (await client.call('daylightTrace', { source: tilt, topo })).parts.length === 1);
+  } finally { client.terminate(); }
+}
+function rbfData() {
+  const R = rng(777), pts = [], vals = [];
+  for (let i = 0; i < 40; i++) { const x = R() * 500, y = R() * 300, z = R() * 100; pts.push([x, y, z]); vals.push(Math.sin(x / 100) + y / 300 + z / 50); }
+  return { pts, vals, tg: [[100, 100, 20], [250, 150, 50], [400, 20, 90], [10, 290, 5]] };
+}
+
 /* ================================================================= main */
 async function main() {
   const t0 = performance.now();
@@ -772,6 +977,7 @@ async function main() {
     ['workings', testWorkings],
     ['worker', () => testWorker(stratInput || makeStratData())],
     ['kit', testKitAndSlicing],
+    ['geometry', testGeometry],
   ];
   if (!NO_BENCH) steps.push(['bench', bench]);
   for (const [name, fn] of steps) {

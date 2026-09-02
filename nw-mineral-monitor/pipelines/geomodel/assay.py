@@ -343,3 +343,42 @@ def vein_surface(vein, placed, collar, extent=None, name='Vein (described attitu
     })
     mesh.provenance = {'source': 'strike and dip stated in the mine description'}
     return mesh
+
+
+def plane_mesh(x, y, z, dip, dip_azimuth, half_strike=150.0, half_dip=150.0, role='vein', name=None,
+               color=None, confidence='described', from_measurement=None, source=None, metadata=None,
+               polarity=1):
+    """A finite rectangle through (x, y, z) with a stated attitude — the JS
+    ``planeMesh``: corners centre + u·half_strike·strike + v·half_dip·dip for
+    (u, v) in (−1,−1), (1,−1), (1,1), (−1,1), the corner order of
+    ``vein_surface`` above, and two triangles.  ``dip_azimuth`` is the
+    down-dip direction clockwise from north (strike = dip_azimuth − 90).
+    A statement of attitude, not a modelled surface; the metadata says so."""
+    dip, dip_azimuth = float(dip), float(dip_azimuth)
+    if not dip >= 0 or dip > 90:
+        raise ValueError('dip must be 0..90 degrees below horizontal (got %r)' % dip)
+    if not half_strike > 0 or not half_dip > 0:
+        raise ValueError('the half extents along strike and down dip must be > 0')
+    d, a = math.radians(dip), math.radians(dip_azimuth)
+    s = (-math.cos(a), math.sin(a), 0.0)
+    dv = (math.sin(a) * math.cos(d), math.cos(a) * math.cos(d), -math.sin(d))
+    verts = farray()
+    for u, v in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+        verts.extend((x + half_strike * u * s[0] + half_dip * v * dv[0],
+                      y + half_strike * u * s[1] + half_dip * v * dv[1],
+                      z + half_strike * u * s[2] + half_dip * v * dv[2]))
+    role = 'fault' if role == 'fault' else 'vein'
+    mesh = Mesh(verts, iarray([0, 1, 2, 0, 2, 3]), role=role,
+                name=name or '%s plane %d° → %d°' % (role, round(dip), round(dip_azimuth)),
+                color=color or ([230, 90, 90] if role == 'fault' else [120, 255, 190]))
+    mesh.opacity = 0.35
+    mesh.metadata.update(metadata or {})
+    mesh.metadata.update({
+        'schema': 'nwmm-assay-vein/1', 'dip': dip, 'dip_azimuth': dip_azimuth, 'polarity': int(polarity),
+        'from_measurement': from_measurement, 'confidence': confidence or 'described', 'source': source,
+        'centre': [x, y, z], 'half_strike_m': half_strike, 'half_dip_m': half_dip,
+        'note': 'statement of attitude, not a modelled surface',
+    })
+    mesh.provenance = {'method': 'plane drawn through a point at a stated dip / dip azimuth (plane_mesh)',
+                       'source': 'typed attitude' if source is None else source}
+    return mesh

@@ -14,12 +14,25 @@ const DEG = Math.PI / 180;
    old prose is a digitising bridge, not new evidence, so an element read off a
    sentence must never be drawn the way a surveyed one is: surveyed solid,
    described dashed, assumed/sketched dotted.  `gm-viewer` reuses these for the
-   viewport banner and the legend so the three surfaces cannot drift apart. */
+   viewport banner and the legend so the three surfaces cannot drift apart.
+   `dash` is [dash, gap] in SCREEN PIXELS (it used to be world metres, which
+   went sub-pixel as soon as the camera pulled back): the renderer converts it
+   to metres from metres-per-pixel every time the zoom drifts by more than
+   10 % (`Renderer.updateDashes`), and the viewer classifies the pattern with
+   `dash[0] > 5 → dashed, else dotted`. */
 export const CONF_CLASSES = [
   { key: 'surveyed', label: 'surveyed', hint: 'traced off a georeferenced plan', dash: null },
-  { key: 'described', label: 'described', hint: 'parsed from a written description', dash: [14, 8] },
-  { key: 'assumed', label: 'assumed', hint: 'supplied in answer to a gap', dash: [2.5, 5] },
+  { key: 'described', label: 'described', hint: 'parsed from a written description', dash: [8, 5] },
+  { key: 'assumed', label: 'assumed', hint: 'supplied in answer to a gap', dash: [2, 4] },
 ];
+/* Label priority for decluttering: a point with a cited grade outranks a bare
+   name.  Grade columns are au / ag / cu / pb / zn or au_ozt, ag_opt, ... */
+const GRADE_COL = /^(au|ag|cu|pb|zn)(_|$)/i;
+/* Layers that are backdrop rather than data: when one of these is drawn
+   see-through, a pick must reach the working or the mine behind it. */
+const CONTEXT_MESH_ROLES = new Set(['geology', 'unit', 'contact', 'surface']);
+function isContextObj(o) { return !!o && (o.kind === 'grid2d' || o.kind === 'imageplane' || (o.kind === 'mesh' && CONTEXT_MESH_ROLES.has(o.role))); }
+function materialOpacity(o) { const m = Array.isArray(o.material) ? o.material[0] : o.material; return m && m.opacity != null ? m.opacity : 1; }
 export function confClass(f) {
   const c = String((f && f.confidence) || 'described').toLowerCase();
   if (c === 'surveyed' || c === 'traced') return 'surveyed';
@@ -95,7 +108,17 @@ export class Renderer {
     this.controls.addEventListener('change', () => { this.needs = true; });
     this._pointTexture = null;
     this.onRender = null;
-    const loop = () => { this.controls.update(); if (this.needs || this.controls.enableDamping) { this.renderer.render(this.scene, this.camera); this.needs = false; if (this.onRender) this.onRender(); } requestAnimationFrame(loop); };
+    this.labelsDecluttered = true; this.labelsDirty = true; this._declutterAt = 0; this._declutterCam = null; this._dashMpp = 0;
+    const loop = () => {
+      // OrbitControls.update() reports whether damping actually moved the
+      // camera; an idle scene must not re-render every frame forever.  The
+      // first frame renders because `needs` starts true.
+      if (this.controls.update()) this.needs = true;
+      if (this.needs) this.updateDashes();
+      this.declutterLabels();           // throttled inside; only after the camera moved
+      if (this.needs) { this.needs = false; this.renderer.render(this.scene, this.camera); if (this.onRender) this.onRender(); }
+      requestAnimationFrame(loop);
+    };
     requestAnimationFrame(loop);
   }
   resize() {
@@ -124,7 +147,7 @@ export class Renderer {
     }
     cam.position.copy(pos); cam.up.copy(up); cam.zoom = 1; cam.updateProjectionMatrix();
     this.camera = cam; this.controls.object = cam; this.controls.target.copy(t); this.controls.update();
-    this.projection = kind; this.resize(); this.invalidate();
+    this.projection = kind; this.resize(); this.updateDashes(true); this.invalidate();
     return kind;
   }
   /** metres per device pixel at the orbit target — drives the scale bar */
@@ -135,7 +158,71 @@ export class Renderer {
     return 2 * Math.tan((this.camera.fov || 50) * DEG / 2) * d / hgt;
   }
   invalidate() { this.needs = true; }
-  setVE(ve) { this.ve = ve; this.root.scale.set(1, ve, 1); this.applyClipping(); this.invalidate(); }
+  setVE(ve) { this.ve = ve; this.root.scale.set(1, ve, 1); this.applyClipping(); this.updateDashes(true); this.labelsDirty = true; this.invalidate(); }
+  /** Dash patterns are specified in screen pixels (CONF_CLASSES) but drawn in
+      metres, so they are rescaled whenever metres-per-pixel drifts by more
+      than 10 %: a described adit stays visibly dashed from any distance. */
+  updateDashes(force = false) {
+    const mpp = this.metresPerPixel(); if (!(mpp > 0)) return;
+    if (!force && this._dashMpp && Math.abs(mpp - this._dashMpp) <= 0.1 * this._dashMpp) return;
+    this._dashMpp = mpp; let changed = false;
+    for (const L of this.layers.values()) L.group.traverse(o => {
+      const m = o.material; if (!m || !m.isLineDashedMaterial || !o.userData.confidence) return;
+      const px = m.userData.dashPx || (CONF_CLASSES.find(c => c.key === o.userData.confidence) || {}).dash; if (!px) return;
+      m.dashSize = px[0] * mpp; m.gapSize = px[1] * mpp; changed = true;
+    });
+    if (changed) this.needs = true;
+  }
+  /** A LineDashedMaterial for a confidence class, dashed in pixels at the
+      current zoom (`updateDashes` keeps it there). */
+  dashedMaterial(cls, extra = {}) {
+    const mpp = this.metresPerPixel() || 1;
+    const m = new THREE.LineDashedMaterial(Object.assign({ vertexColors: true, dashSize: cls.dash[0] * mpp, gapSize: cls.dash[1] * mpp }, extra));
+    m.userData.dashPx = cls.dash.slice(); return m;
+  }
+  /** Greedy label decluttering: project every label sprite to the screen,
+      keep the important ones first (site > graded / workings > rest, nearer
+      first) and hide any whose box overlaps one already placed.  Throttled
+      to ~4 Hz and skipped while the camera has not moved; above 400 labels
+      it stands down and says so in `labelsDecluttered`. */
+  declutterLabels(force = false) {
+    const now = performance.now();
+    if (!force && now - this._declutterAt < 250) return;
+    const cam = this.camera; cam.updateMatrixWorld();
+    const key = cam.matrixWorld.elements.join(',') + '|' + cam.projectionMatrix.elements.join(',');
+    if (!force && !this.labelsDirty && key === this._declutterCam) return;
+    this._declutterAt = now; this._declutterCam = key; this.labelsDirty = false;
+    const sprites = [];
+    for (const L of this.layers.values()) { if (!L.group.visible) continue; L.group.traverse(o => { if (o.isSprite && o.userData.label) sprites.push(o); }); }
+    let changed = false;
+    if (sprites.length > 400) { this.labelsDecluttered = false; for (const s of sprites) if (!s.visible) { s.visible = true; changed = true; } if (changed) this.needs = true; return; }
+    this.labelsDecluttered = true;
+    const el = this.canvas.parentElement, w = el.clientWidth || 800, h = el.clientHeight || 600;
+    // sizeAttenuation:false sprites are `scale × depth` wide in view space
+    // under perspective (so a fixed pixel size), and `scale` world units in ortho
+    const ortho = cam.isOrthographicCamera;
+    const pxPerScale = ortho ? cam.zoom * h / Math.max(1e-9, cam.top - cam.bottom) : (h / 2) / Math.tan((cam.fov || 50) * DEG / 2);
+    const v = new THREE.Vector3(); const items = [];
+    for (const s of sprites) {
+      s.updateWorldMatrix(true, false); v.setFromMatrixPosition(s.matrixWorld);
+      const dist = v.distanceTo(cam.position);
+      v.applyMatrix4(cam.matrixWorldInverse);
+      if (!ortho && v.z >= 0) { items.push({ s, off: true }); continue; }
+      v.applyMatrix4(cam.projectionMatrix);
+      const sx = (v.x + 1) / 2 * w, sy = (1 - v.y) / 2 * h, sw = s.scale.x * pxPerScale, sh = s.scale.y * pxPerScale;
+      const x0 = sx - sw * s.center.x, x1 = x0 + sw, y1 = sy + sh * s.center.y, y0 = y1 - sh;
+      if (x1 < 0 || y1 < 0 || x0 > w || y0 > h) { items.push({ s, off: true }); continue; }
+      items.push({ s, off: false, pr: s.userData.priority || 1, dist, box: [x0, y0, x1, y1] });
+    }
+    items.sort((a, b) => ((b.pr || 0) - (a.pr || 0)) || ((a.dist || 0) - (b.dist || 0)));
+    const placed = [];
+    for (const it of items) {
+      let vis = true;
+      if (!it.off) { for (const b of placed) if (it.box[0] < b[2] && it.box[2] > b[0] && it.box[1] < b[3] && it.box[3] > b[1]) { vis = false; break; } if (vis) placed.push(it.box); }
+      if (it.s.visible !== vis) { it.s.visible = vis; changed = true; }
+    }
+    if (changed) this.needs = true;
+  }
   /* world <-> scene */
   toScene(x, y, z) { return new THREE.Vector3(x - this.origin[0], (z === z ? z : 0) - this.origin[2], -(y - this.origin[1])); }
   toSceneArr(x, y, z) { return [x - this.origin[0], (z === z ? z : 0) - this.origin[2], -(y - this.origin[1])]; }
@@ -204,42 +291,71 @@ export class Renderer {
   pick(clientX, clientY, filter = null) {
     const r = this.canvas.getBoundingClientRect();
     const ndc = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+    // Pixel-consistent tolerances: a mine dot or a hairline is a few pixels
+    // wide whatever the zoom, so the raycaster's world-unit thresholds follow
+    // metres-per-pixel at the orbit target.  Geometry is built in metres under
+    // the exaggerated root (scale 1, ve, 1) and three tests points and lines in
+    // the object's own frame divided by the object's own scale (1), so no `ve`
+    // correction applies horizontally.
+    const tol = 6 * this.metresPerPixel();
+    if (tol > 0) { this.raycaster.params.Points.threshold = tol; this.raycaster.params.Line.threshold = tol; }
     this.raycaster.setFromCamera(ndc, this.camera);
     const targets = [];
     for (const L of this.layers.values()) { if (!L.group.visible) continue; if (filter && !filter(L.obj)) continue; L.group.traverse(o => { if (o.isMesh || o.isPoints || o.isLine || o.isLineSegments) targets.push(o); }); }
     const hits = this.raycaster.intersectObjects(targets, false);
+    const planes = this.clip.active ? this.clip.planes : [];
+    let first = null;
     for (const h of hits) {
-      if (this.clip.active && this.clip.plane && h.object.userData.clippable !== false) { if (this.clip.plane.distanceToPoint(h.point) < -1e-6) continue; }
+      if (planes.length && h.object.userData.clippable !== false && planes.some(pl => pl.distanceToPoint(h.point) < -1e-6)) continue;
       const layer = h.object.userData.layerId ? this.layers.get(h.object.userData.layerId) : null;
-      return { hit: h, obj: layer ? layer.obj : null, world: this.fromScene(h.point), index: h.index, instanceId: h.instanceId, faceIndex: h.faceIndex, object: h.object };
+      const res = { hit: h, obj: layer ? layer.obj : null, world: this.fromScene(h.point), index: h.index, instanceId: h.instanceId, faceIndex: h.faceIndex, object: h.object };
+      const context = layer && isContextObj(layer.obj);
+      // A see-through backdrop (draped geology at 0.4, terrain in see-through
+      // mode, a faint scan) must not swallow the working or the mine visible
+      // behind it; an opaque backdrop still hides what is under it.
+      if (!first) { first = res; if (!context || materialOpacity(h.object) >= 0.6) return res; continue; }
+      if (!context) return res;
+      if (materialOpacity(h.object) >= 0.6) return first;
     }
-    return null;
+    return first;
   }
   pickPlane(clientX, clientY, planeSceneWorld) {   // intersect ray with a THREE.Plane (scene/world coords)
     const r = this.canvas.getBoundingClientRect();
     this.raycaster.setFromCamera(new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1), this.camera);
     const p = new THREE.Vector3(); return this.raycaster.ray.intersectPlane(planeSceneWorld, p) ? this.fromScene(p) : null;
   }
-  /* clipping: plane given in WORLD model coords (point, normal) */
-  setClip(point, normal, side = 1, active = true) {
-    if (!active || !point) { this.clip = { active: false, plane: null, side: 1, planes: [] }; this.applyClipping(); return; }
-    this.clip.active = true; this.clip.side = side; this.clip.worldPoint = point.slice(); this.clip.worldNormal = normal.slice();
+  /* clipping: plane given in WORLD model coords (point, normal).  With a
+     `thickness` (metres) the cut becomes a slab: two planes facing each other
+     ± thickness/2 about the section keep only the slice between them. */
+  setClip(point, normal, side = 1, active = true, thickness = null) {
+    if (!active || !point) { this.clip = { active: false, plane: null, side: 1, planes: [], thickness: null }; this.applyClipping(); return; }
+    this.clip.active = true; this.clip.side = side; this.clip.worldPoint = point.slice(); this.clip.worldNormal = normal.slice(); this.clip.thickness = thickness > 0 ? +thickness : null;
     this.applyClipping();
+  }
+  /** A THREE.Plane in scene (exaggerated) coordinates through world point p
+      with world normal n; `flip` keeps the other side. */
+  scenePlane(p, n, flip = false) {
+    // three points of the plane in model coords -> scene (exaggerated) coords
+    const { u, v } = E.planeBasis(p, n);
+    const P0 = this.toScene(p[0], p[1], p[2]), P1 = this.toScene(p[0] + u[0] * 100, p[1] + u[1] * 100, p[2] + u[2] * 100), P2 = this.toScene(p[0] + v[0] * 100, p[1] + v[1] * 100, p[2] + v[2] * 100);
+    for (const P of [P0, P1, P2]) P.y *= this.ve;
+    const nrm = new THREE.Vector3().subVectors(P1, P0).cross(new THREE.Vector3().subVectors(P2, P0)).normalize();
+    const want = this.toScene(p[0] + n[0] * 100, p[1] + n[1] * 100, p[2] + n[2] * 100); want.y *= this.ve; want.sub(P0);
+    if (nrm.dot(want) < 0) nrm.negate();
+    if (flip) nrm.negate();
+    return new THREE.Plane().setFromNormalAndCoplanarPoint(nrm, P0);
   }
   applyClipping() {
     let planes = [];
     if (this.clip.active && this.clip.worldPoint) {
-      const p = this.clip.worldPoint, n = this.clip.worldNormal;
-      // three points of the plane in model coords -> scene (exaggerated) coords
-      const { u, v } = E.planeBasis(p, n);
-      const P0 = this.toScene(p[0], p[1], p[2]), P1 = this.toScene(p[0] + u[0] * 100, p[1] + u[1] * 100, p[2] + u[2] * 100), P2 = this.toScene(p[0] + v[0] * 100, p[1] + v[1] * 100, p[2] + v[2] * 100);
-      for (const P of [P0, P1, P2]) P.y *= this.ve;
-      const nrm = new THREE.Vector3().subVectors(P1, P0).cross(new THREE.Vector3().subVectors(P2, P0)).normalize();
-      const want = this.toScene(p[0] + n[0] * 100, p[1] + n[1] * 100, p[2] + n[2] * 100); want.y *= this.ve; want.sub(P0);
-      if (nrm.dot(want) < 0) nrm.negate();
-      if (this.clip.side < 0) nrm.negate();
-      const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(nrm, P0);
-      this.clip.plane = plane; planes = [plane];
+      const p = this.clip.worldPoint, n = this.clip.worldNormal, t = this.clip.thickness;
+      if (t) {
+        const nl = Math.hypot(n[0], n[1], n[2]) || 1; const hh = t / 2 / nl;
+        const off = s => [p[0] + n[0] * s, p[1] + n[1] * s, p[2] + n[2] * s];
+        // +n through p − n·h keeps n·(x−p) ≥ −h; −n through p + n·h keeps n·(x−p) ≤ h
+        const a = this.scenePlane(off(-hh), n, false), b = this.scenePlane(off(hh), n, true);
+        this.clip.plane = this.clip.side < 0 ? b : a; planes = [a, b];
+      } else { const plane = this.scenePlane(p, n, this.clip.side < 0); this.clip.plane = plane; planes = [plane]; }
     } else this.clip.plane = null;
     this.clip.planes = planes;
     for (const L of this.layers.values()) L.group.traverse(o => { if (o.material && o.userData.clippable !== false) { const mats = Array.isArray(o.material) ? o.material : [o.material]; for (const m of mats) { m.clippingPlanes = planes; m.clipShadows = false; m.needsUpdate = true; } } });
@@ -248,16 +364,22 @@ export class Renderer {
   /* layer management */
   remove(id) { const L = this.layers.get(id); if (!L) return; this.root.remove(L.group); disposeGroup(L.group); this.layers.delete(id); this.invalidate(); }
   setVisible(id, v) { const L = this.layers.get(id); if (L) { L.group.visible = v; this.invalidate(); } }
-  setOpacity(id, a) { const L = this.layers.get(id); if (!L) return; L.group.traverse(o => { if (o.material) { const mats = Array.isArray(o.material) ? o.material : [o.material]; for (const m of mats) { m.opacity = a; m.transparent = a < 1 || m.userData.alwaysTransparent; m.depthWrite = !(a < 1 && !m.userData.keepDepth); m.needsUpdate = true; } } }); this.invalidate(); }
+  /** Layer opacity multiplies each material's own base opacity (stamped at
+      build time), so a described tube built translucent stays fainter than a
+      surveyed one at every position of the inspector slider. */
+  setOpacity(id, a) { const L = this.layers.get(id); if (!L) return; L.opacity = a; L.group.traverse(o => { if (o.material) { const mats = Array.isArray(o.material) ? o.material : [o.material]; for (const m of mats) applyOpacity(m, a); } }); this.invalidate(); }
   sync(obj, display = {}) {
     this.remove(obj.id);
-    const L = { obj, group: new THREE.Group(), display: Object.assign({}, display) };
+    const L = { obj, group: new THREE.Group(), display: Object.assign({}, display), buildError: null };
     L.group.name = obj.name; L.group.visible = obj.visible !== false;
-    try { this.build(obj, L); } catch (e) { console.warn('[render]', obj.kind, obj.name, e); }
-    L.group.traverse(o => { o.userData.layerId = obj.id; });
+    // a layer that fails to draw says so on its row instead of vanishing
+    try { this.build(obj, L); L.buildError = null; } catch (e) { console.warn('[render]', obj.kind, obj.name, e); L.buildError = (e && e.message) || String(e); }
+    L.empty = !L.group.children.length;
+    L.group.traverse(o => { o.userData.layerId = obj.id; if (o.material) { const mats = Array.isArray(o.material) ? o.material : [o.material]; for (const m of mats) stampOpacity(m); } });
     this.root.add(L.group); this.layers.set(obj.id, L);
     if (obj.opacity != null && obj.opacity < 1) this.setOpacity(obj.id, obj.opacity);
     if (this.clip.planes.length) this.applyClipping();
+    this.labelsDirty = true;
     this.invalidate();
     return L;
   }
@@ -322,7 +444,7 @@ export class Renderer {
     let colors = null;
     if (d.colorBy === 'elevation' || (g.role === 'topography' && !d.texture && d.colorBy !== 'flat')) { const zs = new Float32Array(mesh.nVertices); for (let i = 0; i < zs.length; i++) zs[i] = mesh.vertices[3 * i + 2]; const r = this.colorsForAttribute(zs, defaultColormap(g, d), d.range); colors = r.colors; L.range = r.range; }
     const geo = this.geomFromMesh(mesh, colors);
-    const mat = this.material(g.color, { vertexColors: !!colors, map: d.texture || null, wireframe: !!d.wireframe, transparent: g.opacity < 1, opacity: g.opacity });
+    const mat = this.material(g.color, { vertexColors: !!colors, map: d.texture || null, wireframe: !!d.wireframe });
     if (d.texture) { // planar UVs from the grid bounds (texture covers grid bbox exactly)
       const b = g.bounds(); const uv = new Float32Array(mesh.nVertices * 2);
       for (let i = 0; i < mesh.nVertices; i++) { uv[2 * i] = (mesh.vertices[3 * i] - b[0]) / (b[3] - b[0] || 1); uv[2 * i + 1] = (mesh.vertices[3 * i + 1] - b[1]) / (b[4] - b[1] || 1); }
@@ -335,14 +457,37 @@ export class Renderer {
     const d = L.display; let colors = null;
     if (d.attribute && mesh.attributes[d.attribute] && mesh.attributes[d.attribute].location === 'vertices') { const r = this.colorsForAttribute(mesh.attributes[d.attribute].values, defaultColormap(mesh, d), d.range); colors = r.colors; L.range = r.range; }
     const geo = this.geomFromMesh(mesh, colors);
-    const mat = this.material(mesh.color, { vertexColors: !!colors, wireframe: !!d.wireframe, flat: mesh.role === 'stope' || mesh.role === 'unit', transparent: mesh.opacity < 1, opacity: mesh.opacity });
-    const m = new THREE.Mesh(geo, mat); L.group.add(m);
+    const mat = this.material(mesh.color, { vertexColors: !!colors, wireframe: !!d.wireframe, flat: mesh.role === 'stope' || mesh.role === 'unit' });
+    const m = new THREE.Mesh(geo, mat); m.userData.kind = 'mesh'; L.group.add(m);
     if (d.edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.5 })); L.group.add(e); }
+    if (d.labels) { const b = mesh.bounds(); if (b) { const sp = this.labelSprite(mesh.name, [(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2], 1); L.group.add(sp); L.labelled = 1; L.labelTotal = 1; } }
+  }
+  /** One label sprite at a world point, tagged for the declutter pass. */
+  labelSprite(text, p, priority = 1, lift = 0) {
+    const sp = makeTextSprite(String(text).slice(0, 48)); const s = this.toSceneArr(p[0], p[1], p[2]);
+    sp.position.set(s[0], s[1] + lift / this.ve, s[2]); sp.userData.clippable = false; sp.userData.label = true; sp.userData.priority = priority; sp.userData.text = String(text).slice(0, 48);
+    return sp;
+  }
+  /** Labels for a lineset: one per part at its arc-length midpoint, capped at
+      200.  A working that is not surveyed says so in the label itself, so a
+      name floating over a described adit cannot read as a surveyed one. */
+  addLineLabels(ls, L, d) {
+    const field = d.labelField || 'name'; const cap = 200; const isW = ls.role === 'workings'; let placed = 0;
+    for (let k = 0; k < ls.parts.length && placed < cap; k++) {
+      const f = ls.features[k] || {}; const cc = isW ? confClass(f) : 'surveyed';
+      let txt = field === 'confidence' ? (isW ? (CONF_CLASSES.find(c => c.key === cc) || {}).label || cc : '') : (f[field] == null ? '' : String(f[field]));
+      if (!txt) continue;
+      if (isW && cc !== 'surveyed' && field !== 'confidence') txt += ` (${cc})`;
+      const pts = ls.partXYZ(k); if (!pts.length) continue;
+      const sp = this.labelSprite(txt, polylineMidpoint(pts), isW ? 2 : 1, 8); sp.userData.partIndex = k; L.group.add(sp); placed++;
+    }
+    L.labelled = placed; L.labelTotal = ls.parts.length;
   }
   buildLines(ls, L) {
     const d = L.display; const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2];
     const byType = ls.role === 'workings';
     const tubes = d.tubes != null ? d.tubes : (ls.role === 'workings' || ls.role === 'drillhole-traces');
+    if (d.labels) this.addLineLabels(ls, L, d);
     if (tubes && ls.parts.length <= 4000) {
       // A tube cannot be dashed, so confidence rides on solidity instead: a
       // surveyed working is a solid tube, a described or assumed one is
@@ -360,14 +505,17 @@ export class Renderer {
       for (const acc of mats.values()) {
         const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(acc.pos, 3)); geo.setIndex(acc.idx); geo.computeVertexNormals();
         const op = TUBE_OPACITY[acc.conf] == null ? 1 : TUBE_OPACITY[acc.conf];
-        const m = new THREE.Mesh(geo, this.material(acc.color, { flat: false, emissive: byType ? 0x221100 : 0x000000, transparent: op < 1 || ls.opacity < 1, opacity: op * ls.opacity })); m.userData.partIndex = acc.partIndex; m.userData.confidence = acc.conf; L.group.add(m);
+        // the layer's own opacity is applied on top by sync() -> setOpacity()
+        const m = new THREE.Mesh(geo, this.material(acc.color, { flat: false, emissive: byType ? 0x221100 : 0x000000, transparent: op < 1, opacity: op }));
+        m.userData.partIndex = acc.partIndex; m.userData.faceRanges = acc.faceRanges || []; m.userData.confidence = acc.conf; m.userData.kind = 'tubes'; L.group.add(m);
       }
       if (byType) for (const cls of CONF_CLASSES) {
         if (!cls.dash || !ls.features.some(f => confClass(f) === cls.key)) continue;
         const cseg = this.linesGeometry(ls, null, false, (k, f) => confClass(f) === cls.key);
         if (!cseg.segPart.length) continue;
-        const cm = new THREE.LineSegments(cseg.geo, new THREE.LineDashedMaterial({ vertexColors: true, dashSize: cls.dash[0], gapSize: cls.dash[1] }));
-        cm.userData.segPart = cseg.segPart; cm.userData.confidence = cls.key; L.group.add(cm);
+        // depth test off so the dash reads through its own (translucent) tube
+        const cm = new THREE.LineSegments(cseg.geo, this.dashedMaterial(cls, { depthTest: false }));
+        cm.renderOrder = 5; cm.userData.segPart = cseg.segPart; cm.userData.confidence = cls.key; L.group.add(cm);
       }
       // also thin lines for picking part indices
       const seg = this.linesGeometry(ls, ls.role === 'workings' ? null : ls.color, true); const lm = new THREE.LineSegments(seg.geo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.0, depthWrite: false })); lm.userData.segPart = seg.segPart; lm.userData.pickOnly = true; lm.visible = true; L.group.add(lm);
@@ -382,15 +530,13 @@ export class Renderer {
       for (const cls of CONF_CLASSES) {
         const seg = this.linesGeometry(ls, base, false, (k, f) => confClass(f) === cls.key);
         if (!seg.segPart.length) continue;
-        const m = new THREE.LineSegments(seg.geo, cls.dash
-          ? new THREE.LineDashedMaterial({ vertexColors: true, dashSize: cls.dash[0], gapSize: cls.dash[1], transparent: ls.opacity < 1, opacity: ls.opacity })
-          : new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1, transparent: ls.opacity < 1, opacity: ls.opacity }));
+        const m = new THREE.LineSegments(seg.geo, cls.dash ? this.dashedMaterial(cls) : new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1 }));
         m.userData.segPart = seg.segPart; m.userData.confidence = cls.key; L.group.add(m);
       }
       return;
     }
     const seg = this.linesGeometry(ls, base);
-    const m = new THREE.LineSegments(seg.geo, new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1, transparent: ls.opacity < 1, opacity: ls.opacity })); m.userData.segPart = seg.segPart; L.group.add(m);
+    const m = new THREE.LineSegments(seg.geo, new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1 })); m.userData.segPart = seg.segPart; L.group.add(m);
   }
   linesGeometry(ls, color, lift = false, keep = null) {
     const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2];
@@ -529,7 +675,15 @@ export class Renderer {
   }
   addLabels(ps, L, field) {
     const col = ps.attributes[field]; if (!col) return; const n = Math.min(ps.n, 300);
-    for (let i = 0; i < n; i++) { const txt = col[i]; if (txt == null || txt === '') continue; const sp = makeTextSprite(String(txt).slice(0, 40)); const z = ps.xyz[3 * i + 2]; sp.position.set(ps.xyz[3 * i] - this.origin[0], (z === z ? z : 0) - this.origin[2] + 12 / this.ve, -(ps.xyz[3 * i + 1] - this.origin[1])); sp.userData.clippable = false; L.group.add(sp); }
+    // declutter priority: the site itself, then anything carrying a grade
+    const site = ps.attributes.is_site || null; const grades = Object.keys(ps.attributes).filter(k => GRADE_COL.test(k)).map(k => ps.attributes[k]);
+    let placed = 0;
+    for (let i = 0; i < n; i++) {
+      const txt = col[i]; if (txt == null || txt === '') continue;
+      const pr = site && +site[i] === 1 ? 3 : grades.some(g => g[i] != null && g[i] !== '' && +g[i] === +g[i]) ? 2 : 1;
+      const z = ps.xyz[3 * i + 2]; const sp = this.labelSprite(String(txt).slice(0, 40), [ps.xyz[3 * i], ps.xyz[3 * i + 1], z === z ? z : 0], pr, 12); sp.userData.index = i; L.group.add(sp); placed++;
+    }
+    L.labelled = placed; L.labelTotal = ps.n;
   }
   buildBlocks(bm, L) {
     const d = L.display; const attr = d.attribute || Object.keys(bm.attributes).find(k => bm.attributes[k].type === 'number') || Object.keys(bm.attributes)[0];
@@ -564,13 +718,13 @@ export class Renderer {
   buildDrillholes(dh, L) {
     const d = L.display; const traces = dh.desurvey(2); const ls = new GM.LineSet({ name: dh.name, role: 'drillhole-traces', color: dh.color });
     for (const [hole, pts] of Object.entries(traces)) ls.addPolyline(pts.map(p => [p[1], p[2], p[3]]), { hole, width_m: d.radius ? d.radius * 2 : 2 });
-    this.buildLines(ls, { display: Object.assign({ tubes: true, radius: 1.0 }, d), group: L.group, obj: ls });
+    this.buildLines(ls, { display: Object.assign({ tubes: true, radius: 1.0 }, d, { labels: false }), group: L.group, obj: ls });
     // colour-coded intervals for a chosen table/column
     if (d.table && d.column && dh.intervals[d.table]) {
       const rows = dh.intervals[d.table]; const vals = rows.map(r => +r[d.column]); const r = this.colorsForAttribute(Float64Array.from(vals), defaultColormap(dh, d), d.range); L.range = r.range;
       const acc = { color: [255, 255, 255], pos: [], idx: [], colors: [] };
       rows.forEach((row, q) => { const f = +row.from, t = +row.to; if (!(f === f && t === t) || vals[q] !== vals[q]) return; const pts = []; const steps = Math.max(1, Math.ceil((t - f) / 2)); for (let s = 0; s <= steps; s++) { const p = dh.locate(row.hole, f + (t - f) * s / steps, traces); if (p) pts.push([p[0] - this.origin[0], p[2] - this.origin[2], -(p[1] - this.origin[1])]); } if (pts.length < 2) return; const before = acc.pos.length / 3; appendTube(acc, pts, (d.radius || 1.0) * 1.8, 8, q); const after = acc.pos.length / 3; for (let v = before; v < after; v++) acc.colors.push(r.colors[3 * q], r.colors[3 * q + 1], r.colors[3 * q + 2]); });
-      if (acc.pos.length) { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(acc.pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(acc.colors, 3)); geo.setIndex(acc.idx); geo.computeVertexNormals(); L.group.add(new THREE.Mesh(geo, this.material([255, 255, 255], { vertexColors: true }))); }
+      if (acc.pos.length) { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(acc.pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(acc.colors, 3)); geo.setIndex(acc.idx); geo.computeVertexNormals(); const im = new THREE.Mesh(geo, this.material([255, 255, 255], { vertexColors: true })); im.userData.faceRanges = acc.faceRanges || []; im.userData.kind = 'intervals'; im.userData.table = d.table; L.group.add(im); }
     }
     // collars
     const ps = new GM.PointSet({ name: 'collars', role: 'collars', color: dh.color }); for (const c of dh.collars) ps.add(+c.x, +c.y, +c.z, { name: c.hole });
@@ -580,7 +734,7 @@ export class Renderer {
     const d = L.display; const corners = ip.corners(); // TL TR BR BL world
     const pos = new Float32Array(12); corners.forEach((c, i) => { const s = this.toSceneArr(c[0], c[1], c[2] === c[2] ? c[2] : (d.elevation || 0)); pos[3 * i] = s[0]; pos[3 * i + 1] = s[1]; pos[3 * i + 2] = s[2]; });
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 0], 2)); geo.setIndex([0, 2, 1, 0, 3, 2]); geo.computeVertexNormals();
-    const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: ip.opacity == null ? 1 : ip.opacity, clippingPlanes: this.clip.planes, color: 0xffffff });
+    const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 1, clippingPlanes: this.clip.planes, color: 0xffffff });
     mat.userData.alwaysTransparent = true; mat.userData.keepDepth = true;
     const mesh = new THREE.Mesh(geo, mat); mesh.userData.kind = 'imageplane'; L.group.add(mesh);
     if (ip.image) { new THREE.TextureLoader().load(ip.image, tex => { tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4; mat.map = tex; mat.needsUpdate = true; this.invalidate(); }, undefined, () => { mat.color.set(0x556677); this.invalidate(); }); }
@@ -598,6 +752,7 @@ export class Renderer {
     // ground, never the plane).
     const m = new THREE.Mesh(geo, mat); m.userData.clippable = false; m.userData.kind = 'section'; m.raycast = () => { }; L.group.add(m);
     const edge = new THREE.LineLoop(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3)), new THREE.LineBasicMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.9 })); edge.userData.clippable = false; edge.raycast = () => { }; L.group.add(edge);
+    const lbl = this.labelSprite(sec.name || 'section', [(c[0][0] + c[1][0]) / 2, (c[0][1] + c[1][1]) / 2, zmax], 1, 4); L.group.add(lbl);
     // products (intersection lines, ribbons) are added by the tools into L.products group
     L.products = new THREE.Group(); L.products.userData.clippable = false; L.group.add(L.products);
   }
@@ -610,8 +765,10 @@ export class Renderer {
 }
 
 function appendTube(acc, pts, radius, sides, partIndex) {
-  // sweep a ring along the polyline (per-segment cylinders joined at vertices)
-  const base = acc.pos.length / 3;
+  // sweep a ring along the polyline (per-segment cylinders joined at vertices);
+  // the triangle range each part occupies is recorded so a raycast face
+  // resolves back to the part (`userData.faceRanges` on the batched mesh)
+  const base = acc.pos.length / 3, face0 = acc.idx.length / 3;
   const n = pts.length; if (n < 2) return;
   const frames = [];
   for (let i = 0; i < n; i++) {
@@ -627,7 +784,26 @@ function appendTube(acc, pts, radius, sides, partIndex) {
   for (const [ring, flip] of [[0, true], [n - 1, false]]) { const center = acc.pos.length / 3; acc.pos.push(pts[ring][0], pts[ring][1], pts[ring][2]); for (let s = 0; s < sides; s++) { const a = base + ring * sides + s, b = base + ring * sides + (s + 1) % sides; if (flip) acc.idx.push(center, b, a); else acc.idx.push(center, a, b); } }
   if (!acc.partIndex) acc.partIndex = [];
   acc.partIndex.push(partIndex);
+  if (!acc.faceRanges) acc.faceRanges = [];
+  acc.faceRanges.push([face0, acc.idx.length / 3, partIndex]);
 }
+/** Point half-way along a polyline by arc length. */
+function polylineMidpoint(pts) {
+  if (pts.length === 1) return pts[0].slice();
+  let total = 0; const seg = [];
+  for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]); seg.push(l); total += l; }
+  let run = 0;
+  for (let i = 0; i < seg.length; i++) {
+    if (run + seg[i] >= total / 2) { const t = seg[i] > 0 ? (total / 2 - run) / seg[i] : 0; const a = pts[i], b = pts[i + 1]; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+    run += seg[i];
+  }
+  return pts[pts.length - 1].slice();
+}
+/* Every material remembers the opacity it was built with; the layer slider
+   multiplies it rather than overwriting it, so a described tube (0.72) or an
+   assumed one (0.5) never brightens into a surveyed-looking solid. */
+function stampOpacity(m) { if (m.userData.baseOpacity == null) { m.userData.baseOpacity = m.opacity == null ? 1 : m.opacity; m.userData.baseTransparent = !!m.transparent; m.userData.baseDepthWrite = m.depthWrite !== false; } return m; }
+function applyOpacity(m, a) { stampOpacity(m); const u = m.userData; const op = u.baseOpacity * a; m.opacity = op; m.transparent = op < 1 || u.baseTransparent || !!u.alwaysTransparent; m.depthWrite = u.baseDepthWrite && !(a < 1 && !u.keepDepth); m.needsUpdate = true; }
 
 export function makeTextSprite(text, opts = {}) {
   const c = document.createElement('canvas'); const x = c.getContext('2d'); const font = `${opts.size || 22}px ui-monospace, Menlo, monospace`; x.font = font;

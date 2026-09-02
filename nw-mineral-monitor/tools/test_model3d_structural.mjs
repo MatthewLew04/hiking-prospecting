@@ -37,7 +37,10 @@ const base = `http://localhost:${PORT}/`;
 try {
   await page.goto(`${base}model3d.html`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => !!window.gmApp && !!window.gmApp.R, null, { timeout: 60000 });
-  await page.evaluate(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); });
+  // close the start modal through its own ✕ so its document-level Escape
+  // listener goes with it — removing the element alone leaves that listener
+  // behind to swallow the first Escape the tests press
+  await page.evaluate(() => { document.querySelectorAll('.modal .modal-head button').forEach(b => b.click()); document.querySelectorAll('.modal').forEach(m => m.remove()); });
 
   /* ---------- inject a synthetic project ---------- */
   const built = await page.evaluate(async ({ DIP, AZ }) => {
@@ -92,7 +95,7 @@ try {
   const elev = await page.evaluate(id => {
     const app = window.gmApp, o = app.project.get(id);
     const before = o.xyz[2];
-    app.tools.structure.layer = o; app.tools.structure.setElevation();
+    app.tools.structure.layer = o; app.tools.structure.elev = { scope: 'unsurveyed', offset: 0 }; app.tools.structure.setElevation();
     return { before, after: o.xyz[2], kept: !!o.attributes.z_original, topo: app.topoGrid().sample(o.xyz[0], o.xyz[1]) };
   }, der.id);
   check('set elevation: measurements draped onto topography', Math.abs(elev.after - elev.topo) < 1e-6 && elev.kept, `${elev.before.toFixed(1)} → ${elev.after.toFixed(1)}`);
@@ -178,6 +181,150 @@ try {
   });
   check('global trend: taken from the Bingham mean plane', gt && Math.abs(gt.dip - DIP) < 1 && Math.abs(((gt.dip_azimuth - AZ) % 360 + 540) % 360 - 180) < 1, JSON.stringify(gt));
 
+  /* ---------- global trend round-trips through the project JSON ---------- */
+  const gtrt = await page.evaluate(async () => {
+    const app = window.gmApp, GM = await import('./assets/geomodel/gm-core.js'), t = app.tools.form;
+    t.global = { dip: 41, dipaz: 237, pitch: 12, ratios: [4, 2, 1] }; t.saveGlobal();
+    const p2 = GM.Project.fromJSON(JSON.parse(app.project.serialize()));
+    const saved = p2.metadata.global_trend;
+    app.setProject(p2, 'structural-test');                      // a real project switch, as after a reload
+    app.tools.open('form');
+    const v = k => { const el = document.querySelector(`#toolbody [data-gt="${k}"]`); return el ? +el.value : null; };
+    const st = document.querySelector('#toolbody [data-gt-state]');
+    t.resetGlobal();
+    const afterReset = { meta: app.project.metadata.global_trend || null, dip: v('dip'), r0: v('r0'), state: (document.querySelector('#toolbody [data-gt-state]') || {}).getAttribute && document.querySelector('#toolbody [data-gt-state]').getAttribute('data-gt-state') };
+    t.global = { dip: 41, dipaz: 237, pitch: 12, ratios: [4, 2, 1] }; t.saveGlobal(); t.repanel();
+    return { saved, dip: v('dip') === 41 ? 41 : null, panel: { dip: st ? +document.querySelector('#toolbody [data-gt="dip"]').value : null }, state: st ? st.getAttribute('data-gt-state') : null, note: (document.querySelector('#toolbody [data-gt-note]') || {}).textContent || '', afterReset };
+  });
+  check('global trend: round-trips through project JSON and the panel shows the saved values', gtrt.saved && gtrt.saved.dip === 41 && gtrt.saved.dip_azimuth === 237 && gtrt.saved.ratios.join() === '4,2,1' && gtrt.state === 'saved' && gtrt.dip === 41, JSON.stringify({ saved: gtrt.saved, state: gtrt.state, dip: gtrt.dip }));
+  check('global trend: RESET shows the 3:3:1 defaults and clears the saved trend', gtrt.afterReset.meta === null && gtrt.afterReset.dip === 0 && gtrt.afterReset.r0 === 3 && gtrt.afterReset.state === 'default', JSON.stringify(gtrt.afterReset));
+  check('global trend: the note names its consumers truthfully', /Implicit surface tool applies it/.test(gtrt.note) && /kriging does not yet/.test(gtrt.note), gtrt.note.slice(-120));
+
+  /* ---------- a derive that yields nothing leaves its counts in the panel ---------- */
+  const nothing = await page.evaluate(async () => {
+    const app = window.gmApp, S = await import('./assets/geomodel/gm-structural.js'), t = app.tools.structure;
+    app.tools.open('structure');
+    const src = app.project.objects.find(o => o.kind === 'lineset' && o.role === 'geology-outline');
+    t.derSel = src.id; t.der = Object.assign({}, S.DERIVE_DEFAULTS, { min_relief: 1e9 });
+    const before = app.project.objects.length;
+    await t.derive();
+    t.der = Object.assign({}, S.DERIVE_DEFAULTS);
+    const res = document.querySelector('#toolbody .psec.result');
+    return { added: app.project.objects.length - before, text: res ? res.textContent : '', last: t.last ? { produced: t.last.produced.length, warnings: t.last.warnings.length, rows: t.last.rows.length } : null };
+  });
+  check('derive: a run that yields nothing adds no layer and leaves the rejection counts in the panel DOM', nothing.added === 0 && /windows tried/.test(nothing.text) && /no relief/.test(nothing.text) && nothing.last && nothing.last.produced === 0 && nothing.last.warnings > 0, JSON.stringify(nothing.last) + ' ' + nothing.text.slice(0, 80));
+
+  /* ---------- row removal ---------- */
+  const rm = await page.evaluate(async () => {
+    const S = await import('./assets/geomodel/gm-structural.js');
+    const ps = S.newStructural('rm');
+    for (let i = 0; i < 5; i++) S.addMeasurement(ps, i, i * 10, 0, 10 + i, 100 + i, { confidence: 'sketched', tag: 't' + i });
+    ps.attributes.z_original = [1, 2];                         // a short column, as set-elevation can leave
+    const k = ps.removeRow(2);
+    return { k, n: ps.n, dips: Array.from(ps.attributes.dip), tags: ps.attributes.tag, xs: [ps.xyz[0], ps.xyz[3], ps.xyz[6], ps.xyz[9]], lens: Object.values(ps.attributes).map(c => c.length), k2: ps.removeRows([0, 3]), n2: ps.n, dips2: Array.from(ps.attributes.dip) };
+  });
+  check('removeRow: drops the right row and keeps every attribute column at n', rm.k === 1 && rm.n === 4 && rm.dips.join() === '10,11,13,14' && rm.tags.join() === 't0,t1,t3,t4' && rm.xs.join() === '0,1,3,4' && rm.lens.every(l => l === 4), JSON.stringify(rm));
+  check('removeRows: drops several rows at once', rm.k2 === 2 && rm.n2 === 2 && rm.dips2.join() === '11,13', JSON.stringify({ k2: rm.k2, n2: rm.n2, dips2: rm.dips2 }));
+
+  const del = await page.evaluate(id => {
+    const app = window.gmApp, t = app.tools.structure; app.tools.open('structure'); t.layer = app.project.get(id); const o = t.layer;
+    const n0 = o.n, dip0 = o.attributes.dip[0], rows = document.querySelectorAll('#toolbody .mrow').length;
+    t.deleteRow(0);
+    const n1 = o.n, edited = o.metadata.edited === true, warned = (o.metadata.warnings || []).some(w => /hand-pruned/.test(w)), pruned = /hand-pruned/.test(document.getElementById('toolbody').textContent);
+    app.undo();
+    return { rows, n0, n1, n2: o.n, edited, warned, pruned, dip0, dipLast: o.attributes.dip[o.n - 1], lens: Object.values(o.attributes).every(c => c.length === o.n) };
+  }, der.id);
+  check('delete measurement: ✕ goes through the undo history, marks a derived layer hand-pruned, and undo re-adds the row at the end', del.rows === 8 && del.n1 === del.n0 - 1 && del.n2 === del.n0 && Math.abs(del.dipLast - del.dip0) < 1e-9 && del.edited && del.warned && del.pruned && del.lens, JSON.stringify(del));
+
+  /* ---------- set elevation: scope ---------- */
+  const scope = await page.evaluate(async () => {
+    const app = window.gmApp, S = await import('./assets/geomodel/gm-structural.js'), t = app.tools.structure;
+    const ps = S.newStructural('scope test'); app.project.add(ps);
+    S.addMeasurement(ps, 100, 100, 1234.5, 30, 90, { confidence: 'surveyed' });
+    S.addMeasurement(ps, 200, 200, 0, 30, 90, { confidence: 'sketched' });
+    S.addMeasurement(ps, 300, 300, 555, 30, 90, { confidence: 'sketched' });
+    const topo = app.topoGrid(), tz = [topo.sample(100, 100), topo.sample(200, 200), topo.sample(300, 300)];
+    t.layer = ps; t.elev = { scope: 'blank', offset: 0 }; const r1 = t.setElevation();
+    const a = [ps.xyz[2], ps.xyz[5], ps.xyz[8]];
+    t.elev = { scope: 'unsurveyed', offset: 5 }; const r2 = t.setElevation();
+    const b = [ps.xyz[2], ps.xyz[5], ps.xyz[8]];
+    const text = (document.querySelector('#toolbody .psec.result') || {}).textContent || '';
+    const zo = ps.attributes.z_original.slice();
+    app.project.remove(ps);
+    return { a, b, tz, r1, r2, text, zo };
+  });
+  check('set elevation: the default scope moves only blank-z rows and never a surveyed one', scope.a[0] === 1234.5 && Math.abs(scope.a[1] - scope.tz[1]) < 1e-6 && scope.a[2] === 555 && scope.r1.moved === 1 && scope.r1.surveyed === 1 && scope.r1.hasZ === 1, JSON.stringify({ a: scope.a, r1: scope.r1 }));
+  check('set elevation: "not surveyed" with an offset skips the surveyed row, keeps z_original and reports the counts in the panel', scope.b[0] === 1234.5 && Math.abs(scope.b[2] - scope.tz[2] - 5) < 1e-6 && scope.zo[0] === null && scope.zo[2] === 555 && /moved/.test(scope.text) && /surveyed/.test(scope.text), JSON.stringify({ b: scope.b, r2: scope.r2, zo: scope.zo }));
+
+  /* ---------- arming: every click mode tells the shell ---------- */
+  const arm = await page.evaluate(id => {
+    // the start modal opens asynchronously after boot and takes the first
+    // Escape itself (that is its job) — close it through its ✕ first
+    const modals = [...document.querySelectorAll('.modal .modal-head button')]; modals.forEach(b => b.click());
+    const app = window.gmApp; app.tools.open('structure'); app.tools.structure.layer = app.project.get(id);
+    app.tools.structure.startDigitise('two');
+    if (document.activeElement) document.activeElement.blur();
+    const a = app.tools.armed;
+    return a ? { text: a.text, target: a.target, cursor: document.getElementById('gl').style.cursor, bar: document.getElementById('modebar').style.display, mode: app.tools.structure.mode, modalsClosed: modals.length } : null;
+  }, der.id);
+  check('arming: POINT + DOWN-DIP arms the shell with what the clicks do and where they go', !!arm && /DOWN-DIP/.test(arm.text) && /Esc cancels/.test(arm.text) && /as (inferred|sketched|surveyed|described)$/.test(arm.target) && arm.cursor === 'crosshair' && arm.bar === 'flex' && arm.mode === 'two', JSON.stringify(arm));
+  await page.keyboard.press('Escape');
+  const disarmed = await page.evaluate(() => ({ armed: window.gmApp.tools.armed, mode: window.gmApp.tools.structure.mode, active: window.gmApp.tools.active === window.gmApp.tools.structure, cursor: document.getElementById('gl').style.cursor }));
+  check('arming: Esc clears the digitise mode and the strip, and keeps the panel open', disarmed.armed === null && disarmed.mode === null && disarmed.active && disarmed.cursor === '', JSON.stringify(disarmed));
+
+  const net = await page.evaluate(id => {
+    const app = window.gmApp; app.tools.open('stereonet', app.project.get(id)); const t = app.tools.stereonet;
+    const hasKey = typeof t.onKey === 'function';
+    t.startPick('poly'); const lasso = app.tools.armed && app.tools.armed.text; t.startPick('poly');
+    const offAgain = app.tools.armed;
+    t.startPick('scene'); const scene = app.tools.armed && app.tools.armed.text;
+    if (document.activeElement) document.activeElement.blur();
+    return { hasKey, lasso, offAgain, scene, rect: !!t.rect, picking: t.picking };
+  }, der.id);
+  check('stereonet: the lasso says how it closes and BOX IN THE SCENE says to drag over the 3-D view', net.hasKey && /first vertex/.test(net.lasso || '') && /Enter/.test(net.lasso || '') && net.offAgain === null && /drag a rectangle over the 3-D view/.test(net.scene || '') && net.rect && net.picking === 'scene', JSON.stringify(net));
+  await page.keyboard.press('Escape');
+  const netOff = await page.evaluate(() => { const app = window.gmApp, t = app.tools.stereonet; return { armed: app.tools.armed, picking: t.picking, rect: !!t.rect, active: app.tools.active === t, cursor: document.getElementById('gl').style.cursor }; });
+  check('stereonet: Esc disarms, drops the box listeners that pause orbit / pan, and leaves the tool open', netOff.armed === null && netOff.picking === null && !netOff.rect && netOff.active && netOff.cursor === '', JSON.stringify(netOff));
+
+  /* ---------- SVG parity with the canvas ---------- */
+  const par = await page.evaluate(id => {
+    const app = window.gmApp; app.tools.open('stereonet', app.project.get(id)); const t = app.tools.stereonet;
+    t.opt.showCone = true; t.opt.contours = true; t.opt.net = 'polar'; t.opt.desample = 0.5; t.redraw();
+    t.picked = new Set([0, 1]); t.redraw();
+    const svg = t.exportSvg();
+    const has = re => re.test(svg);
+    const out = { contour: has(/class="contour"/), density: has(/class="density"/), cone: has(/class="cone"/), picked: (svg.match(/class="pole picked"/g) || []).length, polar: has(/class="polar"/), compass: ['N', 'E', 'S', 'W'].every(l => new RegExp(`class="compass"[^>]*>${l}<`).test(svg)), drawn: (svg.match(/class="pole"/g) || []).length, n: t.rows.length, caption: /of \d+ poles drawn/.test(svg), e1: has(/class="e1"/), e3: has(/class="e3"/), alpha: t.stats && t.stats.fisher ? t.stats.fisher.alpha95 : null };
+    t.opt.showCone = false; t.opt.net = 'equatorial'; t.picked.clear(); t.redraw();
+    return out;
+  }, der.id);
+  check('stereonet: the SVG carries contours, density bands, the α95 cone, the selection, the polar net and the compass labels', par.contour && par.density && (par.cone || par.alpha == null) && par.picked === 2 && par.polar && par.compass && par.e1 && par.e3, JSON.stringify(par));
+  check('stereonet: the SVG desamples like the canvas and says so in its caption', par.drawn + par.picked <= par.n && par.caption, `${par.drawn}+${par.picked} of ${par.n}`);
+
+  /* ---------- keep previous products ---------- */
+  const keep = await page.evaluate(async id => {
+    const app = window.gmApp, t = app.tools.form; app.tools.open('form', app.project.get(id));
+    t.sel = new Set([id]); t.opt.keep = true; t.opt.thresholds = 2; t.opt.resolution = 120; t.opt.max_points = 80; t.opt.drape = false;
+    const before = app.project.objects.filter(o => o.metadata && o.metadata.form_of === 'form' && !o.metadata.superseded).map(o => o.id);
+    await t.build();
+    const objs = app.project.objects.filter(o => o.metadata && o.metadata.form_of === 'form');
+    const prev = objs.filter(o => before.includes(o.id)), cur = objs.filter(o => !before.includes(o.id));
+    t.opt.keep = false;
+    return { before: before.length, prev: prev.map(o => ({ sup: o.metadata.superseded === true, vis: o.visible, name: o.name, shown: app.R.layers.get(o.id) ? app.R.layers.get(o.id).group.visible : null })), cur: cur.length, produced: t.last.produced.length, notes: [...document.querySelectorAll('#toolbody .note')].map(n => n.textContent).join(' | '), result: !!document.querySelector('#toolbody .psec.result') };
+  }, der.id);
+  check('form: "keep previous" hides, renames and tags the old set instead of deleting it', keep.before === 3 && keep.prev.length === 3 && keep.prev.every(p => p.sup && p.vis === false && p.shown === false && / \(previous\)$/.test(p.name)) && keep.cur === 2 && keep.produced === 2, JSON.stringify({ before: keep.before, prev: keep.prev, cur: keep.cur, produced: keep.produced }));
+  check('form: the panel states which set is current and shows the build result', /Current set: 2 form products/.test(keep.notes) && /superseded/.test(keep.notes) && keep.result, keep.notes.slice(0, 160));
+
+  /* ---------- make a plane: guarded until planeMesh lands ---------- */
+  const plane = await page.evaluate(async () => {
+    const app = window.gmApp, S = await import('./assets/geomodel/gm-structural.js'), t = app.tools.structure; app.tools.open('structure');
+    const has = typeof S.planeMesh === 'function'; const before = app.project.objects.length;
+    t.lastPoint = [0, 0, 900]; t.form.dip = 40; t.form.dipaz = 120; t.form.confidence = 'sketched';
+    const m = t.makePlane();
+    const btnText = [...document.querySelectorAll('#toolbody button')].map(b => b.textContent).find(x => /MAKE A PLANE/.test(x)) || '';
+    return { has, added: app.project.objects.length - before, group: m ? m.group : null, prov: m ? m.provenance : null, kind: m ? m.kind : null, btn: btnText, armed: app.tools.armed };
+  });
+  check('make a plane: ' + (plane.has ? 'builds a finite plane in Surfaces with the form as provenance' : 'the button exists and is guarded while planeMesh is absent'), plane.has ? (plane.added === 1 && plane.group === 'Surfaces' && plane.kind === 'mesh' && plane.prov && plane.prov.dip === 40 && plane.prov.dip_azimuth === 120 && plane.prov.confidence === 'sketched') : (plane.added === 0 && /MAKE A PLANE/.test(plane.btn) && plane.armed === null), JSON.stringify({ has: plane.has, added: plane.added, group: plane.group }));
+
   /* ---------- orthographic + legend + scale bar ---------- */
   const proj = await page.evaluate(() => {
     window.gmApp.setProjection('ortho');
@@ -253,6 +400,23 @@ try {
         JSON.stringify({ derSel: leak.derSel, derStats: leak.derStats, layer: leak.layer }));
   check('project switch: georeference forgets the image plane it was editing',
         leak.existing === null, JSON.stringify({ existing: leak.existing, project: leak.project }));
+
+  /* ---------- empty states point at the fix ---------- */
+  const empty = await page.evaluate(async () => {
+    const app = window.gmApp, T = app.tools;
+    const label = () => [...document.querySelectorAll('#toolbody button')].map(b => b.textContent);
+    T.open('stereonet'); const net = label().includes('OPEN STRUCTURAL DATA');
+    T.open('form'); const form = label().includes('OPEN STRUCTURAL DATA');
+    const jump = document.querySelector('#toolbody button'); jump.click();
+    const opened = T.active === T.structure && label().includes('+ NEW LAYER');
+    const p = T.structure.newLayer();                          // promptModal, not window.prompt
+    const m = document.querySelector('.modal'); const title = m ? m.querySelector('h2').textContent : null;
+    const input = m && m.querySelector('input'); if (input) input.value = 'Field structure A';
+    m && m.querySelector('.modal-body button.primary').click();
+    const made = await p;
+    return { net, form, opened, title, made: made ? { name: made.name, role: made.role, n: made.n } : null, layers: app.project.objects.filter(o => o.role === 'structural').length };
+  });
+  check('empty states: the stereonet and form panels link to the Structural data tool, whose + NEW LAYER asks through a modal', empty.net && empty.form && empty.opened && empty.title === 'NEW STRUCTURAL LAYER' && empty.made && empty.made.name === 'Field structure A' && empty.made.role === 'structural' && empty.layers === 1, JSON.stringify(empty));
 
   check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 } catch (e) {

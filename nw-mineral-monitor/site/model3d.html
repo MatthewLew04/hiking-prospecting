@@ -219,9 +219,14 @@ textarea.notes{width:100%;min-height:64px;background:var(--bg);border:1px solid 
   #north{top:calc(var(--bannerH,0px) + 12px)}
   #viewtools{top:calc(var(--bannerH,0px) + 64px)}
 }
-@media (max-width:700px){
+@media (max-width:900px){
   header{gap:6px;padding:0 8px}
-  header .hbtn:not(.drawer):not(.primary):not(#btnMenu){display:none}
+  header .hbtn.fold{display:none}
+  #btnMenu{display:inline-block!important}
+  header #crsBadge,header #savestat{display:none}
+}
+@media (max-width:700px){
+  header #siteName{max-width:22vw}
   #legend{max-width:80%}
 }
 </style>
@@ -238,13 +243,13 @@ textarea.notes{width:100%;min-height:64px;background:var(--bg);border:1px solid 
     <div id="crsBadge" title="coordinate system: WGS84 / UTM, metres, Z = elevation">—</div>
     <div id="savestat"></div>
     <div class="sp"></div>
-    <button class="hbtn" id="btnImport" title="drop files anywhere, or pick them">+ IMPORT</button>
-    <button class="hbtn" id="btnExport" title="Leapfrog OMF, DXF, grids, CSV, the project file, or a whole kit">EXPORT ▾</button>
+    <button class="hbtn fold" id="btnImport" title="drop files anywhere, or pick them">+ IMPORT</button>
+    <button class="hbtn fold" id="btnExport" title="Leapfrog OMF, DXF, grids, CSV, the project file, or a whole kit">EXPORT ▾</button>
     <button class="hbtn" id="btnTools" title="the modelling steps, in order">TOOLS ▾</button>
     <button class="hbtn" id="btnView" title="camera, drape, legend, scenes, render image">VIEW ▾</button>
-    <button class="hbtn" id="saveBtn" title="save in this browser (autosaves 2.5 s after every change)">SAVE</button>
-    <button class="hbtn" id="btnProjects" title="saved models in this browser">PROJECTS ▾</button>
-    <button class="hbtn" id="btnHelp" title="how the page works and the modelling order">HELP</button>
+    <button class="hbtn fold" id="saveBtn" title="save in this browser (autosaves 2.5 s after every change)">SAVE</button>
+    <button class="hbtn fold" id="btnProjects" title="saved models in this browser">PROJECTS ▾</button>
+    <button class="hbtn fold" id="btnHelp" title="how the page works and the modelling order">HELP</button>
     <button class="hbtn" id="btnMenu" style="display:none" title="menu">MENU ▾</button>
     <button class="hbtn drawer" id="btnPanel" title="show / hide the properties and tool panel">PANEL ☰</button>
     <button class="hbtn primary" id="btnMap" title="the map tab stays open; this model stays saved in this browser">← BACK TO MAP</button>

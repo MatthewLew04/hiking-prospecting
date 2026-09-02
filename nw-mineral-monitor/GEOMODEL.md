@@ -4,8 +4,9 @@ Every mine card on the map has **⛰ OPEN 3D MODEL**. It opens `site/model3d.htm
 in a new tab with a model built around that site: real terrain, draped satellite
 / USGS topo / Macrostrat geology imagery, the AOI's mapped units and faults
 draped on the ground, the graded mines, targets and BLM claim centroids nearby,
-and empty scaffolds for the things a geologist adds — underground workings,
-a stratigraphic (pancake) model, block models, sections. Everything the
+and the groups a geologist fills listed as *not started* with the step that
+fills them — underground workings, a stratigraphic (pancake) model, block
+models, sections (see §8 for the page itself). Everything the
 modeller produces round-trips with the desktop packages: **Leapfrog Geo**
 (OMF v2.0 for 2025.1+, OMF v0.9 for ≤ 2024.1, plus DXF/OBJ/GOCAD/CSV/grids),
 **Surfer** (.grd), **Geosoft Oasis montaj / Target** (.grd, GXF, XYZ, UBC),
@@ -98,6 +99,8 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
                 traces, declustering, stereonet projection + contouring, Bingham /
                 Fisher statistics, the gradient (form) interpolant, trend fields
  gm-struct-tools.js  the three structural tool panels
+ gm-more-tools.js  measure · notes (pinned, with a source) · trace a fault / contact / vein
+ gm-geom-tools.js  project a trace down dip (vein / fault sheet) · contours · plane from a measurement
  gm-formats.js  every reader/writer (OMF v0.9 + v2.0 incl. a Parquet/Thrift writer, Surfer,
                 Geosoft GRD/GXF/XYZ, Arc ASCII, ZMAP+, Irap, CPS-3, UBC, OBJ, DXF, GOCAD,
                 Leapfrog .msh, CSV tables, SEG-Y, LAS, PNG, ZIP)
@@ -105,7 +108,7 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
  gm-ui.js       DOM helpers, variogram plot
 
 pipelines/geomodel/          Python twin (stdlib only; numpy used when present)
-   model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  kit.py
+   model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  contours.py  kit.py
    narrative.py  resolve.py  agentbuild.py  render2d.py  publish.py   <- prose -> model
    mapplate.py   assay.py                                             <- plates, grades
    formats/{omf1,omf2,parquet_lite,thrift_compact,surfer,geosoft,arcascii,zmap,irap,cps3,
@@ -206,7 +209,9 @@ described in §7, plus the platform work it needed: display settings are now
 part of the project (colormap, attribute, glyph size, labels and cut-offs
 survive a reload), the camera has an orthographic mode (`o` / `p`), and the
 scene carries a legend and a scale bar. The rest of the plan lives in the
-Leapfrog parity roadmap.
+[`LEAPFROG-PARITY.md`](LEAPFROG-PARITY.md) — the read of the 23 Seequent
+course guides and papers against this code, with every verified gap, what was
+built from it on 2026-09-02, and what is set aside as drillhole-only.
 
 
 **Delivered 2026-09-01** — the corpus autopopulator
@@ -302,11 +307,18 @@ python3 pipelines/geomodel_kit.py narrate --file desc.txt --mine-id grades:17 --
 python3 services/minevis/server.py --state-dir /var/lib/minevis                 # the agent's HTTP service
 
 python3 ci/run_tests.py                                        # everything, with the strict-skip check
-python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 393 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views)
+python3 -m unittest discover -s tests -p 'test_geomodel_*.py'  # 468 Python tests (formats vs GDAL/pyarrow/omf-rust/ezdxf/segyio/lasio; parser, placement, views, geometry)
 python3 tests/test_minevis_service.py                          # 69 service tests (in-process, no network)
 node tools/test_gm_formats.mjs      # JS readers/writers vs the Python fixtures (171 checks)
-node tools/test_gm_engine.mjs       # JS numerics vs Python (166 checks)
-node tools/test_model3d.mjs         # headless browser acceptance of the page (28 checks)
+node tools/test_gm_engine.mjs       # JS numerics vs Python (227 checks: interpolants, stratigraphy, workings, extrusion, contours, elevation, clipping)
+node tools/test_gm_structural.mjs   # structural numerics (105 checks)
+npm run test:model3d                # the six headless browser harnesses below, in order
+node tools/test_model3d.mjs         # the page: boot, layers, section, workings, georef, stratigraphy, kriging, reload (33 checks)
+node tools/test_model3d_structural.mjs   # derive, stereonet, form interpolant, trends, arming, row delete, set elevation (53 checks)
+node tools/test_model3d_ui.mjs      # the shell: tool host, arming, Esc, menu order, readiness, key, pick card, undo, scenes, render image (29 checks)
+node tools/test_model3d_render.mjs  # tube picking, pick-through, screen-space dashes, opacity, labels, declutter, slab clip (31 checks)
+node tools/test_model3d_tools.mjs   # section PNG/SVG, thick slice, contact-from-trace, input classification, implicit bounds, measure, notes, polylines (42 checks)
+node tools/test_model3d_geom.mjs    # extrude down dip, contours, plane from a measurement (29 checks)
 ```
 
 ### Cross-check setup
@@ -345,6 +357,90 @@ fails loudly rather than quietly cross-checking against something else.
 
 Vendored: three.js 0.185 (`site/assets/three/`, `npm run vendor:three`). No
 CDN, no build step, no npm dependency at runtime.
+
+## 8. The page (build 2026-09-02-ui2)
+
+Four critiques of the page — a first-time user, a daily Leapfrog user, an
+information designer and a workflow coach, each judging 26 screenshots and
+the panel code — agreed on the same faults: nine tools behind one unordered
+menu, a tool panel that took over the properties panel for the session, no
+undo, a described-workings model that opened with nothing dashed on screen,
+and a confidence key that vanished exactly when every working was described.
+The shell was rebuilt around them.
+
+**Three columns.** Left, the layer tree in three bands — INPUTS (terrain,
+images, map geology and outlines, structure, mines, claims, imports), MODELS
+(workings, stratigraphy, surfaces, block models), OUTPUTS (sections, notes) —
+with the groups a step fills always listed, empty, as *— not started · step
+n*, so a first-time user sees where the workings will go before there are
+any. A filter box narrows the rows; badges say ⚠ warnings, ✕ failed to draw,
+∅ nothing digitised or built yet; hovering a row explains its tag in words;
+double-click zooms; right-click (or ⋯) opens the menu — zoom, properties,
+show only this, export, rename, delete — on rows, on groups, and on the
+scene itself (sections through here, hide, centre the view). Right, the
+**layer inspector** on top and a **tool host** below it. Opening a tool never
+deselects the layer; the host's title bar says *STEP n/9 · NAME*, shows
+◎ ARMED while a click mode is live, and closes with DONE ✕. With nothing
+selected the inspector shows **WHERE THINGS STAND**: the nine steps with
+their state (done with what they produced, ready, or blocked with the missing
+input), and *Start here →*.
+
+**The nine steps.** `TOOL_STEPS` in `gm-tools.js` is the one table behind
+the TOOLS ▾ menu (grouped FROM THE MAP / FROM THE GEOLOGY / VOLUMES / SEE IT,
+numbered, with a readiness hint per item), each panel's NEEDS / HAS / NEXT
+strip (✓ or ✗ per prerequisite with an OPEN button to the step that provides
+it), the progress card and HELP > THE ORDER: 1 georeference a scan, 2
+workings from maps, 3 structural data, 4 stereonet, 5 form interpolant and
+trends, 6 stratigraphy, 7 implicit surface, 8 block model and kriging, 9
+section and slice. Readiness is computed from the project alone.
+
+**One arming path.** Every click mode — trace, adit, shaft, raise, stope,
+section line, georeference PICK, contact points, ± points, virtual drillhole,
+structural digitising, stereonet selection — goes through `Tools.arm()`,
+which paints a strip at the top-left of the viewport saying what the clicks
+do, how to get out, and what will be written where and at what confidence
+(*TRACE — click along the working · Enter finishes · Esc cancels → Workings as
+sketched on the ground*). A trace off the bare ground cannot be committed as
+*surveyed* without a warning. Esc leaves the armed mode first, closes the tool
+second, clears the pick third, the selection last. Opening the Workings or
+Stratigraphy panel creates no layer; the first committed feature does.
+
+**Honesty cues that cannot hide.** The confidence key (solid surveyed,
+dashed described, dotted assumed, with counts) is drawn whenever any working
+is on screen, one class or three; working-type colours and claim colours are
+keyed beside it. A model whose workings were read from prose opens on those
+workings with the ground at 55 % and says so in a toast (VIEW ▾ > Solid ground
+restores it). The PICKED card lands under the layer title with the feature
+highlighted in white, its confidence in words, the document and page, and the
+sentence it was read from. VIEW ▾ > Render image writes the scale bar (with
+*nominal* in perspective), the confidence key, the NOT A SURVEY sentence, north,
+the viewing direction and a project / CRS / VE / date footer into the PNG; the
+kit zip carries the same picture and the same sentence in its README.
+`confidenceSentence()` and `legendModel()` are the single sources the banner,
+the legend and the image all read.
+
+**Undo and dialogs.** Deleting a layer, a section, a working, a scene or a
+measurement goes through `app.destructive()`: the inverse is kept, the toast
+offers UNDO for eight seconds, Ctrl/Cmd+Z undoes the last one. Deleting a
+layer lists what depends on it. Rename, confirm, replace-vs-merge are in-page
+dialogs with Enter and Esc. The header says *saved hh:mm* after every autosave
+and turns red with the message when a save fails.
+
+**Scene.** Buttons under the north arrow (PLAN N S E W BELOW ISO · FIT ·
+ORTHO/PERSP · SLICE · KEY) and Leapfrog's keys: d plan with north up, n s e w,
+u from below, i isometric, f / Home fit, o / p projection, l look at the
+section (Shift+l flips), ? help. The status bar reads *projection · VE ·
+looking az / plunge* — the polarity check from the structural course. The
+default sections start hidden and become visible when chosen in the Section
+tool. Scenes (camera, projection, VE, visibility, opacity, drape, active
+section) save and restore from VIEW ▾. Below 1100 px the panes become
+drawers and the banner a strip.
+
+**Tests.** `tools/test_model3d_ui.mjs` drives all of it through
+`window.gmApp` and the DOM: the split column, arming and Esc, the menu order
+and readiness, no layer on panel open, the key with one class, the pick card,
+undo, filter, right-click, keys, scenes, the render image, and a described
+model opening on its workings.
 
 ## 7. Structural geology — orientation without drillholes
 
@@ -525,9 +621,46 @@ because one plane cannot describe a fold and a structural trend will. It is
 stored on the project as `metadata.global_trend` and exposed to the other tools
 through `globalAnisotropy()`.
 
-### 7.8 What is deliberately not here yet
+### 7.8 What is here since 2026-09-02, and what is deliberately not
 
-Structural surfaces (a contact surface that honours non-contact structural
-data), fault surfaces with fault blocks and terminations, and rose diagrams.
-The first two need the volume-point / surface-chronology machinery, which is
-the next phase.
+Built in the Leapfrog-parity pass ([`LEAPFROG-PARITY.md`](LEAPFROG-PARITY.md)):
+
+* **A vein or fault sheet from a trace** — `TOOLS ▾ > Project a trace down
+  dip` (`gm-geom-tools.js`, engine `extrudePolyline` / `extrude_polyline`):
+  a mapped or traced line plus a dip becomes a ribbon (open trace) or a
+  sheared prism (closed outline), with `VERTICAL WALL` for dip 90. The dip
+  comes from a document (described), from the Bingham mean of the readings
+  derived along that very part (inferred), or is typed (assumed); the mesh's
+  confidence is the weaker of the trace's and the dip's, the depth is stated
+  in the name as the user's projection distance, and a dip azimuth within
+  20° of the trace's strike is refused with the strike printed rather than
+  producing a degenerate sheet. This is the fault surface of the Model From
+  Map course without the fault blocks.
+* **A plane from one measurement** — `Plane from a measurement`: a finite
+  rectangle with a stated attitude through a structural point or a typed
+  location, role vein or fault, labelled a statement of attitude, not a
+  modelled surface (the same corners as `assay.vein_surface`).
+* **Contours** of any grid (topography, pancake bases, form-interpolant
+  fields, property grids), draped where the grid is a property.
+* **A contact from a mapped unit boundary** as a stratigraphic base (source
+  kind *trace* in the Stratigraphy tool), with the warning that a heightfield
+  through one draped trace carries no dip away from the line; faults are
+  refused as bases.
+* **Traced faults, contacts and veins** (`Trace a fault / contact / vein`),
+  **measurements** (`Measure`) and **pinned notes with a source** (`Notes`).
+* Set elevation for any layer with a scope that never touches surveyed rows;
+  implicit surfaces clipped below the topography with the daylight line
+  computed; the global trend restored on reload and applied by the Implicit
+  tool (the anisotropic RBF now shares one length unit with the isotropic
+  one); thick slices; section drawings exported as PNG and SVG with their
+  key, sources and the NOT A SURVEY line; section images drawn in the 2-D
+  panel.
+
+Still deliberately not here: a **structural surface** in Leapfrog's sense (a
+potential-field solve that honours contact points *and* off-contact
+orientations at once — the form interpolant honours orientations, the
+pancake honours contacts, and joining them is the next engine phase), **fault
+blocks and fault-against-fault terminations** (they need mesh-against-mesh
+trimming and a chronology, and without drillholes there is nothing to
+terminate against but a guess), **vein systems with terminations**, and
+**rose diagrams**.

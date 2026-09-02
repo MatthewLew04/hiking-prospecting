@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / 'pipelines'))
 
 from geomodel.model import (Grid2D, Mesh, LineSet, PointSet, BlockModel, Drillholes,  # noqa: E402
                             ImagePlane, Project, utm_crs)
-from geomodel import interp, stratigraphy, blockmodel, slicing, workings, kit  # noqa: E402
+from geomodel import interp, stratigraphy, blockmodel, slicing, workings, kit, contours, assay  # noqa: E402
 
 
 def synthetic(n=150, seed=1):
@@ -248,6 +248,246 @@ class WorkingsTests(unittest.TestCase):
         self.assertEqual(workings.trace_to_world(sec, [(100, 50)]), [(100.0, 0.0, 50.0)])
         world = workings.trace_to_world(ip, [(200, 150), (300, 150)], level_z=42)
         self.assertEqual(world[0][2], 42)
+
+
+class GeometryTests(unittest.TestCase):
+    """extrude_polyline / contour_grid / plane_mesh / set_elevation_from /
+    clip_mesh_to_topography — the Python side of the JS cross-checks in
+    tools/test_gm_engine.mjs section 9."""
+    TRACE = [(0.0, 0.0, 1500.0), (100.0, 20.0, 1510.0), (200.0, 10.0, 1520.0), (300.0, 40.0, 1530.0), (400.0, 15.0, 1545.0)]
+    OUTLINE = [(0.0, 0.0, 1425.0), (50.0, 0.0, 1425.0), (50.0, 40.0, 1425.0), (20.0, 20.0, 1425.0), (0.0, 40.0, 1425.0)]
+
+    def plane_grid(self, name='plane', role='surface'):
+        g = Grid2D(11, 9, 1000, 2000, 10, 10, name=name, role=role)
+        for j in range(9):
+            for i in range(11):
+                g.set(i, j, 100 + 2 * i + j + 0.7 * math.sin(i * 1.3 + j * 0.7))
+        return g
+
+    def test_extrude_open_ribbon(self):
+        m = workings.extrude_polyline(self.TRACE, 60, 175, depth=100, role='fault', confidence='inferred', source={'layer': 'L', 'part': 2})
+        m.validate()
+        self.assertEqual((m.n_vertices, m.n_triangles), (10, 8))
+        t = 100 / math.sin(math.radians(60))
+        dv = (math.sin(math.radians(175)) * math.cos(math.radians(60)), math.cos(math.radians(175)) * math.cos(math.radians(60)), -math.sin(math.radians(60)))
+        for i, p in enumerate(self.TRACE):
+            self.assertEqual(m.vertex(5 + i), p)                                  # the trace is the top ring
+            for a in range(3):
+                self.assertAlmostEqual(m.vertex(i)[a], p[a] + t * dv[a], places=9)   # bottom ring projected down dip
+        md = m.metadata
+        self.assertEqual(md['schema'], 'nwmm-extrude/1')
+        self.assertEqual((md['dip'], md['dip_azimuth'], md['depth_m'], md['confidence'], md['source']['part']), (60.0, 175.0, 100.0, 'inferred', 2))
+        self.assertIn('projection distance', md['note'])
+        self.assertAlmostEqual(md['strike_deg'], workings._polyline_strike(self.TRACE))
+        self.assertTrue(80 < md['strike_deg'] < 90)
+        # z_bottom: the bottom ring lies on the level
+        m2 = workings.extrude_polyline(self.TRACE, 35, 350, z_bottom=1400)
+        for i in range(5):
+            self.assertAlmostEqual(m2.vertex(i)[2], 1400.0, places=9)
+        self.assertAlmostEqual(m2.metadata['depth_m'], sum(p[2] for p in self.TRACE) / 5 - 1400)
+
+    def test_extrude_closed_vertical_is_stope_prism(self):
+        wall = workings.extrude_polyline(self.OUTLINE, 90, 0, depth=25, closed=True, name='w')
+        stope = workings.stope_prism([p[:2] for p in self.OUTLINE], 1400, 1425, name='w')
+        self.assertEqual(list(wall.vertices), list(stope.vertices))
+        self.assertEqual(list(wall.triangles), list(stope.triangles))
+        self.assertEqual(wall.n_triangles, 2 * 3 + 2 * 5)
+        sheared = workings.extrude_polyline([(p[0], p[1], 1420 + 3 * i) for i, p in enumerate(self.OUTLINE)], 60, 90, depth=30, closed=True)
+        sheared.validate()
+        self.assertEqual(sheared.n_triangles, wall.n_triangles)
+        self.assertTrue(all(sheared.vertex(i)[0] > sheared.vertex(5 + i)[0] for i in range(5)))   # pushed east (dip azimuth 90)
+
+    def test_extrude_refusals(self):
+        strike = workings._polyline_strike(self.TRACE)
+        with self.assertRaises(ValueError) as cm:
+            workings.extrude_polyline(self.TRACE, 60, 84, depth=100)
+        self.assertIn('%.1f' % strike, str(cm.exception))
+        self.assertIn('within 20°', str(cm.exception))
+        with self.assertRaises(ValueError) as cm:
+            workings.extrude_polyline([(p[0], p[1], 0.0) for p in self.TRACE], 60, 175, depth=100)
+        self.assertEqual(str(cm.exception), 'the trace has no elevation — drape it on the topography first')
+        with self.assertRaises(ValueError):
+            workings.extrude_polyline([(p[0], p[1]) for p in self.TRACE], 60, 175, depth=100)
+        for bad in (0, -5, 91):
+            with self.assertRaises(ValueError):
+                workings.extrude_polyline(self.TRACE, bad, 175, depth=100)
+        with self.assertRaises(ValueError):
+            workings.extrude_polyline(self.TRACE[:1], 60, 175, depth=100)
+        with self.assertRaises(ValueError):
+            workings.extrude_polyline(self.TRACE, 60, 175)
+        # a vertical wall does not care about the azimuth, and a closed outline has no single strike
+        workings.extrude_polyline(self.TRACE, 90, 84, depth=100)
+        workings.extrude_polyline(self.OUTLINE, 60, 90, depth=10, closed=True)
+
+    def test_contour_grid_plane_and_hole(self):
+        g = self.plane_grid()
+        lv = contours.contour_levels(g, 5)
+        zmin, zmax = g.zrange()
+        self.assertTrue(all(zmin <= l <= zmax and l % 5 == 0 for l in lv))
+        self.assertEqual(contours.contour_levels(g, 4, base=1.5)[0] % 4, 1.5)
+        cs = contours.contour_grid(g, interval=5, index=2)
+        self.assertEqual(cs.role, 'contours')
+        drawn = [l for l in lv if l > zmin]                            # a level at the minimum has nothing below it
+        self.assertEqual(len(cs.parts), len(drawn))                    # a plane: one open line per level
+        for k, f in enumerate(cs.features):
+            self.assertEqual((f['units'], f['source'], f['index']), ('m', 'plane', round(f['level'] / 5) % 2 == 0))
+            self.assertTrue(all(cs.vertex(i)[2] == f['level'] for i in cs.parts[k]))
+        self.assertEqual(sorted(f['level'] for f in cs.features), drawn)
+        h = self.plane_grid('holed')
+        for i, j in ((5, 4), (6, 4), (5, 5)):
+            h.set(i, j, float('nan'))
+        ch = contours.contour_grid(h, levels=lv, interval=5, index=2)
+        self.assertLess(ch.metadata['contours']['n_segments'], cs.metadata['contours']['n_segments'])
+        self.assertGreaterEqual(len(ch.parts), len(cs.parts))
+        for i in range(ch.n_vertices):
+            x, y, _ = ch.vertex(i)
+            self.assertFalse(1050 < x < 1060 and 2040 < y < 2050, 'a vertex inside the hole')
+        # property grid draped on the ground
+        topo = Grid2D(5, 5, 950, 1950, 50, 50, values=[100.0] * 25, name='ground', role='topography')
+        mag = self.plane_grid('mag', role='property')
+        mag.units = 'nT'
+        cp = contours.contour_grid(mag, levels=[105.0, 110.0], drape=topo, lift=2.0)
+        self.assertTrue(cp.n_vertices > 0 and all(abs(cp.vertex(i)[2] - 102) < 1e-9 for i in range(cp.n_vertices)))
+        self.assertEqual(cp.features[0]['units'], 'nT')
+        # saddle: corners 0 and 2 high, centre 0.5 >= 0.5 -> the high corners join, two segments wrap corners 1 and 3
+        sd = Grid2D(2, 2, 0, 0, 1, 1, values=[1.0, 0.0, 0.0, 1.0])
+        segs = contours.marching_squares(2, 2, lambda i, j: sd.values[j * 2 + i], sd.node_xy, 0.5)
+        self.assertEqual(len(segs), 2)
+        self.assertEqual(segs[0], ((0.5, 0.0), (1.0, 0.5)))
+        self.assertEqual(contours.nice_interval(210), 20)
+        self.assertEqual(contours.nice_interval(37), 5)
+
+    def test_plane_mesh_matches_vein_surface(self):
+        cx, cy, cz, half, dip, az = 5000.0, 6000.0, 1400.0, 120.0, 55.0, 300.0
+        vein = {'strike_deg': az - 90, 'dip_deg': dip, 'dip_direction_deg': az, 'dip_direction_assumed': False, 'confidence': 'described', 'quote': ''}
+        placed = [{'start': (cx - 10, cy - 5, cz - 2), 'end': (cx + 10, cy + 5, cz + 2)}]
+        v = assay.vein_surface(vein, placed, None, extent=half)
+        p = assay.plane_mesh(cx, cy, cz, dip, az, half, half, from_measurement={'layer': 'S', 'row': 3})
+        for a, b in zip(v.vertices, p.vertices):
+            self.assertAlmostEqual(a, b, places=9)
+        self.assertEqual(list(p.triangles), [0, 1, 2, 0, 2, 3])
+        self.assertEqual((p.role, p.opacity, p.metadata['schema'], p.metadata['confidence']), ('vein', 0.35, 'nwmm-assay-vein/1', 'described'))
+        self.assertEqual(p.metadata['note'], 'statement of attitude, not a modelled surface')
+        self.assertEqual(p.metadata['from_measurement']['row'], 3)
+        # the plane has the stated pole
+        e1 = [p.vertex(1)[k] - p.vertex(0)[k] for k in range(3)]
+        e2 = [p.vertex(3)[k] - p.vertex(0)[k] for k in range(3)]
+        n = (e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0])
+        L = math.sqrt(sum(c * c for c in n))
+        d, a = math.radians(dip), math.radians(az)
+        pole = (math.sin(a) * math.sin(d), math.cos(a) * math.sin(d), math.cos(d))
+        self.assertAlmostEqual(abs(sum(n[k] / L * pole[k] for k in range(3))), 1.0, places=9)
+        self.assertEqual(assay.plane_mesh(0, 0, 0, 30, 90, role='fault').role, 'fault')
+        with self.assertRaises(ValueError):
+            assay.plane_mesh(0, 0, 0, 95, 90)
+
+    def test_set_elevation_scopes_and_restore(self):
+        g = self.plane_grid()
+        ls = LineSet(name='traces')
+        ls.add_polyline([(1005, 2005, 0), (1015, 2015, float('nan')), (1025, 2025, 777)], {'confidence': 'sketched'})
+        ls.add_polyline([(1035, 2035, 0), (1045, 2045, 0)], {'confidence': 'surveyed'})
+        ls.add_polyline([(1055, 2055, 0), (10, 10, 0)], {'confidence': 'inferred'})
+        st = interp.set_elevation_from(ls, g, only='missing')
+        self.assertEqual(st, {'moved': 5, 'outside': 1, 'skipped': 1})
+        self.assertEqual(ls.vertex(2)[2], 777)                                   # a real z is left alone
+        self.assertAlmostEqual(ls.vertex(0)[2], g.sample(1005, 2005))
+        self.assertAlmostEqual(ls.vertex(1)[2], g.sample(1015, 2015))
+        self.assertEqual(ls.vertex(6)[2], 0)                                     # outside the grid: untouched
+        self.assertEqual(ls.features[0]['z_original'][2], None)
+        self.assertEqual(ls.features[0]['z_original'][0], 0.0)
+        self.assertEqual(ls.metadata['elevation_from'], 'plane')
+        self.assertEqual(interp.restore_elevation(ls), 5)
+        self.assertEqual(ls.vertex(0)[2], 0)
+        self.assertTrue(ls.vertex(1)[2] != ls.vertex(1)[2])
+        self.assertNotIn('z_original', ls.features[0])
+        self.assertNotIn('elevation_from', ls.metadata)
+        st2 = interp.set_elevation_from(ls, g, offset=2.0, only='not-surveyed')
+        self.assertEqual(st2['skipped'], 2)
+        self.assertEqual(ls.vertex(3)[2], 0)                                     # surveyed part keeps its z
+        self.assertAlmostEqual(ls.vertex(2)[2], g.sample(1025, 2025) + 2)
+        self.assertEqual(ls.metadata['elevation_from'], 'plane (+2 m)')
+        ps = PointSet(name='p')
+        ps.add(1005, 2005, 0, confidence='sketched')
+        ps.add(1015, 2015, float('nan'), confidence='surveyed')
+        ps.add(1025, 2025, 500, confidence='surveyed')
+        ps.add(1035, 2035, 12, confidence='described')
+        st3 = interp.set_elevation_from(ps, g, only='not-surveyed')
+        self.assertEqual(st3, {'moved': 2, 'outside': 0, 'skipped': 2})
+        self.assertEqual(ps.attributes['z_original'], [0.0, None, None, 12.0])
+        self.assertEqual(ps.point(2)[2], 500)
+        # a Mesh surface through a vertical ray gives the grid's z at its nodes
+        gm = g.to_mesh()
+        self.assertAlmostEqual(interp.mesh_z_at(gm, 1000, 2000), g.get(0, 0))
+        self.assertAlmostEqual(interp.mesh_z_at(gm, 1100, 2080), g.get(10, 8))
+        self.assertLess(abs(interp.mesh_z_at(gm, 1012.5, 2007.5) - g.sample(1012.5, 2007.5)), 1.0)
+        self.assertTrue(interp.mesh_z_at(gm, 900, 2000) != interp.mesh_z_at(gm, 900, 2000))
+        ps2 = PointSet([(1000, 2000, 0), (900, 2000, 0)])
+        self.assertEqual(interp.set_elevation_from(ps2, gm), {'moved': 1, 'outside': 1, 'skipped': 0})
+        self.assertIn('outside', ps2.metadata['warnings'][0])
+        dh = Drillholes([{'hole': 'A', 'x': 1005, 'y': 2005, 'z': 0, 'depth': 50}, {'hole': 'B', 'x': 1050, 'y': 2050, 'z': 300, 'depth': 50, 'confidence': 'surveyed'}], name='dh')
+        self.assertEqual(interp.set_elevation_from(dh, g, only='not-surveyed')['moved'], 1)
+        self.assertAlmostEqual(dh.collars[0]['z'], g.sample(1005, 2005))
+        self.assertEqual((dh.collars[0]['z_original'], dh.collars[1]['z']), (0.0, 300))
+        self.assertEqual(interp.restore_elevation(dh), 1)
+        self.assertEqual(dh.collars[0]['z'], 0.0)
+        with self.assertRaises(ValueError):
+            interp.set_elevation_from(ps, g, only='everything')
+
+    def test_clip_mesh_to_topography_and_daylight(self):
+        topo = Grid2D(5, 5, 950, 1950, 50, 50, values=[100.0] * 25, name='ground', role='topography')
+        tilt = Mesh([1000, 2000, 80, 1100, 2000, 120, 1100, 2100, 120, 1000, 2100, 80, 1000, 2000, 60], [0, 1, 2, 0, 2, 3, 3, 0, 4],
+                    attributes={'v': {'location': 'vertices', 'values': [1.0, 2.0, 3.0, 4.0, 5.0]}, 'f': {'location': 'faces', 'values': [10.0, 20.0, 30.0]}}, name='tilt', role='fault')
+        c = slicing.clip_mesh_to_topography(tilt, topo)
+        c.validate()
+        self.assertEqual(c.metadata['clip']['kept'], 1)
+        self.assertEqual(c.metadata['clip']['split'], 2)
+        self.assertEqual(c.metadata['clip']['dropped'], 0)
+        self.assertEqual(c.n_triangles, 4)
+        self.assertEqual(c.role, 'fault')
+        self.assertEqual(c.metadata['clipped_to'], 'ground')
+        for i in range(c.n_vertices):
+            x, y, z = c.vertex(i)
+            self.assertLessEqual(z, topo.sample(x, y) + 1e-6)
+            if abs(z - 100) < 1e-9:
+                self.assertAlmostEqual(x, 1050.0)                       # the crossing of the 80 -> 120 tilt
+        self.assertEqual(len(c.attributes['v']['values']), c.n_vertices)
+        self.assertEqual(len(c.attributes['f']['values']), c.n_triangles)
+        self.assertEqual(sorted(set(c.attributes['f']['values'])), [10.0, 20.0, 30.0])
+        # a whole-above mesh disappears, a whole-below one is untouched
+        above = Mesh([1000, 2000, 200, 1010, 2000, 200, 1000, 2010, 200], [0, 1, 2], name='a')
+        self.assertEqual(slicing.clip_mesh_to_topography(above, topo).n_triangles, 0)
+        below = Mesh([1000, 2000, 50, 1010, 2000, 50, 1000, 2010, 50], [0, 1, 2], name='b')
+        self.assertEqual(list(slicing.clip_mesh_to_topography(below, topo).vertices), list(below.vertices))
+        dl = slicing.daylight_trace(tilt, topo)
+        self.assertEqual((dl.role, dl.name, len(dl.parts)), ('interpretation', 'tilt daylight (computed)', 1))
+        self.assertTrue(all(abs(dl.vertex(i)[0] - 1050) < 1e-9 and abs(dl.vertex(i)[2] - 100) < 1e-9 for i in range(dl.n_vertices)))
+        self.assertEqual(dl.features[0]['confidence'], 'inferred')
+        g = self.plane_grid()
+        flat = g.copy_empty()
+        flat.values = Grid2D(11, 9, 1000, 2000, 10, 10, values=[110.0] * 99).values
+        flat.name = 'flat'
+        dg = slicing.daylight_trace(g, flat)
+        self.assertGreater(dg.n_vertices, 2)
+        for i in range(dg.n_vertices):
+            x, y, z = dg.vertex(i)
+            self.assertAlmostEqual(z, 110.0)
+            self.assertLess(abs(g.sample(x, y) - 110.0), 0.05)          # on the zero contour of (surface - ground)
+
+    def test_rbf_isotropic_anisotropy_matches_isotropic(self):
+        rnd = random.Random(7)
+        pts = [(rnd.uniform(0, 500), rnd.uniform(0, 300), rnd.uniform(0, 100)) for _ in range(40)]
+        vals = [math.sin(p[0] / 100) + p[1] / 300 + p[2] / 50 for p in pts]
+        tg = [(100, 100, 20), (250, 150, 50), (400, 20, 90), (10, 290, 5)]
+        for k in interp.RBF_KERNELS:
+            eps = 200.0 if k in ('gaussian', 'multiquadric') else None
+            a = interp.RBF(kernel=k, epsilon=eps).fit(pts, vals)
+            b = interp.RBF(kernel=k, epsilon=eps, anisotropy=interp.Anisotropy([1, 1, 1])).fit(pts, vals)
+            for x, y in zip(a.predict(tg), b.predict(tg)):
+                self.assertLess(abs(x - y), 1e-6, k)
+        # scale_aniso = major range / span: the ellipsoid distance and the normalised epsilon share a unit
+        an = interp.RBF(kernel='thin_plate', anisotropy=interp.Anisotropy([200, 100, 50])).fit(pts, vals)
+        self.assertAlmostEqual(an.scale_aniso, 200.0 / an.scale)
+        self.assertEqual(interp.RBF(kernel='thin_plate').fit(pts, vals).scale_aniso, 1.0)
 
 
 class KitTests(unittest.TestCase):

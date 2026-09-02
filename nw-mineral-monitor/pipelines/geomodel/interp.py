@@ -576,7 +576,11 @@ class RBF(object):
         self.offset = tuple((mins[a] + maxs[a]) / 2.0 for a in range(3))
         span = max(maxs[a] - mins[a] for a in range(self.dim)) or 1.0
         self.scale = span
-        self.scale_aniso = 1.0
+        # one length unit for both paths (G-44): the isotropic kernel sees
+        # |d| / span, so the ellipsoid distance (|d| / range per axis) is
+        # rescaled by the major range — a 1:1:1 anisotropy reproduces the
+        # isotropic fit exactly and the normalised epsilon means the same thing
+        self.scale_aniso = (max(self.anisotropy.ranges) / span) if self.anisotropy is not None else 1.0
         eps = self.epsilon
         if eps is None:
             eps = 0.25 if self.kernel in ('gaussian', 'multiquadric') else 1.0
@@ -673,6 +677,195 @@ class RBF(object):
                 P = _np.hstack([P, Tl[:, :self.dim]])
             out += P.dot(_np.asarray(self.poly))
         return [float(v) for v in out]
+
+
+# ------------------------------------------------------------- elevation
+class _MeshXYIndex(object):
+    """Plan-view index of a mesh: a _GridIndex of triangle centroids plus the
+    largest centroid-to-vertex reach (the JS ``meshXYIndex``)."""
+
+    def __init__(self, mesh):
+        self.mesh = mesh
+        V = mesh.vertices
+        nt = mesh.n_triangles
+        C = []
+        reach = 0.0
+        for t in range(nt):
+            a, b, c = mesh.triangle(t)
+            cx = (V[3 * a] + V[3 * b] + V[3 * c]) / 3.0
+            cy = (V[3 * a + 1] + V[3 * b + 1] + V[3 * c + 1]) / 3.0
+            C.append((cx, cy, 0.0))
+            for i in (a, b, c):
+                reach = max(reach, math.sqrt((V[3 * i] - cx) ** 2 + (V[3 * i + 1] - cy) ** 2))
+        self.index = _GridIndex(C, dim=2)
+        self.reach = reach * (1 + 1e-9) + 1e-9
+        self.k = min(max(nt, 1), 512)
+
+
+def _in_tri(p, a, b, c):
+    def s(p1, p2, p3):
+        return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
+    d1, d2, d3 = s(p, a, b), s(p, b, c), s(p, c, a)
+    neg = d1 < 0 or d2 < 0 or d3 < 0
+    pos = d1 > 0 or d2 > 0 or d3 > 0
+    return not (neg and pos)
+
+
+def mesh_z_at(mesh, x, y, index=None):
+    """z of a mesh under / over (x, y): the highest triangle covering the point
+    in plan (a vertical ray); NaN where none does."""
+    ix = index or _MeshXYIndex(mesh)
+    m = ix.mesh
+    V = m.vertices
+    best = NAN
+    for _d, t in ix.index.nearest((x, y, 0.0), ix.k, radius=ix.reach):
+        a, b, c = m.triangle(t)
+        ax, ay, bx, by, cx, cy = V[3 * a], V[3 * a + 1], V[3 * b], V[3 * b + 1], V[3 * c], V[3 * c + 1]
+        if not _in_tri((x, y), (ax, ay), (bx, by), (cx, cy)):
+            continue
+        det = (bx - ax) * (cy - ay) - (cx - ax) * (by - ay)
+        if abs(det) < 1e-300:
+            continue
+        l1 = ((bx - x) * (cy - y) - (cx - x) * (by - y)) / det
+        l2 = ((cx - x) * (ay - y) - (ax - x) * (cy - y)) / det
+        l3 = 1 - l1 - l2
+        z = l1 * V[3 * a + 2] + l2 * V[3 * b + 2] + l3 * V[3 * c + 2]
+        if best != best or z > best:
+            best = z
+    return best
+
+
+ELEVATION_SCOPES = ('missing', 'all', 'not-surveyed')
+
+
+def _surface_sampler(surface):
+    if surface.kind == 'grid2d':
+        return surface.sample
+    if surface.kind == 'mesh':
+        ix = _MeshXYIndex(surface)
+        return lambda x, y: mesh_z_at(surface, x, y, ix)
+    raise ValueError('cannot take elevations from a %s' % surface.kind)
+
+
+def set_elevation_from(target, surface, offset=0.0, only='all'):
+    """Leapfrog's Set Elevation, generalised (the JS ``setElevationFrom``).
+    target: PointSet (xyz), LineSet (every vertex) or Drillholes (collars);
+    surface: Grid2D (bilinear sample) or Mesh (vertical ray).  ``only``:
+    'missing' (z NaN or 0) | 'all' | 'not-surveyed' (rows / parts / collars
+    whose confidence is not 'surveyed').  The original z is kept (a
+    ``z_original`` column, a per-feature list, a collar field) for
+    ``restore_elevation``.  Returns {'moved', 'outside', 'skipped'}."""
+    off = float(offset or 0)
+    if only not in ELEVATION_SCOPES:
+        raise ValueError('only must be one of %s' % ' | '.join(ELEVATION_SCOPES))
+    z_at = _surface_sampler(surface)
+    stats = {'moved': 0, 'outside': 0, 'skipped': 0}
+
+    def missing(z):
+        return z != z or z == 0
+
+    label = surface.name + (' (+%g m)' % off if off else '')
+    if target.kind == 'points':
+        keep = list(target.attributes.get('z_original') or [])
+        conf = target.attributes.get('confidence') or []
+        while len(keep) < target.n:
+            keep.append(None)
+        for i in range(target.n):
+            z0 = target.xyz[3 * i + 2]
+            if (only == 'missing' and not missing(z0)) or (only == 'not-surveyed' and i < len(conf) and conf[i] == 'surveyed'):
+                stats['skipped'] += 1
+                continue
+            z = z_at(target.xyz[3 * i], target.xyz[3 * i + 1])
+            if z != z:
+                stats['outside'] += 1
+                continue
+            if keep[i] is None:
+                keep[i] = z0
+            target.xyz[3 * i + 2] = z + off
+            stats['moved'] += 1
+        target.attributes['z_original'] = keep
+    elif target.kind == 'lineset':
+        while len(target.features) < len(target.parts):
+            target.features.append({})
+        for k, idx in enumerate(target.parts):
+            f = target.features[k]
+            if only == 'not-surveyed' and f.get('confidence') == 'surveyed':
+                stats['skipped'] += len(idx)
+                continue
+            keep = list(f['z_original']) if isinstance(f.get('z_original'), list) else [None] * len(idx)
+            touched = False
+            for q, vi in enumerate(idx):
+                z0 = target.vertices[3 * vi + 2]
+                if only == 'missing' and not missing(z0):
+                    stats['skipped'] += 1
+                    continue
+                z = z_at(target.vertices[3 * vi], target.vertices[3 * vi + 1])
+                if z != z:
+                    stats['outside'] += 1
+                    continue
+                if keep[q] is None:
+                    keep[q] = z0
+                target.vertices[3 * vi + 2] = z + off
+                stats['moved'] += 1
+                touched = True
+            if touched:
+                f['z_original'] = keep
+    elif target.kind == 'drillholes':
+        for c in target.collars:
+            z0 = NAN if c.get('z') in (None, '') else float(c['z'])
+            if (only == 'missing' and not missing(z0)) or (only == 'not-surveyed' and c.get('confidence') == 'surveyed'):
+                stats['skipped'] += 1
+                continue
+            z = z_at(float(c['x']), float(c['y']))
+            if z != z:
+                stats['outside'] += 1
+                continue
+            if c.get('z_original') is None:
+                c['z_original'] = z0 if z0 == z0 else None
+            c['z'] = z + off
+            stats['moved'] += 1
+        target._traces = None
+    else:
+        raise ValueError('cannot set the elevation of a %s' % target.kind)
+    target.metadata['elevation_from'] = label
+    if stats['outside']:
+        target.metadata.setdefault('warnings', []).append(
+            '%d point(s) fell outside %s and kept their original elevation' % (stats['outside'], surface.name))
+    return stats
+
+
+def restore_elevation(target):
+    """Undo set_elevation_from: put the kept original z back, drop the record."""
+    restored = 0
+    if target.kind == 'points':
+        keep = target.attributes.pop('z_original', None)
+        if keep:
+            for i in range(min(target.n, len(keep))):
+                if keep[i] is not None:
+                    target.xyz[3 * i + 2] = float(keep[i])
+                    restored += 1
+    elif target.kind == 'lineset':
+        for k, idx in enumerate(target.parts):
+            f = target.features[k] if k < len(target.features) else None
+            if not f or not isinstance(f.get('z_original'), list):
+                continue
+            for q, vi in enumerate(idx):
+                if q < len(f['z_original']) and f['z_original'][q] is not None:
+                    target.vertices[3 * vi + 2] = float(f['z_original'][q])
+                    restored += 1
+            del f['z_original']
+    elif target.kind == 'drillholes':
+        for c in target.collars:
+            if 'z_original' in c:
+                if c['z_original'] is not None:
+                    c['z'] = float(c['z_original'])
+                    restored += 1
+                del c['z_original']
+        target._traces = None
+    else:
+        raise ValueError('cannot restore the elevation of a %s' % target.kind)
+    target.metadata.pop('elevation_from', None)
+    return restored
 
 
 # ------------------------------------------------------------ convenience

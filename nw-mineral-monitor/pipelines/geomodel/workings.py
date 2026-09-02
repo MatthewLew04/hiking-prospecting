@@ -171,6 +171,127 @@ def stope_prism(outline_xy, z_bottom, z_top, name='stope', color=None, **attrs):
     return m
 
 
+EXTRUDE_SCHEMA = 'nwmm-extrude/1'
+EXTRUDE_COLORS = {'vein': [120, 255, 190], 'fault': [230, 90, 90], 'wall': [200, 200, 200]}
+
+
+def _polyline_strike(xyz):
+    """Strike of a polyline in plan: azimuth (degrees clockwise from north,
+    folded into 0..180) of its principal direction (the major eigenvector of
+    the xy covariance) — the JS ``polylineStrike``."""
+    n = len(xyz)
+    if n < 2:
+        return float('nan')
+    cx = 0.0
+    cy = 0.0
+    for p in xyz:
+        cx += p[0]
+        cy += p[1]
+    cx /= n
+    cy /= n
+    xx = xy = yy = 0.0
+    for p in xyz:
+        dx, dy = p[0] - cx, p[1] - cy
+        xx += dx * dx
+        xy += dx * dy
+        yy += dy * dy
+    theta = 0.5 * math.atan2(2 * xy, xx - yy)
+    return math.degrees(math.atan2(math.cos(theta), math.sin(theta))) % 180.0
+
+
+def _deg1(v):
+    return '%g' % (round(v * 10) / 10.0)
+
+
+def extrude_polyline(xyz, dip, dip_azimuth, depth=None, z_bottom=None, closed=False, name=None,
+                     color=None, role='wall', confidence='described', metadata=None, source=None):
+    """Project a polyline down dip (the JS ``extrudePolyline``, same vertex and
+    triangle order).  Every vertex is pushed t·dipVector(dip, dip_azimuth) —
+    t = depth / sin(dip), or per vertex (z − z_bottom) / sin(dip) so the bottom
+    ring lies on a level — and the two rings are stitched into a ribbon; a
+    closed outline gets ear-clipped caps, so a vertical extrusion of a flat
+    outline is exactly ``stope_prism``.  Vertices: bottom ring first, then the
+    trace.  ``dip_azimuth`` is the DOWN-dip direction, clockwise from north.
+
+    Refuses a dip outside (0, 90], an open trace's dip azimuth within 20° of
+    its strike (the ribbon would collapse onto the trace — the message prints
+    the strike; a closed outline is not gated), fewer than 2 vertices, and a
+    trace whose z are all 0 / NaN."""
+    dip = float(dip)
+    if not dip > 0 or dip > 90:
+        raise ValueError('dip must be > 0 and <= 90 degrees below horizontal (got %r)' % dip)
+    if dip_azimuth is None or dip_azimuth != dip_azimuth:
+        raise ValueError('a dip azimuth is required (degrees clockwise from north, in the down-dip direction)')
+    dip_azimuth = float(dip_azimuth)
+    pts = []
+    for p in xyz:
+        z = float(p[2]) if len(p) > 2 and p[2] is not None else float('nan')
+        pts.append([float(p[0]), float(p[1]), z])
+    closed = bool(closed)
+    if len(pts) > 2 and pts[0][0] == pts[-1][0] and pts[0][1] == pts[-1][1]:
+        pts = pts[:-1]
+        closed = True
+    if len(pts) < 2:
+        raise ValueError('a trace needs at least 2 vertices')
+    if closed and len(pts) < 3:
+        raise ValueError('a closed outline needs at least 3 vertices')
+    if not any(p[2] == p[2] and p[2] != 0 for p in pts):
+        raise ValueError('the trace has no elevation — drape it on the topography first')
+    no_z = sum(1 for p in pts if p[2] != p[2])
+    if no_z:
+        raise ValueError('%d vertex(es) of the trace have no elevation — drape it on the topography first' % no_z)
+    if depth is None and z_bottom is None:
+        raise ValueError('give a depth (vertical metres) or a bottom elevation (z_bottom)')
+    strike = _polyline_strike(pts)
+    if dip < 90 and not closed:          # a closed outline has no single strike and its prism cannot collapse
+        off = abs((dip_azimuth - strike + 90) % 180.0 - 90)
+        if off < 20:
+            raise ValueError("dip azimuth %s° is within 20° of the trace's strike (%s° / %s°) — the ribbon would "
+                             "collapse onto the trace; a down-dip azimuth near %s° or %s° is perpendicular to it"
+                             % (_deg1(dip_azimuth), _deg1(strike), _deg1(strike + 180),
+                                _deg1((strike + 90) % 360.0), _deg1((strike + 270) % 360.0)))
+    if closed and _signed_area([(p[0], p[1]) for p in pts]) < 0:
+        pts.reverse()
+    n = len(pts)
+    role = role if role in ('vein', 'fault', 'wall') else 'wall'
+    d, a = math.radians(dip), math.radians(dip_azimuth)
+    sd = math.sin(d)
+    dv = (0.0, 0.0, -1.0) if dip == 90 else (math.sin(a) * math.cos(d), math.cos(a) * math.cos(d), -sd)
+    verts = farray([0.0] * (n * 6))
+    zsum = 0.0
+    for i, (x, y, z) in enumerate(pts):
+        zsum += z
+        t = float(depth) / sd if depth is not None else (z - float(z_bottom)) / sd
+        verts[3 * (n + i)] = x
+        verts[3 * (n + i) + 1] = y
+        verts[3 * (n + i) + 2] = z
+        verts[3 * i] = x + t * dv[0]
+        verts[3 * i + 1] = y + t * dv[1]
+        verts[3 * i + 2] = z + t * dv[2]
+    tris = iarray()
+    if closed:
+        for p_, q_, r_ in _ear_clip([(p[0], p[1]) for p in pts]):
+            tris.extend((p_ + n, q_ + n, r_ + n))
+            tris.extend((p_, r_, q_))
+    nseg = n if closed else n - 1
+    for i in range(nseg):
+        j = (i + 1) % n
+        tris.extend((i, j, j + n, i, j + n, i + n))
+    m = Mesh(verts, tris, name=name or '%s projected %s° → %s°' % (role, _deg1(dip), _deg1(dip_azimuth)),
+             color=color or EXTRUDE_COLORS[role], role=role)
+    m.metadata.update(metadata or {})
+    m.metadata.update({
+        'schema': EXTRUDE_SCHEMA, 'dip': dip, 'dip_azimuth': dip_azimuth,
+        'depth_m': float(depth) if depth is not None else zsum / n - float(z_bottom),
+        'z_bottom': None if z_bottom is None else float(z_bottom),
+        'strike_deg': strike, 'closed': closed, 'n_trace': n, 'source': source, 'confidence': confidence,
+        'note': 'a mapped trace projected down dip by a distance the user chose — the depth is a projection '
+                'distance, not a modelled fact',
+    })
+    m.provenance = {'method': 'polyline projected down dip (extrude_polyline)', 'dip': dip, 'dip_azimuth': dip_azimuth}
+    return m
+
+
 def _signed_area(ring):
     s = 0.0
     for i in range(len(ring)):

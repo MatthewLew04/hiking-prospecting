@@ -250,23 +250,15 @@ export function deriveFromTraces(lineset, opts = {}) {
 }
 
 /** Drape a PointSet onto a Grid2D (Leapfrog's `Set Elevation`).  Keeps the
-    original z in `z_original` so it can be switched back. */
+    original z in `z_original` so it can be switched back.  Now a thin front
+    for the engine's setElevationFrom (which also takes LineSets, Drillholes
+    and Mesh surfaces, and the 'missing' / 'not-surveyed' scopes). */
 export function setElevationFromGrid(ps, grid, opts = {}) {
-  const off = opts.offset == null ? 0 : +opts.offset;
-  const keep = ps.attributes.z_original || [];
-  let moved = 0, outside = 0;
-  for (let i = 0; i < ps.n; i++) {
-    const x = ps.xyz[3 * i], y = ps.xyz[3 * i + 1];
-    const z = grid.sample(x, y);
-    if (z !== z) { outside++; continue; }
-    if (keep[i] == null) keep[i] = ps.xyz[3 * i + 2];
-    ps.xyz[3 * i + 2] = z + off; moved++;
-  }
-  ps.attributes.z_original = keep;
-  ps.metadata.elevation_from = grid.name + (off ? ` (+${off} m)` : '');
-  if (outside) ps.warn(`${outside} point(s) fell outside ${grid.name} and kept their original elevation`);
-  return { moved, outside };
+  const r = E.setElevationFrom(ps, grid, Object.assign({ only: 'all' }, opts));
+  return { moved: r.moved, outside: r.outside, skipped: r.skipped };
 }
+export const setElevationFrom = E.setElevationFrom;
+export const restoreElevation = E.restoreElevation;
 
 /* ============================================================ eigen ==== */
 
@@ -458,26 +450,47 @@ export function densityGrid(poles, n, opts = {}) {
   return { grid, size, max, method, sigma, units, projection: proj, unit_label: method === 'schmidt' ? '% per 1% area' : 'σ' };
 }
 
-/** Marching squares on the density lattice -> contour polylines on the disc. */
+/** Marching squares on the density lattice -> contour polylines on the disc
+    (the engine's shared marchingSquares, so saddles are split the same way
+    everywhere). */
 export function contourLines(dg, levels) {
-  const { grid, size } = dg, out = [];
-  const at = (i, j) => grid[j * size + i];
+  const { grid, size } = dg;
   const px = i => (i / (size - 1)) * 2 - 1;
-  for (const lv of levels) {
-    const segs = [];
-    for (let j = 0; j < size - 1; j++) for (let i = 0; i < size - 1; i++) {
-      const v = [at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)];
-      if (v.some(x => x !== x)) continue;
-      let code = 0; for (let k = 0; k < 4; k++) if (v[k] >= lv) code |= (1 << k);
-      if (code === 0 || code === 15) continue;
-      const X = [px(i), px(i + 1), px(i + 1), px(i)], Y = [px(j), px(j), px(j + 1), px(j + 1)];
-      const pt = e => { const a = e, b = (e + 1) % 4; const t = (lv - v[a]) / ((v[b] - v[a]) || 1e-12); return [X[a] + (X[b] - X[a]) * t, Y[a] + (Y[b] - Y[a]) * t]; };
-      const edges = []; for (let e = 0; e < 4; e++) { const a = e, b = (e + 1) % 4; if ((v[a] >= lv) !== (v[b] >= lv)) edges.push(e); }
-      for (let e = 0; e + 1 < edges.length; e += 2) segs.push([pt(edges[e]), pt(edges[e + 1])]);
-    }
-    out.push({ level: lv, segments: segs });
-  }
-  return out;
+  return levels.map(lv => ({ level: lv, segments: E.marchingSquares(size, size, (i, j) => grid[j * size + i], (i, j) => [px(i), px(j)], lv) }));
+}
+
+/* ============================================= plane from a measurement == */
+
+/** A finite rectangle through (x, y, z) with the stated attitude: the four
+    corners are centre + u·halfStrike·strikeVector + v·halfDip·dipVector for
+    (u, v) in (−1,−1), (1,−1), (1,1), (−1,1) — the corner order of
+    pipelines/geomodel/assay.py vein_surface — and two triangles.  It is a
+    statement of attitude, not a modelled surface, and its metadata says so.
+      opts: { role: 'vein' | 'fault', name, color, confidence, from_measurement,
+      source, metadata } */
+export function planeMesh(x, y, z, dip, dipAz, halfStrike = 150, halfDip = 150, opts = {}) {
+  dip = +dip; dipAz = +dipAz;
+  if (!(dip >= 0) || dip > 90) throw new Error(`dip must be 0..90 degrees below horizontal (got ${dip})`);
+  if (dipAz !== dipAz) throw new Error('a dip azimuth is required (degrees clockwise from north, down-dip direction)');
+  if (!(halfStrike > 0) || !(halfDip > 0)) throw new Error('the half extents along strike and down dip must be > 0');
+  const s = strikeVector(dipAz), d = dipVector(dip, dipAz);
+  const verts = new Float64Array(12);
+  [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([u, v], k) => {
+    verts[3 * k] = x + halfStrike * u * s[0] + halfDip * v * d[0];
+    verts[3 * k + 1] = y + halfStrike * u * s[1] + halfDip * v * d[1];
+    verts[3 * k + 2] = z + halfStrike * u * s[2] + halfDip * v * d[2];
+  });
+  const role = opts.role === 'fault' ? 'fault' : 'vein';
+  const m = new GM.Mesh({ vertices: verts, triangles: Uint32Array.from([0, 1, 2, 0, 2, 3]), name: opts.name || `${role} plane ${Math.round(dip)}° → ${Math.round(dipAz)}°`, color: opts.color || (role === 'fault' ? [230, 90, 90] : [120, 255, 190]), role, opacity: 0.35 });
+  Object.assign(m.metadata, opts.metadata || {}, {
+    schema: 'nwmm-assay-vein/1', dip, dip_azimuth: dipAz, polarity: opts.polarity == null ? 1 : +opts.polarity,
+    from_measurement: opts.from_measurement == null ? null : opts.from_measurement,
+    confidence: opts.confidence || 'described', source: opts.source == null ? null : opts.source,
+    centre: [x, y, z], half_strike_m: halfStrike, half_dip_m: halfDip,
+    note: 'statement of attitude, not a modelled surface',
+  });
+  m.provenance = { method: 'plane drawn through a point at a stated dip / dip azimuth (planeMesh)', source: opts.source == null ? 'typed attitude' : opts.source };
+  return m;
 }
 
 /* ======================================================= declustering == */
@@ -882,5 +895,6 @@ export const STRUCT_OPS = {
     return { surfaces: meshes, interpolant: fi.toJSON(), thresholds, meta: fi.meta, count: ff.count, spacing: ff.spacing };
   },
   trendGlyphs: (a) => { const f = buildTrendField(a.inputs, a); return { points: trendGlyphs(f, a.bounds, a), field: f.toJSON() }; },
+  planeMesh: (a) => planeMesh(a.x, a.y, a.z, a.dip, a.dip_azimuth == null ? a.dipAzimuth : a.dip_azimuth, a.half_strike == null ? a.halfStrike : a.half_strike, a.half_dip == null ? a.halfDip : a.half_dip, a),
 };
 try { Object.assign(E.OPS, STRUCT_OPS); } catch (e) { /* engine without a registry */ }

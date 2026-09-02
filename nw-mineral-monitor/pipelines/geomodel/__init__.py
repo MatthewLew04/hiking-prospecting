@@ -18,7 +18,9 @@ It is organised as:
   stratigraphy  the "pancake" stacker: ordered contact surfaces -> units
   blockmodel    block-model estimation (kriging / IDW) + unit tagging
   slicing       plane sections: mesh-plane intersections, grid/block samples,
-                marching-tetrahedra iso-surfaces for implicit (RBF) models
+                marching-tetrahedra iso-surfaces for implicit (RBF) models,
+                clipping a surface to the ground and its daylight trace
+  contours      marching-squares contour lines from a Grid2D
   workings      underground workings schema (adit/drift/shaft/raise/winze/
                 stope) + 2-D-map-to-3-D georeferencing helpers
   kit           builds a model project for a mine or AOI from the repo bundles

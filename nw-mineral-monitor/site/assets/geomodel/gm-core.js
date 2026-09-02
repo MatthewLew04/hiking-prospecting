@@ -209,6 +209,22 @@ export class PointSet extends ModelObject{
     for(const k of keys){ const col=this.attributes[k]=this.attributes[k]||[]; while(col.length<n-1)col.push(null); col.push(attrs[k]===undefined?null:attrs[k]); }
     return n-1;
   }
+  /** Drop one row (or several) from xyz and from every attribute column —
+      z_original included — so `n` (xyz.length/3) and the columns stay in
+      step.  Columns shorter than n are padded with null first, the way
+      add() pads, so nothing shifts onto the wrong row.  Returns the number
+      of rows actually removed. */
+  removeRow(i){ return this.removeRows([i]); }
+  removeRows(indices){
+    const n=this.n, drop=new Uint8Array(n); let k=0;
+    for(const v of indices||[]){ const j=+v; if(j>=0&&j<n&&j===Math.floor(j)&&!drop[j]){ drop[j]=1; k++; } }
+    if(!k) return 0;
+    const nv=new Float64Array((n-k)*3); let w=0;
+    for(let i=0;i<n;i++){ if(drop[i])continue; nv[3*w]=this.xyz[3*i]; nv[3*w+1]=this.xyz[3*i+1]; nv[3*w+2]=this.xyz[3*i+2]; w++; }
+    this.xyz=nv;
+    for(const key of Object.keys(this.attributes)){ let col=this.attributes[key]; if(!Array.isArray(col))col=Array.from(col||[]); if(col.length>n)col=col.slice(0,n); while(col.length<n)col.push(null); this.attributes[key]=col.filter((_,i)=>!drop[i]); }
+    return k;
+  }
   numeric(name){ const col=this.attributes[name]||[], out=new Float64Array(this.n).fill(NaN); for(let i=0;i<Math.min(col.length,this.n);i++){ const v=col[i]; if(v==null||v==='')continue; const f=+v; if(f===f)out[i]=f; } return out; }
   isNumeric(name){ let seen=false; for(const v of this.attributes[name]||[]){ if(v==null||v==='')continue; if(typeof v==='boolean')return false; const f=+v; if(f!==f)return false; seen=true; } return seen; }
   bounds(){ return xyzBounds(this.xyz); }

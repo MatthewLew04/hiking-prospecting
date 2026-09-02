@@ -15,7 +15,9 @@
    Ops: see OPS in gm-engine.js (gridFromPoints, buildStratigraphy, stratigraphyVolumes,
    stratigraphySection, empiricalVariogram, fitVariogram, estimate, gradeTonnage,
    tagBlockModel, isosurface, implicitSurface, meshPlaneIntersection,
-   blockmodelPlaneSample, linesetNearPlane, desurvey, composite, ...). */
+   blockmodelPlaneSample, linesetNearPlane, desurvey, composite, extrudePolyline,
+   gridContours, setElevationFrom, clipMeshToTopography, daylightTrace, ...) plus
+   the structural ops gm-structural.js registers (deriveStructure, planeMesh, ...). */
 
 import { runOp, packValue, unpackValue, collectTransferables } from './gm-engine.js';
 import './gm-structural.js';   // registers the structural ops into the shared OPS registry

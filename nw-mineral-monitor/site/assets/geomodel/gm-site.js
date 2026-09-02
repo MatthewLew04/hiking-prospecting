@@ -183,9 +183,11 @@ export async function buildSiteProject(lon, lat, opts = {}) {
   log('loading graded mines…');
   try { const gr = await jget(`${base}data/grades/grades.json`); const ps = minesFromGrades(gr, crs, topo, box, opts.gi); if (ps.n) proj.add(ps); } catch (e) { proj.metadata.warnings = (proj.metadata.warnings || []).concat([`grades table unavailable: ${e.message}`]); }
   if (opts.handoff) { const existing = new Set(proj.objects.map(o => o.name)); for (const ps of pointsFromHandoff(opts.handoff, crs, topo, box)) if (!existing.has(ps.name) || !ps.role.startsWith('claims')) proj.add(ps); }
-  // scaffolding
-  const ws = E.newWorkings('Workings (digitised)', name); ws.group = 'Workings'; ws.metadata.howto = 'Use TOOLS > Workings: georeference a level plan, trace drifts at the level elevation, add adits from portals and shafts from collars.'; proj.add(ws);
-  const sm = new GM.StratModel({ name: 'Stratigraphy (pancake)', topography: topo.id }); sm.metadata.howto = 'TOOLS > Stratigraphy: add units top-down from contact points / surfaces / constants, then BUILD.'; proj.add(sm);
+  // No scaffold layers: an empty 'Workings (digitised)' row and a 0-unit
+  // stratigraphy used to be added here so the tree showed where they would
+  // go.  The tree now lists those groups itself as '— not started · step n'
+  // with the tool to open, and the tools create the layer on the first
+  // committed feature, so nothing empty is autosaved on the user's behalf.
   const zr = topo.zrange(); const zmin = zr[0] === zr[0] ? zr[0] - 400 : -500, zmax = zr[1] === zr[1] ? zr[1] + 50 : 500;
   // The two preset sections are scaffolding, not data: they start hidden so a
   // fresh model shows terrain rather than two 3 km glass walls, and the Section

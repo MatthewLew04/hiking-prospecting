@@ -66,7 +66,9 @@ try {
 
   /* ---------- derive orientations from the mapped trace ---------- */
   await page.evaluate(() => window.gmApp.tools.open('structure'));
-  const hasPanel = await page.evaluate(() => !!document.querySelector('#inspector .tool h2') && document.querySelector('#inspector .tool h2').textContent.includes('STRUCTURAL'));
+  // tools mount in the tool host below the layer inspector, with the step in
+  // the title bar; the layer inspector is never taken over
+  const hasPanel = await page.evaluate(() => { const host = document.getElementById('toolhost'); const ttl = host && host.querySelector('.ttl'); return !!host && !host.hidden && /STRUCTURAL/.test(ttl.textContent) && /STEP 3/.test(ttl.textContent) && !!document.querySelector('#toolbody .tool'); });
   check('ui: structural tool panel opens', hasPanel);
 
   await page.evaluate(() => window.gmApp.tools.structure.deriveAll());

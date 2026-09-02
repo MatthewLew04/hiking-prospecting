@@ -187,7 +187,10 @@ export async function buildSiteProject(lon, lat, opts = {}) {
   const ws = E.newWorkings('Workings (digitised)', name); ws.group = 'Workings'; ws.metadata.howto = 'Use TOOLS > Workings: georeference a level plan, trace drifts at the level elevation, add adits from portals and shafts from collars.'; proj.add(ws);
   const sm = new GM.StratModel({ name: 'Stratigraphy (pancake)', topography: topo.id }); sm.metadata.howto = 'TOOLS > Stratigraphy: add units top-down from contact points / surfaces / constants, then BUILD.'; proj.add(sm);
   const zr = topo.zrange(); const zmin = zr[0] === zr[0] ? zr[0] - 400 : -500, zmax = zr[1] === zr[1] ? zr[1] + 50 : 500;
-  proj.add(new GM.Section({ start: [cx - radius, cy], end: [cx + radius, cy], z_min: zmin, z_max: zmax, name: 'Section W-E' }));
-  proj.add(new GM.Section({ start: [cx, cy - radius], end: [cx, cy + radius], z_min: zmin, z_max: zmax, name: 'Section S-N' }));
+  // The two preset sections are scaffolding, not data: they start hidden so a
+  // fresh model shows terrain rather than two 3 km glass walls, and the Section
+  // tool ticks one visible when it is chosen.
+  proj.add(new GM.Section({ start: [cx - radius, cy], end: [cx + radius, cy], z_min: zmin, z_max: zmax, name: 'Section W-E', visible: false }));
+  proj.add(new GM.Section({ start: [cx, cy - radius], end: [cx, cy + radius], z_min: zmin, z_max: zmax, name: 'Section S-N', visible: false }));
   return { project: proj, topoRes };
 }

@@ -8,42 +8,171 @@ import * as GM from './gm-core.js';
 import * as E from './gm-engine.js';
 import * as F from './gm-formats.js';
 import { THREE, canvasTexture } from './gm-render.js';
-import { h, clear, row, num, txt, sel, btn, range, note, kv, section, toast, modal, menu, colorInput, fmtNum, plotVariogram } from './gm-ui.js';
+import { h, clear, row, num, txt, sel, btn, range, note, kv, section, toast, modal, menu, colorInput, fmtNum, plotVariogram, toolHead, confirmModal, promptModal, lineSample } from './gm-ui.js';
 import { StructureTool, StereonetTool, FormTool } from './gm-struct-tools.js';
+import { CONF_CLASSES, confClass } from './gm-render.js';
 
 const $ = id => document.getElementById(id);
 
+/* The nine steps, in the order a district with no drillholes is modelled
+   (GEOMODEL.md §1 and §7): from the map, from the geology, volumes, see it.
+   Everything that presents the tools — the TOOLS menu, each panel's header,
+   the progress card in the empty inspector, HELP — reads this one table, so
+   the numbering and the wording cannot drift apart. `needs` and `has` are
+   computed from the project alone. */
+export const TOOL_STEPS = [
+  { key: 'georef', step: 1, group: 'FROM THE MAP', title: 'Georeference a scan', menu: 'Georeference an image', purpose: 'Place a scanned level plan at its level elevation, or a longitudinal / cross section between two surface points, so it can be traced in 3-D.',
+    needs: P => [{ label: 'an image or PDF (drop it on the page)', ok: true }],
+    has: P => { const n = P.byKind('imageplane').length; return n ? `${n} georeferenced image${n > 1 ? 's' : ''}` : null; }, next: 'trace workings on it (step 2)' },
+  { key: 'workings', step: 2, group: 'FROM THE MAP', title: 'Workings from maps', menu: 'Workings from maps', purpose: 'Turn a level plan, a section or a written description into adits, drifts, shafts, raises and stopes — every one typed, sourced and confidence-tagged.',
+    needs: P => [{ label: 'topography', ok: !!topoOf(P), open: null, why: 'clicks land on the ground' }, { label: 'a georeferenced plan (optional)', ok: P.byKind('imageplane').length > 0, open: 'georef', optional: true }],
+    has: P => { const ws = P.byKind('lineset').filter(l => l.role === 'workings' && l.parts.length); if (!ws.length) return null; const n = ws.reduce((a, l) => a + l.parts.length, 0), m = ws.reduce((a, l) => a + l.length(), 0); return `${n} working${n > 1 ? 's' : ''} · ${fmtNum(m, 0)} m`; }, next: 'cut a section through them (step 9)' },
+  { key: 'structure', step: 3, group: 'FROM THE GEOLOGY', title: 'Structural data', menu: 'Structural data', purpose: 'Dip and dip azimuth: derived from where mapped contacts and faults cross the terrain (the three-point problem), digitised on the map, or imported.',
+    needs: P => [{ label: 'mapped traces or a map to digitise on', ok: !!topoOf(P) || P.objects.some(o => o.kind === 'lineset' && ['geology-outline', 'faults', 'lines'].includes(o.role) && o.parts.length), why: 'contacts / faults draped on terrain' }],
+    has: P => { const L = P.objects.filter(o => o.kind === 'points' && o.role === 'structural'); if (!L.length) return null; const n = L.reduce((a, l) => a + l.n, 0); return `${n} measurement${n > 1 ? 's' : ''} in ${L.length} layer${L.length > 1 ? 's' : ''}`; }, next: 'stereonet (step 4), form interpolant (step 5)' },
+  { key: 'stereonet', step: 4, group: 'FROM THE GEOLOGY', title: 'Stereonet', menu: 'Stereonet', purpose: 'Lower-hemisphere net: poles, great circles, Kamb / Schmidt contours, Bingham and Fisher statistics, selection linked to the scene.',
+    needs: P => [{ label: 'structural data', ok: P.objects.some(o => o.kind === 'points' && o.role === 'structural' && o.n > 0), open: 'structure' }],
+    has: P => null, next: 'assign categories, then the form interpolant (step 5)' },
+  { key: 'form', step: 5, group: 'FROM THE GEOLOGY', title: 'Form interpolant & trends', menu: 'Form interpolant & trends', purpose: 'A gradient-constrained RBF whose iso-surfaces lie parallel to the measured fabric; structural trend fields; the global trend plane.',
+    needs: P => [{ label: '3+ structural measurements', ok: P.objects.some(o => o.kind === 'points' && o.role === 'structural' && o.n >= 3), open: 'structure' }],
+    has: P => { const f = P.byKind('mesh').filter(m => m.metadata && m.metadata.form_of).length, t = P.objects.filter(o => o.role === 'trend').length; return f || t ? `${f} form surface${f === 1 ? '' : 's'}${t ? `, ${t} trend field` : ''}` : null; }, next: 'stratigraphy (step 6) or sections (step 9)' },
+  { key: 'strat', step: 6, group: 'VOLUMES', title: 'Stratigraphy (pancake)', menu: 'Stratigraphy (pancake)', purpose: 'Units youngest-first, each with a base from contact points, a surface grid or a constant; deposit bases on-lap, erosion bases cut.',
+    needs: P => [{ label: 'topography', ok: !!topoOf(P) }, { label: 'contact points or a surface grid', ok: P.byKind('points').some(p => p.role === 'contacts') || P.byKind('grid2d').some(g => g.role !== 'topography' && g.role !== 'property'), open: null, optional: true, why: 'constants and thicknesses work without them' }],
+    has: P => { const s = P.byKind('stratmodel').find(m => m.units.length); if (!s) return null; return s.metadata.built ? `built · ${s.units.length} units` : `${s.units.length} unit${s.units.length > 1 ? 's' : ''}, not built`; }, next: 'virtual drillhole, block-model domains, section fill' },
+  { key: 'implicit', step: 7, group: 'VOLUMES', title: 'Implicit surface (RBF)', menu: 'Implicit surface (RBF)', purpose: 'Signed-distance RBF through contact points (0), hanging-wall (+) and foot-wall (−) points → the iso-surface of a vein, intrusion or ore shell.',
+    needs: P => [{ label: 'a points layer with sides or signed distances', ok: P.byKind('points').some(p => p.n >= 4), why: 'or digitise ± points in the panel' }],
+    has: P => { const n = P.byKind('mesh').filter(m => m.provenance && /RBF implicit/.test(m.provenance.method || '')).length; return n ? `${n} surface${n > 1 ? 's' : ''}` : null; }, next: 'sections (step 9), export' },
+  { key: 'blocks', step: 8, group: 'VOLUMES', title: 'Block model & kriging', menu: 'Block model & kriging', purpose: 'A block grid, a sample layer, an experimental variogram and its fit, then ordinary kriging / IDW / nearest — optionally inside one unit — with cut-offs and grade–tonnage.',
+    needs: P => [{ label: 'a points layer with a numeric value', ok: P.byKind('points').some(p => p.role !== 'claims' && Object.keys(p.attributes).some(k => p.isNumeric(k))), why: 'assays, graded mines, imported XYZ' }],
+    has: P => { const b = P.byKind('blockmodel'); if (!b.length) return null; const est = b.filter(x => x.metadata.estimates && x.metadata.estimates.length).length; return `${b.length} block model${b.length > 1 ? 's' : ''}${est ? `, ${est} estimated` : ''}`; }, next: 'grade–tonnage, section slice, export UBC / CSV' },
+  { key: 'section', step: 9, group: 'SEE IT', title: 'Section & slice', menu: 'Section & slice', purpose: 'Cut the model: clip, intersect every surface, fill the pancake, sample block models, project nearby workings; the 2-D panel draws it the way it is drawn on paper.',
+    needs: P => [{ label: 'anything to cut', ok: P.objects.length > 0 }],
+    has: P => { const s = P.byKind('section').length; return s ? `${s} section${s > 1 ? 's' : ''}` : null; }, next: 'render image, export DXF / PNG' },
+];
+const topoOf = P => P.byKind('grid2d').find(g => g.role === 'topography') || null;
+export const stepOf = key => TOOL_STEPS.find(s => s.key === key) || null;
+
 export class Tools {
   constructor(app) {
-    this.app = app; this.active = null; this.panel = null;
+    this.app = app; this.active = null; this.panel = null; this.armed = null; this.prevSelected = null;
     this.section = new SectionTool(this); this.workings = new WorkingsTool(this); this.georef = new GeorefTool(this);
     this.strat = new StratTool(this); this.blocks = new BlocksTool(this); this.implicit = new ImplicitTool(this);
     this.structure = new StructureTool(this); this.stereonet = new StereonetTool(this); this.form = new FormTool(this);
     this.all = { section: this.section, workings: this.workings, georef: this.georef, strat: this.strat, blocks: this.blocks, implicit: this.implicit, structure: this.structure, stereonet: this.stereonet, form: this.form };
+    this.extra = [];                                   // [{ key, tool, label, hint }] registered by other modules
+    const close = $('toolClose'); if (close) close.onclick = () => this.close();
   }
   get R() { return this.app.R; }
   get project() { return this.app.project; }
-  onProject() { for (const t of Object.values(this.all)) t.onProject && t.onProject(); this.stop(); }
-  menu(anchor) {
-    menu(anchor, [
-      { label: 'Structural data', hint: 'dip / dip azimuth', onclick: () => this.open('structure') },
-      { label: 'Stereonet', hint: 'poles, contours, Bingham', onclick: () => this.open('stereonet') },
-      { label: 'Form interpolant & trends', hint: 'deformation fabric', onclick: () => this.open('form') },
-      '-',
-      { label: 'Section & slice', hint: 'cut the model', onclick: () => this.open('section') },
-      { label: 'Workings from maps', hint: 'adits, drifts, shafts, stopes', onclick: () => this.open('workings') },
-      { label: 'Georeference an image', hint: 'level plan / section scan', onclick: () => this.open('georef') },
-      { label: 'Stratigraphy (pancake)', hint: 'layered geologic model', onclick: () => this.open('strat') },
-      { label: 'Block model & kriging', hint: 'grade estimation', onclick: () => this.open('blocks') },
-      { label: 'Implicit surface (RBF)', hint: 'veins / contacts from points', onclick: () => this.open('implicit') },
-      '-',
-      { label: 'Virtual drillhole (click the ground)', onclick: () => this.strat.virtualHole() },
-      { label: 'Derive structure from all mapped traces', hint: 'three-point problem', onclick: () => { this.open('structure'); this.structure.deriveAll(); } },
-    ]);
+  /** Register a tool that lives outside this file (gm-more-tools.js). */
+  register(key, tool, meta = {}) { this.all[key] = tool; this.extra.push(Object.assign({ key, tool }, meta)); }
+  onProject() { for (const t of Object.values(this.all)) t.onProject && t.onProject(); this.close(); }
+
+  /** Readiness of every step, from the project alone: blocked (a required
+      input is missing), ready, or done (it has produced something). */
+  readiness() {
+    const P = this.project, out = {};
+    for (const s of TOOL_STEPS) {
+      if (!P) { out[s.key] = { state: 'blocked', why: 'no project', needs: [], has: null }; continue; }
+      let needs = [], has = null;
+      try { needs = s.needs(P); has = s.has(P); } catch (e) { /* a half-built object must not break the menu */ }
+      const missing = needs.filter(n => !n.ok && !n.optional);
+      out[s.key] = { state: has ? 'done' : missing.length ? 'blocked' : 'ready', why: missing.map(n => n.label).join(', '), needs, has };
+    }
+    return out;
   }
-  open(name, ...args) { this.stop(); const t = this.all[name]; this.active = t; this.panel = t.panel(...args); this.app.select(null); showPanel(this.panel); }
-  stop() { if (this.active && this.active.stop) this.active.stop(); this.active = null; this.R.clearOverlay(); $('gl').style.cursor = ''; }
-  showPanel(p) { this.panel = p; showPanel(p); }
+  menu(anchor) {
+    const r = this.readiness(); const items = []; let group = null;
+    for (const s of TOOL_STEPS) {
+      if (s.group !== group) { group = s.group; items.push({ head: group }); }
+      const st = r[s.key];
+      items.push({ label: `${s.step}  ${s.menu}`, cls: st.state, hint: st.state === 'done' ? st.has : st.state === 'blocked' ? `needs ${st.why}` : 'ready', title: s.purpose, onclick: () => this.open(s.key) });
+    }
+    items.push('-', { head: 'SHORTCUTS' });
+    const traces = this.project ? this.project.objects.filter(o => o.kind === 'lineset' && ['geology-outline', 'faults', 'lines'].includes(o.role) && o.parts.length).length : 0;
+    items.push({ label: 'Derive structure from all mapped traces', hint: traces ? `${traces} trace layer${traces > 1 ? 's' : ''} · three-point problem` : 'no mapped traces', disabled: !traces, onclick: () => { this.open('structure'); this.structure.deriveAll(); } });
+    const built = this.project && this.project.byKind('stratmodel').some(m => m.metadata.built);
+    items.push({ label: 'Virtual drillhole (click the ground)', hint: built ? 'column through the pancake' : 'needs a built stratigraphy', cls: built ? '' : 'blocked', onclick: () => { this.open('strat'); if (built) this.strat.virtualHole(); } });
+    for (const x of this.extra) items.push({ label: x.label || x.key, hint: x.hint || '', onclick: () => this.open(x.key) });
+    menu(anchor, items);
+  }
+  /** Open a tool: the previous one is stopped, the layer inspector is left
+      alone, and the panel lands in the tool host with a title bar. */
+  open(name, ...args) {
+    const t = this.all[name]; if (!t) return;
+    if (this.active && this.active !== t && this.active.stop) this.active.stop();
+    this.disarm(); this.active = t; this.current = name;
+    this.panel = t.panel(...args); this.mount();
+    const right = $('rightPane'); if (right && right.classList.contains('open') === false && window.innerWidth <= 1100) right.classList.add('open');
+    return t;
+  }
+  mount() {
+    const host = $('toolhost'), body = $('toolbody'); if (!host || !body) { const insp = $('inspector'); clear(insp); insp.appendChild(this.panel); return; }
+    const meta = stepOf(this.current) || (this.extra.find(x => x.key === this.current) || {});
+    host.hidden = false;
+    host.querySelector('.ttl').textContent = ''; host.querySelector('.ttl').append(meta.step ? h('span', { class: 'step' }, `STEP ${meta.step}/${TOOL_STEPS.length} · `) : '', (meta.title || meta.label || this.current || '').toUpperCase());
+    clear(body); body.appendChild(this.headFor()); body.appendChild(this.panel); body.scrollTop = 0;
+    this.renderMode();
+  }
+  /** The NEEDS / HAS / NEXT strip every panel starts with, from TOOL_STEPS. */
+  headFor() {
+    const meta = stepOf(this.current); if (!meta || !this.project) return h('div');
+    const st = this.readiness()[meta.key];
+    return toolHead({ step: meta.step, total: TOOL_STEPS.length, title: meta.title, purpose: meta.purpose, needs: st.needs, has: st.has, next: meta.next, open: k => this.open(k) });
+  }
+  /** Re-render the current tool's panel in place (tools call this after any
+      change of their own state). */
+  showPanel(p) { this.panel = p; if (this.active) { const body = $('toolbody'); if (body && !$('toolhost').hidden) { const top = body.scrollTop; clear(body); body.appendChild(this.headFor()); body.appendChild(p); body.scrollTop = top; this.renderMode(); return; } } this.mount(); }
+  /** Close the tool: stop it, empty the host, let the inspector stand alone. */
+  close() {
+    if (this.active && this.active.stop) this.active.stop();
+    this.disarm(); this.active = null; this.current = null; this.panel = null;
+    const host = $('toolhost'); if (host) { host.hidden = true; clear($('toolbody')); }
+    this.R.clearOverlay(); $('gl').style.cursor = '';
+    if (this.app.renderInspector) this.app.renderInspector();
+  }
+  /** stop() keeps the panel but cancels any armed mode — Esc while a mode is
+      armed; a second Esc closes the tool. */
+  stop() { if (this.active && this.active.stop) this.active.stop(); this.disarm(); this.R.clearOverlay(); $('gl').style.cursor = ''; if (this.active && this.active.repanel) this.active.repanel(); else if (this.active && this.active.panel && this.panel) this.showPanel(this.active.panel()); }
+  /** One arming path for every click mode.  `text` says what the clicks do
+      and how to get out; `target` names what will be written and at what
+      confidence, so a trace off the bare ground can never pass as surveyed. */
+  arm(tool, text, target = null) {
+    if (tool && this.active !== tool) { this.active = tool; }
+    this.armed = { text, target };
+    $('gl').style.cursor = 'crosshair'; this.renderMode();
+    this.app.status(text);
+  }
+  disarm() { if (!this.armed) return; this.armed = null; $('gl').style.cursor = ''; this.renderMode(); this.app.status(''); }
+  renderMode() {
+    const bar = $('modebar'), host = $('toolhost');
+    if (host) { const m = host.querySelector('.mode'); if (m) m.textContent = this.armed ? '◎ ARMED' : ''; }
+    if (!bar) return;
+    clear(bar);
+    if (!this.armed) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+    bar.appendChild(h('span', {}, h('b', {}, '◎ '), this.armed.text, this.armed.target ? h('span', { class: 'k' }, ' → ' + this.armed.target) : null));
+    bar.appendChild(h('button', { class: 'x', title: 'cancel (Esc)', onclick: () => this.stop() }, '✕'));
+  }
+  /** The empty-inspector card: where things stand, step by step, and what to
+      click next. */
+  progressCard() {
+    const P = this.project, r = this.readiness();
+    const card = h('div', { class: 'insp' }, h('h2', {}, 'WHERE THINGS STAND'));
+    if (!P) { card.appendChild(note('no project open')); return card; }
+    const nextStep = TOOL_STEPS.find(s => r[s.key].state === 'ready') || null;
+    const list = h('div', { class: 'steps' });
+    for (const s of TOOL_STEPS) {
+      const st = r[s.key];
+      list.appendChild(h('button', { class: 'step ' + st.state + (nextStep && nextStep.key === s.key ? ' next' : ''), title: s.purpose + (st.state === 'blocked' ? ` — needs ${st.why}` : ''), onclick: () => this.open(s.key) },
+        h('span', { class: 'n' }, String(s.step)), h('span', { class: 't' }, s.title),
+        h('span', { class: 's' }, st.state === 'done' ? st.has : st.state === 'blocked' ? `needs ${st.why}` : 'ready')));
+    }
+    card.appendChild(list);
+    if (nextStep) card.appendChild(note(`Start here → ${nextStep.step} ${nextStep.title}.`, 'note ok'));
+    card.appendChild(note('Click a layer on the left for its properties, hover or click anything in the scene for what it is and where it came from, TOOLS ▾ for the steps.'));
+    return card;
+  }
 }
 function showPanel(p) { const host = $('inspector'); clear(host); host.appendChild(p); }
 function groundPick(R, e) { const p = R.pick(e.clientX, e.clientY, o => o.kind === 'grid2d' || o.kind === 'mesh' || o.kind === 'imageplane'); return p ? p.world : null; }
@@ -58,7 +187,9 @@ export class SectionTool {
     if (!this.sec) this.sec = this.app.project.byKind('section')[0] || null;
     const P = h('div', { class: 'tool' }, h('h2', {}, 'SECTION & SLICE'));
     const list = this.app.project.byKind('section');
-    P.appendChild(row('section', sel([['', '— pick —'], ...list.map(s => [s.id, s.name])], this.sec ? this.sec.id : '', { onchange: e => { this.sec = this.app.project.get(e.target.value); this.offset = 0; this.update(); this.T.showPanel(this.panel()); } })));
+    // Choosing a section shows it: the presets start hidden so a fresh model is
+    // terrain, not glass walls, and the tool is where they become visible.
+    P.appendChild(row('section', sel([['', '— pick —'], ...list.map(s => [s.id, s.name + (s.visible === false ? ' (hidden)' : '')])], this.sec ? this.sec.id : '', { onchange: e => { this.sec = this.app.project.get(e.target.value); this.offset = 0; if (this.sec && this.sec.visible === false) { this.sec.visible = true; this.app.R.setVisible(this.sec.id, true); this.app.renderLayers(); } this.update(); this.T.showPanel(this.panel()); } })));
     P.appendChild(h('div', { class: 'frow' }, btn('DRAW LINE (2 clicks)', () => this.startDraw()), btn('W–E here', () => this.preset('we')), btn('S–N here', () => this.preset('sn'))));
     if (this.sec) {
       const s = this.sec; const L = Math.hypot(s.end[0] - s.start[0], s.end[1] - s.start[1]);
@@ -68,14 +199,14 @@ export class SectionTool {
       P.appendChild(row('band ± m', num(this.band, { onchange: e => { this.band = +e.target.value; this.update(); } })));
       P.appendChild(row('products', ...['lines', 'strat', 'blocks', 'near'].map(k => h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.opt(k), onchange: e => { this['show_' + k] = e.target.checked; this.update(); } }), { lines: 'surface cuts', strat: 'pancake fill', blocks: 'block slice', near: 'nearby workings' }[k]))));
       P.appendChild(h('div', { class: 'frow' }, btn('2-D SECTION PANEL', () => this.togglePanel()), btn('SAVE CUTS AS LAYERS', () => this.saveProducts()), btn('EXPORT DXF', () => this.exportDxf())));
-      P.appendChild(h('div', { class: 'frow' }, btn('rename', () => { const n = prompt('Section name', s.name); if (n) { s.name = n; this.app.renderLayers(); } }), btn('delete section', () => { this.app.project.remove(s); this.sec = null; this.update(); this.T.showPanel(this.panel()); }, { class: 'b danger' })));
+      P.appendChild(h('div', { class: 'frow' }, btn('rename', async () => { const n = await promptModal('RENAME SECTION', 'name', s.name); if (n) { s.name = n; this.app.renderLayers(); this.T.showPanel(this.panel()); } }), btn('delete section', () => { const gone = s; this.app.destructive(`deleted ${gone.name}`, () => { this.app.project.remove(gone); if (this.sec === gone) this.sec = null; this.update(); this.T.showPanel(this.panel()); }, () => { this.app.project.add(gone); this.sec = gone; this.update(); this.T.showPanel(this.panel()); }); }, { class: 'b danger' })));
     }
     P.appendChild(note('The plane clips everything that is clippable, cuts every mesh and surface into lines, fills the stratigraphic units along the line, samples block models onto the plane and projects workings within the band. Sweep with the offset slider.'));
     this.update();
     return P;
   }
   opt(k) { return this['show_' + k] == null ? true : this['show_' + k]; }
-  startDraw() { this.mode = 'draw'; this.pts = []; $('gl').style.cursor = 'crosshair'; this.app.status('click the start point of the section on the ground'); }
+  startDraw() { this.mode = 'draw'; this.pts = []; this.T.arm(this, 'SECTION — click the start point on the ground, then the end · Esc cancels', 'a new vertical section'); }
   preset(kind) {
     const topo = this.app.topoGrid(); const b = this.app.project.bounds(); if (!b) return; const cx = (b[0] + b[3]) / 2, cy = (b[1] + b[4]) / 2; const R = Math.max(b[3] - b[0], b[4] - b[1]) / 2;
     const t = this.app.R.controls.target; const w = this.app.R.fromScene(new THREE.Vector3(t.x, t.y, t.z)); const x = w[0], y = w[1];
@@ -83,20 +214,24 @@ export class SectionTool {
   }
   create(start, end, name) {
     const b = this.app.project.bounds(); const zmin = b ? b[2] - 200 : -500, zmax = b ? b[5] + 50 : 500;
-    const s = new GM.Section({ start, end, z_min: zmin, z_max: zmax, name: name || `Section ${this.app.project.byKind('section').length + 1}` });
+    // Serial names: a third W–E section is 'Section W-E [3]', never a second
+    // row reading exactly like the first.
+    const stem = name || 'Section'; const same = this.app.project.byKind('section').filter(x => x.name === stem || x.name.startsWith(stem + ' [')).length;
+    const s = new GM.Section({ start, end, z_min: zmin, z_max: zmax, name: same ? `${stem} [${same + 1}]` : stem });
     this.app.project.add(s); this.sec = s; this.offset = 0; this.update(); this.T.showPanel(this.panel());
+    toast(`${s.name} created — sweep it with the offset slider, clip with "clip model", 2-D SECTION PANEL draws it`, 'ok', 5000);
   }
   onClick(e) {
     if (this.mode !== 'draw') return false;
     const w = groundPick(this.app.R, e); if (!w) return true;
     this.pts.push(w);
     if (this.pts.length === 1) { this.app.R.overlayMarker(w, 0x2dd4bf); this.app.status('click the end point'); }
-    else { this.mode = null; $('gl').style.cursor = ''; this.app.R.clearOverlay(); this.create([this.pts[0][0], this.pts[0][1]], [this.pts[1][0], this.pts[1][1]]); }
+    else { this.mode = null; this.T.disarm(); this.app.R.clearOverlay(); this.create([this.pts[0][0], this.pts[0][1]], [this.pts[1][0], this.pts[1][1]]); }
     return true;
   }
   onMove(e) { if (this.mode !== 'draw' || this.pts.length !== 1) return false; const w = groundPick(this.app.R, e); if (!w) return true; this.app.R.clearOverlay(); this.app.R.overlayMarker(this.pts[0], 0x2dd4bf); this.app.R.overlayPolyline([this.pts[0], w], 0x2dd4bf, true); return true; }
-  onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; this.app.R.clearOverlay(); $('gl').style.cursor = ''; return true; } return false; }
-  stop() { this.mode = null; }
+  onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; this.app.R.clearOverlay(); this.T.disarm(); return true; } return false; }
+  stop() { this.mode = null; this.pts = []; }
   plane() {
     if (!this.sec) return null; const s = this.sec; const { point, normal } = E.sectionPlane(s.start, s.end);
     const p = [point[0] + normal[0] * this.offset, point[1] + normal[1] * this.offset, 0];
@@ -205,21 +340,28 @@ export class WorkingsTool {
   constructor(T) { this.T = T; this.ws = null; this.mode = null; this.pts = []; this.image = null; this.form = { type: 'drift', name: '', level: '', level_z: '', units_in: 'ft', confidence: 'sketched', doc: '', page: '', width_m: '', bearing: 0, length: 100, depth: 100, dip: 90, azimuth: 0, grade: 0.5, zTop: '', zBottom: '' }; }
   get app() { return this.T.app; }
   onProject() { this.ws = null; this.image = null; this.mode = null; }
-  ensureLayer() { if (this.ws && this.app.project.get(this.ws.id)) return this.ws; this.ws = this.app.project.byKind('lineset').find(l => l.role === 'workings') || null; if (!this.ws) { this.ws = E.newWorkings('Workings (digitised)', this.app.project.name); this.ws.group = 'Workings'; this.app.project.add(this.ws); } return this.ws; }
-  panel(ws, image) {
-    if (ws) this.ws = ws; this.ensureLayer(); if (image) this.image = image;
+  /* Two phases: find() is what the panel uses and never creates anything;
+     ensureLayer() creates the layer on the first committed feature.  Opening
+     the panel used to add an empty 'Workings (digitised)' row, mark the
+     project dirty and autosave it — a layer nobody asked for. */
+  find() { if (this.ws && this.app.project.get(this.ws.id)) return this.ws; this.ws = this.app.project.byKind('lineset').find(l => l.role === 'workings') || null; return this.ws; }
+  ensureLayer() { if (this.find()) return this.ws; this.ws = E.newWorkings('Workings (digitised)', this.app.project.name); this.ws.group = 'Workings'; this.app.project.add(this.ws); return this.ws; }
+  panel(wsArg, image) {
+    if (wsArg) this.ws = wsArg; this.find(); if (image) this.image = image;
     const f = this.form; const P = h('div', { class: 'tool' }, h('h2', {}, 'WORKINGS FROM MAPS'));
     const wsList = this.app.project.byKind('lineset').filter(l => l.role === 'workings'); const images = this.app.project.byKind('imageplane');
-    P.appendChild(row('layer', sel(wsList.map(l => [l.id, l.name]), this.ws.id, { onchange: e => { this.ws = this.app.project.get(e.target.value); } }), btn('+', () => { const l = E.newWorkings(`Workings ${wsList.length + 1}`, this.app.project.name); l.group = 'Workings'; this.app.project.add(l); this.ws = l; this.T.showPanel(this.panel()); }, { title: 'new workings layer' })));
-    P.appendChild(row('trace on', sel([['', 'ground / any surface'], ...images.map(i => [i.id, `${i.name} (${i.plane}${i.elevation != null ? ' @' + fmtNum(i.elevation, 0) : ''})`])], this.image ? this.image.id : '', { onchange: e => { this.image = e.target.value ? this.app.project.get(e.target.value) : null; if (this.image && this.image.plane === 'plan' && this.image.elevation != null) { f.level_z = this.image.elevation; this.T.showPanel(this.panel()); } } })));
-    P.appendChild(note(this.image ? `tracing on "${this.image.name}" — clicks are read through its georeference${this.image.plane === 'plan' ? ' at the level elevation below' : ''}` : 'no image selected — clicks land on the topography / surfaces (use TOOLS > Georeference to place a scanned level plan first)'));
+    if (!this.image && images.length && !this._imageAsked) { this.image = images[images.length - 1]; if (this.image.plane === 'plan' && this.image.elevation != null) f.level_z = this.image.elevation; }
+    P.appendChild(row('layer', sel([...(this.ws ? [] : [['', '— new layer on first feature —']]), ...wsList.map(l => [l.id, l.name])], this.ws ? this.ws.id : '', { onchange: e => { this.ws = this.app.project.get(e.target.value) || null; } }), btn('+', () => { const l = E.newWorkings(`Workings ${wsList.length + 1}`, this.app.project.name); l.group = 'Workings'; this.app.project.add(l); this.ws = l; this.T.showPanel(this.panel()); }, { title: 'new workings layer' })));
+    P.appendChild(row('trace on', sel([['', 'ground / any surface'], ...images.map(i => [i.id, `${i.name} (${i.plane}${i.elevation != null ? ' @' + fmtNum(i.elevation, 0) : ''})`])], this.image ? this.image.id : '', { onchange: e => { this._imageAsked = true; this.image = e.target.value ? this.app.project.get(e.target.value) : null; if (this.image && this.image.plane === 'plan' && this.image.elevation != null) { f.level_z = this.image.elevation; } this.T.showPanel(this.panel()); } })));
+    if (this.image) P.appendChild(note(`tracing on "${this.image.name}" — clicks are read through its georeference${this.image.plane === 'plan' ? ' at the level elevation below' : ''}`));
+    else P.appendChild(h('div', { class: 'note' }, 'No plan selected: clicks land on the topography / surfaces, so a trace here is a sketch, never a survey. ', btn('GEOREFERENCE A PLAN…', () => this.T.open('georef'), { class: 'x' }), ' or draw straight on the ground with the buttons below.'));
     const modes = [['trace', 'TRACE (drift / crosscut / level)'], ['adit', 'ADIT (portal + bearing + length)'], ['adit2', 'ADIT (click portal, click end)'], ['shaft', 'SHAFT / WINZE (collar + depth)'], ['raise', 'RAISE (click lower, click upper)'], ['stope', 'STOPE (outline + z range)']];
-    P.appendChild(h('div', { class: 'modes' }, ...modes.map(([m, lbl]) => btn(lbl, () => this.start(m), { class: 'b' + (this.mode === m ? ' on' : '') }))));
+    P.appendChild(h('div', { class: 'modes' }, ...modes.map(([m, lbl]) => btn(lbl, () => this.start(m), { class: this.mode === m ? 'on' : '' }))));
     const frm = h('div', { class: 'psec' }, h('h3', {}, 'FEATURE'));
     frm.appendChild(row('type', sel(Object.keys(E.WORKING_TYPES).filter(t => t !== 'portal'), f.type, { onchange: e => { f.type = e.target.value; } })));
     frm.appendChild(row('name', txt(f.name, { placeholder: 'No. 2 adit / 300 level drift', oninput: e => { f.name = e.target.value; } })));
     frm.appendChild(row('level label', txt(f.level, { placeholder: '300', oninput: e => { f.level = e.target.value; } }), num(f.level_z, { placeholder: 'elev m', style: { width: '80px' }, oninput: e => { f.level_z = e.target.value; } })));
-    frm.appendChild(row('map units', sel([['ft', 'feet'], ['m', 'metres']], f.units_in, { onchange: e => { f.units_in = e.target.value; } }), sel(E.CONFIDENCE, f.confidence, { onchange: e => { f.confidence = e.target.value; } })));
+    frm.appendChild(row('map units', sel([['ft', 'feet'], ['m', 'metres']], f.units_in, { title: 'Old US maps are in feet: keep feet and every typed length converts once, at the door.', onchange: e => { f.units_in = e.target.value; } }), sel(E.CONFIDENCE.map(c => [c, c + (c === 'surveyed' ? ' — off a georeferenced plan' : c === 'sketched' ? ' — drawn by hand' : c === 'inferred' ? ' — deduced' : ' — read off a text')]), f.confidence, { title: 'how sure the geometry is: surveyed draws solid, sketched dotted, described dashed', onchange: e => { f.confidence = e.target.value; if (f.confidence === 'surveyed' && !this.image) toast('"surveyed" means traced off a georeferenced plan — pick a plan under "trace on", or keep sketched', 'warn', 6000); } })));
     frm.appendChild(row('source', txt(f.doc, { placeholder: 'document / plate', oninput: e => { f.doc = e.target.value; } }), txt(f.page, { placeholder: 'page', style: { width: '60px' }, oninput: e => { f.page = e.target.value; } })));
     frm.appendChild(row('opening w (m)', num(f.width_m, { placeholder: 'auto', oninput: e => { f.width_m = e.target.value; } })));
     const geo = h('div', { class: 'psec' }, h('h3', {}, 'GEOMETRY (for adit / shaft / stope)'));
@@ -228,17 +370,36 @@ export class WorkingsTool {
     geo.appendChild(row('dip °', num(f.dip, { oninput: e => { f.dip = +e.target.value; } }), h('span', { class: 'mono' }, 'azimuth'), num(f.azimuth, { oninput: e => { f.azimuth = +e.target.value; } })));
     geo.appendChild(row('stope z', num(f.zBottom, { placeholder: 'bottom', oninput: e => { f.zBottom = e.target.value; } }), num(f.zTop, { placeholder: 'top', oninput: e => { f.zTop = e.target.value; } })));
     P.appendChild(frm); P.appendChild(geo);
-    // feature list
-    const list = h('div', { class: 'psec' }, h('h3', {}, `FEATURES (${this.ws.parts.length}) · ${fmtNum(this.ws.length(), 0)} m`));
-    this.ws.features.forEach((ft, k) => list.appendChild(h('div', { class: 'feat' }, h('span', { class: 'sw', style: { background: rgba((E.WORKING_TYPES[ft.type] || E.WORKING_TYPES.unknown).color, 1) } }), h('span', { class: 'fn' }, `${ft.type} ${ft.name || ''} ${ft.level ? '· L' + ft.level : ''}`), h('span', { class: 'fl' }, fmtNum(this.ws.length(k), 0) + ' m'), btn('✕', () => { this.ws.removePart(k); this.app.refresh(this.ws); this.T.showPanel(this.panel()); }, { class: 'x' }))));
-    const stopes = this.app.project.byKind('mesh').filter(m => m.role === 'stope'); if (stopes.length) list.appendChild(note(`${stopes.length} stope volume(s) are separate mesh layers`));
+    if (this.mode) P.appendChild(h('div', { class: 'frow' }, btn('UNDO LAST POINT (Backspace)', () => { this.pts.pop(); this.preview(); }), btn('FINISH (Enter / double-click)', () => this.finish(), { class: 'primary' }), btn('CANCEL (Esc)', () => this.cancel())));
+    // feature list: name, level, confidence sample, length; hover highlights
+    // the part in the scene, click zooms to it, ✕ deletes with UNDO
+    const ws = this.ws;
+    const list = h('div', { class: 'psec' }, h('h3', {}, ws ? `FEATURES (${ws.parts.length}) · ${fmtNum(ws.length(), 0)} m` : 'FEATURES (none yet)'));
+    if (ws) {
+      const tally = { surveyed: 0, described: 0, assumed: 0 }; ws.features.forEach(ft => { tally[confClass(ft)]++; });
+      if (ws.features.length) list.appendChild(h('div', { class: 'keyrow' }, ...CONF_CLASSES.filter(c => tally[c.key]).map(c => h('span', { title: c.hint }, lineSample(c.dash), ` ${c.label} ${tally[c.key]}  `))));
+      ws.features.forEach((ft, k) => {
+        const cc = CONF_CLASSES.find(c => c.key === confClass(ft));
+        list.appendChild(h('div', { class: 'feat', title: `${ft.type}${ft.level ? ' · level ' + ft.level : ''} · ${cc.label} — ${cc.hint}${ft.source && (ft.source.doc || ft.source.document) ? ' · ' + (ft.source.doc || ft.source.document) + (ft.source.page ? ' p. ' + ft.source.page : '') : ''}`,
+          onmouseenter: () => this.app.R.highlight && this.app.R.highlight(ws, k), onmouseleave: () => this.app.R.highlight && this.app.R.highlight(null),
+          onclick: () => { const pts = ws.partXYZ(k); const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), zs = pts.map(p => p[2]); this.app.R.fitTo([Math.min(...xs) - 30, Math.min(...ys) - 30, Math.min(...zs) - 30, Math.max(...xs) + 30, Math.max(...ys) + 30, Math.max(...zs) + 30]); } },
+          h('span', { class: 'sw', style: { background: rgba((E.WORKING_TYPES[ft.type] || E.WORKING_TYPES.unknown).color, 1) } }),
+          h('span', { class: 'fn' }, ft.name || ft.type, ft.name && ft.name !== ft.type ? h('span', { class: 'fl' }, ' ' + ft.type) : null, ft.level ? h('span', { class: 'fl' }, ' · L' + ft.level) : null),
+          lineSample(cc.dash), h('span', { class: 'fl' }, fmtNum(ws.length(k), 0) + ' m'),
+          btn('✕', e => { e.stopPropagation(); const pts = ws.partXYZ(k), feat = ws.features[k]; this.app.destructive(`removed ${feat.name || feat.type}`, () => { ws.removePart(k); this.app.refresh(ws); this.T.showPanel(this.panel()); }, () => { ws.addPolyline(pts, feat); this.app.refresh(ws); this.T.showPanel(this.panel()); }); }, { class: 'x', title: 'remove this working (undo from the toast)' })));
+      });
+      const stopes = this.app.project.byKind('mesh').filter(m => m.role === 'stope'); if (stopes.length) list.appendChild(note(`${stopes.length} stope volume${stopes.length > 1 ? 's are' : ' is'} listed under WORKINGS in the layer tree as mesh layers`));
+    } else list.appendChild(note('Nothing digitised yet. The layer is created with the first feature you commit.'));
     P.appendChild(list);
-    P.appendChild(h('div', { class: 'frow' }, btn('UNDO LAST POINT', () => { this.pts.pop(); this.preview(); }), btn('FINISH (Enter)', () => this.finish()), btn('CANCEL (Esc)', () => this.cancel())));
-    P.appendChild(h('div', { class: 'frow' }, btn('SEND FOOTPRINT TO MAP', () => this.sendToMap(this.ws)), btn('EXPORT DXF', () => this.app.exportObjects('dxf', [this.ws])), btn('EXPORT GEOJSON', () => this.app.exportObjects('geojson', [this.ws]))));
-    P.appendChild(note('Workflow: georeference the level plan (TOOLS > Georeference) at its level elevation → TRACE drifts on it → ADIT from the portal on the surface (bearing/length from the map, or click portal + end) → SHAFT from its collar (depth, dip) → RAISEs between levels → STOPEs as outlines with a z range. Old US maps are in feet: keep "feet" and everything converts once.'));
+    if (ws && ws.parts.length) P.appendChild(h('div', { class: 'frow' }, btn('SEND FOOTPRINT TO MAP', () => this.sendToMap(ws)), btn('EXPORT DXF', () => this.app.exportObjects('dxf', [ws])), btn('EXPORT GEOJSON', () => this.app.exportObjects('geojson', [ws]))));
     return P;
   }
-  start(mode) { this.mode = mode; this.pts = []; $('gl').style.cursor = 'crosshair'; this.app.R.clearOverlay(); this.app.status({ trace: 'click along the working (double-click or Enter to finish)', adit: 'click the portal on the surface', adit2: 'click the portal, then the inner end', shaft: 'click the collar', raise: 'click the lower end, then the upper end', stope: 'click the outline corners (Enter to close)' }[mode]); this.T.showPanel(this.panel()); }
+  start(mode) {
+    this.mode = mode; this.pts = []; this.app.R.clearOverlay();
+    const what = { trace: 'TRACE — click along the working · Enter or double-click finishes · Backspace undoes a point · Esc cancels', adit: 'ADIT — click the portal on the surface (bearing + length from the form) · Esc cancels', adit2: 'ADIT — click the portal, then the inner end · Esc cancels', shaft: 'SHAFT — click the collar (depth + dip from the form) · Esc cancels', raise: 'RAISE — click the lower end, then the upper end · Esc cancels', stope: 'STOPE — click the outline corners · Enter closes · Esc cancels' }[mode];
+    const f = this.form; const target = `${this.ws ? this.ws.name : 'new workings layer'} as ${f.confidence}${this.image ? ` on ${this.image.name}` : ' on the ground'}`;
+    this.T.arm(this, what, target); this.T.showPanel(this.panel());
+  }
   pickPoint(e) {
     const R = this.app.R;
     if (this.image) { // intersect the ray with the image plane
@@ -276,7 +437,7 @@ export class WorkingsTool {
     this.done();
   }
   done() { this.pts = []; this.app.R.clearOverlay(); this.app.refresh(this.ws); this.T.showPanel(this.panel()); this.app.status(`${this.ws.parts.length} workings, ${fmtNum(this.ws.length(), 0)} m — ${this.mode ? 'again, or Esc' : ''}`); }
-  cancel() { this.mode = null; this.pts = []; this.app.R.clearOverlay(); $('gl').style.cursor = ''; this.T.showPanel(this.panel()); }
+  cancel() { this.mode = null; this.pts = []; this.app.R.clearOverlay(); this.T.disarm(); this.T.showPanel(this.panel()); }
   stop() { this.mode = null; this.pts = []; }
   async sendToMap(ws) {
     try { const fc = E.workingsToGeoJSON(ws, this.app.project.crs); if (!fc.features.length) return toast('no workings yet', 'warn'); const slug = 'workings-' + GM.slug(this.app.project.name); await GM.store.putUserLayer({ slug, name: `${this.app.project.name} workings (3-D model)`, added: new Date().toISOString().slice(0, 10), n: fc.features.length, misses: 0, visible: true, fc }); toast(`sent ${fc.features.length} workings to the map — reload the map and look under MY DATA`, 'ok', 7000); }
@@ -307,7 +468,7 @@ export class GeorefTool {
     if (!this.img) { P.appendChild(note('Drop a PNG/JPG/PDF of a level plan, longitudinal section or geologic map onto the page, or:')); P.appendChild(btn('CHOOSE IMAGE / PDF…', () => $('fileIn').click())); P.appendChild(note('A level plan becomes a horizontal plane at its level elevation; a section becomes a vertical plane between two surface points. Then trace workings on it (TOOLS > Workings).')); return P; }
     P.appendChild(row('name', txt(this.name, { oninput: e => { this.name = e.target.value; } })));
     P.appendChild(row('kind', sel([['plan', 'PLAN (horizontal: level plan, map)'], ['section', 'SECTION (vertical: long / cross section)']], this.plane, { onchange: e => { this.plane = e.target.value; this.markers = []; this.T.showPanel(this.panel()); } })));
-    if (this.plane === 'plan') P.appendChild(row('elevation m', num(this.elev, { placeholder: 'level elevation (blank = drape on topography)', oninput: e => { this.elev = e.target.value; } })));
+    if (this.plane === 'plan') P.appendChild(row('elevation m', num(this.elev, { placeholder: 'level elevation (blank = just above the terrain)', title: 'a level plan belongs at its level elevation; left blank it is placed 5 m above the highest corner of the terrain, flat', oninput: e => { this.elev = e.target.value; } })));
     else { P.appendChild(row('z top / bottom', num(this.zTop, { placeholder: 'top edge m', oninput: e => { this.zTop = e.target.value; } }), num(this.zBottom, { placeholder: 'bottom edge m', oninput: e => { this.zBottom = e.target.value; } }))); }
     // image canvas with markers
     const box = h('div', { class: 'imgbox' }); const view = document.createElement('canvas'); const W = 300, scale = W / this.img.width; view.width = W; view.height = Math.round(this.img.height * scale); box.appendChild(view);
@@ -319,12 +480,26 @@ export class GeorefTool {
       const fill = (X, Y) => { m.X = X; m.Y = Y; this.T.showPanel(this.panel()); };
       P.appendChild(h('div', { class: 'mk' }, h('span', { class: 'mkn', style: { background: ['#ff5252', '#ffd740', '#69f0ae'][i % 3] } }, String(i + 1)), h('span', { class: 'mono' }, `px ${m.px.toFixed(0)},${m.py.toFixed(0)}`),
         num(m.X, { placeholder: 'E (or lon)', oninput: e => { m.X = e.target.value; } }), num(m.Y, { placeholder: 'N (or lat)', oninput: e => { m.Y = e.target.value; } }),
-        btn('PICK', () => { this.mode = 'pick'; this.pending = m; $('gl').style.cursor = 'crosshair'; this.app.status(`click in the scene where marker ${i + 1} is`); }, { title: 'click the spot in the 3-D scene' }), btn('✕', () => { this.markers.splice(i, 1); this.T.showPanel(this.panel()); }, { class: 'x' })));
+        btn('PICK', () => { this.mode = 'pick'; this.pending = m; this.T.arm(this, `PICK marker ${i + 1} — click the spot in the scene where it is · Esc cancels`, this.name || 'image'); }, { title: 'click the spot in the 3-D scene' }), btn('✕', () => { this.markers.splice(i, 1); this.T.showPanel(this.panel()); }, { class: 'x' })));
     });
-    P.appendChild(h('div', { class: 'frow' }, btn(this.existing ? 'UPDATE IMAGE PLANE' : 'CREATE IMAGE PLANE', () => this.commit()), btn('SCALE BAR + ONE POINT…', () => this.scaleBar()), btn('cancel', () => { this.existing = null; this.T.stop(); this.app.select(null); })));
+    if (this.plane === 'plan' && this.markers.filter(m => m.X !== '' && m.Y !== '').length >= 3) { const q = this.quality(); if (q) P.appendChild(note(`fit: ${fmtNum(q.mpp, 3)} m / pixel · control points disagree by up to ${fmtNum(q.maxResidual, 1)} m (RMS ${fmtNum(q.rms, 1)} m)${q.maxResidual > 20 ? ' — a marker is probably tied wrongly' : ''}`, q.maxResidual > 20 ? 'note warn' : 'note ok')); }
+    P.appendChild(h('div', { class: 'frow' }, btn(this.existing ? 'UPDATE IMAGE PLANE' : 'CREATE IMAGE PLANE', () => this.commit(), { class: 'primary' }), btn('SCALE BAR + ONE POINT…', () => this.scaleBar()), btn('cancel', () => { this.existing = null; this.T.close(); })));
     return P;
   }
-  onClick(e) { if (this.mode !== 'pick' || !this.pending) return false; const w = groundPick(this.app.R, e); if (!w) return true; this.pending.X = +w[0].toFixed(2); this.pending.Y = +w[1].toFixed(2); if (this.plane === 'section') { if (this.zTop === '') this.zTop = +w[2].toFixed(1); } else if (this.elev === '' && this.markers.indexOf(this.pending) === 0) { /* keep drape */ } this.mode = null; this.pending = null; $('gl').style.cursor = ''; this.T.showPanel(this.panel()); return true; }
+  /** With 3+ control points a plan georeference is over-determined: fit the
+      affine transform by least squares and report how far the points disagree
+      (the Python mapplate does the same), so a mistyped coordinate is visible
+      before workings land in the wrong place. */
+  quality() {
+    const ms = this.markers.filter(m => m.X !== '' && m.Y !== '').map(m => { const [X, Y] = this.toUTM(m.X, m.Y); return [m.px, m.py, X, Y]; });
+    if (ms.length < 3) return null;
+    const A = ms.map(([px, py]) => [px, py, 1]); const solve = rhs => { const AtA = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], Atb = [0, 0, 0]; for (let i = 0; i < A.length; i++) for (let r = 0; r < 3; r++) { Atb[r] += A[i][r] * rhs[i]; for (let c = 0; c < 3; c++) AtA[r][c] += A[i][r] * A[i][c]; } return E.solveDense(AtA, Atb); };
+    let ax, ay; try { ax = solve(ms.map(m => m[2])); ay = solve(ms.map(m => m[3])); } catch (e) { return null; }
+    let sum = 0, max = 0; for (const [px, py, X, Y] of ms) { const dx = ax[0] * px + ax[1] * py + ax[2] - X, dy = ay[0] * px + ay[1] * py + ay[2] - Y; const d = Math.hypot(dx, dy); sum += d * d; max = Math.max(max, d); }
+    return { rms: Math.sqrt(sum / ms.length), maxResidual: max, mpp: Math.hypot(ax[0], ay[0]) };
+  }
+  onClick(e) { if (this.mode !== 'pick' || !this.pending) return false; const w = groundPick(this.app.R, e); if (!w) return true; this.pending.X = +w[0].toFixed(2); this.pending.Y = +w[1].toFixed(2); if (this.plane === 'section') { if (this.zTop === '') this.zTop = +w[2].toFixed(1); } else if (this.elev === '' && this.markers.indexOf(this.pending) === 0) { /* keep drape */ } this.mode = null; this.pending = null; this.T.disarm(); this.T.showPanel(this.panel()); return true; }
+  onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; this.pending = null; this.T.disarm(); this.T.showPanel(this.panel()); return true; } return false; }
   stop() { this.mode = null; this.pending = null; }
   toUTM(X, Y) { X = +X; Y = +Y; if (GM.utm.looksLonLat(X, Y) && this.app.project.crs.kind === 'utm' && Math.abs(X) > 1) return GM.utm.fwd(X, Y, this.app.project.crs.zone, this.app.project.crs.north); return [X, Y]; }
   scaleBar() {
@@ -341,7 +516,7 @@ export class GeorefTool {
       if (this.plane === 'plan') { if (ms.length < 2) throw new Error('need at least 2 markers with coordinates'); const control = ms.map(m => { const [X, Y] = this.toUTM(m.X, m.Y); return [m.px, m.py, X, Y]; }); ip = this.existing || new GM.ImagePlane({ image: this.img.dataUrl, width: this.img.width, height: this.img.height, plane: 'plan', name: this.name }); ip.plane = 'plan'; ip.control = control; ip.elevation = this.elev === '' ? null : +this.elev; if (ip.elevation == null) { const topo = this.app.topoGrid(); if (topo) { const c = ip.corners(); const zs = c.map(q => topo.sample(q[0], q[1])).filter(z => z === z); ip.elevation = zs.length ? Math.max(...zs) + 5 : 0; ip.warn('no level elevation given: placed just above the terrain'); } else ip.elevation = 0; } }
       else { if (ms.length < 2) throw new Error('need the two top corners with coordinates'); if (this.zTop === '' || this.zBottom === '') throw new Error('need top and bottom elevations'); const [X1, Y1] = this.toUTM(ms[0].X, ms[0].Y), [X2, Y2] = this.toUTM(ms[1].X, ms[1].Y); ip = this.existing || new GM.ImagePlane({ image: this.img.dataUrl, width: this.img.width, height: this.img.height, plane: 'section', name: this.name }); ip.plane = 'section'; ip.p1 = [X1, Y1]; ip.p2 = [X2, Y2]; ip.zTop = +this.zTop; ip.zBottom = +this.zBottom; }
       ip.name = this.name || ip.name; ip.group = 'Images'; ip.opacity = ip.opacity == null ? 0.9 : ip.opacity;
-      if (this.existing) { this.app.refresh(ip); toast('image plane updated', 'ok'); } else { this.app.project.add(ip); toast('image plane created — TOOLS > Workings to trace on it', 'ok', 5000); }
+      if (this.existing) { this.app.refresh(ip); toast('image plane updated', 'ok'); } else { this.app.project.add(ip); toast(`image plane created${ip.plane === 'plan' && this.elev === '' ? ' — no level elevation given, so it sits 5 m above the terrain; set one to place it at its level' : ''} — now trace workings on it (step 2)`, ip.plane === 'plan' && this.elev === '' ? 'warn' : 'ok', 7000); }
       const b = ip.bounds(); if (b) this.app.R.fitTo(b);
       this.existing = null; this.T.open('workings', null, ip);
     } catch (e) { toast(e.message, 'err'); }
@@ -353,13 +528,16 @@ export class StratTool {
   constructor(T) { this.T = T; this.sm = null; this.busy = false; this.mode = null; }
   get app() { return this.T.app; }
   onProject() { this.sm = null; }
-  ensure() { if (this.sm && this.app.project.get(this.sm.id)) return this.sm; this.sm = this.app.project.byKind('stratmodel')[0] || null; if (!this.sm) { const topo = this.app.topoGrid(); this.sm = new GM.StratModel({ name: 'Stratigraphy (pancake)', topography: topo ? topo.id : null }); this.app.project.add(this.sm); } return this.sm; }
+  /* find() never creates; ensure() creates the model on the first unit. */
+  find() { if (this.sm && this.app.project.get(this.sm.id)) return this.sm; this.sm = this.app.project.byKind('stratmodel')[0] || null; return this.sm; }
+  ensure() { if (this.find()) return this.sm; const topo = this.app.topoGrid(); this.sm = new GM.StratModel({ name: 'Stratigraphy (pancake)', topography: topo ? topo.id : null }); this.app.project.add(this.sm); return this.sm; }
   panel(sm) {
-    if (sm) this.sm = sm; const S = this.ensure(); const P = h('div', { class: 'tool' }, h('h2', {}, 'STRATIGRAPHY — PANCAKE MODEL'));
+    if (sm) this.sm = sm; const S = this.find() || new GM.StratModel({ name: 'Stratigraphy (pancake)' }); const P = h('div', { class: 'tool' }, h('h2', {}, 'STRATIGRAPHY — PANCAKE MODEL'));
     const topo = this.app.topoGrid(); if (!topo) { P.appendChild(note('needs a topography grid (import one, or open the model from a mine card)', 'note warn')); return P; }
     const pointLayers = this.app.project.byKind('points'), gridLayers = this.app.project.byKind('grid2d').filter(g => g.role !== 'topography' && g.role !== 'property');
     P.appendChild(note('Units are listed youngest (top) first. Each unit needs the surface at its BASE: contact points (interpolated), an existing surface grid, or a constant elevation. The last unit is basement (no base). Deposit bases on-lap older units; erosion bases cut them.'));
     const list = h('div', { class: 'units' });
+    if (!S.units.length) list.appendChild(note('No units yet — + UNIT starts the model. Contact points come from DIGITISE CONTACT POINTS, an imported points layer, or a surface grid.'));
     S.units.forEach((u, i) => {
       const src = u.source || { kind: u.base ? 'grid' : 'none', id: u.base || '', value: '' };
       u.source = src;
@@ -370,16 +548,23 @@ export class StratTool {
         h('div', { class: 'frow' }, srcSel, idSel, txt(u.lithology || '', { placeholder: 'lithology', oninput: e => { u.lithology = e.target.value; } }))));
     });
     P.appendChild(list);
-    P.appendChild(h('div', { class: 'frow' }, btn('+ UNIT', () => { S.units.push({ name: `Unit ${S.units.length + 1}`, color: E.DEFAULT_COLORS[S.units.length % E.DEFAULT_COLORS.length], contact: 'deposit', source: { kind: S.units.length ? 'const' : 'points', id: pointLayers[0] ? pointLayers[0].id : '', value: '' } }); this.T.showPanel(this.panel()); }), btn('+ BASEMENT', () => { S.units.push({ name: 'Basement', color: [140, 140, 140], contact: 'deposit', source: { kind: 'none' } }); this.T.showPanel(this.panel()); }), btn('DIGITISE CONTACT POINTS', () => this.digitise())));
+    P.appendChild(h('div', { class: 'frow' }, btn('+ UNIT', () => { const M = this.ensure(); M.units.push({ name: `Unit ${M.units.length + 1}`, color: E.DEFAULT_COLORS[M.units.length % E.DEFAULT_COLORS.length], contact: 'deposit', source: { kind: M.units.length ? 'const' : 'points', id: pointLayers[0] ? pointLayers[0].id : '', value: '' } }); this.T.showPanel(this.panel()); }), btn('+ BASEMENT', () => { const M = this.ensure(); M.units.push({ name: 'Basement', color: [140, 140, 140], contact: 'deposit', source: { kind: 'none' } }); this.T.showPanel(this.panel()); }), btn('DIGITISE CONTACT POINTS', () => this.digitise())));
     const method = sel([['rbf', 'RBF (thin-plate, linear drift)'], ['ok', 'ordinary kriging (auto variogram)'], ['idw', 'inverse distance'], ['nn', 'nearest']], this.method || 'rbf', { onchange: e => { this.method = e.target.value; } });
     const res = num(this.res || 60, { style: { width: '70px' }, oninput: e => { this.res = +e.target.value; } });
     P.appendChild(row('interpolation', method)); P.appendChild(row('lattice nodes', res, h('span', { class: 'mono' }, '× per side')));
     P.appendChild(row('outputs', h('label', { class: 'chk' }, h('input', { type: 'checkbox', checked: this.volumes !== false, onchange: e => { this.volumes = e.target.checked; } }), 'unit volumes (closed meshes)')));
-    P.appendChild(h('div', { class: 'frow' }, btn(this.busy ? 'BUILDING…' : 'BUILD STRATIGRAPHY', () => this.build(), { disabled: this.busy }), btn('VIRTUAL DRILLHOLE', () => this.virtualHole()), btn('TAG BLOCK MODEL', () => this.tagBlocks())));
-    if (S.metadata.built) P.appendChild(note(`built ${S.metadata.built.at} · ${S.metadata.built.units} units · lattice ${S.metadata.built.lattice}`));
+    P.appendChild(h('div', { class: 'frow' }, btn(this.busy ? 'BUILDING…' : 'BUILD STRATIGRAPHY', () => this.build(), { disabled: this.busy || !S.units.length, class: 'primary', title: S.units.length ? '' : 'add a unit first' }), btn('VIRTUAL DRILLHOLE', () => this.virtualHole(), { disabled: !S.metadata.built, title: S.metadata.built ? 'click the ground for the column' : 'build the stratigraphy first' }), btn('TAG BLOCK MODEL', () => this.tagBlocks(), { disabled: !S.metadata.built })));
+    if (S.metadata.built) P.appendChild(note(`built ${S.metadata.built.at} · ${S.metadata.built.units} units · lattice ${S.metadata.built.lattice} — open a section (step 9) to see the pancake fill; VIRTUAL DRILLHOLE reports the column anywhere`, 'note ok'));
+    if (this.last && this.last.warnings && this.last.warnings.length) this.last.warnings.forEach(w => P.appendChild(note(w, 'note warn')));
     return P;
   }
-  digitise() { const ps = new GM.PointSet({ name: `contact points ${this.app.project.byKind('points').length + 1}`, role: 'contacts', group: 'Stratigraphy', color: [255, 120, 200] }); this.app.project.add(ps); this.mode = 'digitise'; this.target = ps; $('gl').style.cursor = 'crosshair'; this.app.status('click contact points on the terrain / section images / surfaces (Esc to stop); set the base of a unit to this layer'); }
+  digitise() {
+    // append to the existing contact layer rather than minting a new one per
+    // press; a new layer only when there is none yet
+    let ps = this.target && this.app.project.get(this.target.id) ? this.target : this.app.project.byKind('points').filter(p => p.role === 'contacts').pop() || null;
+    if (!ps) { ps = new GM.PointSet({ name: 'contact points', role: 'contacts', group: 'Stratigraphy', color: [255, 120, 200] }); this.app.project.add(ps); }
+    this.mode = 'digitise'; this.target = ps; this.T.arm(this, 'CONTACT POINTS — click contacts on the terrain, section images or surfaces · Esc stops', `${ps.name} (${ps.n} so far)`); this.T.showPanel(this.panel());
+  }
   // Both of this tool's click modes live here on the prototype.  virtualHole()
   // used to install its own `onClick` on the instance, which shadowed this one
   // for good — after one virtual drillhole, digitising contacts was dead.
@@ -387,9 +572,9 @@ export class StratTool {
     if (this.mode === 'vhole') { const w = groundPick(this.app.R, e); if (!w) return true; this.showColumn(w); return true; }
     if (this.mode !== 'digitise') return false;
     const w = groundPick(this.app.R, e); if (!w) return true;
-    this.target.add(w[0], w[1], w[2], { n: this.target.n + 1 }); this.app.refresh(this.target); this.app.status(`${this.target.n} contact points`); return true;
+    this.target.add(w[0], w[1], w[2], { n: this.target.n + 1 }); this.app.refresh(this.target); this.app.status(`${this.target.n} contact points in ${this.target.name}`); return true;
   }
-  onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; $('gl').style.cursor = ''; this.T.showPanel(this.panel()); return true; } return false; }
+  onKey(e) { if (e.key === 'Escape' && this.mode) { this.mode = null; this.T.disarm(); this.T.showPanel(this.panel()); return true; } return false; }
   stop() { this.mode = null; }
   async build() {
     const S = this.ensure(); const topo = this.app.topoGrid(); if (!topo) return; this.busy = true; this.T.showPanel(this.panel());
@@ -420,7 +605,7 @@ export class StratTool {
     } catch (e) { console.error(e); toast('build failed: ' + e.message, 'err', 8000); }
     this.busy = false; this.T.showPanel(this.panel());
   }
-  virtualHole() { this.mode = 'vhole'; $('gl').style.cursor = 'crosshair'; this.app.status('click the ground for a virtual drillhole column'); this.T.active = this; }
+  virtualHole() { if (this.T.active !== this) this.T.open('strat'); this.mode = 'vhole'; this.T.arm(this, 'VIRTUAL DRILLHOLE — click the ground for the column · Esc stops', 'a report, no geometry'); }
   showColumn(w) {
     const S = this.ensure(); const topo = this.app.topoGrid(); const grids = {}; for (const u of S.units) if (u.base) { const g = this.app.project.get(u.base); if (g) grids[u.base] = g; }
     const col = Object.keys(grids).length ? E.columnAt(S, grids, w[0], w[1], topo) : [];
@@ -528,8 +713,9 @@ export class ImplicitTool {
     P.appendChild(h('div', { class: 'frow' }, btn('DIGITISE ± POINTS', () => this.digitise()), btn(this.busy ? 'BUILDING…' : 'BUILD SURFACE', () => this.build(), { disabled: this.busy })));
     return P;
   }
-  digitise() { const ps = new GM.PointSet({ name: `implicit points ${this.app.project.byKind('points').length + 1}`, role: 'contacts', group: 'Surfaces', color: [255, 120, 200] }); this.app.project.add(ps); this.params.points = ps.id; this.params.valueCol = 'sd'; this.mode = 'dig'; this.sign = 0; $('gl').style.cursor = 'crosshair'; this.app.status('click contact points (0); press + / - before a click for above/below points; Esc to stop'); this.T.showPanel(this.panel()); }
-  onKey(e) { if (!this.mode) return false; if (e.key === '+' || e.key === '=') { this.sign = 1; this.app.status('next click: POSITIVE side'); return true; } if (e.key === '-') { this.sign = -1; this.app.status('next click: NEGATIVE side'); return true; } if (e.key === '0') { this.sign = 0; this.app.status('next click: on contact'); return true; } if (e.key === 'Escape') { this.mode = null; $('gl').style.cursor = ''; return true; } return false; }
+  digitise() { const ps = new GM.PointSet({ name: `implicit points ${this.app.project.byKind('points').length + 1}`, role: 'contacts', group: 'Surfaces', color: [255, 120, 200] }); this.app.project.add(ps); this.params.points = ps.id; this.params.valueCol = 'sd'; this.mode = 'dig'; this.sign = 0; this.armText(); this.T.showPanel(this.panel()); }
+  armText() { const side = this.sign > 0 ? 'POSITIVE side (hanging wall)' : this.sign < 0 ? 'NEGATIVE side (foot wall)' : 'ON the contact'; this.T.arm(this, `± POINTS — clicks place ${side} points · press + / − / 0 to switch side (it stays switched) · Esc stops`, `${this.app.project.get(this.params.points).name}`); }
+  onKey(e) { if (!this.mode) return false; if (e.key === '+' || e.key === '=') { this.sign = 1; this.armText(); return true; } if (e.key === '-') { this.sign = -1; this.armText(); return true; } if (e.key === '0') { this.sign = 0; this.armText(); return true; } if (e.key === 'Escape') { this.mode = null; this.T.disarm(); return true; } return false; }
   onClick(e) { if (this.mode !== 'dig') return false; const w = groundPick(this.app.R, e); if (!w) return true; const ps = this.app.project.get(this.params.points); ps.add(w[0], w[1], w[2], { sd: this.sign * (this.params.offset || 10), side: this.sign > 0 ? 'pos' : this.sign < 0 ? 'neg' : 'on' }); this.app.refresh(ps); return true; }
   stop() { this.mode = null; }
   async build() {

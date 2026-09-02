@@ -346,8 +346,11 @@ def build_site_model(lon, lat, radius_m=2500.0, name=None, aoi='auto', grade_ind
     zr = topo.zrange()
     zmin = (zr[0] - 400.0) if zr[0] == zr[0] else -500.0
     zmax = (zr[1] + 50.0) if zr[1] == zr[1] else 500.0
-    proj.add(Section(start=[cx - R, cy], end=[cx + R, cy], z_min=zmin, z_max=zmax, name='Section W-E'))
-    proj.add(Section(start=[cx, cy - R], end=[cx, cy + R], z_min=zmin, z_max=zmax, name='Section S-N'))
+    # Preset sections are scaffolding: they start hidden so a fresh model shows
+    # terrain rather than two glass walls (the viewer's Section tool ticks one
+    # visible when it is chosen).
+    proj.add(Section(start=[cx - R, cy], end=[cx + R, cy], z_min=zmin, z_max=zmax, name='Section W-E', visible=False))
+    proj.add(Section(start=[cx, cy - R], end=[cx, cy + R], z_min=zmin, z_max=zmax, name='Section S-N', visible=False))
     proj.metadata['summary'] = {o.kind + ':' + o.name: (o.bounds() or None) for o in proj.objects}
     return proj
 

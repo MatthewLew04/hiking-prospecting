@@ -157,9 +157,48 @@ export class Renderer {
   }
   viewFrom(dirName) {
     const t = this.controls.target.clone(), d = this.camera.position.distanceTo(t);
-    const dirs = { top: [0, 1, 0.0001], north: [0, 0.15, -1], south: [0, 0.15, 1], east: [1, 0.15, 0], west: [-1, 0.15, 0], iso: [0.55, 0.55, 0.65] };
+    // `top` is a true plan: the camera sits on +Y looking down with north up
+    // the screen (three -Z is north, so up = -Z).  `below` looks up from
+    // underneath — the only way to see the underside of a vein sheet.
+    const dirs = { top: [0, 1, 0], below: [0, -1, 0], north: [0, 0.15, -1], south: [0, 0.15, 1], east: [1, 0.15, 0], west: [-1, 0.15, 0], iso: [0.55, 0.55, 0.65] };
     const v = new THREE.Vector3(...(dirs[dirName] || dirs.iso)).normalize();
-    this.camera.position.copy(t).addScaledVector(v, d); this.camera.up.set(0, 1, 0); this.controls.update(); this.invalidate();
+    this.controls.maxPolarAngle = Math.PI;
+    this.camera.position.copy(t).addScaledVector(v, d);
+    if (dirName === 'top') this.camera.up.set(0, 0, -1); else if (dirName === 'below') this.camera.up.set(0, 0, 1); else this.camera.up.set(0, 1, 0);
+    this.controls.update(); this.invalidate();
+  }
+  /** Camera state for saved scenes: everything needed to come back to
+      exactly this view. */
+  getView() { return { position: this.camera.position.toArray(), target: this.controls.target.toArray(), up: this.camera.up.toArray(), projection: this.projection, ve: this.ve, zoom: this.camera.zoom, orthoHeight: this.orthoHeight }; }
+  setView(v) {
+    if (!v) return;
+    if (v.projection && v.projection !== this.projection) this.setProjection(v.projection);
+    if (v.ve) this.setVE(v.ve);
+    if (v.position) this.camera.position.fromArray(v.position); if (v.target) this.controls.target.fromArray(v.target); if (v.up) this.camera.up.fromArray(v.up);
+    if (v.orthoHeight && this.camera.isOrthographicCamera) { this.orthoHeight = v.orthoHeight; this.resize(); }
+    if (v.zoom) { this.camera.zoom = v.zoom; this.camera.updateProjectionMatrix(); }
+    this.controls.update(); this.invalidate();
+  }
+  /** Azimuth (clockwise from north) and plunge (positive = looking down) of
+      the view direction, for the status bar and the polarity check. */
+  viewAzPlunge() { const c = this.camera.getWorldDirection(new THREE.Vector3()); const az = (Math.atan2(c.x, -c.z) * 180 / Math.PI % 360 + 360) % 360; const plunge = Math.asin(Math.max(-1, Math.min(1, -c.y))) * 180 / Math.PI; return { az, plunge }; }
+  /** Highlight one part of a lineset (or one point) with an overlay that is
+      independent of the tool overlay, so hovering a feature row never wipes a
+      half-drawn trace.  highlight(null) clears it. */
+  highlight(obj, index = null) {
+    if (!this.hl) { this.hl = new THREE.Group(); this.root.add(this.hl); }
+    for (const c of [...this.hl.children]) { this.hl.remove(c); disposeGroup(c); }
+    if (obj && obj.kind === 'lineset' && index != null && index < obj.parts.length) {
+      const pos = []; for (const p of obj.partXYZ(index)) pos.push(...this.toSceneArr(p[0], p[1], p[2]));
+      const l = new THREE.Line(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.95 }));
+      l.renderOrder = 998; l.userData.clippable = false; this.hl.add(l);
+      const pts = obj.partXYZ(index); for (const p of [pts[0], pts[pts.length - 1]]) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.pointTexture(), color: 0xffffff, depthTest: false, sizeAttenuation: false })); sp.scale.set(8 / 300, 8 / 300, 1); const s = this.toSceneArr(p[0], p[1], p[2]); sp.position.set(s[0], s[1], s[2]); sp.renderOrder = 999; sp.userData.clippable = false; this.hl.add(sp); }
+    } else if (obj && obj.kind === 'points' && index != null && index < obj.n) {
+      const p = obj.point(index); const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.pointTexture(), color: 0xffffff, depthTest: false, sizeAttenuation: false })); sp.scale.set(16 / 300, 16 / 300, 1); const s = this.toSceneArr(p[0], p[1], p[2]); sp.position.set(s[0], s[1], s[2]); sp.renderOrder = 999; sp.userData.clippable = false; this.hl.add(sp);
+    } else if (obj && obj.bounds && index == null) {
+      const b = obj.bounds(); if (b) { const box = new THREE.Box3(new THREE.Vector3(...this.toSceneArr(b[0], b[4], b[2] === b[2] ? b[2] : 0)), new THREE.Vector3(...this.toSceneArr(b[3], b[1], b[5] === b[5] ? b[5] : 0))); const hb = new THREE.Box3Helper(box, 0xffffff); hb.material.depthTest = false; hb.material.transparent = true; hb.material.opacity = 0.7; hb.userData.clippable = false; this.hl.add(hb); }
+    }
+    this.invalidate();
   }
   /* picking */
   pick(clientX, clientY, filter = null) {
@@ -554,7 +593,10 @@ export class Renderer {
     const pos = new Float32Array(12); c.forEach((p, i) => { const s = this.toSceneArr(p[0], p[1], p[2]); pos[3 * i] = s[0]; pos[3 * i + 1] = s[1]; pos[3 * i + 2] = s[2]; });
     const geo = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setIndex([0, 2, 1, 0, 3, 2]);
     const mat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf, transparent: true, opacity: d.planeOpacity == null ? 0.08 : d.planeOpacity, side: THREE.DoubleSide, depthWrite: false }); mat.userData.alwaysTransparent = true;
-    const m = new THREE.Mesh(geo, mat); m.userData.clippable = false; m.userData.kind = 'section'; L.group.add(m);
+    // The quad is display only: it must not intercept hovers and clicks meant
+    // for the terrain or the workings behind it (the section tool picks the
+    // ground, never the plane).
+    const m = new THREE.Mesh(geo, mat); m.userData.clippable = false; m.userData.kind = 'section'; m.raycast = () => { }; L.group.add(m);
     const edge = new THREE.LineLoop(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3)), new THREE.LineBasicMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.9 })); edge.userData.clippable = false; edge.raycast = () => { }; L.group.add(edge);
     // products (intersection lines, ribbons) are added by the tools into L.products group
     L.products = new THREE.Group(); L.products.userData.clippable = false; L.group.add(L.products);

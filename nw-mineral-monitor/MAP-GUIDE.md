@@ -12,16 +12,18 @@ commands and pipelines is `USER-GUIDE.md`; this is the tour._
 
 This is a treasure map built out of government records — with receipts.
 
-It covers eight states (Washington, Oregon, Idaho, Montana, Wyoming, Nevada,
-Utah, California) and layers together, on one screen: nearly **400,000 known
-mines and mineral prospects**, about **743,000 active mining claims** (the
-ground somebody currently holds) plus **1.3 million historic claims** that
-were staked and later dropped, **3,366 old mines with documented ore
-richness** — each one backed by a word-for-word quote from the original
-government report — the **geologic maps** themselves, **airborne magnetic
-and radiation surveys**, and a scoring engine that ranks counties and
-individual targets by how much *actionable* gold evidence sits on ground
-nobody currently holds.
+Its national baseline covers 49 states (every state except Hawaii): about
+**900,000 known mines, prospects and topo-map workings**, and a scoring engine
+that now ranks **every one of the 3,138 counties** by gold. The deep corpora —
+about **743,000 active mining claims** (the ground somebody currently holds)
+plus **1.3 million historic claims** that were staked and later dropped,
+**3,369 old mines with documented ore richness** (each backed by a
+word-for-word quote from the original government report), the **geologic
+maps** themselves and **airborne magnetic and radiation surveys** — remain
+richest across the western footprint (Washington, Oregon, Idaho, Montana,
+Wyoming, Nevada, Utah, California) plus Alaska, and the county ranking says
+plainly, county by county, which of its numbers are measured there and which
+are not.
 
 Nothing on the map is an opinion without a source. Click anything and its
 card tells you where the fact came from, what document, what page, and when
@@ -49,11 +51,17 @@ they kill people.
 Across the top: live record counts, a **search box** (mine names, claim
 serial numbers, districts, places), basemap buttons (**DARK** for reading
 data, **SAT** for real terrain, **TOPO** for contour maps), and the feature
-buttons — **INTEL**, **ASK**, **+ DATA**, **WATCH**, **READING**, **ABOUT**.
+buttons — **INTEL**, **ASK**, **+ DATA**, **WATCH**, **READING**,
+**COVERAGE**, **? HELP**, **ABOUT**. The first time you open the map a
+welcome card offers a two-minute spotlight tour; **? HELP** (or the `?` key)
+brings it back any time, along with one-click recipes.
 
-Down the left: the layer switchboard, described section by section below.
-Click any row to turn a layer on or off. The **STATES** chips at the top
-limit everything to the states you care about.
+Down the left: the layer switchboard in four groups — **START HERE** (states
+and gold by county), **MAP LAYERS** (mines, claims, geology, districts,
+filters, your own data), **CASSIA COUNTY DEEP DIVE**, and **ADVANCED &
+EXPORT** — described section by section below. Click any row to turn a
+layer on or off. The **STATES** chips at the top limit everything to the
+states you care about.
 
 The map is the middle. Click anything on it and the **detail panel** opens
 on the right with the full story of that thing. The footer shows your
@@ -205,26 +213,45 @@ record.
 > plate awaits reviewed georeferencing) — a selectable map means "verified
 > footprint and honest scale," not "best possible map."
 
-## Part 5 — The scores: county gold ranking (GOLD SIGNAL — COUNTIES)
+## Part 5 — The scores: gold by county (49 states)
 
-Flip on the choropleth and all 302 counties shade from dark to bright gold
-by **stakeable gold** — a score built from evidence you could still act on:
-documented-rich mines sitting on open ground, gold sites that were staked
-and later dropped, unclaimed occurrences, validated by producer history and
-workings density. Click a county for its itemized scorecard — every point
-traced to its evidence, with fly-to links to the best individual leads.
+Turn on **SHADE COUNTIES BY GOLD** in the START HERE group and every county
+in 49 states takes a color. Two lenses:
 
-Each card also shows **endowment** — the same county scored for raw gold
-regardless of who holds it. The gap between the two numbers is the story:
-high endowment + low stakeable = great gold, all locked up (most of Nevada).
-High stakeable = documented gold nobody is currently holding. Current top
-five: Jackson OR, Okanogan WA, Custer ID, Snohomish WA, Josephine OR.
+**STAKEABLE** shades from dark to bright gold by evidence you could still act
+on: documented-rich mines sitting on open ground, gold sites that were
+staked and later dropped, unclaimed occurrences, validated by producer
+history and workings density. It can only be measured where the map holds a
+claims snapshot — the eight western states plus Alaska (scored against
+Alaska's state-law claims, since the federal Alaska file is not in the repo).
+Everywhere else the county is muted with a dashed edge: that is an
+*endowment preview*, and the card says so, because a stakeable score with no
+claim data would call every mine "unclaimed."
+
+**ENDOWMENT** shades every county by raw gold regardless of who holds it —
+producers, gold-site counts, rich cited grades, current staking interest. It
+is the lens for the ten claim states still waiting on a claims snapshot and
+the thirty states with no federal claim system at all, where nothing can be
+staked and the route is a state lease or a private deal.
+
+Click a county for its itemized scorecard — every point traced to its
+evidence, a plain-language line about what the score means under that
+state's rules, and fly-to links to the best individual leads. **▸ ranked
+list** gives the national top 25 or every county of one state; **⤢ whole
+country** and **⤢ alaska** fit the map. The gap between the two numbers is
+the story: high endowment + low stakeable = great gold, all locked up (most
+of Nevada). High stakeable = documented gold nobody is currently holding.
+Current top five stakeable: Jackson OR, Lemhi ID, Okanogan WA, Custer ID,
+Snohomish WA; Alaska's best is the Nome Census Area.
 
 > **Geologist's note.** Every card prints its own error bars: the 400 m
 > "open" test inherits MRDS coordinate slop; NV/UT/WY dropped-ground
-> undercounts from truncated closed files; CA's staked-then-dropped term is
-> floored at zero until its closed file lands; patented land reads "open"
-> until the withdrawal overlay ships.
+> undercounts from truncated closed files; CA has no closed file, so its
+> staked-then-dropped term is floored at zero; cited grades exist for eight
+> states, so elsewhere the rich-open term is *unmeasured* rather than zero;
+> patented land reads "open" until the withdrawal overlay ships. Counties
+> are joined on Census FIPS decoded from the same admin archive the map
+> draws, so the shaded polygon is always the county the score belongs to.
 
 ## Part 6 — Physics from the air (GEOPHYSICS)
 

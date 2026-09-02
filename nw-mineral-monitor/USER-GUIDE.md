@@ -1,6 +1,6 @@
 # NW Mineral Monitor — user guide
 
-_Build 2026-08-13 · WS11 national baseline and visible per-state release gates._
+_Build 2026-09-02-cg49 · 49-state county gold ranking, guided first run, and visible per-state release gates._
 
 The Monitor is one self-contained map app (`site/index.html`, MapLibre GL) for
 49 states (all except Hawaii). Its immutable national baseline currently
@@ -37,14 +37,35 @@ after any change: `git push` then `cd infra && bash deploy.sh` — the footer's
 build stamp must match the version at the top of this guide.
 
 Screen layout: **header** (live counts, search, basemap DARK/SAT/TOPO, INTEL /
-ASK / + DATA / WATCH / READING / ABOUT buttons) · **left sidebar** (layer
-toggles + filters, top to bottom below) · **map** · **right detail panel**
-(opens when you click anything) · **footer** (coords, disclaimers, data
-freshness).
+ASK / + DATA / WATCH / READING / COVERAGE / **? HELP** / ABOUT buttons) ·
+**left sidebar** in four collapsible groups — **START HERE** (states, gold by
+county), **MAP LAYERS** (mines, claims, geology, districts, filters, your
+data), **CASSIA COUNTY DEEP DIVE** and **ADVANCED & EXPORT** (quad maps,
+geophysics, 3D, Leapfrog; both collapsed until you open them) · **map** ·
+**right detail panel** (opens when you click anything) · **footer** (coords,
+disclaimers, data freshness).
+
+First visit: a welcome card on the map offers a **2-minute tour** (ten
+spotlighted steps through the rule, states, gold by county, a county card,
+sites, claims, search, basemaps, ASK / + DATA and help), **SHADE COUNTIES**,
+or **EXPLORE ON MY OWN**. **? HELP** (or the `?` key) reopens the tour, four
+one-click recipes (most actionable gold · explore one state · who holds the
+ground around a mine · bring your own points) and the shortcuts (`/` search,
+`Esc` close, `←`/`→` tour steps). The only things the browser remembers are
+"tour seen" and which sidebar groups you collapsed.
 
 ---
 
 ## 2 · What changed in the latest releases
+
+**Gold by county — 49 states, and a guided first run (2026-09-01).** The
+county ranking now scores all 3,138 counties (every Alaska borough and census
+area included, measured against DNR state-law claims) with a STAKEABLE /
+ENDOWMENT lens switch, per-state ranked lists, and honest muted rendering
+wherever stakeable cannot be measured. The sidebar is grouped (START HERE ·
+MAP LAYERS · CASSIA DEEP DIVE · ADVANCED & EXPORT) with plain-language titles,
+and new users get a welcome card, a ten-step spotlight tour, a ? HELP center
+with one-click recipes, and keyboard shortcuts. See §1 and §7.
 
 **WS10 — quad-scale geology (2026-08-11).** **MAP INVENTORY** now gives all
 19 targets a checkbox: the top 15 rich-open rows plus the four required seed
@@ -215,30 +236,54 @@ flow with synthetic data: `python3 pipelines/county_records.py --demo`
 (everything shows a DEMO tag; don't deploy it). Neighboring-county portal
 status: `COUNTY-COVERAGE.md`.
 
-## 7 · GOLD SIGNAL — COUNTIES
+## 7 · GOLD BY COUNTY — 49 STATES
 
-Toggle **STAKEABLE-GOLD CHOROPLETH**: all 244 counties shaded by stakeable-
-gold score (dark → bright gold). Hover for rank; click a county (anywhere
-without a site/target on top) for its card:
+The first group of the sidebar (**START HERE**) carries the county gold
+ranking for every county in scope: **3,138 counties in 49 states**, built by
+`pipelines/county_gold.py` from the national MRDS bulk CSV, the national
+USMIN archive, the six legacy state-survey snapshots, ARDF for Alaska, the
+eight federal MLRS claim snapshots and the Alaska DNR state-claim archive.
+Counties are joined on Census FIPS decoded from the same `admin.pmtiles`
+archive the map draws, so a shaded county is always the county under it.
 
-- **STAKEABLE — itemized**: cited-grade gold mines ≥0.3 oz/t on open ground
-  (the strongest lead class — documented gold, nobody holding it), gold
-  sites **staked-then-dropped** (closed claim nearby, nothing active —
-  someone proved it, then let it lapse), unclaimed gold occurrences,
-  producer validation, workings density.
-- **ENDOWMENT — itemized**: the same county scored for raw gold regardless
-  of claim status. High endowment + low stakeable = great gold, all locked
-  up (most of Nevada).
-- **BEST EVIDENCE** — the county's top open cited-grade mines and dropped
-  sites, each one click from flying there.
+Toggle **SHADE COUNTIES BY GOLD** and pick a lens:
 
-"▸ ranked county list" gives the top 20; `GOLD-COUNTIES.md` has the top 25
-plus **every Idaho county** ranked. Current top: Jackson OR, Okanogan WA,
-Custer ID, Snohomish WA, Josephine OR — Idaho's belt is Custer / Blaine /
-Lemhi (endowment #1 of all 244) / Valley / Idaho County / Elmore. Cassia is
-#69 — gold-thin, as expected. Caveats on every card: the 400 m open test
-inherits MRDS coordinate slop; NV/UT/WY dropped-ground undercounts
-(truncated closed files); patented land reads "open."
+- **STAKEABLE** — gold you could still act on: cited-grade gold mines
+  ≥0.3 oz/t on open ground (documented gold, nobody holding it), gold sites
+  **staked-then-dropped** (closed claim nearby, nothing active), unclaimed
+  gold occurrences, producer validation, workings density. Only measurable
+  where a claims snapshot exists: **CA ID MT NV OR UT WA WY** (federal MLRS)
+  and **AK** (DNR state-law claims — the federal Alaska MLRS snapshot is not
+  in the repo, so federal claims are not screened there). Every other county
+  renders muted with a dashed outline: an *endowment preview*, never a stake
+  score.
+- **ENDOWMENT** — raw gold regardless of who holds it (producers, gold-site
+  counts, rich cited grades, current staking interest). Comparable across all
+  3,138 counties, and the only honest lens for the ten claim states still
+  pending a snapshot (AR AZ CO FL LA MS ND NE NM SD) and the thirty
+  non-claim states, where nothing can be staked at all.
+
+Hover a county for its rank; click one (anywhere without a site or target on
+top) for its card: a plain-language line saying what the numbers mean for
+that state's regime, the **itemized** stakeable and endowment scores, the
+caveats that apply (truncated closed files, no cited-grade corpus yet, Alaska
+state-claims-only), and **BEST EVIDENCE** — the county's top open cited-grade
+mines and dropped sites, each one click from flying there. **⤢ fly to
+county** and **▸ rank within <state>** sit under the badges.
+
+**▸ ranked list** opens the top 25 nationally, or every county of one state
+from the drop-down (✓ marks states where stakeable is measured); the lens
+switch inside the card follows you onto the map. **⤢ whole country** and
+**⤢ alaska** fit the map. ASK understands the same thing in words: "best
+gold counties in alaska", "top counties in colorado" (answered by endowment,
+with the reason stated). `GOLD-COUNTIES.md` has the national top 25, every
+Alaska borough, every Idaho county, and the endowment top 25.
+
+Cited grades exist for eight states only; elsewhere the rich-open-grade
+component is *unmeasured*, and the card says so rather than showing a zero as
+if it were measured. Caveats on every card: the 400 m open test inherits MRDS
+coordinate slop; NV/UT/WY dropped-ground undercounts (truncated closed
+files); CA has no closed snapshot; patented land reads "open."
 
 ## 7b · GEOPHYSICS — WS7
 

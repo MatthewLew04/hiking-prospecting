@@ -436,6 +436,8 @@ async function runRobustness() {
             openGround:!!(OG&&map.getSource('og')),
             geoTargets:!!(TG&&map.getSource('tg')),
             countyGold:!!(CG&&map.getLayer('ctygold-fill')),
+            // the county ranking must be the national build, never the legacy eight-state file
+            countyGoldNational:!!(CG&&CG.scope&&CG.scope.states===49&&CG.counties.length===3138),
             mapGeology:!!document.getElementById('msFillTgl'),
             geophys:!!(map.getSource('gp-surveys')&&document.getElementById('gp-surv-tgl')),
             userLayers:!!map.getSource('u-inbox-messy-cassia-geojson'),

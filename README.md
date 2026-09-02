@@ -4,7 +4,7 @@ Mining research and interactive maps for prospecting — old mines, active claim
 
 ## The maps
 
-**[`nw-mineral-monitor/`](nw-mineral-monitor/) — the Northwest US map (WA · OR · ID · MT · WY).** 177,994 sites from 7 databases, 113k active + 819k closed BLM claims with nightly auto-refresh when hosted, live claim boundaries queried straight from BLM at high zoom, and 472 mining districts. Run locally (`cd nw-mineral-monitor/site && python3 -m http.server 8000`) or host on AWS in ~15 minutes — see [`nw-mineral-monitor/DEPLOY.md`](nw-mineral-monitor/DEPLOY.md).
+**[`nw-mineral-monitor/`](nw-mineral-monitor/) — the Northwest US map (WA · OR · ID · MT · WY).** 177,994 sites from 7 databases, 113k active + 819k closed BLM claims with nightly auto-refresh when hosted, live claim boundaries queried straight from BLM at high zoom, and 472 mining districts. Run locally (`cd nw-mineral-monitor/site && python3 -m http.server 8000`) or host on AWS in ~15 minutes — see [`nw-mineral-monitor/DEPLOY.md`](nw-mineral-monitor/DEPLOY.md). The national baseline covers 49 states (Hawaii excluded), every one of the 3,138 counties is scored for gold — stakeable where a claims snapshot exists, endowment everywhere — and first-time visitors get a guided walkthrough (`? HELP`).
 
 **[`cassia-mineral-monitor.html`](cassia-mineral-monitor.html) — the original Cassia County, Idaho deep dive.** Single self-contained file, works offline from disk. Every mine, claim, and mineral occurrence in the county, plus the researched story of its seven districts. [`cassia-mining-research.md`](cassia-mining-research.md) is the companion report; the county data layers live in [`data/`](data/).
 

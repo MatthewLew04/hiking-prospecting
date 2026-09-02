@@ -22,16 +22,23 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:13px/1.45 var(--sans);overflow:hidden}
 a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
 #app{display:grid;grid-template-rows:52px 1fr 26px;height:100vh}
-header{display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--line2);z-index:1200}
-.brand{display:flex;flex-direction:column;line-height:1.15;white-space:nowrap}
+header{display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--line2);z-index:1200;min-width:0}
+#main{min-width:0}
+.brand{display:flex;flex-direction:column;line-height:1.15;white-space:nowrap;min-width:0;flex:0 1 auto}
+.brand span{overflow:hidden;text-overflow:ellipsis}
 .brand b{font-size:14px;letter-spacing:.12em}
 .brand b .pick{color:var(--accent)}
 .brand span{font-size:10px;color:var(--mut);letter-spacing:.06em}
-.hstats{display:flex;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink2);white-space:nowrap}
+.hstats{display:flex;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink2);white-space:nowrap;min-width:0;overflow:hidden;flex:0 1 auto}
 .hstats .st{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
 .hstats .st b{color:var(--ink);font-weight:600}
 .hstats .st.live b{color:var(--good)}
-#searchWrap{position:relative;flex:1;max-width:400px;margin-left:auto}
+/* narrower windows drop the lower-priority stat chips rather than clipping a number */
+@media (max-width:1700px){.hstats .st[data-pri="4"]{display:none}}
+@media (max-width:1500px){.hstats .st[data-pri="3"]{display:none}}
+@media (max-width:1350px){.hstats .st[data-pri="2"]{display:none}}
+@media (max-width:1200px){.brand span{display:none}}
+#searchWrap{position:relative;flex:1 1 160px;min-width:120px;max-width:400px;margin-left:auto}
 #search{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink);padding:7px 10px 7px 30px;font:12px var(--mono);outline:none}
 #search:focus{border-color:var(--accent)}
 #searchWrap::before{content:"⌕";position:absolute;left:9px;top:5px;color:var(--mut);font-size:15px}
@@ -41,7 +48,7 @@ header{display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--
 #results .r .tag{font:9px var(--mono);color:#0b0d10;border-radius:3px;padding:1px 5px;flex:none;letter-spacing:.05em}
 #results .r .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #results .r .sb{color:var(--mut);font-size:11px;margin-left:auto;white-space:nowrap;flex:none}
-.hbtns{display:flex;gap:6px;align-items:center}
+.hbtns{display:flex;gap:6px;align-items:center;flex:none}
 .seg{display:flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden}
 .seg button{background:var(--panel2);border:none;color:var(--ink2);padding:6px 10px;font:11px var(--mono);cursor:pointer}
 .seg button.on{background:var(--accent-dim);color:var(--accent)}
@@ -316,6 +323,51 @@ footer .right{margin-left:auto}
 .docref .t{font-size:11.5px;color:var(--ink)}
 .docref .q{font-size:11.5px;color:var(--ink2);font-style:italic;margin:2px 0;overflow-wrap:anywhere}
 .docref .n{font:10px var(--mono);color:var(--mut)}
+/* ---------- guide: sidebar groups · welcome card · walkthrough · help ---------- */
+.grp{margin-bottom:8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.012)}
+.grph{width:100%;display:flex;align-items:center;gap:7px;background:none;border:none;color:var(--ink);padding:8px 9px;font:700 10.5px var(--mono);letter-spacing:.12em;cursor:pointer;text-align:left}
+.grph:hover{color:var(--accent)}
+.grph .chev{color:var(--accent);width:10px;flex:none;transition:transform .15s}
+.grp:not(.open) .grph .chev{transform:rotate(-90deg)}
+.grph .hint{margin-left:auto;font:9.5px var(--sans);letter-spacing:0;color:var(--mut);text-transform:none;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56%}
+.grpb{padding:8px 8px 2px;border-top:1px solid var(--line)}
+.grp:not(.open) .grpb{display:none}
+.grpb .sec:last-child{margin-bottom:8px}
+.cgctl{display:flex;flex-wrap:wrap;gap:5px;padding:2px 6px 4px}
+#btnHelp{color:var(--accent);border-color:rgba(45,212,191,.45)}
+#btnHelp.pulse{animation:helpPulse 1.6s 3}
+@keyframes helpPulse{0%{box-shadow:0 0 0 0 rgba(45,212,191,.55)}70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}
+.tbtn{background:var(--panel2);border:1px solid var(--line2);border-radius:6px;color:var(--ink2);padding:7px 12px;font:600 11px var(--mono);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
+.tbtn:hover{border-color:var(--accent);color:var(--ink)}
+.tbtn.primary{background:var(--accent-dim);border-color:rgba(45,212,191,.5);color:var(--accent)}
+.tbtn.primary:hover{background:rgba(45,212,191,.24)}
+.tbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#startCard{position:absolute;left:10px;top:10px;z-index:1000;width:min(340px,calc(100vw - 20px));background:rgba(18,21,26,.96);border:1px solid rgba(45,212,191,.4);border-radius:10px;padding:12px 14px 12px;box-shadow:0 12px 36px rgba(0,0,0,.55);backdrop-filter:blur(4px);display:none}
+#startCard.show{display:block}
+#startCard .x{position:absolute;top:5px;right:8px;background:none;border:none;color:var(--mut);font-size:15px;cursor:pointer}
+#startCard .x:hover{color:var(--ink)}
+#startCard h3{font-size:13.5px;color:var(--ink);margin:0 18px 4px 0;line-height:1.3}
+#startCard p{font-size:11.5px;color:var(--ink2);line-height:1.45;margin-bottom:9px}
+#startCard .row{display:flex;flex-wrap:wrap;gap:6px}
+#tourMask{position:fixed;inset:0;z-index:7000;display:none;pointer-events:none}
+#tourMask.show{display:block}
+#tourHole{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(5,7,10,.64);border:2px solid var(--accent);transition:left .22s ease,top .22s ease,width .22s ease,height .22s ease}
+#tourCard{position:fixed;z-index:7001;width:min(370px,92vw);background:var(--panel);border:1px solid rgba(45,212,191,.45);border-radius:10px;padding:13px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.65);display:none}
+#tourCard.show{display:block}
+#tourCard .tstep{font:600 9.5px var(--mono);letter-spacing:.14em;color:var(--accent);margin-bottom:7px;display:flex;align-items:center;gap:8px}
+#tourCard .tstep .dots{display:flex;gap:4px;margin-left:auto}
+#tourCard .tstep .dots i{width:6px;height:6px;border-radius:50%;background:#2a2f37;display:block}
+#tourCard .tstep .dots i.on{background:var(--accent)}
+#tourCard h3{font-size:14px;color:var(--ink);margin-bottom:6px;line-height:1.3}
+#tourCard p{font-size:12.5px;color:var(--ink2);line-height:1.5}
+#tourCard .tbtns{display:flex;gap:6px;align-items:center;margin-top:11px}
+#tourCard .skip{margin-right:auto;background:none;border:none;color:var(--mut);font:10.5px var(--mono);cursor:pointer;padding:6px 0}
+#tourCard .skip:hover{color:var(--ink)}
+.recipe{display:grid;grid-template-columns:1fr auto;gap:3px 12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.recipe b{color:var(--ink);font-size:12.5px}
+.recipe>span{grid-column:1;font-size:11.5px;color:var(--ink2)}
+.recipe .act{grid-column:2;grid-row:1/span 2;display:flex;gap:6px;align-items:center}
+.kbd{display:inline-block;border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:0 6px;font:11px var(--mono);color:var(--ink);background:var(--panel2);margin-right:5px}
 /* mobile overrides for late-defined components — must stay LAST in the stylesheet */
 @media (max-width:900px){
   #askPanel{position:fixed;left:0;right:0;bottom:26px;top:auto;width:auto;max-width:none;height:62vh;min-height:300px;border-radius:14px 14px 0 0;z-index:1600}
@@ -329,6 +381,10 @@ footer .right{margin-left:auto}
   .qtargetrow{display:flex;flex-wrap:wrap;align-items:flex-start}
   .qtargetcontrol{flex:1 1 100%}
   .ulrow button{padding:4px 8px;font-size:10px}
+  #startCard{left:8px;right:8px;width:auto;top:44px}
+  #tourCard{width:calc(100vw - 16px)}
+  .recipe{grid-template-columns:1fr}
+  .recipe .act{grid-column:1;grid-row:auto}
 }
 </style>
 </head>
@@ -336,78 +392,101 @@ footer .right{margin-left:auto}
 <div id="app">
   <header>
     <button id="menuBtn" title="layers & filters">☰</button>
-    <div class="brand"><b><span class="pick">⛏</span> NATIONAL MINERAL MONITOR</b><span>49 STATES · HAWAII EXCLUDED — BASELINE LIVE · RELEASES GATE-BLOCKED</span></div>
+    <div class="brand"><b><span class="pick">⛏</span> NATIONAL MINERAL MONITOR</b><span>49 STATES (HAWAII EXCLUDED) · NATIONAL BASELINE LIVE · STATE RELEASES GATE-BLOCKED — SEE COVERAGE</span></div>
     <div class="hstats" id="hstats"></div>
     <div id="searchWrap"><input id="search" placeholder="search mines, claims, districts…" autocomplete="off"><div id="results"></div></div>
     <div class="hbtns">
       <div class="seg" id="basemaps"><button data-b="dark" class="on">DARK</button><button data-b="sat">SAT</button><button data-b="topo">TOPO</button></div>
-      <button class="hbtn" id="btnIntel" style="display:none">INTEL</button>
-      <button class="hbtn" id="btnAsk" style="display:none">ASK ▸</button>
+      <button class="hbtn" id="btnIntel" style="display:none" title="top-10 targets and the watchlist">INTEL</button>
+      <button class="hbtn" id="btnAsk" style="display:none" title="ask plain-English questions of the loaded data">ASK ▸</button>
       <button class="hbtn" id="btnData" title="import CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP">+ DATA</button>
-      <button class="hbtn" id="btnAlerts" style="display:none">WATCH</button>
-      <button class="hbtn" id="btnReading">READING</button>
-      <button class="hbtn" id="btnCoverage">COVERAGE</button>
-      <button class="hbtn" id="btnAbout">ABOUT / SOURCES</button>
+      <button class="hbtn" id="btnAlerts" style="display:none" title="claim expiration watch">WATCH</button>
+      <button class="hbtn" id="btnReading" title="primary sources and portals">READING</button>
+      <button class="hbtn" id="btnCoverage" title="which states have passed every data gate">COVERAGE</button>
+      <button class="hbtn" id="btnHelp" title="walkthrough · quick recipes · shortcuts (press ?)">? HELP</button>
+      <button class="hbtn" id="btnAbout" title="data sources, method and caveats">ABOUT / SOURCES</button>
       <button class="hbtn" id="btnSignOut" style="display:none">SIGN OUT</button>
     </div>
   </header>
   <div id="main">
     <aside>
-      <div class="sec"><h3>STATES</h3><div class="statechips" id="stateChips"></div><div id="loadbar"></div></div>
-      <div class="sec"><h3>SITE LAYERS</h3><div id="layersSites"></div></div>
-      <div class="sec"><h3>CLAIM LAYERS</h3><div id="layersClaims"></div></div>
-      <div class="sec"><h3>OPEN GROUND — CASSIA</h3><div id="layersOG"></div>
-        <div class="oglegend" id="ogLegend" style="display:none"></div>
-        <div class="subnote" id="ogNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>GEOLOGY TARGETS — CASSIA</h3><div id="layersWS6"></div>
-        <div class="oglegend" id="tgLegend" style="display:none"></div>
-        <div class="subnote" id="tgNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>GOLD SIGNAL — COUNTIES</h3><div id="layersCG"></div>
-        <div class="oglegend" id="cgLegend" style="display:none"></div>
-        <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>GEOLOGY — NATIONAL + STATE</h3><div id="layersMS"></div>
-        <div class="subnote" id="msNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>GEOLOGY (QUAD)</h3><div id="layersQuad"></div>
-        <div id="quadSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="quadOpacity" min="0" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">shared quad-overlay opacity</div></div>
-        <div class="subnote" id="quadNote" style="padding-left:0">loading quad inventory…</div>
-        <div class="qactions" id="quadBtns"></div></div>
-      <div class="sec"><h3>GEOPHYSICS — WS7</h3><div id="layersGP"></div>
-        <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
-        <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>3D TERRAIN</h3><div id="layers3D"></div>
-        <div id="t3dSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="t3dExag" min="10" max="30" value="15" style="width:100%"><div class="subnote" style="padding-left:0" id="t3dExagLbl">vertical exaggeration ×1.5 — drag with right mouse (or ctrl-drag / two fingers) to tilt & orbit</div></div>
-        <div class="subnote" id="t3dNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>LEAPFROG EXPORT</h3>
-        <div id="lfxBtns"><button class="dosbtn" id="lfxGo">⬇ EXPORT CURRENT VIEW FOR LEAPFROG</button></div>
-        <label class="lrow"><input type="checkbox" id="lfxDem" checked> <span>INCLUDE TERRAIN GRID (.asc DEM)</span></label>
-        <div class="subnote" id="lfxNote" style="padding-left:0">frame your area (zoom ≥ 8), turn on the layers you want, and export — you get a zip of Leapfrog-ready files: UTM point CSVs with grades, AOI geology/fault/section shapefiles, a real DEM, and an .omf bundle, plus import instructions</div></div>
-      <div class="sec"><h3>3D MODEL</h3>
-        <div id="g3dBtns"><button class="dosbtn" id="g3dGo">⛰ OPEN 3D MODEL AT VIEW CENTER</button></div>
-        <label class="lrow"><span>radius</span> <select id="g3dRadius" style="margin-left:6px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px"><option value="1500">1.5 km</option><option value="2500" selected>2.5 km</option><option value="4000">4 km</option><option value="6000">6 km</option></select></label>
-        <div class="subnote" id="g3dNote" style="padding-left:0">every mine card also has OPEN 3D MODEL: a Leapfrog-style modeller opens with the real terrain, draped imagery, map geology/faults, graded mines and claims around the site — georeference old level plans, trace adits/drifts/shafts into 3-D, build pancake stratigraphy, krige grades into a block model, slice it, and import/export Leapfrog (OMF), Surfer, Geosoft, Kingdom files</div></div>
-      <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
-        <div class="subnote" id="ctyNote" style="padding-left:0"></div>
-        <div id="ctyBtns"></div></div>
-      <div class="sec"><h3>MY DATA</h3><div id="layersUser"></div>
-        <div class="subnote" style="padding-left:0">drop CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP on the map — lat-lon, UTM and PLSS legals (“T12S R22E Sec 14”) auto-geocode nationally; include a state and, where ambiguous, a PLSS meridian code</div>
-        <div id="ingestLog"></div></div>
-      <div class="sec"><h3>CONTEXT</h3><div id="layersCtx"></div>
-        <div class="subnote" id="contextNote" style="padding-left:0"></div></div>
-      <div class="sec"><h3>COMMODITY FILTER</h3>
-        <div class="chips" id="chips"></div>
-        <div class="radio" id="statusRadio">
-          <button data-v="all" class="on">ALL SITES</button><button data-v="ex">EXISTING ◯</button><button data-v="old">OLD ●</button>
+      <div class="grp open" data-grp="start">
+        <button class="grph" type="button" aria-expanded="true"><span class="chev">▾</span>START HERE<span class="hint">states · gold by county</span></button>
+        <div class="grpb">
+        <div class="sec" id="secStates"><h3>STATES</h3><div class="statechips" id="stateChips"></div><div id="loadbar"></div>
+          <div class="subnote" style="padding-left:0">click a state to hide or show it — every layer on the map follows this selection</div></div>
+        <div class="sec" id="secCG"><h3>GOLD BY COUNTY — 49 STATES</h3><div id="layersCG"></div>
+          <div class="oglegend" id="cgLegend" style="display:none"></div>
+          <div class="subnote" id="cgNote" style="padding-left:0"></div></div>
         </div>
-        <div id="visCount"></div>
       </div>
-      <div class="sec"><h3>SITES BY COMMODITY CLASS</h3><div id="chart"></div>
-        <div class="subnote" style="padding-left:0" id="chartNote"></div></div>
-      <div class="sec"><h3>FAMOUS DISTRICTS</h3><div id="dlist"></div></div>
+      <div class="grp open" data-grp="layers">
+        <button class="grph" type="button" aria-expanded="true"><span class="chev">▾</span>MAP LAYERS<span class="hint">mines · claims · geology · your data</span></button>
+        <div class="grpb">
+        <div class="sec" id="secSites"><h3>MINES & MINERAL SITES</h3><div id="layersSites"></div></div>
+        <div class="sec" id="secClaims"><h3>MINING CLAIMS</h3><div id="layersClaims"></div></div>
+        <div class="sec"><h3>GEOLOGIC MAPS & FAULTS</h3><div id="layersMS"></div>
+          <div class="subnote" id="msNote" style="padding-left:0"></div></div>
+        <div class="sec"><h3>DISTRICTS & BOUNDARIES</h3><div id="layersCtx"></div>
+          <div class="subnote" id="contextNote" style="padding-left:0"></div></div>
+        <div class="sec" id="secFilter"><h3>COMMODITY FILTER</h3>
+          <div class="chips" id="chips"></div>
+          <div class="radio" id="statusRadio">
+            <button data-v="all" class="on">ALL SITES</button><button data-v="ex">EXISTING ◯</button><button data-v="old">OLD ●</button>
+          </div>
+          <div id="visCount"></div>
+        </div>
+        <div class="sec"><h3>SITES BY COMMODITY CLASS</h3><div id="chart"></div>
+          <div class="subnote" style="padding-left:0" id="chartNote"></div></div>
+        <div class="sec"><h3>FAMOUS DISTRICTS</h3><div id="dlist"></div></div>
+        <div class="sec" id="secUser"><h3>MY DATA</h3><div id="layersUser"></div>
+          <div class="subnote" style="padding-left:0">drop CSV / XLSX / GeoJSON / KML / KMZ / GPX / zipped SHP on the map — lat-lon, UTM and PLSS legals (“T12S R22E Sec 14”) auto-geocode nationally; include a state and, where ambiguous, a PLSS meridian code</div>
+          <div id="ingestLog"></div></div>
+        </div>
+      </div>
+      <div class="grp" data-grp="cassia">
+        <button class="grph" type="button" aria-expanded="false"><span class="chev">▾</span>CASSIA COUNTY DEEP DIVE<span class="hint">Idaho pilot · open ground · targets · recorder</span></button>
+        <div class="grpb">
+        <div class="sec"><h3>OPEN GROUND — CASSIA</h3><div id="layersOG"></div>
+          <div class="oglegend" id="ogLegend" style="display:none"></div>
+          <div class="subnote" id="ogNote" style="padding-left:0"></div></div>
+        <div class="sec"><h3>GEOLOGY TARGETS — CASSIA</h3><div id="layersWS6"></div>
+          <div class="oglegend" id="tgLegend" style="display:none"></div>
+          <div class="subnote" id="tgNote" style="padding-left:0"></div></div>
+        <div class="sec"><h3>COUNTY RECORDS — CASSIA</h3>
+          <div class="subnote" id="ctyNote" style="padding-left:0"></div>
+          <div id="ctyBtns"></div></div>
+        </div>
+      </div>
+      <div class="grp" data-grp="advanced">
+        <button class="grph" type="button" aria-expanded="false"><span class="chev">▾</span>ADVANCED & EXPORT<span class="hint">quad maps · geophysics · 3D · Leapfrog</span></button>
+        <div class="grpb">
+        <div class="sec"><h3>QUAD-SCALE GEOLOGIC MAPS</h3><div id="layersQuad"></div>
+          <div id="quadSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="quadOpacity" min="0" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">shared quad-overlay opacity</div></div>
+          <div class="subnote" id="quadNote" style="padding-left:0">loading quad inventory…</div>
+          <div class="qactions" id="quadBtns"></div></div>
+        <div class="sec"><h3>GEOPHYSICS — AEROMAG & RADIOMETRIC</h3><div id="layersGP"></div>
+          <div id="gpSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="gpOpacity" min="10" max="100" value="65" style="width:100%"><div class="subnote" style="padding-left:0">overlay opacity — drapes over any basemap (try SAT)</div></div>
+          <div class="subnote" id="gpNote" style="padding-left:0"></div></div>
+        <div class="sec"><h3>3D TERRAIN</h3><div id="layers3D"></div>
+          <div id="t3dSlider" style="display:none;padding:2px 6px 4px"><input type="range" id="t3dExag" min="10" max="30" value="15" style="width:100%"><div class="subnote" style="padding-left:0" id="t3dExagLbl">vertical exaggeration ×1.5 — drag with right mouse (or ctrl-drag / two fingers) to tilt & orbit</div></div>
+          <div class="subnote" id="t3dNote" style="padding-left:0"></div></div>
+        <div class="sec"><h3>3D MODEL</h3>
+          <div id="g3dBtns"><button class="dosbtn" id="g3dGo">⛰ OPEN 3D MODEL AT VIEW CENTER</button></div>
+          <label class="lrow"><span>radius</span> <select id="g3dRadius" style="margin-left:6px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:2px 4px"><option value="1500">1.5 km</option><option value="2500" selected>2.5 km</option><option value="4000">4 km</option><option value="6000">6 km</option></select></label>
+          <div class="subnote" id="g3dNote" style="padding-left:0">every mine card also has OPEN 3D MODEL: a Leapfrog-style modeller opens with the real terrain, draped imagery, map geology/faults, graded mines and claims around the site — georeference old level plans, trace adits/drifts/shafts into 3-D, build pancake stratigraphy, krige grades into a block model, slice it, and import/export Leapfrog (OMF), Surfer, Geosoft, Kingdom files</div></div>
+        <div class="sec"><h3>LEAPFROG EXPORT</h3>
+          <div id="lfxBtns"><button class="dosbtn" id="lfxGo">⬇ EXPORT CURRENT VIEW FOR LEAPFROG</button></div>
+          <label class="lrow"><input type="checkbox" id="lfxDem" checked> <span>INCLUDE TERRAIN GRID (.asc DEM)</span></label>
+          <div class="subnote" id="lfxNote" style="padding-left:0">frame your area (zoom ≥ 8), turn on the layers you want, and export — you get a zip of Leapfrog-ready files: UTM point CSVs with grades, AOI geology/fault/section shapefiles, a real DEM, and an .omf bundle, plus import instructions</div></div>
+        </div>
+      </div>
     </aside>
     <div id="mapWrap">
       <div id="map"></div>
       <div class="tip" id="tip"></div>
       <div id="liveBadge"></div>
+      <div id="startCard" role="region" aria-label="getting started"></div>
       <div id="legend"><h4 id="legendHead">LEGEND ▾</h4><div class="lgBody" id="legendBody"></div></div>
       <div id="askPanel">
         <div class="ask-head">⌁ ASK THE DATA<span id="aiChip" style="display:none;margin-left:8px;border:1px solid rgba(12,163,12,.5);color:#3ecf3e;border-radius:4px;padding:1px 7px;font-size:9px;cursor:pointer" title="AI answerer for out-of-distribution questions — click to toggle">AI ON</span><button onclick="document.getElementById('askPanel').classList.remove('open')">✕</button></div>
@@ -445,6 +524,12 @@ footer .right{margin-left:auto}
   <div class="modal-head"><h2>GEOLOGY (QUAD) — DRAFT OUTBOX</h2><button onclick="toggleModal('quadOutboxModal',0)">✕</button></div>
   <div class="modal-body" id="quadOutboxBody">Loading draft outbox…</div></div></div>
 
+<div class="modal" id="helpModal"><div class="modal-card">
+  <div class="modal-head"><h2>HELP — TOUR · RECIPES · SHORTCUTS</h2><button onclick="toggleModal('helpModal',0)">✕</button></div>
+  <div class="modal-body" id="helpBody"></div></div></div>
+<div id="tourMask" aria-hidden="true"><div id="tourHole"></div></div>
+<div id="tourCard" role="dialog" aria-label="walkthrough" aria-live="polite"></div>
+
 <div id="authGate"><div class="auth-card">
   <div class="ab"><span class="pick">⛏</span> NW MINERAL MONITOR</div>
   <div class="as">RESTRICTED ACCESS · SIGN IN</div>
@@ -466,7 +551,7 @@ footer .right{margin-left:auto}
 <script>
 'use strict';
 /* ============ constants ============ */
-const BUILD = '2026-08-21-gm1';
+const BUILD = '2026-09-02-cg49';
 console.log('NW Mineral Monitor build', BUILD);
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // BLM's current public-domain claim-state set. Non-claim states use land
@@ -904,7 +989,8 @@ async function jget(u){ const r = await fetch(u); if(!r.ok) throw new Error(u+' 
 const loadbar = m => { $('loadbar').textContent = m || ''; };
 
 /* ---------- storage governance + diagnostics (hotfix 2026-08-08b) ----------
-   The app deliberately persists almost nothing: localStorage = auth token,
+   The app deliberately persists almost nothing: localStorage = auth token
+   plus the first-run guide flags (tour seen, collapsed sidebar groups),
    IndexedDB 'nwmm-userlayers' = user-imported layers only. Bulk data
    (claims/geology/faults/mag) is NEVER written to browser storage. These
    guards make that stance self-enforcing and observable. */
@@ -2437,14 +2523,14 @@ function buildUI(){
   if (small()) $('legend').classList.add('min');
   document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); }));
   $('legendHead').onclick = ()=>$('legend').classList.toggle('min');
-  buildLegend(); buildModals(); wireSearch();
+  buildLegend(); buildModals(); wireSearch(); initGuide();
   const siteTotal=['mrds','stategeo','usmin','ardf'].reduce((n,k)=>n+Number((NB[k]||{}).n||0),0);
   $('hstats').innerHTML =
-    `<span class="st"><b>${fmt(siteTotal)}</b> SITES</span>
-     <span class="st"><b>${countLabel(fedActive)}</b> FED ACTIVE</span>
-     <span class="st"><b>${countLabel(fedClosed)}</b> FED CLOSED</span>
-     ${NB.alaska_state_claims?`<span class="st"><b>${countLabel(akActive)}</b> AK ACTIVE+PENDING</span>`:''}
-     <span class="st live" id="liveStat"><b>LIVE</b> BLM</span>`;
+    `<span class="st" data-pri="1"><b>${fmt(siteTotal)}</b> SITES</span>
+     <span class="st" data-pri="2"><b>${countLabel(fedActive)}</b> FED ACTIVE</span>
+     <span class="st" data-pri="3"><b>${countLabel(fedClosed)}</b> FED CLOSED</span>
+     ${NB.alaska_state_claims?`<span class="st" data-pri="4"><b>${countLabel(akActive)}</b> AK ACTIVE+PENDING</span>`:''}
+     <span class="st live" data-pri="1" id="liveStat"><b>LIVE</b> BLM</span>`;
   $('fresh').textContent = `federal claims PMTiles ${claims.retrieved||'pending'} · AK DNR + ARDF ${NB.ardf&&NB.ardf.retrieved||'pending'} · national tiled baselines · build ${BUILD}`;
 }
 
@@ -2629,11 +2715,13 @@ function tipText(f){
   if (lid==='tg-fill' && TGIDX[p.id]){ const t=TGIDX[p.id];
     return `#${t.rank} · ${t.score} · ${t.nm||'unit'}${t.money?' ★':''} (${(t.tierName||'').split(' — ')[0]})`; }
   if (lid==='geo-fill') return `${p.nm||'geologic unit'}${p.age?' · '+p.age:''}`;
-  if (lid==='ctygold-fill'){ const r=countyGoldRow(p); return !r?'':r.pending
-    ? `${p.name}, ${p.st} — endowment ${r.endow} (claims pending; stakeable not yet measurable)`
+  if (lid==='ctygold-fill'){ const r=countyGoldRow(p); if(!r) return '';
+    if (CG_LENS==='endow') return `${countyLabel(r)}, ${r.st} — endowment #${r.rank_endow} · ${r.endow}${r.stake!=null?' · stakeable #'+r.rank:''}`;
+    return r.pending
+    ? `${countyLabel(r)}, ${r.st} — endowment ${r.endow} (claims pending; stakeable not yet measurable)`
     : r.open_ground_status==='not_applicable'
-      ? `${p.name}, ${p.st} — endowment ${r.endow} · open ground N/A`
-      : `#${r.rank} ${p.name}, ${p.st} — stakeable gold ${r.stake}`; }
+      ? `${countyLabel(r)}, ${r.st} — endowment ${r.endow} · non-claim state, nothing to stake`
+      : `#${r.rank} ${countyLabel(r)}, ${r.st} — stakeable gold ${r.stake}`; }
   if (lid==='gp-surv-fill') return gpSurvTip(p);
   if (lid==='grades-c' && GR){ const i=p.i;
     const og=GR.open_ground&&GR.open_ground[i];
@@ -2978,7 +3066,7 @@ function buildModals(){
   <tr><td>Geology targets (Cassia)</td><td>WS6 sinter-first engine: tiered lithology regexes × mapped faults & intersections × <a href="https://www.usgs.gov/tools/geographic-names-information-system-gnis" target="_blank">GNIS</a> hot/warm springs × IDWR geothermal wells × MRDS pathfinder commodities × WS2 open ground — every target carries its full scoring rationale</td><td>ranked</td></tr>
   <tr><td>Quad-scale geologic maps</td><td>WS10 per-target inventory from <a href="https://ngmdb.usgs.gov/ngmdb/ngmdb_home.html" target="_blank">USGS NGMDB</a> and state-survey catalogs; acquired scans are georeferenced with recorded method, confidence, GCP count and fit error, then served as external COG/XYZ assets. Explicit gaps, processing states, watch entries, vector rescans and read-only draft outbox records remain visible in the inventory. Raster pixels are not stored in this site.</td><td>per inventory</td></tr>
   <tr><td>County recorder (Cassia)</td><td>WS5 operator-assisted ingest — Cassia has <b>no online index</b> (verified 2026-08-06; records request / vault visit), instruments fuzzy-matched to MLRS serials by claim name + TRS; COUNTY-COVERAGE.md has the per-county matrix</td><td>per-export</td></tr>
-  <tr><td>County gold signal</td><td>Legacy eight-state derived ranking; claim-state and non-claim semantics are now distinct, but national recomputation is still gate-blocked</td><td>${MAN.ws56&&MAN.ws56.counties_gold?MAN.ws56.counties_gold.n:0} counties</td></tr>
+  <tr><td>Gold by county</td><td>Derived 49-state ranking (<code>pipelines/county_gold.py</code>): stakeable where a claims snapshot exists (federal MLRS for CA ID MT NV OR UT WA WY; Alaska DNR state claims for AK), endowment everywhere; counties join on Census FIPS from the admin archive. A derived research score, not a state release</td><td>${MAN.ws56&&MAN.ws56.counties_gold?fmt(MAN.ws56.counties_gold.n):0} counties</td></tr>
   </table>
   <h3>AUTO-UPDATING</h3>
   <p>Two mechanisms keep claims current: (1) the AWS updater pulls all <b>19 BLM public-domain claim states</b> through private staging for tiled builds, with independent Alaska DNR state-claim alerts; (2) at zoom ≥ 10.5, “Live claim boundaries” queries BLM for the current viewport. The coverage grid, not the presence of a baseline, is the authority on whether a state has shipped.</p>
@@ -3042,6 +3130,215 @@ function renderCoverage(){
   el.innerHTML=`<h3>WS11 — 49-STATE DONE GATE</h3><p><b style="color:var(--ink)">${COVERAGE.summary.gate_complete}/49</b> states pass every applicable gate; <b style="color:var(--ink)">${COVERAGE.summary.released}</b> are release-enabled. Baseline national services may be visible for building states, but an incomplete state is never presented as shipped.</p>
     <p style="font-size:10.5px;color:var(--mut)">Hover a cell for its explicit evidence/gap. ✓ pass · × fail · ! blocked · — legally not applicable.</p>
     <div class="qtablewrap"><table><tr><th>State</th>${COVERAGE.gate_keys.map(k=>`<th>${labels[k]||k}</th>`).join('')}<th>Release</th></tr>${rows}</table></div>${docSection}`;
+}
+
+/* ================= guide: welcome card · walkthrough · help · sidebar groups =================
+   First-run orientation for people who have never opened the map. State is a
+   per-viewer convenience only (localStorage 'nwmm.guide.v1': tour seen and
+   which sidebar groups are collapsed); nothing else is persisted, and every
+   read is guarded so a blocked storage API degrades to "show the welcome
+   again". The tour never fabricates a view: each step spotlights the real
+   control and, where it turns something on, uses the same code path as a
+   click. */
+const GUIDE_KEY='nwmm.guide.v1';
+function guideState(){ try{ const v=JSON.parse(localStorage.getItem(GUIDE_KEY)||'{}'); return v&&typeof v==='object'?v:{}; }catch(e){ return {}; } }
+function markGuide(patch){ try{ localStorage.setItem(GUIDE_KEY, JSON.stringify(Object.assign(guideState(), patch))); }catch(e){} }
+const guideSmall=()=>window.matchMedia('(max-width:900px)').matches;
+function setGroupOpen(grp,open){
+  grp.classList.toggle('open',open);
+  const h=grp.querySelector('.grph'); if(h) h.setAttribute('aria-expanded',open?'true':'false');
+}
+function initSidebarGroups(){
+  const saved=guideState().groups||{};
+  document.querySelectorAll('.grp').forEach(grp=>{
+    const key=grp.dataset.grp;
+    if(typeof saved[key]==='boolean') setGroupOpen(grp,saved[key]);
+    const h=grp.querySelector('.grph');
+    h.setAttribute('aria-expanded',grp.classList.contains('open')?'true':'false');
+    h.onclick=()=>{ const open=!grp.classList.contains('open'); setGroupOpen(grp,open);
+      const groups=Object.assign({},guideState().groups||{}); groups[key]=open; markGuide({groups}); };
+  });
+}
+function revealGuideTarget(el){
+  if(!el) return;
+  const grp=el.closest('.grp'); if(grp&&!grp.classList.contains('open')) setGroupOpen(grp,true);
+  const aside=document.querySelector('aside');
+  if(aside.contains(el)){
+    if(guideSmall()) aside.classList.add('open');
+    // Scroll the sidebar itself, never scrollIntoView: while the mobile
+    // drawer is still sliding in, scrollIntoView drags the overflow-hidden
+    // document sideways and the whole page lands half off-screen.
+    const ar=aside.getBoundingClientRect(), er=el.getBoundingClientRect();
+    if(er.top<ar.top+8||er.bottom>ar.bottom-8) aside.scrollTop+=(er.top-ar.top)-40;
+  }
+}
+function whenCountyGold(fn, tries){
+  tries = tries==null ? 40 : tries;
+  if(CG && map.getLayer('ctygold-fill')) return void fn();
+  if(tries<=0) return;
+  setTimeout(()=>whenCountyGold(fn,tries-1),250);
+}
+/* ---- walkthrough ---- */
+const TOUR_STEPS=[
+  {t:()=>document.querySelector('footer .warn'), title:'One rule before anything else',
+   body:'Everything on this map is a research lead, not a title search. “No claims here” can mean patented private land, a park, or a withdrawal. Verify at BLM and the county recorder, and never enter old workings.'},
+  {t:()=>$('secStates'), title:'Pick your states',
+   body:'Every layer follows these chips. Click a state to drop it, click again to bring it back. Start broad, then narrow to the states you can actually get to.'},
+  {t:()=>$('secCG'), title:'Gold by county — all 49 states',
+   body:'The map now shades every county. <b>STAKEABLE</b> ranks documented gold that nobody currently holds; <b>ENDOWMENT</b> ranks raw gold regardless of who holds it. Muted, dashed counties have no claims snapshot yet (or no claim system), so only endowment is honest there.',
+   before:()=>whenCountyGold(()=>{ setCgLens('stake',true); if(map.getZoom()>5.6) map.fitBounds(CG_US_BOUNDS,{padding:24,duration:900}); })},
+  {t:()=>$('detail'), title:'Read a county card',
+   body:'Click any shaded county for its itemized scorecard — every point traced to evidence, with BEST EVIDENCE links that fly you to the individual mines. This is the #1 stakeable county right now.',
+   before:()=>whenCountyGold(()=>{ const top=CG.counties.find(r=>r.rank===1); if(top&&TOUR.i===3){ showCountyGold(top.st,top.name,top.fips); setTimeout(tourPlace,260); } })},
+  {t:()=>$('secSites'), title:'Mines, prospects and workings',
+   body:'Circles are existing or producing sites, dots are historic; color is the commodity class. Steel dots are physical workings traced off old topo sheets — the best “something was actually dug here” signal.',
+   before:()=>closeDetail()},
+  {t:()=>$('secClaims'), title:'Who holds the ground',
+   body:'Teal dots are active federal claims from the tiled snapshot; maroon embers are closed historic records. Zoom past 10.5 and live claim boundaries stream straight from BLM.'},
+  {t:()=>$('searchWrap'), title:'Search anything',
+   body:'Mine names, claim serials, districts and places. Pick a result and the map flies there with its card open. Press <span class="kbd">/</span> to jump to the box.'},
+  {t:()=>$('basemaps'), title:'Basemaps',
+   body:'DARK for reading data, SAT for real terrain, TOPO for contours. Geophysics and quad-scale geology drape over any of them.'},
+  {t:()=>getComputedStyle($('btnAsk')).display!=='none'?$('btnAsk'):$('btnData'), title:'Ask, or bring your own data',
+   body:'ASK answers plain-English questions from the loaded data (“gold producers in montana”, “best county in alaska”). + DATA drops a CSV, KML, GPX or shapefile onto the map and geocodes PLSS legals.'},
+  {t:()=>$('btnHelp'), title:'Help is one key away',
+   body:'? HELP reopens this tour, quick recipes and shortcuts. Press <span class="kbd">?</span> at any time.'},
+];
+const TOUR={i:-1,active:false};
+function tourTarget(step){ try{ return step.t(); }catch(e){ return null; } }
+function tourStart(i){
+  markGuide({seen:true});
+  $('startCard').classList.remove('show');
+  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'));
+  TOUR.active=true; $('tourMask').classList.add('show'); $('tourCard').classList.add('show');
+  tourShow(i||0);
+}
+function tourEnd(done){
+  TOUR.active=false; TOUR.i=-1;
+  $('tourMask').classList.remove('show'); $('tourCard').classList.remove('show');
+  markGuide({seen:true, tourDone:!!(done||guideState().tourDone)});
+  if(guideSmall()) document.querySelector('aside').classList.remove('open');
+}
+function tourShow(i){
+  if(i<0) i=0;
+  if(i>=TOUR_STEPS.length) return tourEnd(true);
+  const step=TOUR_STEPS[i]; TOUR.i=i;
+  try{ if(step.before) step.before(); }catch(e){ console.warn('[tour]',e); }
+  revealGuideTarget(tourTarget(step));
+  const last=i===TOUR_STEPS.length-1;
+  const dots=TOUR_STEPS.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
+  $('tourCard').innerHTML=`<div class="tstep">STEP ${i+1} OF ${TOUR_STEPS.length}<span class="dots">${dots}</span></div>
+    <h3>${step.title}</h3><p>${step.body}</p>
+    <div class="tbtns"><button class="skip" id="tourSkip">${last?'close':'skip tour'}</button>
+      ${i>0?'<button class="tbtn" id="tourBack">← BACK</button>':''}
+      <button class="tbtn primary" id="tourNext">${last?'DONE ✓':'NEXT →'}</button></div>`;
+  $('tourSkip').onclick=()=>tourEnd(last);
+  if($('tourBack')) $('tourBack').onclick=()=>tourShow(i-1);
+  $('tourNext').onclick=()=>tourShow(i+1);
+  // drawers and the detail panel animate; place now and again once settled
+  tourPlace(); setTimeout(tourPlace,260); setTimeout(tourPlace,700);
+  $('tourNext').focus();
+}
+function tourPlace(){
+  if(!TOUR.active) return;
+  const step=TOUR_STEPS[TOUR.i]; if(!step) return;
+  const el=tourTarget(step), hole=$('tourHole'), card=$('tourCard');
+  const vw=document.documentElement.clientWidth, vh=document.documentElement.clientHeight, pad=6;
+  let r=el&&el.getBoundingClientRect();
+  if(!r||(!r.width&&!r.height)){ r={left:vw/2-1,top:vh/2-1,width:2,height:2,right:vw/2+1,bottom:vh/2+1}; hole.style.opacity='0'; }
+  else hole.style.opacity='1';
+  hole.style.left=(r.left-pad)+'px'; hole.style.top=(r.top-pad)+'px';
+  hole.style.width=(r.width+pad*2)+'px'; hole.style.height=(r.height+pad*2)+'px';
+  const cw=card.offsetWidth||370, ch=card.offsetHeight||200, gap=14;
+  let left, top;
+  const clampY=y=>Math.min(Math.max(8,y),Math.max(8,vh-ch-8));
+  const clampX=x=>Math.min(Math.max(8,x),Math.max(8,vw-cw-8));
+  if(guideSmall()){ left=clampX((vw-cw)/2); top=(r.bottom+gap+ch<vh-8)?r.bottom+gap:clampY(r.top-gap-ch); }
+  else if(r.right+gap+cw<vw-8){ left=r.right+gap; top=clampY(r.top); }
+  else if(r.left-gap-cw>8){ left=r.left-gap-cw; top=clampY(r.top); }
+  else if(r.bottom+gap+ch<vh-8){ left=clampX(r.left); top=r.bottom+gap; }
+  else { left=clampX(r.left); top=clampY(r.top-gap-ch); }
+  card.style.left=left+'px'; card.style.top=top+'px';
+}
+/* ---- help center ---- */
+function openHelp(){ renderHelp(); toggleModal('helpModal',1); $('btnHelp').classList.remove('pulse'); }
+function renderHelp(){
+  const NB=(MAN&&MAN.national_baselines)||{};
+  const counts=[NB.mrds?fmt(NB.mrds.n)+' MRDS sites':'', NB.usmin?fmt(NB.usmin.n)+' topo-map workings':'',
+    CG?fmt(CG.counties.length)+' scored counties':''].filter(Boolean).join(' · ');
+  const stateOptions=STATES.map(s=>`<option value="${s}">${esc(cgStateName(s))}</option>`).join('');
+  $('helpBody').innerHTML=`
+    <p><b style="color:var(--ink)">What this is.</b> A research map of U.S. mines, prospects, mining claims and geology for 49 states (Hawaii excluded), with every county scored for gold. Every card cites its source and every layer prints its own caveats.${counts?' '+counts+'.':''}</p>
+    <div class="callout"><b style="color:var(--warn)">⚠ The one rule.</b> Everything here is a research lead, not a title search. “No claims” can mean patented private land, a park, or a withdrawal. Verify at BLM and the county recorder, and never enter old workings.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px"><button class="tbtn primary" id="helpTour">▶ START THE 2-MINUTE TOUR</button><button class="tbtn" id="helpAbout">ABOUT / SOURCES</button><button class="tbtn" id="helpCoverage">COVERAGE — WHAT IS DONE</button></div>
+    <h3>QUICK RECIPES</h3>
+    <div class="recipe"><b>Where is the most actionable gold?</b><span>Shade counties by STAKEABLE, open the ranked list, click a county, then follow BEST EVIDENCE to an individual mine.</span><span class="act"><button class="tbtn" data-do="gold">▶ DO IT</button></span></div>
+    <div class="recipe"><b>Explore one state</b><span>Keep only that state's chip, zoom to it, and read its counties by ENDOWMENT if it has no claims snapshot yet.</span><span class="act"><select id="helpState" aria-label="state" style="background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:6px;font:11px var(--mono)">${stateOptions}</select><button class="tbtn" data-do="state">▶ GO</button></span></div>
+    <div class="recipe"><b>Who holds the ground around a mine?</b><span>Search a mine or district, zoom past 10.5, and live claim boundaries stream from BLM. Click a claim for its serial and dossier.</span><span class="act"><button class="tbtn" data-do="claims">▶ SHOW ME</button></span></div>
+    <div class="recipe"><b>Bring your own points</b><span>Drop a CSV, XLSX, GeoJSON, KML/KMZ, GPX or zipped shapefile on the map. Lat-lon, UTM and PLSS legals (“T12S R22E Sec 14”) geocode automatically.</span><span class="act"><button class="tbtn" data-do="data">▶ ADD DATA</button></span></div>
+    <h3>KEYBOARD</h3>
+    <p><span class="kbd">?</span>help · <span class="kbd">/</span>search · <span class="kbd">Esc</span>close panels · <span class="kbd">←</span><span class="kbd">→</span>tour steps</p>
+    <h3>READING THE MAP</h3>
+    <p>Circles = existing or producing sites, dots = historic; color = commodity class. Teal = active claims, maroon = closed records, dashed rings = districts. The LEGEND box (bottom-left) lists every symbol. ABOUT / SOURCES has the full method and caveats; COVERAGE shows which states have passed every data gate. In the repo, MAP-GUIDE.md is the long-form tour and USER-GUIDE.md the operator's manual.</p>`;
+  $('helpTour').onclick=()=>{ toggleModal('helpModal',0); tourStart(0); };
+  $('helpAbout').onclick=()=>{ toggleModal('helpModal',0); toggleModal('aboutModal',1); };
+  $('helpCoverage').onclick=()=>{ toggleModal('helpModal',0); renderCoverage(); toggleModal('coverageModal',1); };
+  $('helpBody').querySelectorAll('[data-do]').forEach(b=>b.onclick=()=>{ toggleModal('helpModal',0); guideDo(b.dataset.do); });
+}
+function guideDo(what){
+  markGuide({seen:true}); $('startCard').classList.remove('show');
+  if(what==='gold'){
+    whenCountyGold(()=>{ setCgLens('stake',true); map.fitBounds(CG_US_BOUNDS,{padding:24,duration:1100}); showCountyGoldList({lens:'stake'}); });
+  } else if(what==='state'){
+    const sel=$('helpState'); if(sel&&sel.value) guideGoState(sel.value);
+  } else if(what==='claims'){
+    const live=document.querySelector('[data-layer="live"]'); if(live&&!S.layers.live) live.click();
+    $('search').placeholder='try a mine name, a district, or a claim serial…'; $('search').focus();
+  } else if(what==='data'){
+    $('btnData').click();
+  }
+}
+function guideGoState(st){
+  setUiStates([st]); applyFilters();
+  // county centroids are the only per-state extent the browser holds; the
+  // Aleutians cross the antimeridian, so positive longitudes are left out
+  const rows=(CG&&CG.counties.filter(r=>r.st===st&&r.cx<0))||[];
+  if(rows.length){ const xs=rows.map(r=>r.cx), ys=rows.map(r=>r.cy);
+    map.fitBounds([[Math.min(...xs)-.6,Math.min(...ys)-.4],[Math.max(...xs)+.6,Math.max(...ys)+.4]],{padding:20,duration:1100}); }
+  whenCountyGold(()=>setCgLens(cgMeasuredStates().has(st)?'stake':'endow',true));
+  if(guideSmall()) document.querySelector('aside').classList.remove('open');
+}
+/* ---- welcome card ---- */
+function initStartCard(){
+  const card=$('startCard');
+  const NB=(MAN&&MAN.national_baselines)||{};
+  const sites=['mrds','usmin','stategeo','ardf'].reduce((n,k)=>n+Number((NB[k]||{}).n||0),0);
+  card.innerHTML=`<button class="x" aria-label="dismiss" id="scX">✕</button>
+    <h3>New here? Start with gold by county.</h3>
+    <p>Every county in 49 states is scored for gold you could still act on, over ${sites?fmt(sites)+' ':''}mine and prospect records — with the evidence behind every number one click away.</p>
+    <div class="row"><button class="tbtn primary" id="scTour">▶ 2-MINUTE TOUR</button><button class="tbtn" id="scGold">⛏ SHADE COUNTIES</button><button class="tbtn" id="scSkip">EXPLORE ON MY OWN</button></div>`;
+  const dismiss=()=>{ card.classList.remove('show'); markGuide({seen:true}); $('btnHelp').classList.add('pulse'); };
+  $('scX').onclick=dismiss; $('scSkip').onclick=dismiss;
+  $('scTour').onclick=()=>tourStart(0);
+  $('scGold').onclick=()=>guideDo('gold');
+  if(!guideState().seen) card.classList.add('show');
+}
+function initGuide(){
+  initSidebarGroups();
+  $('btnHelp').onclick=openHelp;
+  initStartCard();
+  document.addEventListener('keydown', e=>{
+    const tag=(e.target&&e.target.tagName)||'';
+    const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(tag)||(e.target&&e.target.isContentEditable);
+    if(e.key==='Escape'&&TOUR.active){ tourEnd(false); return; }
+    if(typing||e.metaKey||e.ctrlKey||e.altKey) return;
+    if(e.key==='?'){ e.preventDefault(); openHelp(); }
+    else if(e.key==='/'){ e.preventDefault(); $('search').focus(); }
+    else if(TOUR.active&&e.key==='ArrowRight'){ e.preventDefault(); tourShow(TOUR.i+1); }
+    else if(TOUR.active&&e.key==='ArrowLeft'){ e.preventDefault(); tourShow(TOUR.i-1); }
+  });
+  window.addEventListener('resize', ()=>tourPlace());
+  document.querySelector('aside').addEventListener('scroll', ()=>tourPlace(), {passive:true});
 }
 
 /* ================= INTEL + ASK-the-data ================= */
@@ -4793,8 +5090,8 @@ function answer(q){
     }
   }
   /* county gold-signal questions — before grades ("which county has the most gold") */
-  if (/count(y|ies)/.test(q) && /gold|silver|signal|stake|best|most|top/.test(q))
-    return void cgAnswer();
+  if (/count(y|ies)/.test(q) && /gold|silver|signal|stake|best|most|top|endow/.test(q))
+    return void cgAnswer(q);
   /* WS6 geology-target questions — before grades ("epithermal gold targets") */
   if (/\btargets?\b|sinter|opalin|epithermal|geolog|rhyolite/.test(q) && !/oz|grade|richest/.test(q))
     return void tgAnswer(q);
@@ -6260,55 +6557,75 @@ async function fillUnderground3DSubject(subject){
   slot.innerHTML = ugHtml(e);
 }
 
-/* ---------- county gold-signal ranking ---------- */
-let CG = null, CGIDX = {};
-const countyKey=(st,name)=>st+'|'+String(name||'').replace(/\s+(?:County|Parish|Borough|Census Area|Municipality|city)$/i,'').trim();
+/* ---------- county gold-signal ranking (49 states · 3,138 counties) ---------- */
+let CG = null, CGIDX = {}, CG_LENS = 'stake';
+const countyKey=(st,name)=>st+'|'+String(name||'').replace(/\s+(?:County|Parish|Borough|Census Area|Municipality|City and Borough|city)$/i,'').trim();
 // GEOID/FIPS is the national join key. The normalized-name fallback exists
 // only for legacy rows that predate FIPS and is ambiguous for county/city
 // pairs such as Baltimore, St. Louis, Richmond, Fairfax and Roanoke.
 const countyGoldRow=p=>p&&((p.fips&&CGIDX['fips|'+String(p.fips).padStart(5,'0')])||CGIDX[countyKey(p.st,p.name)]);
+// The admin archive carries the Census name with its suffix ("Yukon-Koyukuk
+// Census Area", "Orleans Parish"); legacy eight-state rows carried bare names.
+const countyLabel=r=>/\b(County|Parish|Borough|Census Area|Municipality|city)$/i.test(r.name||'')?r.name:(r.name||'')+' County';
+const CODE_TO_STATE_NAME=Object.fromEntries(Object.entries(STATE_NAME_TO_CODE).map(([n,c])=>[c,n.replace(/\b[a-z]/g,ch=>ch.toUpperCase())]));
+const cgStateName=code=>CODE_TO_STATE_NAME[code]||code;
+const CG_RAMPS = {
+  stake:{key:'disp', stops:[0,'#12151a',15,'#26221a',40,'#584410',75,'#9c7100',105,'#c98500',130,'#ffd54a'],
+         legend:[['#26221a','low'],['#584410',''],['#9c7100',''],['#c98500',''],['#ffd54a','top']],
+         line:'#c98500', title:'STAKEABLE — documented gold nobody currently holds'},
+  endow:{key:'endow', stops:[0,'#12151a',10,'#221a16',30,'#4a2f1a',55,'#8a4f1b',80,'#c98a3a',100,'#ffe2a8'],
+         legend:[['#221a16','low'],['#4a2f1a',''],['#8a4f1b',''],['#c98a3a',''],['#ffe2a8','top']],
+         line:'#c98a3a', title:'ENDOWMENT — raw gold, staked or not (every county)'},
+};
+const CG_US_BOUNDS=[[-125.5,24],[-66.5,49.6]], CG_AK_BOUNDS=[[-170,51],[-129.5,71.6]];
+const cgMeasuredStates=()=>new Set(CG&&CG.scope&&CG.scope.stake_measured_states||(CG?CG.counties.filter(r=>r.stake!=null).map(r=>r.st):[]));
+// A county whose stake cannot be measured (no claims snapshot yet, or a
+// non-claim state) only ever carries an endowment preview.
+const cgPreview=r=>!!(r&&(r.pending||r.open_ground_status==='not_applicable'||r.stake==null));
+function cgFillPaint(lens){
+  const ramp=CG_RAMPS[lens];
+  const value=['coalesce',['feature-state',ramp.key],-1];
+  return {'fill-color':['interpolate',['linear'],['max',value,0],...ramp.stops],
+    // Counties without a row stay invisible. In the stakeable lens a preview
+    // county renders muted so endowment is never read as a stake score.
+    'fill-opacity':['case',['==',value,-1],0,
+      lens==='stake'?['case',['==',['feature-state','prev'],1],.28,.55]:.55]};
+}
+function cgLinePaint(lens){
+  const ramp=CG_RAMPS[lens], value=['coalesce',['feature-state',ramp.key],-1];
+  const prev=lens==='stake'?['==',['feature-state','prev'],1]:['boolean',false];
+  return {'line-color':['case',prev,'#38bdf8',ramp.line],
+    'line-width':['case',prev,1.1,.5],'line-dasharray':[2,2],
+    'line-opacity':['case',['==',value,-1],0,['case',prev,.5,.35]]};
+}
 async function loadCountyGold(){
   try{ CG = await jget('data/counties_gold.json'); }
   catch(e){ $('cgNote').textContent='no ranking built — run pipelines/county_gold.py'; return; }
   for (const r of CG.counties){ CGIDX[countyKey(r.st,r.name)] = r; if(r.fips)CGIDX['fips|'+r.fips]=r; }
   const under = map.getLayer('geo-fill') ? 'geo-fill' : map.getLayer('og-fill') ? 'og-fill' : map.getLayer('claimsC-dot') ? 'claimsC-dot' : undefined;
   map.addLayer({id:'ctygold-fill', type:'fill', source:'admin','source-layer':'counties', layout:{visibility:'none'},
-    paint:{'fill-color':['interpolate',['linear'],['coalesce',['feature-state','disp'],0],
-      0,'#12151a', 15,'#26221a', 40,'#584410', 75,'#9c7100', 105,'#c98500', 130,'#ffd54a'],
-      // pending states (no claims snapshot yet) render muted — endowment preview only
-      'fill-opacity':['case',['==',['coalesce',['feature-state','disp'],-1],-1],0,
-        ['==',['feature-state','pend'],1],.3,.55]}}, under);
+    paint:cgFillPaint(CG_LENS)}, under);
   map.addLayer({id:'ctygold-line', type:'line', source:'admin','source-layer':'counties', layout:{visibility:'none'},
-    paint:{'line-color':['case',['==',['feature-state','pend'],1],'#38bdf8','#c98500'],
-      'line-width':['case',['==',['feature-state','pend'],1],1.1,.5],
-      'line-dasharray':[2,2],
-      'line-opacity':['case',['==',['coalesce',['feature-state','disp'],-1],-1],0,
-        ['==',['feature-state','pend'],1],.5,.35]}}, under);
+    paint:cgLinePaint(CG_LENS)}, under);
   const applyCountyState=()=>{
     for(const f of map.querySourceFeatures('admin',{sourceLayer:'counties'})){
       const r=CGIDX['fips|'+f.properties.fips]||CGIDX[countyKey(f.properties.st,f.properties.name)]; if(!r||f.id==null)continue;
       map.setFeatureState({source:'admin',sourceLayer:'counties',id:f.id},{
-        disp:(r.disp!=null?r.disp:r.stake),pend:r.pending?1:0,stake:r.stake,
+        disp:(r.disp!=null?r.disp:r.stake!=null?r.stake:0),prev:cgPreview(r)?1:0,stake:r.stake,
         endow:r.endow,rank:r.rank});
     }
   };
   map.on('sourcedata',e=>{if(e.sourceId==='admin')applyCountyState();});
   applyCountyState();
-  const row = document.createElement('label');
-  row.className='lrow'; row.innerHTML = `<input type="checkbox" id="cgToggle"> <span>STAKEABLE-GOLD CHOROPLETH</span>`;
-  $('layersCG').appendChild(row);
-  $('cgToggle').onchange = e=>{
-    const v = e.target.checked?'visible':'none';
-    map.setLayoutProperty('ctygold-fill','visibility',v);
-    map.setLayoutProperty('ctygold-line','visibility',v);
-    $('cgLegend').style.display = e.target.checked?'flex':'none';
-    if (e.target.checked && map.getZoom() > 7.5) map.flyTo({zoom:5.6, duration:900});
-  };
-  const listBtn = document.createElement('div');
-  listBtn.className='subnote'; listBtn.style.cssText='padding-left:0;cursor:pointer;color:var(--accent)';
-  listBtn.textContent = '▸ ranked county list';
-  listBtn.onclick = ()=>showCountyGoldList();
-  $('layersCG').appendChild(listBtn);
+  $('layersCG').innerHTML = `
+    <label class="lrow" title="shade every county by its gold score"><input type="checkbox" id="cgToggle"> <span>SHADE COUNTIES BY GOLD</span></label>
+    <div class="radio" id="cgLens" style="margin:0 6px 6px"><button data-v="stake" class="on" title="documented gold on ground nobody currently holds — needs a claims snapshot">STAKEABLE</button><button data-v="endow" title="raw gold endowment regardless of who holds it — every county">ENDOWMENT</button></div>
+    <div class="cgctl"><button class="qinfo" id="cgListBtn" title="top counties, filterable by state">▸ ranked list</button><button class="qinfo" id="cgFitBtn" title="fit the lower 48">⤢ whole country</button><button class="qinfo" id="cgAkBtn" title="fit Alaska">⤢ alaska</button></div>`;
+  $('cgToggle').onchange = e=>setCountyGoldVisible(e.target.checked);
+  $('cgLens').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setCgLens(b.dataset.v, true); });
+  $('cgListBtn').onclick = ()=>showCountyGoldList();
+  $('cgFitBtn').onclick = ()=>{ setCountyGoldVisible(true); map.fitBounds(CG_US_BOUNDS,{padding:24,duration:1100}); };
+  $('cgAkBtn').onclick = ()=>{ setCountyGoldVisible(true); map.fitBounds(CG_AK_BOUNDS,{padding:24,duration:1100}); };
   map.on('click','ctygold-fill', e=>{
     // everything else on the map wins over the county wash
     const others = map.queryRenderedFeatures(e.point).filter(f=>!['ctygold-fill','ctygold-line'].includes(f.layer.id) && f.source!=='carto');
@@ -6316,13 +6633,45 @@ async function loadCountyGold(){
     const p = e.features[0].properties;
     showCountyGold(p.st, p.name, p.fips);
   });
-  $('cgLegend').innerHTML = [['#26221a','low'],['#584410',''],['#9c7100',''],['#c98500',''],['#ffd54a','top']]
-    .map(([c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join('');
-  const top = CG.counties[0];
-  $('cgNote').textContent = `${CG.counties.length} counties ranked by STAKEABLE gold (open cited grades · staked-then-dropped sites · unclaimed occurrences). #1 ${top.name}, ${top.st}. ${CG.generated}.`;
+  renderCgLegend();
+  const scope=CG.scope||{}, measured=[...cgMeasuredStates()].sort();
+  const top = CG.counties.find(r=>r.rank===1)||CG.counties[0];
+  const pend=scope.pending_claim_states||[], nonclaim=scope.non_claim_states||[];
+  $('cgNote').innerHTML = scope.states
+    ? `<b style="color:var(--ink2)">${fmt(CG.counties.length)} counties · ${scope.states} states.</b> Stakeable is measured in ${measured.length} states (${measured.join(' ')}) — the ones with a claims snapshot. ${pend.length} claim states are pending a snapshot and ${nonclaim.length} states have no federal claim system, so they show endowment only (muted, dashed). #1 stakeable: ${esc(countyLabel(top))}, ${top.st}. Built ${esc(CG.generated||'')}.`
+    : `${CG.counties.length} counties ranked by STAKEABLE gold. #1 ${esc(countyLabel(top))}, ${top.st}. ${esc(CG.generated||'')}.`;
+}
+function setCountyGoldVisible(on){
+  const t=$('cgToggle'); if(t&&t.checked!==on) t.checked=on;
+  if(!map.getLayer('ctygold-fill')) return;
+  const v = on?'visible':'none';
+  map.setLayoutProperty('ctygold-fill','visibility',v);
+  map.setLayoutProperty('ctygold-line','visibility',v);
+  $('cgLegend').style.display = on?'flex':'none';
+  if (on && map.getZoom() > 6.2) map.flyTo({zoom:5.4, duration:900});
+}
+function setCgLens(lens, show){
+  if(!CG_RAMPS[lens]) return;
+  CG_LENS=lens;
+  document.querySelectorAll('#cgLens button').forEach(b=>b.classList.toggle('on', b.dataset.v===lens));
+  if(map.getLayer('ctygold-fill')){
+    for(const [k,v] of Object.entries(cgFillPaint(lens))) map.setPaintProperty('ctygold-fill',k,v);
+    for(const [k,v] of Object.entries(cgLinePaint(lens))) map.setPaintProperty('ctygold-line',k,v);
+  }
+  renderCgLegend();
+  if(show) setCountyGoldVisible(true);
+}
+function renderCgLegend(){
+  const ramp=CG_RAMPS[CG_LENS];
+  $('cgLegend').innerHTML = `<span style="flex-basis:100%;color:var(--ink2)">${ramp.title}</span>`
+    + ramp.legend.map(([c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join('')
+    + (CG_LENS==='stake' ? `<span style="flex-basis:100%"><i style="background:#1d2b34;border:1px dashed #38bdf8"></i>muted + dashed = endowment preview only (no claims snapshot, or a non-claim state)</span>` : '');
 }
 function showCountyGold(st, name, fips){
   const r = (fips&&CGIDX['fips|'+String(fips).padStart(5,'0')])||CGIDX[countyKey(st,name)]; if (!r) return;
+  const N = CG.counties.length, scored = CG.counties.filter(x=>x.stake!=null).length;
+  const regime = r.regime || (r.open_ground_status==='not_applicable'?'non_claim':'claim');
+  const status = r.pending ? 'pending' : regime==='non_claim' ? 'non_claim' : r.stake!=null ? 'measured' : 'pending';
   const evid = (r.top||[]).map(t=> t.k==='graded'
     ? `<div class="dc" onclick="map.flyTo({center:[${t.x},${t.y}],zoom:12.5,duration:900})">
         <div class="t">${esc(t.nm)} <span class="b" style="color:var(--gold)">${t.au} oz/t Au</span></div>
@@ -6330,40 +6679,83 @@ function showCountyGold(st, name, fips){
     : `<div class="dc" onclick="map.flyTo({center:[${t.x},${t.y}],zoom:12.5,duration:900})">
         <div class="t">${esc(t.nm||'(unnamed)')} <span class="b">${t.prod?'PAST PRODUCER':'site'}</span></div>
         <div class="c">gold site near a closed-claim record ≤~1 km — no active centroid in the measured snapshot; verify current status</div></div>`).join('');
-  openDetail(`<h2>${esc(r.name)} County, ${r.st}</h2>
-    <div class="badges">${r.pending
-      ? `<span class="badge exploration">CLAIMS PENDING — ENDOWMENT ONLY</span>`
-      : `<span class="badge exploration">STAKEABLE #${r.rank} · ${r.stake}</span>`}
+  const meaning = status==='measured'
+    ? `Stakeable <b>#${r.rank} of ${fmt(scored)}</b> scored counties${r.claims_source==='alaska_dnr_state_claims'?' — measured against Alaska DNR state-law claims':''}. Endowment #${r.rank_endow} of ${fmt(N)} in the 49-state scope. The gap between the two is the story: high endowment with low stakeable means great gold that is all held.`
+    : status==='pending'
+      ? `Federal mining claims apply here, but no claims snapshot is in the repo yet. A stakeable score would call every site "unclaimed", so only <b>endowment (#${r.rank_endow} of ${fmt(N)})</b> is shown and the county renders muted.`
+      : `No federal claim system in this state — nothing here can be staked. <b>Endowment #${r.rank_endow} of ${fmt(N)}</b> says where the gold is; the route is a state mineral lease or private negotiation.`;
+  openDetail(`<h2>${esc(countyLabel(r))}, ${r.st}</h2>
+    <div class="badges">${status==='measured'
+      ? `<span class="badge exploration">STAKEABLE #${r.rank} · ${r.stake}</span>`
+      : status==='pending' ? `<span class="badge exploration">CLAIMS PENDING — ENDOWMENT ONLY</span>`
+      : `<span class="badge closed">NON-CLAIM STATE — ENDOWMENT ONLY</span>`}
       <span class="badge abandoned">ENDOWMENT #${r.rank_endow} · ${r.endow}</span></div>
+    <div class="desc">${meaning}</div>
+    <div class="links"><a href="#" onclick="map.flyTo({center:[${r.cx},${r.cy}],zoom:8.2,duration:1000});return false">⤢ fly to county</a><a href="#" onclick="showCountyGoldList({state:'${r.st}'});return false">▸ rank within ${esc(cgStateName(r.st))}</a></div>
     <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">STAKEABLE SCORE — ITEMIZED</h3>
     ${(r.why_stake||[]).map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
     <h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:8px 0 4px">ENDOWMENT — ITEMIZED</h3>
-    ${(r.why_endow||[]).map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')}
+    ${(r.why_endow||[]).map(w=>`<div style="font-size:11.5px;margin-bottom:4px;padding-left:10px;text-indent:-10px">· ${esc(w)}</div>`).join('')||'<div style="font-size:11.5px;color:var(--mut);padding-left:10px">· no gold-commodity records in this county</div>'}
     ${r.notes&&r.notes.length?`<div class="callout" style="font-size:10.5px">${r.notes.map(esc).join('<br>')}</div>`:''}
     ${evid?`<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:10px 0 4px">BEST EVIDENCE — CLICK TO FLY</h3>${evid}`:''}
     <div class="src">${esc(CG.method||'')}</div>`);
 }
-function showCountyGoldList(){
-  const rows = CG.counties.filter(r=>!r.pending).slice(0,20).map(r=>`<div class="dc" onclick="map.flyTo({center:[${r.cx},${r.cy}],zoom:8.2,duration:1000});showCountyGold('${r.st}','${esc(r.name).replace(/'/g,"\\'")}','${esc(r.fips||'')}')">
-      <div class="t"><span style="color:var(--gold);font:600 11px var(--mono)">#${r.rank}</span> ${esc(r.name)}, ${r.st} <span class="b">${r.stake}</span></div>
-      <div class="c">${r.m.gr_rich_open} rich-open grades · ${r.m.au_dropped_open} staked-then-dropped · ${r.m.au_open} open Au sites · endow #${r.rank_endow}</div></div>`).join('');
-  openDetail(`<h2>Stakeable gold — county ranking</h2>
-    <div class="badges"><span class="badge exploration">TOP 20 OF ${CG.counties.length}</span><span class="badge abandoned">LEGACY 8-STATE SCORE</span></div>
-    <div style="margin:8px 0">${rows}</div>
-    <div class="src">This county score predates WS11 and covers eight western states only; it is not the 49-state DONE-gated target score. Full legacy ranking incl. every Idaho county: GOLD-COUNTIES.md in the repo. ${esc(CG.lens||'')}</div>`);
-  const t=$('cgToggle'); if (t&&!t.checked) t.click();
+function showCountyGoldList(opts){
+  if (!CG) return;
+  opts = opts||{};
+  const lens = opts.lens || CG_LENS, st = opts.state || '';
+  const measured = cgMeasuredStates();
+  const stakeOK = !st || measured.has(st);
+  const useLens = (lens==='stake' && stakeOK) ? 'stake' : 'endow';
+  const pool = CG.counties.filter(r=>!st||r.st===st);
+  const rows = useLens==='stake' ? pool.filter(r=>r.stake!=null).sort((a,b)=>a.rank-b.rank)
+                                 : pool.slice().sort((a,b)=>a.rank_endow-b.rank_endow);
+  const limit = st ? rows.length : 25;
+  const states = [...new Set(CG.counties.map(r=>r.st))].sort();
+  const options = `<option value="">all ${states.length} states</option>` + states.map(s=>`<option value="${s}"${s===st?' selected':''}>${esc(cgStateName(s))}${measured.has(s)?' ✓':''}</option>`).join('');
+  const list = rows.slice(0,limit).map(r=>`<div class="dc" data-fips="${esc(r.fips||'')}" data-st="${r.st}" data-name="${esc(r.name)}" data-cx="${r.cx}" data-cy="${r.cy}">
+      <div class="t"><span style="color:var(--gold);font:600 11px var(--mono)">#${useLens==='stake'?r.rank:r.rank_endow}</span> ${esc(countyLabel(r))}, ${r.st} <span class="b">${useLens==='stake'?r.stake:r.endow}</span></div>
+      <div class="c">${useLens==='stake'
+        ? `${r.m.gr_rich_open} rich-open grades · ${r.m.au_dropped_open} staked-then-dropped · ${r.m.au_open} open Au sites · endow #${r.rank_endow}`
+        : `${r.m.au_prod} producers · ${r.m.au_sites} gold sites · ${r.m.gr_rich} rich cited grades · ${fmt(r.m.act)} active claims${r.stake!=null?' · stake #'+r.rank:''}`}</div></div>`).join('');
+  openDetail(`<h2>Gold by county — ${useLens==='stake'?'stakeable':'endowment'} ranking</h2>
+    <div class="badges"><span class="badge exploration">${st?esc(cgStateName(st)).toUpperCase():'TOP '+limit+' OF '+fmt(rows.length)}</span><span class="badge abandoned">${useLens==='stake'?'STAKEABLE LENS':'ENDOWMENT LENS'}</span></div>
+    <div style="display:flex;gap:6px;align-items:center;margin:6px 0 8px;flex-wrap:wrap">
+      <select id="cgListState" aria-label="state" style="flex:1;min-width:150px;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:5px 6px;font:11px var(--mono)">${options}</select>
+      <div class="radio" id="cgListLens" style="margin:0;flex:none"><button data-v="stake" class="${useLens==='stake'?'on':''}"${!stakeOK?' disabled title="no claims snapshot for this state — stakeable cannot be measured"':''}>STAKEABLE</button><button data-v="endow" class="${useLens==='endow'?'on':''}">ENDOWMENT</button></div>
+    </div>
+    ${(st && lens==='stake' && !stakeOK) ? `<div class="callout" style="font-size:10.5px">${esc(cgStateName(st))} has no claims snapshot yet, or no federal claim system, so stakeable cannot be measured there. Showing endowment instead.</div>` : ''}
+    <div style="margin:8px 0">${list||'<div class="src">no counties match</div>'}</div>
+    <div class="src">✓ = stakeable measured (a claims snapshot exists). ${esc(CG.lens||'')} Full tables, including every Alaska borough and Idaho county: GOLD-COUNTIES.md in the repo.</div>`);
+  dInner.querySelector('#cgListState').onchange = e=>showCountyGoldList({state:e.target.value, lens});
+  dInner.querySelectorAll('#cgListLens button').forEach(b=>b.onclick=()=>{ if(!b.disabled) showCountyGoldList({state:st, lens:b.dataset.v}); });
+  dInner.querySelectorAll('.dc[data-fips]').forEach(el=>el.onclick=()=>{
+    map.flyTo({center:[+el.dataset.cx,+el.dataset.cy],zoom:8.2,duration:1000});
+    showCountyGold(el.dataset.st, el.dataset.name, el.dataset.fips); });
+  setCgLens(useLens, true);
 }
-function cgAnswer(){
+function cgAnswer(q){
   if (!CG) return void botMsg('County gold ranking not built yet — run pipelines/county_gold.py.');
-  const ida = CG.counties.filter(r=>r.st==='ID').slice(0,5);
-  const d = botMsg(`<b>Stakeable-gold county ranking</b> (open cited grades · staked-then-dropped · unclaimed sites): `
-    + CG.counties.slice(0,5).map(r=>`#${r.rank} ${r.name} ${r.st}`).join(' · ')
-    + `.<br>Idaho: ` + ida.map(r=>`${r.name} (#${r.rank})`).join(' · ')
-    + `. <span style="font-size:10.5px;color:var(--mut)">Not a title search — patented ground reads "open".</span>`,
-    [{label:'⚡ show choropleth', fn:()=>{ const t=$('cgToggle'); if(t&&!t.checked) t.click(); }},
-     {label:'📋 full ranking', fn:()=>showCountyGoldList()}]);
-  CG.counties.slice(0,8).forEach(r=>d.appendChild(hitLink(
-    `#${r.rank} ${r.name}, ${r.st} — ${r.stake} (${r.m.gr_rich_open} rich-open, ${r.m.au_dropped_open} dropped)`, null,
+  const f = q ? parseQuery(String(q).toLowerCase()) : {states:null};
+  const st = f.states && f.states.length===1 ? f.states[0] : null;
+  const measured = cgMeasuredStates();
+  const lens = (st && !measured.has(st)) || /endow/.test(String(q||'')) ? 'endow' : 'stake';
+  const pool = CG.counties.filter(r=>!st||r.st===st);
+  const rows = lens==='stake' ? pool.filter(r=>r.stake!=null).sort((a,b)=>a.rank-b.rank)
+                              : pool.slice().sort((a,b)=>a.rank_endow-b.rank_endow);
+  const rk = r=>lens==='stake'?r.rank:r.rank_endow, sc = r=>lens==='stake'?r.stake:r.endow;
+  const where = st ? ` in ${esc(cgStateName(st))}` : '';
+  const nonClaim = !!(CG.scope&&(CG.scope.non_claim_states||[]).includes(st));
+  const caveat = st && !measured.has(st)
+    ? ` <span style="font-size:10.5px;color:var(--warn)">${esc(cgStateName(st))} has no claims snapshot${nonClaim?' and no federal claim system':''}, so this is the endowment ranking — stakeable cannot be measured there.</span>`
+    : ` <span style="font-size:10.5px;color:var(--mut)">Not a title search — patented ground reads "open".</span>`;
+  if (!rows.length) return void botMsg(`No counties${where} carry a gold score.`);
+  const d = botMsg(`<b>${lens==='stake'?'Stakeable-gold':'Gold-endowment'} county ranking${where}</b> (${lens==='stake'?'open cited grades · staked-then-dropped · unclaimed sites':'producers · gold sites · rich grades · active claims'}): `
+    + rows.slice(0,5).map(r=>`#${rk(r)} ${esc(countyLabel(r))} ${r.st}`).join(' · ') + '.' + caveat,
+    [{label:'⚡ shade the map', fn:()=>{ setCgLens(lens, true); if(st) guideGoState(st); }},
+     {label:'📋 full ranking', fn:()=>showCountyGoldList({state:st||'', lens})}]);
+  rows.slice(0,8).forEach(r=>d.appendChild(hitLink(
+    `#${rk(r)} ${countyLabel(r)}, ${r.st} — ${sc(r)} (${lens==='stake'?r.m.gr_rich_open+' rich-open, '+r.m.au_dropped_open+' dropped':r.m.au_prod+' producers, '+r.m.au_sites+' gold sites'})`, null,
     ()=>{ map.flyTo({center:[r.cx,r.cy], zoom:8.2, duration:1000}); showCountyGold(r.st, r.name, r.fips); })));
 }
 

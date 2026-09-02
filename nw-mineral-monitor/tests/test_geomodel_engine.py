@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / 'pipelines'))
 from geomodel.model import (Grid2D, Mesh, LineSet, PointSet, BlockModel, Drillholes,  # noqa: E402
                             ImagePlane, Project, utm_crs)
 from geomodel import interp, stratigraphy, blockmodel, slicing, workings, kit, contours, assay  # noqa: E402
+from geomodel import mapmodel  # noqa: E402
 
 
 def synthetic(n=150, seed=1):
@@ -526,6 +527,182 @@ class KitTests(unittest.TestCase):
         self.assertEqual(sorted(c), [(0.0, 0.0), (0.0, 10.0), (10.0, 0.0), (10.0, 10.0)])
         pts, tris = kit.subdivide_triangles([(0, 0), (100, 0), (0, 100)], [(0, 1, 2)], 30)
         self.assertTrue(all(math.hypot(pts[a][0] - pts[b][0], pts[a][1] - pts[b][1]) <= 30 + 1e-9 for t in tris for a, b in ((t[0], t[1]), (t[1], t[2]), (t[2], t[0]))))
+
+
+class MapModelTests(unittest.TestCase):
+    """mapmodel.unit_order / shared_contacts / dip_offsets / build_from_map —
+    the Python side of the JS cross-checks in tools/test_gm_engine.mjs
+    section 10.  A 1 km square with a plane topography rising east; Basement
+    west, Middle centre, Young east (shared edges at x = 400 and x = 700), an
+    Island younger than everything that touches nothing older, an Unaged
+    unit, two bedding readings and one derived along a fault."""
+
+    def setUp(self):
+        self.topo = Grid2D(41, 41, 0, 0, 25, 25, values=[1200 + 0.1 * (i * 25) + 0.02 * (j * 25) for j in range(41) for i in range(41)],
+                           name='Topography', role='topography')
+        t = self.topo
+
+        def rect(name, x0, y0, x1, y1, step, feat):
+            ls = LineSet(name=name + ' outline', role='geology-outline')
+            ls.add_polyline([(x, y, t.sample(x, y) + 2) for x, y in kit.densify([(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)], step)], feat)
+            return ls
+        self.young = {'id': 'y', 'name': 'Young', 't0': 2.6, 't1': 0, 'outline': rect('Young', 700, 0, 1000, 1000, 25, {'unit': 'Young', 'unit_id': 'y'})}
+        self.middle = {'id': 'm', 'name': 'Middle', 't0': 8.7, 't1': 2.6, 'outline': rect('Middle', 400, 0, 700, 1000, 20, {'unit': 'Middle', 'unit_id': 'm'})}
+        self.basement = {'id': 'b', 'name': 'Basement', 't0': 320, 't1': 286, 'outline': rect('Basement', 0, 0, 400, 1000, 25, {'unit': 'Basement', 'unit_id': 'b'})}
+        self.island = {'id': 'i', 'name': 'Island', 't0': 0.1, 't1': 0, 'outline': rect('Island', 800, 400, 900, 500, 10, {'unit': 'Island', 'unit_id': 'i'})}
+        self.unaged = {'id': 'u', 'name': 'Unaged', 'outline': rect('Unaged', 100, 100, 200, 200, 10, {'unit': 'Unaged', 'unit_id': 'u'})}
+        self.struct = PointSet(name='Derived structure', role='structural')
+        self.struct.add(700, 500, t.sample(700, 500), dip=30, dip_azimuth=90, source='Young outline', part=0)
+        self.struct.add(400, 500, t.sample(400, 500), dip=20, dip_azimuth=90, source='Middle outline', part=0)   # both bases dip east, under their own unit
+        self.struct.add(410, 600, t.sample(410, 600), dip=80, dip_azimuth=0, source='Faults (mapped)', part=0)
+        self.faults = LineSet(name='Faults (mapped)', role='faults')
+        self.faults.add_polyline([(410, 550, 1240), (410, 650, 1240)], {'name': 'f1'})
+
+    def test_unit_order_ages_ties_unaged(self):
+        o = mapmodel.unit_order([self.young, self.middle, self.basement, self.island, self.unaged])
+        self.assertEqual(o['order'], [3, 0, 1, 2, 4])               # Island (0.1–0) before Young (2.6–0); Unaged last
+        self.assertEqual(o['unaged_names'], ['Unaged'])
+        self.assertEqual(o['ties'], [])
+        self.assertTrue(any('Unaged' in w and 'not modelled' in w for w in o['warnings']))
+        tied = [{'id': 'a', 'name': 'A', 't0': 5, 't1': 1}, {'id': 'b', 'name': 'B', 't0': 5, 't1': 1}, {'id': 'c', 'name': 'C', 't0': 9, 't1': 5},
+                {'id': 'd', 'name': 'D'}, {'id': 'e', 'name': 'E', 't0': 1, 't1': 0}, {'id': 'f', 'name': 'F', 't1': 0.5}]
+        o2 = mapmodel.unit_order(tied)
+        self.assertEqual(o2['order'], [4, 5, 0, 1, 2, 3])            # F has a single age and is placed; D unaged last
+        self.assertEqual(o2['ties'], [['A', 'B']])
+        self.assertTrue(any('A / B' in w for w in o2['warnings']))
+        self.assertEqual(mapmodel.unit_order([])['order'], [])
+
+    def test_shared_contacts_on_a_shared_edge(self):
+        sc = mapmodel.shared_contacts(self.young['outline'], self.middle['outline'], 25.0, topo=self.topo)
+        self.assertEqual(sc['count'], 37)                            # y = 25 … 975 along x = 700; the box-edge vertices are dropped
+        self.assertEqual(sc['edge_skipped'], 68)
+        pts = sc['points']
+        self.assertEqual(pts.role, 'contacts')
+        for i in range(pts.n):
+            x, y, z = pts.point(i)
+            self.assertEqual(x, 700.0)
+            self.assertTrue(25 < y < 975)
+            self.assertAlmostEqual(z, self.topo.sample(x, y), places=9)   # resampled, not the lifted outline z
+        self.assertEqual(set(pts.attributes['against']), {'Middle outline'})
+        self.assertEqual(set(pts.attributes['unit']), {'Young'})
+        self.assertEqual(pts.provenance['method'], 'model from map')
+        self.assertEqual(pts.provenance['confidence'], 'inferred')
+        self.assertEqual(len(pts.metadata['derived_from']), 3)
+        self.assertEqual(mapmodel.shared_contacts(self.young['outline'], self.basement['outline'], 25.0, topo=self.topo)['count'], 0)
+        # distance is to the older outline's LINE, so a vertex between two older vertices still counts
+        mid = LineSet(name='coarse', role='geology-outline')
+        mid.add_polyline([(700, 0, 0), (700, 1000, 0)], {})
+        self.assertEqual(mapmodel.shared_contacts(self.young['outline'], mid, 1.0, topo=self.topo)['count'], 37)
+        with self.assertRaises(ValueError):
+            mapmodel.shared_contacts(self.young['outline'], self.middle['outline'], 0.0)
+
+    def test_dip_offsets_geometry(self):
+        sc = mapmodel.shared_contacts(self.young['outline'], self.middle['outline'], 25.0, topo=self.topo)
+        d = mapmodel.dip_offsets(sc['points'], self.struct, radius=300.0, offset=100.0, exclude_sources=['Faults (mapped)'])
+        self.assertEqual((d['used'], d['unmatched'], d['readings'], d['excluded']), (23, 14, 2, 1))
+        v = mapmodel._dip_vector(30, 90)
+        self.assertAlmostEqual(v[0], math.cos(math.radians(30)))
+        self.assertAlmostEqual(v[2], -0.5)
+        for i in range(d['points'].n):
+            c = d['points'].attributes['contact'][i]
+            p, q = sc['points'].point(c), d['points'].point(i)
+            for a in range(3):
+                self.assertAlmostEqual(q[a], p[a] + 100.0 * v[a], places=9)
+            self.assertEqual((d['points'].attributes['dip'][i], d['points'].attributes['dip_azimuth'][i]), (30.0, 90.0))
+            self.assertEqual(d['points'].attributes['reading_source'][i], 'Young outline')
+            self.assertLessEqual(d['points'].attributes['reading_distance_m'][i], 300.0)
+        self.assertEqual(d['points'].metadata['dip_offsets']['used'], 23)
+        self.assertEqual(mapmodel.dip_offsets(sc['points'], None)['used'], 0)
+        with self.assertRaises(ValueError):
+            mapmodel.dip_offsets(sc['points'], self.struct, radius=0)
+
+    def test_build_from_map_three_units(self):
+        r = mapmodel.build_from_map(self.topo, [self.young, self.middle, self.basement, self.island, self.unaged],
+                                    faults=self.faults, structural=self.struct, opts={'radius': 300.0, 'offset': 100.0})
+        names = [u['name'] for u in r['units']]
+        self.assertEqual(names, ['Young', 'Middle', 'Basement'])
+        y, m, b = r['units']
+        self.assertEqual((y['n_contacts'], y['n_offsets'], y['against']), (37, 23, ['Middle']))
+        self.assertEqual((m['n_contacts'], m['n_offsets'], m['against']), (47, 29, ['Basement']))
+        self.assertIsNone(b['base'])
+        self.assertEqual(y['base'].n, 60)
+        self.assertEqual(y['contact'], 'deposit')
+        for u in (y, m):
+            self.assertEqual(u['provenance']['method'], 'model from map')
+            self.assertEqual(u['provenance']['confidence'], 'inferred')
+            self.assertEqual(u['base'].provenance['method'], 'model from map')
+            self.assertIn('Topography', u['provenance']['inputs'])
+            self.assertGreaterEqual(len(u['derived_from']), 3)
+            self.assertEqual(u['warnings'], [])
+        self.assertEqual(b['provenance']['role'], 'basement')
+        st = r['stats']
+        self.assertEqual(st['ordered'], ['Island', 'Young', 'Middle', 'Basement'])
+        self.assertEqual(st['rejected']['no_contacts'], ['Island'])
+        self.assertEqual(st['rejected']['no_age'], ['Unaged'])
+        self.assertEqual(st['rejected']['readings_excluded'], 1)     # the fault reading never becomes a bedding dip
+        self.assertEqual((st['dips_used'], st['readings'], st['faults_ignored'], st['no_dip']), (52, 2, 1, False))
+        self.assertTrue(any(w.startswith('Island: its outline touches no older unit') for w in r['warnings']))
+        self.assertTrue(any('fault trace is not honoured' in w for w in r['warnings']))
+        # the Middle offsets come from the 20°/270° reading, never the 80° fault reading 10 m away
+        dips = [d for d, k in zip(m['base'].attributes['dip'], m['base'].attributes['kind']) if k == 'offset']
+        self.assertEqual(set(dips), {20.0})
+        # → 2 base grids + basement through the pancake builder
+        lat = Grid2D(11, 11, 0, 0, 100, 100)
+        sm, bases, topo2 = stratigraphy.build_stratigraphy(self.topo, mapmodel.strat_units(r), lattice=lat, method='rbf')
+        self.assertEqual([g is not None for g in bases], [True, True, False])
+        self.assertEqual([g.name for g in bases if g], ['Young base', 'Middle base'])
+        for idx in range(len(topo2.values)):
+            seq = [topo2.values[idx]] + [g.values[idx] for g in bases if g]
+            for a in range(len(seq) - 1):
+                self.assertGreaterEqual(seq[a], seq[a + 1] - 1e-9)
+        grids = {g.id: g for g in bases if g}
+        col = stratigraphy.column_at(sm, grids, 850, 500, topo2)
+        self.assertEqual([c['name'] for c in col], ['Young', 'Middle', 'Basement'])
+        self.assertGreater(col[0]['thickness'], 0)                 # Young has thickness inside its own outline, east of the contact
+        self.assertEqual(len(stratigraphy.stratigraphy_volumes(sm, grids, topo2)), 3)
+
+    def test_refusals(self):
+        # no readings anywhere: heightfields through the contacts, the stated sentence on every base
+        r = mapmodel.build_from_map(self.topo, [self.young, self.middle, self.basement])
+        self.assertTrue(r['stats']['no_dip'])
+        self.assertIn(mapmodel.NO_DIP_WARNING, r['warnings'])
+        for u in r['units']:
+            if u['base'] is not None:
+                self.assertIn(mapmodel.NO_DIP_WARNING, u['warnings'])
+                self.assertEqual(u['n_offsets'], 0)
+                self.assertEqual(set(u['base'].attributes['kind']), {'contact'})
+        self.assertEqual(r['stats']['dips_used'], 0)
+        # readings exist but none within reach of one unit's contacts: that unit says so, the other bends
+        far = PointSet(name='far', role='structural')
+        far.add(400, 500, self.topo.sample(400, 500), dip=20, dip_azimuth=90)
+        r2 = mapmodel.build_from_map(self.topo, [self.young, self.middle, self.basement], structural=far, opts={'radius': 200.0})
+        self.assertEqual(r2['stats']['units_without_dip'], ['Young'])
+        self.assertFalse(r2['stats']['no_dip'])
+        self.assertTrue(any('no orientation within 200 m' in w for w in r2['units'][0]['warnings']))
+        self.assertEqual(r2['units'][1]['n_offsets'], 19)          # y = 320 … 680: the search is 3-D, and the 4 m of relief pushes y = 300 / 700 just past 200 m
+        # fewer than 3 contacts: skipped with the count
+        ls = LineSet(name='Young outline', role='geology-outline')
+        ls.add_polyline([(700.0, 480.0, 1270.0), (700.0, 500.0, 1272.0), (900.0, 500.0, 1292.0), (900.0, 480.0, 1290.0), (700.0, 480.0, 1270.0)], {'unit': 'Young'})
+        r3 = mapmodel.build_from_map(self.topo, [dict(self.young, outline=ls), self.middle, self.basement], structural=self.struct)
+        self.assertEqual(r3['stats']['rejected']['few_contacts'], ['Young'])
+        self.assertEqual([u['name'] for u in r3['units']], ['Middle', 'Basement'])
+        self.assertTrue(any('only 2 contact points' in w for w in r3['warnings']))
+        # tied ages are not older/younger than each other: the tied twin has nothing to touch
+        twin = dict(self.middle, id='m2', name='Middle twin', outline=self.young['outline'])
+        r4 = mapmodel.build_from_map(self.topo, [self.middle, twin, self.basement], structural=self.struct)
+        self.assertEqual(r4['stats']['ties'], [['Middle', 'Middle twin']])
+        self.assertIn('Middle twin', r4['stats']['rejected']['no_contacts'])
+        # nothing aged, or only one aged unit: said, not built
+        r5 = mapmodel.build_from_map(self.topo, [self.unaged])
+        self.assertEqual(r5['units'], [])
+        self.assertTrue(any('no unit carries an age' in w for w in r5['warnings']))
+        r6 = mapmodel.build_from_map(self.topo, [self.basement, self.unaged])
+        self.assertEqual(len(r6['units']), 1)
+        self.assertTrue(any('only Basement can be placed' in w for w in r6['warnings']))
+        with self.assertRaises(ValueError):
+            mapmodel.build_from_map(None, [self.young, self.middle])
+        with self.assertRaises(ValueError):
+            mapmodel.build_from_map(self.topo, [{'id': 'x', 'name': 'X', 't0': 1, 't1': 0}])
 
 
 if __name__ == '__main__':

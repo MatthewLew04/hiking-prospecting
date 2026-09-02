@@ -4,7 +4,10 @@
    USGS topo / Macrostrat geology) is stitched into a texture draped on the
    topography; AOI bundles (geology units, faults, targets, claims) and the
    national graded-mines table come from site/data; tiled layers the map had
-   loaded arrive through the IndexedDB hand-off the OPEN 3D MODEL button writes. */
+   loaded — USMIN mine features, MRDS, claims — and the USGS geology it had
+   decoded in the viewport arrive through the IndexedDB hand-off the OPEN 3D
+   MODEL button writes, so a site outside every AOI bundle still gets its
+   rock and its faults. */
 import * as GM from './gm-core.js';
 import * as E from './gm-engine.js';
 
@@ -108,12 +111,122 @@ export async function aoiForPoint(lon, lat, base = '') {
   return null;
 }
 
-/** Draped geology + faults from an AOI bundle. */
+/* Geologic time in Ma, [older, younger] — ICS boundaries rounded the way map
+   legends round them.  Used only for a hand-off unit whose age arrives as
+   legend text without numeric age_min / age_max: reading "Cretaceous" as
+   145–66 is transcription, not invention, and anything the table cannot read
+   stays null and is warned about rather than defaulted (GEOMODEL.md §4).
+   Sub-epochs precede their parents so the longest-name-first regex below
+   never reads "Neoproterozoic" as "Proterozoic". */
+export const GEO_TIME = [
+  ['holocene', 0.0117, 0], ['pleistocene', 2.58, 0.0117], ['quaternary', 2.58, 0],
+  ['pliocene', 5.33, 2.58], ['miocene', 23, 5.33], ['neogene', 23, 2.58],
+  ['oligocene', 33.9, 23], ['eocene', 56, 33.9], ['paleocene', 66, 56], ['palaeocene', 66, 56], ['paleogene', 66, 23], ['palaeogene', 66, 23],
+  ['tertiary', 66, 2.58], ['cenozoic', 66, 0],
+  ['cretaceous', 145, 66], ['jurassic', 201, 145], ['triassic', 252, 201], ['mesozoic', 252, 66],
+  ['permian', 299, 252], ['pennsylvanian', 323, 299], ['mississippian', 359, 323], ['carboniferous', 359, 299],
+  ['devonian', 419, 359], ['silurian', 444, 419], ['ordovician', 485, 444], ['cambrian', 539, 485],
+  ['paleozoic', 539, 252], ['palaeozoic', 539, 252], ['phanerozoic', 539, 0],
+  ['neoproterozoic', 1000, 539], ['mesoproterozoic', 1600, 1000], ['paleoproterozoic', 2500, 1600], ['palaeoproterozoic', 2500, 1600],
+  ['proterozoic', 2500, 539], ['archean', 4000, 2500], ['archaean', 4000, 2500], ['hadean', 4600, 4000], ['precambrian', 4600, 539],
+];
+const GEO_NAMES = GEO_TIME.map(t => t[0]).sort((a, b) => b.length - a.length);
+const AGE_RE = new RegExp(`\\b(?:(early|lower|middle|mid|late|upper)\\b[\\s-]*(?:(?:to|and|or|[-–])\\s*)?(?:(early|lower|middle|mid|late|upper)\\b[\\s-]*)?)?(${GEO_NAMES.join('|')})\\b`, 'gi');
+const MA_RANGE_RE = /(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)\s*(?:ma|m\.?y\.?a?|million)\b/i;
+const MA_ONE_RE = /(?:^|[^\d.])(\d+(?:\.\d+)?)\s*(?:ma|m\.?y\.?a?)\b/i;
+function halfOf(t0, t1, mod) {
+  const mid = (t0 + t1) / 2, q = (t0 - t1) / 4;
+  switch (String(mod || '').toLowerCase()) {
+    case 'early': case 'lower': return [t0, mid];
+    case 'late': case 'upper': return [mid, t1];
+    case 'middle': case 'mid': return [t0 - q, t1 + q];
+    default: return [t0, t1];
+  }
+}
+/** Read a legend age ("Cretaceous", "Late Jurassic to Early Cretaceous",
+    "Miocene (17-14 Ma)") into { t0, t1, how } in Ma, or null when nothing in
+    the text is a known period or a stated Ma range.  A compound spans every
+    period named; a numeric range in the text wins over the period name. */
+export function parseAgeText(text) {
+  const s = String(text == null ? '' : text).trim(); if (!s) return null;
+  const mr = s.match(MA_RANGE_RE); if (mr) { const a = +mr[1], b = +mr[2]; return { t0: Math.max(a, b), t1: Math.min(a, b), how: 'stated Ma range' }; }
+  const m1 = s.match(MA_ONE_RE); if (m1) { const a = +m1[1]; return { t0: a, t1: a, how: 'stated age' }; }
+  let t0 = -Infinity, t1 = Infinity, hits = 0; AGE_RE.lastIndex = 0; let m;
+  while ((m = AGE_RE.exec(s))) {
+    const row = GEO_TIME.find(t => t[0] === m[3].toLowerCase()); if (!row) continue;
+    // "Early to Middle Jurassic": the union of the named sub-ranges
+    const parts = [m[1], m[2]].filter(Boolean).map(mod => halfOf(row[1], row[2], mod));
+    const lo = parts.length ? Math.max(...parts.map(q => q[0])) : row[1], hi = parts.length ? Math.min(...parts.map(q => q[1])) : row[2];
+    t0 = Math.max(t0, lo); t1 = Math.min(t1, hi); hits++;
+  }
+  return hits ? { t0, t1, how: 'geologic-time table' } : null;
+}
+export function hexRGB(s) { const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(s || '').trim()); return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null; }
+const isPolys = g => Array.isArray(g) && g.length && g.every(poly => Array.isArray(poly) && poly.length && Array.isArray(poly[0]) && poly[0].length >= 3 && Array.isArray(poly[0][0]));
+
+/** The map's hand-off geology (index.html open3D writes h.geology = { units,
+    faults, sources, note } decoded from the national USGS PMTiles in the
+    viewport) in the shape geologyObjects() takes — the same shape the AOI
+    bundles have, so draped units, outlines and faults are identical in kind.
+    Returns { geo, label, unparsed: [{ id, nm, age }], sources }. */
+export function geologyFromHandoff(hg) {
+  const units = [], faults = [], unparsed = [];
+  (hg.units || []).forEach((u, i) => {
+    if (!u || !isPolys(u.polys)) return;
+    const id = u.id != null ? u.id : `handoff-unit-${i}`, nm = u.nm || u.label || 'unit';
+    let t0 = GM.isNum(+u.age_max) && u.age_max !== null && u.age_max !== '' ? +u.age_max : null, t1 = GM.isNum(+u.age_min) && u.age_min !== null && u.age_min !== '' ? +u.age_min : null;
+    let age_how = t0 != null && t1 != null ? 'age_min / age_max from the map data' : null;
+    if (t0 == null || t1 == null) {
+      const r = parseAgeText(u.age);
+      if (r) { t0 = r.t0; t1 = r.t1; age_how = r.how; }
+      else { t0 = t1 = null; unparsed.push({ id, nm, age: u.age == null || u.age === '' ? null : String(u.age) }); }
+    }
+    const rgb = hexRGB(u.color);
+    units.push({ id, nm, label: u.label, li: u.li, age: u.age, de: u.de, src: u.src, url: u.url, scale: u.scale, t0, t1, age_how, rgb: rgb || undefined, g: u.polys });
+  });
+  (hg.faults || []).forEach((f, i) => {
+    if (!f || !Array.isArray(f.path) || f.path.length < 2 || !Array.isArray(f.path[0])) return;
+    faults.push({ id: f.id != null ? f.id : `handoff-fault-${i}`, nm: f.nm, ty: f.ty, age: f.age, slip: f.slip, src: f.src, path: f.path });
+  });
+  const named = (hg.sources || []).map(s => typeof s === 'string' ? s : (s && (s.name || s.ref || s.id || s.src)) || '').map(s => String(s).trim()).filter(Boolean);
+  const sources = named.length ? [...new Set(named)] : [...new Set(units.map(u => u.src).concat(faults.map(f => f.src)).filter(Boolean).map(String))];
+  const label = 'USGS geology via map hand-off' + (sources.length ? ` (${sources.join(', ')})` : '');
+  return { geo: { units, faults }, label, unparsed, sources };
+}
+
+/** The pieces of a polyline inside a rectangle (Liang–Barsky per segment,
+    consecutive inside segments chained).  A mapped fault is a long sparse
+    trace: it seldom has a vertex inside a 3 km box, and the part of it beyond
+    the terrain grid must not be draped onto z = 0. */
+export function clipPolylineRect(path, minx, miny, maxx, maxy) {
+  const out = []; let cur = null;
+  for (let i = 0; i + 1 < path.length; i++) {
+    const a = path[i], b = path[i + 1]; const dx = b[0] - a[0], dy = b[1] - a[1];
+    let t0 = 0, t1 = 1, ok = true; const p = [-dx, dx, -dy, dy], q = [a[0] - minx, maxx - a[0], a[1] - miny, maxy - a[1]];
+    for (let k = 0; k < 4 && ok; k++) {
+      if (p[k] === 0) { if (q[k] < 0) ok = false; continue; }
+      const r = q[k] / p[k];
+      if (p[k] < 0) { if (r > t1) ok = false; else if (r > t0) t0 = r; } else { if (r < t0) ok = false; else if (r < t1) t1 = r; }
+    }
+    if (!ok) { cur = null; continue; }
+    const A = [a[0] + dx * t0, a[1] + dy * t0], B = [a[0] + dx * t1, a[1] + dy * t1];
+    if (cur && t0 === 0) cur.push(B); else { cur = [A, B]; out.push(cur); }
+    if (t1 < 1) cur = null;
+  }
+  return out.filter(piece => piece.some((v, i) => i && Math.hypot(v[0] - piece[i - 1][0], v[1] - piece[i - 1][1]) > 1e-6));
+}
+
+/** Draped geology + faults from an AOI bundle (or the same shape from the
+    map hand-off: opts.bundle names the source in every provenance).  The
+    returned array carries `.stats` — triangles drawn, units draped, units
+    left as outlines once the triangle budget bit — so the caller can say so. */
 export function geologyObjects(geo, crs, topo, box, opts = {}) {
   const out = []; const fwd = (lon, lat) => GM.utm.fwd(lon, lat, crs.zone, crs.north); const [minx, miny, maxx, maxy] = box;
   const cell = topo.dx; const elev = (x, y, lift = 0) => { const v = topo.sample(x, y); return (v === v ? v : 0) + lift; };
-  const inbox = (x, y) => x >= minx && x <= maxx && y >= miny && y <= maxy;
   let nTri = 0; const budget = opts.maxTriangles || 150000; const maxEdge = Math.max(cell * 2, (maxx - minx) / 60);
+  const bundle = opts.bundle || `data/geology/${opts.aoi}.json`; const extra = opts.provenance || {};
+  const defined = o => { const r = {}; for (const [k, v] of Object.entries(o)) if (v !== undefined) r[k] = v; return r; };
+  const stats = { triangles: 0, units: 0, units_over_budget: 0, faults: 0, budget };
   for (const u of (geo.units || []).filter(u => u.g)) {
     const polys = [];
     for (const poly of u.g) { const outer = poly[0].map(([x, y]) => fwd(x, y)); const xs = outer.map(p => p[0]), ys = outer.map(p => p[1]); if (Math.max(...xs) < minx || Math.min(...xs) > maxx || Math.max(...ys) < miny || Math.min(...ys) > maxy) continue; const c = E.clipRingRect(outer, minx, miny, maxx, maxy); if (c.length >= 3) polys.push(c); }
@@ -124,18 +237,25 @@ export function geologyObjects(geo, crs, topo, box, opts = {}) {
       const { points: pts, triangles: t2 } = E.subdivideTriangles(verts2d, tris, maxEdge);
       const v = new Float64Array(pts.length * 3); pts.forEach((p, i) => { v[3 * i] = p[0]; v[3 * i + 1] = p[1]; v[3 * i + 2] = elev(p[0], p[1], 1.5); });
       const tflat = new Uint32Array(t2.length * 3); t2.forEach((t, i) => { tflat[3 * i] = t[0]; tflat[3 * i + 1] = t[1]; tflat[3 * i + 2] = t[2]; });
-      const m = new GM.Mesh({ vertices: v, triangles: tflat, name: u.nm || u.id || 'unit', color: E.unitColor(u), role: 'geology', group: 'Geology (draped)', opacity: 0.85 });
-      Object.assign(m.metadata, { unit_id: u.id, age: u.age, lithology: u.li, description: u.de, source: u.src, t0_ma: u.t0, t1_ma: u.t1 });
-      m.provenance = { bundle: `data/geology/${opts.aoi}.json`, unit: u.id, drape: `terrain +1.5 m, edges <= ${maxEdge.toFixed(0)} m` };
-      out.push(m); nTri += t2.length;
-    }
+      // a unit that came with its map colour keeps it (the hand-off carries the
+      // PMTiles fill); otherwise the stable hash colour every bundle unit gets
+      const m = new GM.Mesh({ vertices: v, triangles: tflat, name: u.nm || u.id || 'unit', color: Array.isArray(u.rgb) && u.rgb.length === 3 ? u.rgb : E.unitColor(u), role: 'geology', group: 'Geology (draped)', opacity: 0.85 });
+      Object.assign(m.metadata, { unit_id: u.id, age: u.age, lithology: u.li, description: u.de, source: u.src, t0_ma: u.t0 == null ? null : u.t0, t1_ma: u.t1 == null ? null : u.t1 }, defined({ age_basis: u.age_how, source_url: u.url, source_scale: u.scale, unit_label: u.label && u.label !== u.nm ? u.label : undefined }));
+      m.provenance = Object.assign({ bundle, unit: u.id, drape: `terrain +1.5 m, edges <= ${maxEdge.toFixed(0)} m` }, extra);
+      out.push(m); nTri += t2.length; stats.units++;
+    } else if (tris.length) stats.units_over_budget++;
     const ol = new GM.LineSet({ name: (u.nm || 'unit') + ' outline', role: 'geology-outline', color: [40, 40, 40], group: 'Geology outlines' });
-    for (const ring of polys) { const dense = E.densify(ring.concat([ring[0]]), cell); ol.addPolyline(dense.map(([x, y]) => [x, y, elev(x, y, 2)]), { unit: u.nm, unit_id: u.id, age: u.age }); }
-    ol.provenance = { bundle: `data/geology/${opts.aoi}.json` }; out.push(ol);
+    for (const ring of polys) { const dense = E.densify(ring.concat([ring[0]]), cell); ol.addPolyline(dense.map(([x, y]) => [x, y, elev(x, y, 2)]), { unit: u.nm, unit_id: u.id, age: u.age, t0: u.t0 != null && u.t0 === u.t0 ? +u.t0 : undefined, t1: u.t1 != null && u.t1 === u.t1 ? +u.t1 : undefined }); }
+    ol.provenance = Object.assign({ bundle }, extra); out.push(ol);
   }
   const fl = new GM.LineSet({ name: 'Faults (mapped)', role: 'faults', color: [212, 165, 63], group: 'Structure' });
-  for (const f of (geo.faults || []).filter(f => f.path)) { const path = f.path.map(([x, y]) => fwd(x, y)); if (!path.some(([x, y]) => inbox(x, y))) continue; const dense = E.densify(path, cell); fl.addPolyline(dense.map(([x, y]) => [x, y, elev(x, y, 3)]), { name: f.nm, type: f.ty, source: f.src }); }
-  if (fl.parts.length) { fl.provenance = { bundle: `data/geology/${opts.aoi}.json`, drape: 'terrain +3 m' }; out.push(fl); }
+  for (const f of (geo.faults || []).filter(f => Array.isArray(f.path) && f.path.length >= 2)) {
+    const path = f.path.map(([x, y]) => fwd(x, y)); const feature = Object.assign({ name: f.nm, type: f.ty, source: f.src }, defined({ age: f.age, slip_sense: f.slip, fault_id: f.id }));
+    // a trace that crosses the box more than once becomes one part per crossing
+    for (const piece of clipPolylineRect(path, minx, miny, maxx, maxy)) { const dense = E.densify(piece, cell); fl.addPolyline(dense.map(([x, y]) => [x, y, elev(x, y, 3)]), feature); }
+  }
+  if (fl.parts.length) { fl.provenance = Object.assign({ bundle, drape: 'terrain +3 m' }, extra); out.push(fl); stats.faults = fl.parts.length; }
+  stats.triangles = nTri; out.stats = stats;
   return out;
 }
 
@@ -148,13 +268,28 @@ export function minesFromGrades(gr, crs, topo, box, siteIndex = null) {
   return ps;
 }
 
+/* USMIN rows keep these columns even when a row lacks one, so the inspector
+   table, the pick card and the glyph builder always find them. */
+export const USMIN_COLUMNS = ['typ', 'az', 'nm', 'quad', 'yr', 'scale', 'st'];
+export const USMIN_HOWTO = 'Symbols by feature type: square = shaft · triangle = adit / tunnel (the apex points along the mapped azimuth, into the hill, when the map gave one) · circle = prospect or pit · diamond = open pit / quarry / strip mine · hexagon = dump / tailings · inverted triangle = placer / gravel · cross = mill / smelter / plant · ring = anything else. Each symbol is where a historical topographic map showed the feature; it says nothing about depth, length or whether it is open. Never enter adits or shafts.';
+
 export function pointsFromHandoff(h, crs, topo, box) {
   const out = []; const [minx, miny, maxx, maxy] = box; const colors = { mrds: [110, 140, 190], usmin: [140, 120, 170], stategeo: [90, 160, 120], ardf: [160, 130, 90], claimsA: [255, 80, 80], claimsC: [120, 120, 160] };
-  const names = { mrds: 'USGS MRDS occurrences', usmin: 'USGS USMIN map features', stategeo: 'State-survey mine records', ardf: 'Alaska ARDF occurrences', claimsA: 'Claims active (BLM centroids)', claimsC: 'Claims closed (BLM centroids)' };
+  const names = { mrds: 'USGS MRDS occurrences', usmin: 'Mine features (USMIN topo maps)', stategeo: 'State-survey mine records', ardf: 'Alaska ARDF occurrences', claimsA: 'Claims active (BLM centroids)', claimsC: 'Claims closed (BLM centroids)' };
+  const roles = { usmin: 'features' };
   for (const [layer, feats] of Object.entries(h.layers || {})) {
-    const ps = new GM.PointSet({ name: names[layer] || layer, role: layer.startsWith('claims') ? 'claims' : 'points', color: colors[layer] || [150, 150, 150], group: layer.startsWith('claims') ? 'Claims' : 'Mines' });
-    for (const f of feats) { const [e, n] = GM.utm.fwd(f.x, f.y, crs.zone, crs.north); if (e < minx || e > maxx || n < miny || n > maxy) continue; const z = topo.sample(e, n); const attrs = Object.assign({}, f.p || {}); if (layer === 'claimsA') attrs.status = 'ACTIVE'; if (layer === 'claimsC') attrs.status = 'CLOSED'; ps.add(e, n, z === z ? z : 0, attrs); }
-    if (ps.n) { ps.provenance = { source: 'map hand-off (viewport snapshot of tiled layer ' + layer + ')', note: 'viewport snapshot, not an archive' }; out.push(ps); }
+    if (!Array.isArray(feats)) continue;
+    const ps = new GM.PointSet({ name: names[layer] || layer, role: layer.startsWith('claims') ? 'claims' : (roles[layer] || 'points'), color: colors[layer] || [150, 150, 150], group: layer.startsWith('claims') ? 'Claims' : 'Mines' });
+    if (layer === 'usmin') for (const c of USMIN_COLUMNS) ps.attributes[c] = [];
+    for (const f of feats) { if (!f || !GM.isNum(+f.x) || !GM.isNum(+f.y)) continue; const [e, n] = GM.utm.fwd(+f.x, +f.y, crs.zone, crs.north); if (e < minx || e > maxx || n < miny || n > maxy) continue; const z = topo.sample(e, n); const attrs = Object.assign({}, f.p || {}); if (layer === 'claimsA') attrs.status = 'ACTIVE'; if (layer === 'claimsC') attrs.status = 'CLOSED'; ps.add(e, n, z === z ? z : 0, attrs); }
+    if (!ps.n) continue;
+    ps.provenance = { source: 'map hand-off (viewport snapshot of tiled layer ' + layer + ')', note: 'viewport snapshot, not an archive' };
+    if (layer === 'usmin') {
+      ps.provenance = { source: 'USGS USMIN: features digitised from historical topographic maps — surface locations only, no depth or extent', handoff: 'map hand-off (viewport snapshot of tiled layer usmin)', note: 'viewport snapshot, not an archive' };
+      ps.metadata.howto = USMIN_HOWTO;
+      ps.metadata.columns = { typ: 'feature type as the map symbol was classified', az: 'adit azimuth in degrees from the map symbol (absent when the map gave none)', nm: 'name printed on the map', quad: 'topographic quadrangle', yr: 'map year', scale: 'map scale denominator', st: 'state' };
+    }
+    out.push(ps);
   }
   return out;
 }
@@ -174,14 +309,43 @@ export async function buildSiteProject(lon, lat, opts = {}) {
   proj.metadata.topography = { zoom: topoRes.zoom, cell: topoRes.cell, reachable: topoRes.have };
   const base = opts.base || '';
   let aoi = opts.aoi; if (!aoi || aoi === 'auto') { aoi = await aoiForPoint(lon, lat, base); proj.site.aoi = aoi; }
+  const warn = msg => { proj.metadata.warnings = (proj.metadata.warnings || []).concat([msg]); };
+  const budgetNote = (stats, what) => { if (stats && stats.units_over_budget) warn(`geology triangle budget (${stats.budget.toLocaleString()}) reached in the ${what}: ${stats.units_over_budget} unit(s) drawn as outlines only — a smaller radius (r=) drapes them`); };
+  let bundleGeo = 0;   // geology objects the AOI bundle produced inside the box
   if (aoi) {
     log(`loading ${aoi} geology…`);
-    try { const geo = await jget(`${base}data/geology/${aoi}.json`); for (const o of geologyObjects(geo, crs, topo, box, { aoi })) proj.add(o); } catch (e) { proj.metadata.warnings = (proj.metadata.warnings || []).concat([`geology bundle unavailable: ${e.message}`]); }
+    try { const geo = await jget(`${base}data/geology/${aoi}.json`); const objs = geologyObjects(geo, crs, topo, box, { aoi }); for (const o of objs) proj.add(o); bundleGeo = objs.length; budgetNote(objs.stats, `${aoi} bundle`); if (bundleGeo) proj.metadata.geology_source = { kind: 'bundle', bundle: `data/geology/${aoi}.json`, units: objs.stats.units, faults: objs.stats.faults }; } catch (e) { warn(`geology bundle unavailable: ${e.message}`); }
     try { const tj = await jget(`${base}data/targets/${aoi}.json`); const ts = new GM.PointSet({ name: 'Geology targets (scored)', role: 'targets', color: [45, 212, 191], group: 'Mines' }); for (const t of tj.targets || []) { if (t.cx == null) continue; const [e, n] = GM.utm.fwd(t.cx, t.cy, zone, north); if (e < box[0] || e > box[2] || n < box[1] || n > box[3]) continue; const z = topo.sample(e, n); ts.add(e, n, z === z ? z : 0, { tier: t.tier, score: t.score, unit: t.nm, age: t.age, area_km2: t.area_km2, money: t.money ? 1 : 0, tier_name: t.tierName }); } if (ts.n) { ts.provenance = { bundle: `data/targets/${aoi}.json` }; proj.add(ts); } } catch (e) { /* optional */ }
     try { const cl = await jget(`${base}data/openground/${aoi}_claims.json`); for (const [status, color] of [['active', [255, 80, 80]], ['closed', [120, 120, 160]]]) { const cs = new GM.PointSet({ name: `Claims ${status} (BLM centroids)`, role: 'claims', color, group: 'Claims' }); for (const c of cl[status] || []) { if (c.x == null) continue; const [e, n] = GM.utm.fwd(c.x, c.y, zone, north); if (e < box[0] || e > box[2] || n < box[1] || n > box[3]) continue; const z = topo.sample(e, n); cs.add(e, n, z === z ? z : 0, { serial: c.ser, name: c.name, type: c.type, disposition: c.disp, acres: c.acres, status: status.toUpperCase() }); } if (cs.n) { cs.provenance = { bundle: `data/openground/${aoi}_claims.json`, note: 'MLRS centroids, not staked corners' }; proj.add(cs); } } } catch (e) { /* optional */ }
   }
+  // Geology the map handed over (decoded from the national USGS PMTiles in
+  // the viewport).  One source per area: where the AOI bundle drew anything
+  // the hand-off units are left out and the project says so, because the same
+  // contact drawn twice from two compilations reads as two contacts.
+  const hg = opts.handoff && opts.handoff.geology && typeof opts.handoff.geology === 'object' ? opts.handoff.geology : null;
+  const hgUnits = hg && Array.isArray(hg.units) ? hg.units.length : 0, hgFaults = hg && Array.isArray(hg.faults) ? hg.faults.length : 0;
+  if (hgUnits + hgFaults > 0) {
+    if (bundleGeo) {
+      const note = `map hand-off geology (${hgUnits} unit(s), ${hgFaults} fault(s)) not used: the ${aoi} bundle covers this site, and one source per area keeps a contact from being drawn twice`;
+      proj.metadata.notes.push(note); proj.metadata.geology_source.handoff_skipped = { units: hgUnits, faults: hgFaults, note };
+    } else {
+      log('draping the map\'s geology…');
+      const conv = geologyFromHandoff(hg);
+      const objs = geologyObjects(conv.geo, crs, topo, box, { aoi: 'map hand-off', bundle: conv.label, provenance: Object.assign({ handoff: 'viewport snapshot of the map\'s loaded geology tiles, not an archive' }, opts.handoff.at ? { snapshot_at: opts.handoff.at } : {}) });
+      for (const o of objs) proj.add(o);
+      budgetNote(objs.stats, 'map hand-off');
+      const bad = new Map(conv.unparsed.map(u => [String(u.id), u]));
+      for (const o of objs) if (o.kind === 'mesh' && o.role === 'geology' && bad.has(String(o.metadata.unit_id))) { const u = bad.get(String(o.metadata.unit_id)); o.warn(`age not read for unit '${u.nm}': ${u.age == null ? 'no age text' : `"${u.age}"`} is not in the geologic-time table — t0 / t1 left unset rather than guessed`); }
+      if (conv.unparsed.length) warn(`age text not read for ${conv.unparsed.length} hand-off unit(s) (${conv.unparsed.map(u => u.nm).slice(0, 4).join(', ')}${conv.unparsed.length > 4 ? ', …' : ''}) — t0 / t1 left unset rather than guessed`);
+      proj.metadata.geology_source = { kind: 'handoff', bundle: conv.label, sources: conv.sources, units: objs.stats.units, faults: objs.stats.faults, note: hg.note || null };
+    }
+  }
+  if (!proj.objects.some(o => (o.kind === 'mesh' && o.role === 'geology') || (o.kind === 'lineset' && o.role === 'faults'))) {
+    if (!proj.metadata.geology_source) proj.metadata.geology_source = { kind: 'none' };
+    warn('no mapped geology in this model — open it from the map with USGS GEOLOGY on and the site in view, or drop a geology file');
+  }
   log('loading graded mines…');
-  try { const gr = await jget(`${base}data/grades/grades.json`); const ps = minesFromGrades(gr, crs, topo, box, opts.gi); if (ps.n) proj.add(ps); } catch (e) { proj.metadata.warnings = (proj.metadata.warnings || []).concat([`grades table unavailable: ${e.message}`]); }
+  try { const gr = await jget(`${base}data/grades/grades.json`); const ps = minesFromGrades(gr, crs, topo, box, opts.gi); if (ps.n) proj.add(ps); } catch (e) { warn(`grades table unavailable: ${e.message}`); }
   if (opts.handoff) { const existing = new Set(proj.objects.map(o => o.name)); for (const ps of pointsFromHandoff(opts.handoff, crs, topo, box)) if (!existing.has(ps.name) || !ps.role.startsWith('claims')) proj.add(ps); }
   // No scaffold layers: an empty 'Workings (digitised)' row and a 0-unit
   // stratigraphy used to be added here so the tree showed where they would

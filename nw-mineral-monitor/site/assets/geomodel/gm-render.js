@@ -54,6 +54,29 @@ export function confidenceTally(project) {
 
 export const CATEGORY_PALETTE = [[104, 176, 255], [244, 162, 97], [138, 201, 38], [231, 111, 81], [187, 148, 255], [42, 196, 179], [255, 209, 102], [148, 163, 184], [214, 93, 177], [125, 211, 252]];
 
+/* Mine features off the USMIN topographic-map layer (points, role
+   'features') draw as type glyphs rather than dots, so a shaft and an adit
+   read differently at a glance the way they do on the map sheet.  The first
+   row whose `match` hits the feature type wins, which is why the exclusive
+   ones come first (an "Open Pit Mine" is a diamond, not the circle a
+   "Prospect Pit" gets).  `key` is the word the viewer's legend and
+   `L.featureKeys` speak; `shape` names the sprite `Renderer.shapeTexture`
+   draws; colours are RGB like every other colour here.  An adit with a
+   mapped azimuth is the one glyph that turns: its apex points along that
+   azimuth on the ground — into the hill — whichever way the camera looks. */
+export const FEATURE_SYMBOLS = [
+  { match: /shaft/i, key: 'shaft', label: 'shaft', shape: 'square', color: [255, 96, 96] },
+  { match: /adit|tunnel|portal/i, key: 'adit', label: 'adit / tunnel (apex into the hill)', shape: 'triangle', color: [255, 186, 74] },
+  { match: /open[\s-]*pit|quarry|strip/i, key: 'openpit', label: 'open pit / quarry / strip mine', shape: 'diamond', color: [196, 140, 255] },
+  { match: /placer|gravel|dredge/i, key: 'placer', label: 'placer / gravel', shape: 'triangle-down', color: [96, 196, 255] },
+  { match: /prospect|pit/i, key: 'prospect', label: 'prospect / pit', shape: 'circle', color: [244, 226, 120] },
+  { match: /dump|tailings|waste/i, key: 'dump', label: 'dump / tailings', shape: 'hexagon', color: [176, 156, 128] },
+  { match: /mill|smelter|plant/i, key: 'mill', label: 'mill / smelter / plant', shape: 'cross', color: [116, 226, 160] },
+  { match: /./, key: 'other', label: 'other mapped feature', shape: 'ring', color: [200, 204, 212] },
+];
+/** The symbol row for a USMIN feature type ('Mine Shaft', 'Adit', ...). */
+export function featureSymbol(typ) { const s = String(typ == null ? '' : typ); return FEATURE_SYMBOLS.find(f => f.match.test(s)) || FEATURE_SYMBOLS[FEATURE_SYMBOLS.length - 1]; }
+
 /* Which ramp a layer gets when the user has not chosen one.  The default
    depends on what is being coloured (a draped property grid is not read like
    a topographic surface), and it is applied in three places: the builders
@@ -114,7 +137,7 @@ export class Renderer {
       // camera; an idle scene must not re-render every frame forever.  The
       // first frame renders because `needs` starts true.
       if (this.controls.update()) this.needs = true;
-      if (this.needs) this.updateDashes();
+      if (this.needs) { this.updateDashes(); this.updateGlyphs(); }
       this.declutterLabels();           // throttled inside; only after the camera moved
       if (this.needs) { this.needs = false; this.renderer.render(this.scene, this.camera); if (this.onRender) this.onRender(); }
       requestAnimationFrame(loop);
@@ -389,7 +412,7 @@ export class Renderer {
       case 'grid2d': return this.buildGrid(obj, L);
       case 'mesh': return this.buildMesh(obj, L);
       case 'lineset': return this.buildLines(obj, L);
-      case 'points': return (obj.role === 'structural' || obj.role === 'trend') ? this.buildStructural(obj, L) : this.buildPoints(obj, L);
+      case 'points': return (obj.role === 'structural' || obj.role === 'trend') ? this.buildStructural(obj, L) : obj.role === 'features' ? this.buildFeatures(obj, L) : this.buildPoints(obj, L);
       case 'blockmodel': return this.buildBlocks(obj, L);
       case 'drillholes': return this.buildDrillholes(obj, L);
       case 'imageplane': return this.buildImage(obj, L);
@@ -569,6 +592,110 @@ export class Renderer {
     const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
     x.beginPath(); x.arc(32, 32, 26, 0, Math.PI * 2); x.fillStyle = '#fff'; x.fill(); x.lineWidth = 6; x.strokeStyle = 'rgba(0,0,0,.55)'; x.stroke();
     this._pointTexture = new THREE.CanvasTexture(c); return this._pointTexture;
+  }
+  /** One white-on-transparent sprite per glyph shape (tinted by vertex or
+      material colour), cached for the renderer's life and shared across
+      layers, so disposing a layer never disposes the shape. */
+  shapeTexture(shape) {
+    if (!this._shapeTextures) this._shapeTextures = new Map();
+    if (this._shapeTextures.has(shape)) return this._shapeTextures.get(shape);
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); x.translate(32, 32); x.lineJoin = 'round';
+    const poly = pts => { x.beginPath(); pts.forEach(([px, py], i) => i ? x.lineTo(px, py) : x.moveTo(px, py)); x.closePath(); };
+    const hex = []; for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; hex.push([26 * Math.cos(a), 26 * Math.sin(a)]); }
+    switch (shape) {
+      case 'square': poly([[-21, -21], [21, -21], [21, 21], [-21, 21]]); break;
+      case 'triangle': poly([[0, -28], [26, 22], [-26, 22]]); break;              // apex up = along the azimuth once rotated
+      case 'triangle-down': poly([[0, 28], [26, -22], [-26, -22]]); break;
+      case 'diamond': poly([[0, -29], [29, 0], [0, 29], [-29, 0]]); break;
+      case 'hexagon': poly(hex); break;
+      case 'cross': poly([[-7, -28], [7, -28], [7, -7], [28, -7], [28, 7], [7, 7], [7, 28], [-7, 28], [-7, 7], [-28, 7], [-28, -7], [-7, -7]]); break;
+      case 'ring': x.beginPath(); x.arc(0, 0, 18, 0, Math.PI * 2); break;
+      default: x.beginPath(); x.arc(0, 0, 25, 0, Math.PI * 2);                     // circle
+    }
+    if (shape === 'ring') { x.lineWidth = 13; x.strokeStyle = 'rgba(0,0,0,.55)'; x.stroke(); x.lineWidth = 7; x.strokeStyle = '#fff'; x.stroke(); }
+    else { x.fillStyle = '#fff'; x.fill(); x.lineWidth = 5; x.strokeStyle = 'rgba(0,0,0,.55)'; x.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.userData.shared = true; t.userData.shape = shape;
+    this._shapeTextures.set(shape, t); return t;
+  }
+  /** Pixels per unit of sprite scale for a sizeAttenuation:false sprite —
+      the same arithmetic the label declutter uses, so a glyph asked for at
+      16 px is 16 px tall. */
+  pxPerScale() {
+    const el = this.canvas.parentElement, h = el.clientHeight || 600, cam = this.camera;
+    return cam.isOrthographicCamera ? cam.zoom * h / Math.max(1e-9, cam.top - cam.bottom) : (h / 2) / Math.tan((cam.fov || 50) * DEG / 2);
+  }
+  /** Adit sprites keep their apex along the mapped azimuth on the ground as
+      the camera moves: the ground direction is projected to the screen at the
+      sprite's own position (a direction taken at the image centre is wrong
+      under perspective) and the sprite turned to match; the pixel size is
+      re-fitted at the same time so a resize, a VE change or an ortho zoom
+      never stretches a glyph.  Runs only on frames that redraw anyway. */
+  updateGlyphs() {
+    let sprites = null;
+    for (const L of this.layers.values()) { if (!L.group.visible || !L.azSprites || !L.azSprites.length) continue; (sprites = sprites || []).push(...L.azSprites); }
+    if (!sprites) return;
+    const cam = this.camera; cam.updateMatrixWorld();
+    const el = this.canvas.parentElement, w = el.clientWidth || 800, h = el.clientHeight || 600, pps = this.pxPerScale();
+    const p = new THREE.Vector3(), q = new THREE.Vector3(); let changed = false;
+    for (const sp of sprites) {
+      const a = sp.userData.az * DEG; sp.getWorldPosition(p);
+      q.set(p.x + Math.sin(a), p.y, p.z - Math.cos(a));       // one metre along the azimuth (three -Z is north)
+      p.project(cam); q.project(cam);
+      const dx = (q.x - p.x) * w / 2, dy = (q.y - p.y) * h / 2;
+      if (dx * dx + dy * dy > 1e-18) { let rot = Math.atan2(dy, dx) - Math.PI / 2; if (rot <= -Math.PI) rot += 2 * Math.PI; if (Math.abs(rot - sp.material.rotation) > 1e-4) { sp.material.rotation = rot; changed = true; } }
+      const sx = sp.userData.glyphPx / pps, sy = sx / this.ve;
+      if (Math.abs(sp.scale.x - sx) > 1e-9 || Math.abs(sp.scale.y - sy) > 1e-9) { sp.scale.set(sx, sy, 1); changed = true; }
+    }
+    if (changed) this.needs = true;
+  }
+  /** USMIN mine features as type glyphs (FEATURE_SYMBOLS): one THREE.Points
+      per shape at a fixed pixel size, plus one sprite per adit that carries a
+      mapped azimuth (the only glyph that turns).  Picking goes through an
+      invisible point cloud holding every row in order, so `pick().index` is
+      the row index exactly as it is for plain points; the visible glyphs do
+      not raycast.  Labels use the map name (`nm`).  The glyph size is
+      `display.glyphSize` (default 16 px) and deliberately not the generic
+      `display.size` dot radius, which the viewer defaults to 9 for anything
+      that is not a graded mine — a 9 px hexagon is a blob. */
+  buildFeatures(ps, L) {
+    const d = L.display, n = ps.n;
+    const typ = ps.attributes.typ || [], azs = ps.attributes.az || [];
+    const size = d.glyphSize || 16, lift = d.lift == null ? 1 : d.lift;
+    const cap = d.maxGlyphs || 4000, stride = Math.max(1, Math.ceil(n / cap));
+    const groups = new Map(), rotated = [], present = new Set(), counts = {};
+    let drawn = 0;
+    for (let i = 0; i < n; i += stride) {
+      const x = ps.xyz[3 * i], y = ps.xyz[3 * i + 1], z = ps.xyz[3 * i + 2]; if (x !== x || y !== y) continue;
+      const sym = featureSymbol(typ[i]); present.add(sym.key); counts[sym.key] = (counts[sym.key] || 0) + 1; drawn++;
+      const az = azs[i] == null || azs[i] === '' ? NaN : +azs[i];
+      const s = this.toSceneArr(x, y, (z === z ? z : 0) + lift);
+      if (sym.shape === 'triangle' && az === az) { rotated.push({ i, az: ((az % 360) + 360) % 360, s, sym }); continue; }
+      let g = groups.get(sym.shape); if (!g) { g = { sym, rows: [], pos: [], col: [] }; groups.set(sym.shape, g); }
+      g.rows.push(i); g.pos.push(s[0], s[1], s[2]); g.col.push(sym.color[0] / 255, sym.color[1] / 255, sym.color[2] / 255);
+    }
+    for (const [shape, g] of groups) {
+      const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g.pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(g.col, 3)); geo.computeBoundingSphere();
+      const mat = new THREE.PointsMaterial({ size, sizeAttenuation: false, vertexColors: true, map: this.shapeTexture(shape), alphaTest: 0.4, transparent: true, depthWrite: false, clippingPlanes: this.clip.planes });
+      const pts = new THREE.Points(geo, mat); Object.assign(pts.userData, { kind: 'features', shape, featureKey: g.sym.key, rows: g.rows }); pts.raycast = () => { }; L.group.add(pts);
+    }
+    const pps = this.pxPerScale(); L.azSprites = [];
+    for (const r of rotated) {
+      const mat = new THREE.SpriteMaterial({ map: this.shapeTexture('triangle'), color: new THREE.Color(r.sym.color[0] / 255, r.sym.color[1] / 255, r.sym.color[2] / 255), sizeAttenuation: false, transparent: true, alphaTest: 0.4, depthWrite: false, clippingPlanes: this.clip.planes });
+      const sp = new THREE.Sprite(mat); sp.position.set(r.s[0], r.s[1], r.s[2]); sp.scale.set(size / pps, size / pps / this.ve, 1); sp.renderOrder = 2;
+      Object.assign(sp.userData, { kind: 'features', shape: 'triangle', featureKey: r.sym.key, az: r.az, rowIndex: r.i, glyphPx: size }); sp.raycast = () => { };
+      L.group.add(sp); L.azSprites.push(sp);
+    }
+    // the pick cloud: every row, in order, so a hit's index is the row
+    if (n) {
+      const ppos = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { const z = ps.xyz[3 * i + 2]; const v = this.toSceneArr(ps.xyz[3 * i], ps.xyz[3 * i + 1], (z === z ? z : 0) + lift); ppos[3 * i] = v[0]; ppos[3 * i + 1] = v[1]; ppos[3 * i + 2] = v[2]; }
+      const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(ppos, 3)); pg.computeBoundingSphere();
+      const pick = new THREE.Points(pg, new THREE.PointsMaterial({ size: 6, sizeAttenuation: false, transparent: true, opacity: 0.01, depthWrite: false, clippingPlanes: this.clip.planes }));
+      pick.userData.kind = 'points'; pick.userData.pickOnly = true; L.group.add(pick);
+    }
+    L.featureKeys = FEATURE_SYMBOLS.map(f => f.key).filter(k => present.has(k)); L.featureCounts = counts; L.drawn = drawn; L.totalGlyphs = n;
+    if (d.labels) this.addLabels(ps, L, d.labelField || (ps.attributes.nm ? 'nm' : 'name'));
+    this.updateGlyphs();
   }
   buildPoints(ps, L) {
     const d = L.display; const n = ps.n; const ox = this.origin[0], oy = this.origin[1], oz = this.origin[2];

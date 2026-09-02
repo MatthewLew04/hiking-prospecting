@@ -53,7 +53,7 @@ dishonest for this user. Value and effort are the adjusted figures.
 | G-04 | 4 | M | Export the 2-D section drawing as PNG / SVG | shipped: EXPORT PNG / SVG of the 2-D section with key, sources and the NOT A SURVEY line |
 | G-05 | 5 | S | Scene picking fidelity: tubes resolve to their feature / interval row (face -> part map), pick through translucent terrain, pixel-consistent thresholds, section quad inert outside its tool, and a drillholes pick readout (hole, from, to, values, open table) | shipped: tubes resolve to their feature, translucent context yields to data behind it, pixel-consistent thresholds |
 | G-06 | 4 | M | Sample-table contract for cited grades: value, unit, width / support, basis (selected vs average vs plain), source — honoured by display, filters, compositing and kriging | deferred |
-| G-07 | 4 | M | Contact surface from a mapped unit boundary (From GIS Vector Data / Contact Points refine) | shipped: unit base from a mapped unit boundary (source kind *trace*, faults refused, no-dip warning) |
+| G-07 | 4 | M | Contact surface from a mapped unit boundary (From GIS Vector Data / Contact Points refine) | shipped: unit base from a mapped unit boundary (source kind *trace*), and the one-click Model the rock from the map (contacts between units + derived dips → inferred pancake) |
 | G-09 | 4 | M | Tool panel vs layer inspector: the Shape List / Properties Panel / tool-window separation | shipped: layer inspector above a closable tool host; one arm() path with the mode strip; Esc semantics |
 | G-10 | 4 | M | Undo / redo and per-element delete in digitising tools | shipped (layers, sections, workings features): delete goes through a toast with UNDO, Ctrl/Cmd+Z; per-measurement delete is in the structural panel |
 | G-11 | 4 | M | Render Image with overlays (legend, confidence key, scale bar, north arrow, NOT A SURVEY banner, project / CRS / VE / date footer) at a chosen size with supersampling, download and copy to clipboard | shipped: VIEW ▾ > Render image writes scale bar, confidence key, NOT A SURVEY sentence, north, view direction and a CRS/VE footer into the PNG; the kit zip includes it |
@@ -91,7 +91,7 @@ dishonest for this user. Value and effort are the adjusted figures.
 | G-60 | 5 | L | Interpret on sections and images: draw polylines on a scanned / SEG-Y section image, the section plane or the slicer and use them as surface inputs - contact points for a stratigraphy unit, signed points for the implicit surface (offset along the plane normal), fault / contact traces for structural derivation and a fault surface - with tangent ribbons, provenance and rebuild | deferred |
 | G-70 | 4 | M | Exact clipping toggle / show unclipped surface (judge a surface's fit above topography; clip implicit surfaces to topography and extents) | shipped: `clipMeshToTopography` + daylight trace, clip below topography on the Implicit panel |
 | G-72 | 4 | S | Input classification before building (inputs outside the boundary or above topography, Set Elevation for any contact layer, minimum data check) | shipped: input classification per unit, DRAPE for no-elevation points, refusal below 3 distinct points |
-| G-76 | 4 | M | Water-table / drainage-level surface from prose ('water at the 300 level', 'the adit drains the workings') or a typed elevation | deferred |
+| G-76 | 4 | M | Water-table / drainage-level surface from prose ('water at the 300 level', 'the adit drains the workings') or a typed elevation | shipped (stated level): an elevation or depth below the collar with a source → a water plane, described / assumed; reading it out of prose in the narrative pipeline is deferred |
 | G-91 | 4 | M | Set Elevation / drape on topography for any layer (points, structural, drillhole collars, linesets, plan images): surface picker (topography, any grid, any mesh), offset, scope (only missing z / only confidence = ...), keep z_original and RESTORE, true image drape on the terrain | shipped: `setElevationFrom` for points, linesets and collars, scopes that never touch surveyed rows, RESTORE |
 | G-97 | 4 | M | Model boundary object shared by every builder (extents with handles, Enclose Object, lateral extent polygon, base / z range, topography cap) and per-interpolant boundaries (bounding box + pad, inside a closed mesh / unit volume / fault block, within a distance of samples, clip below topography, boundary filter) | shipped (step 1): z from / to, clip below topography and iso value on the Implicit panel; a shared boundary object is deferred |
 
@@ -251,6 +251,19 @@ a map, a DEM and old plans. The rest were verified as marginal for this user.
 | G-174 | Layer-conforming flow grid from the pancake model (N layers per unit, minimum thickness) and MODFLOW / FEFLOW export |
 | G-175 | Import flow models and time-dependent results (MODFLOW .nam, heads .hds, MT3D .ucn, FEFLOW .fem/.dac) with a timestep slider |
 | G-176 | Structural form as thickness control and polarity flip for stratigraphic thickness (Advanced Stratigraphy) |
+
+### Rock for every dot (added the same day)
+
+The map hands the modeller the USGS geology polygons and fault traces it has
+loaded around any point, so draped units, outlines and faults exist for
+every site, not only the AOI bundles; USMIN shafts, adits and pits arrive as
+typed symbols; and *Model the rock from the map* turns the contacts between
+units and the orientations derived along them into inferred unit surfaces
+and volumes with every refusal counted. What still cannot be populated from
+here: underground workings for dots whose text is not on this machine (the
+MRDS tiles carry no description; the ARDF workings text sits in a private
+snapshot; the WS13 corpus is in-VPC), so a described 3-D mine exists only
+where the document store describes it (16 today) or where a user traces it.
 
 ## 7. What Leapfrog does that this modeller will not
 

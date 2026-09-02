@@ -45,7 +45,7 @@ async function boot() {
   app.tools = new Tools(app);
   // Optional tool modules register themselves; a missing or broken one must
   // not take the page down with it.
-  for (const [mod, fn] of [['./gm-more-tools.js', 'installMoreTools'], ['./gm-geom-tools.js', 'installGeomTools']]) {
+  for (const [mod, fn] of [['./gm-more-tools.js', 'installMoreTools'], ['./gm-geom-tools.js', 'installGeomTools'], ['./gm-map-model.js', 'installMapModelTools']]) {
     try { const M = await import(mod); if (M[fn]) M[fn](app.tools); } catch (e) { console.warn(`${mod}: ${e.message}`); }
   }
   wireChrome();
@@ -222,8 +222,8 @@ function groupOf(o) {
   if (o.group) return o.group;
   if (o.kind === 'grid2d') return o.role === 'topography' ? 'Topography' : o.role === 'contact' ? 'Stratigraphy' : o.role === 'property' ? 'Surfaces' : 'Surfaces';
   if (o.kind === 'mesh') return o.role === 'unit' ? 'Stratigraphy' : o.role === 'geology' ? 'Geology (draped)' : o.role === 'stope' ? 'Workings' : 'Surfaces';
-  if (o.kind === 'lineset') return o.role === 'workings' ? 'Workings' : o.role === 'faults' ? 'Structure' : o.role === 'geology-outline' ? 'Geology outlines' : o.role === 'section' ? 'Sections' : 'Imports';
-  if (o.kind === 'points') return o.role === 'structural' || o.role === 'trend' ? 'Structure' : o.role === 'claims' ? 'Claims' : o.role === 'mines' || o.role === 'targets' ? 'Mines' : o.role === 'notes' ? 'Notes' : 'Imports';
+  if (o.kind === 'lineset') return o.role === 'workings' ? 'Workings' : o.role === 'faults' ? 'Structure' : o.role === 'geology-outline' ? 'Geology outlines' : o.role === 'section' ? 'Sections' : o.role === 'contours' || o.role === 'interpretation' ? 'Surfaces' : o.role === 'annotation' ? 'Notes' : 'Imports';
+  if (o.kind === 'points') return o.role === 'structural' || o.role === 'trend' ? 'Structure' : o.role === 'claims' ? 'Claims' : o.role === 'mines' || o.role === 'targets' || o.role === 'features' ? 'Mines' : o.role === 'notes' ? 'Notes' : 'Imports';
   if (o.kind === 'blockmodel') return 'Block models';
   if (o.kind === 'drillholes') return 'Drillholes';
   if (o.kind === 'imageplane') return 'Images';
@@ -590,6 +590,15 @@ export function describePick(p) {
     const pol = o.attributes.polarity ? +o.attributes.polarity[i] : 1; if (pol < 0) lines.push('overturned');
     for (const [k, col] of Object.entries(o.attributes)) { if (['dip', 'dip_azimuth', 'polarity', 'z_original'].includes(k)) continue; const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 60)}`); if (lines.length > 12) break; }
   }
+  else if (o.kind === 'points' && o.role === 'features' && p.index != null) {
+    // a USMIN symbol is a location digitised from a topographic map: it says a
+    // shaft or an adit was there, never how deep or how far it went
+    const i = p.index; const a = o.attributes; const typ = a.typ ? a.typ[i] : 'feature';
+    lines.push(`${a.nm && a.nm[i] ? a.nm[i] : typ} · ${typ}`);
+    if (a.az && a.az[i] != null && a.az[i] !== '') lines.push(`portal azimuth: ${a.az[i]}° (from the map symbol)`);
+    if (a.quad && a.quad[i]) lines.push(`topo map: ${a.quad[i]}${a.yr && a.yr[i] ? ' (' + a.yr[i] + ')' : ''}${a.scale && a.scale[i] ? ' 1:' + a.scale[i] : ''}`);
+    lines.push('mapped surface feature — location only, no depth or extent is known');
+  }
   else if (o.kind === 'points' && p.index != null) { const i = p.index; lines.push(`${o.name} #${i}`); for (const [k, col] of Object.entries(o.attributes)) { const v = col[i]; if (v == null || v === '') continue; lines.push(`${k}: ${String(v).slice(0, 80)}`); if (lines.length > 14) break; } }
   else if (o.kind === 'lineset') {
     // a part index can come from the segment map (hairlines), from the
@@ -800,6 +809,12 @@ export function legendModel() {
   }
   const claims = app.project.byKind('points').filter(p => p.role === 'claims' && p.visible !== false);
   if (claims.length) out.keys.push({ title: 'claims (BLM centroids)', rows: claims.map(c => ({ label: c.name.replace(/\s*\(BLM centroids\)/, ''), color: c.color })) });
+  // mapped mine features draw as type glyphs; the renderer says which are present
+  const FS = GMR.FEATURE_SYMBOLS || null;
+  for (const f of app.project.byKind('points').filter(p => p.role === 'features' && p.visible !== false)) {
+    const L2 = R.layers.get(f.id); const keys = (L2 && L2.featureKeys) || [];
+    if (FS && keys.length) out.keys.push({ title: 'mine features (topo maps)', rows: keys.map(k => { const s = FS.find(x => x.key === k) || {}; return { label: `${s.label || k}${s.shape ? ' · ' + s.shape : ''}`, color: s.color || f.color }; }) });
+  }
   const o = app.selected ? app.project.get(app.selected) : null; const L = o ? R.layers.get(o.id) : null;
   if (L && (L.range || L.categories)) {
     const d = app.display.get(o.id) || {};

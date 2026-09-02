@@ -143,6 +143,7 @@ aside::-webkit-scrollbar-thumb,#detail::-webkit-scrollbar-thumb,#results::-webki
 .kv dd.mono{font-family:var(--mono);font-size:11px}
 #detail .desc{font-size:12px;color:var(--ink2);margin-bottom:10px}
 #detail .src{font-size:10.5px;color:var(--mut);border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+#detail .g3dhint{font-size:10.5px;color:var(--mut);margin:4px 0 2px;line-height:1.35}
 #detail .links{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 #detail .links a{border:1px solid var(--line2);border-radius:5px;padding:4px 9px;font:11px var(--mono)}
 #detail .links a:hover{border-color:var(--accent);text-decoration:none}
@@ -2760,7 +2761,7 @@ function showFeature(f){
       <div class="badges">${badge(p.status==='P'?'active':'abandoned',(SMAP[p.status]||'UNKNOWN').toUpperCase())} ${gbadge(Number(p.g)||0)} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Commodities',esc(p.commodities)||'—'],['County',esc(p.county)],['Deposit type',esc(p.deposit)],['Record quality',esc(p.quality)]])}
       <div class="links"><a href="https://mrdata.usgs.gov/mrds/show-mrds.php?dep_id=${encodeURIComponent(p.id)}" target="_blank">MRDS record ↗</a>${nationalResearchAnchors(p.nm,'',p.st)}</div>
-      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm):'';})()}
+      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm)+'<div class="g3dhint">The 3-D model shows what is mapped here; underground workings appear only where a document describes them.</div>':'';})()}
       <div class="src">USGS Mineral Resources Data System, streamed from the 49-state PMTiles baseline. MRDS is a legacy lead, not current land status.</div>`, subject);
     return;
   }
@@ -2769,7 +2770,7 @@ function showFeature(f){
       <div class="badges">${badge('abandoned','TOPO-MAP FEATURE')} <span class="badge abandoned">${esc(p.st)}</span></div>
       ${kv([['Feature',esc(p.typ)],['County',esc(p.co)],['Source quad',esc(p.quad)],['Map year',p.yr],['Map scale',p.scale?`1:${Number(p.scale).toLocaleString()}`:null],['GDA ID',p.gda]])}
       ${p.nm?`<div class="links">${nationalResearchAnchors(p.nm,'',p.st)}</div>`:''}
-      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.typ||'mine feature'):'';})()}
+      ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.typ||'mine feature')+'<div class="g3dhint">The 3-D model shows what is mapped here; underground workings appear only where a document describes them.</div>':'';})()}
       <div class="src">USGS USMIN mine symbols, streamed from the 49-state PMTiles baseline. Historical map evidence is not permission to enter a site. <b>Never enter adits or shafts.</b></div>`);
     return;
   }
@@ -6386,10 +6387,20 @@ function loadLeapfrogExport(){ $('lfxGo').onclick=()=>{lfxExport();}; }
 /* ---------- 3D MODEL (site/model3d.html) ----------
    One click on a mine card opens the Leapfrog-style modeller around that site.
    The map hands over what it has LOADED for the area (tiled point layers in
-   the viewport: viewport snapshot, never an archive) through IndexedDB
+   the viewport, plus the rock units and fault traces of every tiled geology
+   layer that is on: viewport snapshot, never an archive) through IndexedDB
    'nwmm-geomodel' (whitelisted in guardStorage) so the 3-D page does not have
    to decode PMTiles itself; everything else (terrain, imagery, AOI bundles,
-   grades) the page fetches on its own. */
+   grades) the page fetches on its own.
+   Hand-off shape (h): { layers:{mrds|usmin|stategeo|ardf|claimsA|claimsC:[{x,y,p}]},
+     total, geology:{ units:[{id,fid,nm,label,li,age,age_min,age_max,de,color,
+     src,url,scale,st,layer,polys:[[ring,...],...],rings:[ring,...]}],
+     faults:[{id,fid,part,nm,ty,age,slip,certainty,src,url,scale,st,layer,path}],
+     sources:[...], total:{units,faults}, box, zoom, note }, at, note }.
+   A unit's polys are every polygon of the feature (a MultiPolygon, or the
+   pieces the tiles cut it into) as [outer ring, hole, ...] in GeoJSON order;
+   rings is the same rings flattened. Features are kept whole where the tile
+   holds them whole — the viewer clips to its own box. */
 const G3D = {db:null};
 function g3dSlug(s){ return String(s||'site').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'site'; }
 function g3dDb(){
@@ -6400,6 +6411,113 @@ function g3dDb(){
     rq.onsuccess = ()=>res(rq.result); rq.onerror = ()=>rej(rq.error);
   });
   return G3D.db;
+}
+/* The tiled rock-unit / fault layers the map can hand over: the national USGS
+   snapshots (queried even while hidden — tiles that are still loaded answer),
+   every WS11 release geology / fault layer that is live, and every state-survey
+   baseline geology / fault layer that is live. One row per source + source
+   layer; `on` says whether the user had it showing. */
+function g3dGeologyLayers(){
+  const rows=[], seen=new Set();
+  const add=(row)=>{ const k=row.src+'/'+row.sl; if(seen.has(k)||!map.getSource(row.src))return; seen.add(k); row.name=k; rows.push(row); };
+  add({src:'national-geology',sl:'geology',kind:'units',on:!!S.layers.natGeo,national:true,label:'USGS SGMC / SIM 3340 geology'});
+  add({src:'national-faults',sl:'faults',kind:'faults',on:!!S.layers.natFault,national:true,label:'USGS SGMC / SIM 3340 / Qfaults faults'});
+  for(const group of Object.values(typeof WS11_VECTOR_GROUPS==='object'&&WS11_VECTOR_GROUPS||{}))for(const spec of group.specs||[]){
+    if(spec.kind!=='geology'&&spec.kind!=='faults')continue;
+    if(!(spec.style_layers||[]).some(l=>map.getLayer('ws11-'+l.id)))continue;   // syncWs11Vectors created it: toggle on, state selected, in zoom + footprint
+    add({src:group.source_id,sl:spec.source_layer,kind:spec.kind==='geology'?'units':'faults',on:true,national:false,label:`${spec.state} WS11 ${spec.kind} (${spec.id||spec.source_layer})`});
+  }
+  for(const d of (typeof STATE_SURVEY_LAYERS==='object'&&STATE_SURVEY_LAYERS||[]))for(const layer of d.layers||[]){
+    if(!map.getLayer(layer.id))continue;                                          // syncStateSurveyLayers created it: toggle on, state selected, in zoom + footprint
+    const t=(layer.style||{}).type, kind=stateSurveyFeatureKind(layer);
+    if(t==='fill'&&kind==='geology')add({src:d.source_id,sl:layer.source_layer,kind:'units',on:true,national:false,label:`${d.state} ${d.toggle_label}`});
+    else if(t==='line'&&kind==='fault')add({src:d.source_id,sl:layer.source_layer,kind:'faults',on:true,national:false,label:`${d.state} ${d.toggle_label}`});
+  }
+  return rows;
+}
+const G3D_CAP={units:3000,faults:2000};
+function g3dGeologySnapshot(lon, lat, box){
+  const [W,Sx,E,N]=box;
+  const num=v=>(v==null||v===''||!isFinite(+v))?null:+v;
+  const str=v=>(v==null||v==='')?null:String(v);
+  const bboxOf=(pts)=>{ let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; for(const c of pts){ const x=+c[0],y=+c[1]; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } return [x0,y0,x1,y1]; };
+  const hits=(b)=> b[0]<=E && b[2]>=W && b[1]<=N && b[3]>=Sx;
+  // the same ring arrives once per tile that holds it (buffers overlap): a
+  // vertex count + bbox at ~10 m tells repeats from the distinct parts of a
+  // MultiPolygon, which are merged under the one fid keeping every ring
+  const sig=(pts,b)=> pts.length+'|'+b.map(v=>v.toFixed(4)).join(',');
+  const dist2=(b)=>{ const cx=(b[0]+b[2])/2, cy=(b[1]+b[3])/2; return (cx-lon)*(cx-lon)+(cy-lat)*(cy-lat); };
+  const units=new Map(), faults=new Map(), sources=[], notes=[];
+  const replaced={units:ws11RuntimeStates('geology'), faults:ws11RuntimeStates('faults')};  // states whose WS11 layer replaces the national rows (syncWs11NationalFallbacks)
+  let nationalGeoSeen=0, nationalGeoLoaded=false, nationalFaultSeen=0;
+  for(const row of g3dGeologyLayers()){
+    let feats=[]; try{ feats=map.querySourceFeatures(row.src,{sourceLayer:row.sl}); }catch(_){ continue; }
+    if(row.src==='national-geology'&&feats.length)nationalGeoLoaded=true;
+    let used=0;
+    for(const f of feats){
+      const p=f.properties||{};
+      if(row.national&&replaced[row.kind].has(p.st))continue;
+      const g=f.geometry; if(!g)continue;                                         // (getter: decode once)
+      const fid=p.fid!=null?p.fid:(f.id!=null?f.id:(p.source_record_id!=null?p.source_record_id:null));
+      const prov={src:str(p.source_dataset||p.src||p.publication_id)||row.label, url:str(p.source_url), scale:str(p.source_scale||p.mapped_scale), st:str(p.st||p.state), layer:row.name};
+      if(row.kind==='units'){
+        if(g.type!=='Polygon'&&g.type!=='MultiPolygon')continue;
+        const polys=g.type==='Polygon'?[g.coordinates]:g.coordinates;
+        const keep=[]; for(const poly of polys){ if(!poly||!poly.length||poly[0].length<3)continue; const b=bboxOf(poly[0]); if(hits(b))keep.push({poly,b}); }
+        if(!keep.length)continue;
+        const key=row.name+'|'+(fid!=null?fid:'@'+sig(keep[0].poly[0],keep[0].b));
+        let u=units.get(key);
+        if(!u){
+          u=Object.assign({id:fid!=null?row.src+':'+fid:key, fid:fid!=null?fid:null,
+            nm:str(p.unit_name||p.map_unit||p.unit_label||p.MapUnit||p.unit_id||p.state_map_label),
+            label:str(p.unit_label||p.map_unit||p.MapUnit||p.unit_id), li:str(p.lithology),
+            age:str(p.age||p.unit_age), age_min:num(p.age_min), age_max:num(p.age_max),
+            de:str(p.description||p.unit_description||p.notes), color:str(p.color)}, prov,
+            {polys:[], rings:[], tiles:0, _sigs:new Set(), _d:Infinity});
+          units.set(key,u);
+        }
+        u.tiles++;
+        for(const {poly,b} of keep){ const sg=sig(poly[0],b); if(u._sigs.has(sg))continue; u._sigs.add(sg); u.polys.push(poly); for(const r of poly)u.rings.push(r); const d=dist2(b); if(d<u._d)u._d=d; }
+        used++; if(row.src==='national-geology')nationalGeoSeen++;
+      }else{
+        if(g.type!=='LineString'&&g.type!=='MultiLineString')continue;
+        const lines=g.type==='LineString'?[g.coordinates]:g.coordinates;
+        const keep=[]; for(const line of lines){ if(!line||line.length<2)continue; const b=bboxOf(line); if(hits(b))keep.push({line,b}); }
+        if(!keep.length)continue;
+        const key=row.name+'|'+(fid!=null?fid:'@'+sig(keep[0].line,keep[0].b));
+        let fl=faults.get(key);
+        if(!fl){
+          fl=Object.assign({id:fid!=null?row.src+':'+fid:key, fid:fid!=null?fid:null,
+            nm:str(p.name||p.fault_name), ty:str(p.fault_type||p.feature_type||p.Type),
+            age:str(p.age||p.fault_age), slip:str(p.slip_sense||p.fault_movement), certainty:str(p.certainty)}, prov,
+            {paths:[], _sigs:new Set(), _d:Infinity});
+          faults.set(key,fl);
+        }
+        for(const {line,b} of keep){ const sg=sig(line,b); if(fl._sigs.has(sg))continue; fl._sigs.add(sg); fl.paths.push(line); const d=dist2(b); if(d<fl._d)fl._d=d; }
+        used++; if(row.src==='national-faults')nationalFaultSeen++;
+      }
+    }
+    if(used)sources.push(row.name);
+    if(used&&!row.on)notes.push(row.src==='national-geology'
+      ?'USGS geology was hidden on the map when the model opened; tiles already loaded were used'
+      :'USGS faults were hidden on the map when the model opened; tiles already loaded were used');
+  }
+  // nearest first; cap with a note rather than silently dropping the far end
+  let U=[...units.values()].sort((a,b)=>a._d-b._d);
+  if(U.length>G3D_CAP.units){ notes.push(`rock units capped at the ${G3D_CAP.units} nearest the site (${U.length} were loaded in the box)`); U=U.slice(0,G3D_CAP.units); }
+  for(const u of U){ delete u._sigs; delete u._d; }
+  const F=[]; for(const fl of [...faults.values()].sort((a,b)=>a._d-b._d)){ const {paths,_sigs,_d,...rest}=fl; paths.forEach((path,i)=>F.push(Object.assign({},rest,{part:i,path}))); }
+  let Fo=F; if(Fo.length>G3D_CAP.faults){ notes.push(`fault traces capped at the ${G3D_CAP.faults} nearest the site (${Fo.length} were loaded in the box)`); Fo=Fo.slice(0,G3D_CAP.faults); }
+  const zoom=Math.round(map.getZoom()*10)/10;
+  if(!nationalGeoSeen){
+    if(!map.getSource('national-geology'))notes.push('this build has no USGS geology tiles, so the model gets no rock units from the map');
+    else if(!S.layers.natGeo&&!nationalGeoLoaded)notes.push('USGS geology was hidden on the map when the model opened and its tiles were no longer loaded — zoom to the site with USGS GEOLOGY on (LAYERS ▸ GEOLOGIC MAP — USGS SNAPSHOT) and open the model again to give it its rock units');
+    else if(zoom<9||!nationalGeoLoaded)notes.push('no USGS geology was loaded for this area — zoom to the site (zoom ≥ 9) with USGS GEOLOGY on (LAYERS ▸ GEOLOGIC MAP — USGS SNAPSHOT) before opening the model to give it its rock units');
+    else notes.push('the loaded USGS geology tiles hold no rock unit at this site — zooming to the site with USGS GEOLOGY on gives the model its rock units where they are mapped');
+  }
+  if(!nationalFaultSeen&&!S.layers.natFault&&map.getSource('national-faults'))notes.push('USGS faults were hidden on the map when the model opened and their tiles were no longer loaded — turn on LAYERS ▸ FAULTS — USGS SNAPSHOT at the site to give the model its mapped fault traces');
+  if((U.length||Fo.length)&&zoom<10)notes.push(`rock units and faults were read from zoom-${zoom} tiles, whose outlines are simplified — zoom to the site with USGS GEOLOGY on for their full detail`);
+  return {units:U, faults:Fo, sources, total:{units:U.length, faults:Fo.length}, box, zoom, note:notes.length?notes.join('; '):null};
 }
 function g3dHandoff(lon, lat, radiusM){
   // viewport snapshot of the toggled-on tiled point layers within ~1.3x the radius
@@ -6421,7 +6539,11 @@ function g3dHandoff(lon, lat, radiusM){
     }
     if(out.length){ layers[spec.flag]=out; total+=out.length; }
   }
-  return {layers, total, at:new Date().toISOString(), note:'viewport snapshot of loaded tiles, not an archive'};
+  // the rock units and fault traces of the same box, from every tiled geology layer that answers
+  let geology;
+  try{ geology=g3dGeologySnapshot(lon, lat, [lon-dLon, lat-dLat, lon+dLon, lat+dLat]); }
+  catch(e){ console.warn('[nwmm 3d handoff] geology', e); geology={units:[], faults:[], sources:[], total:{units:0,faults:0}, box:[lon-dLon, lat-dLat, lon+dLon, lat+dLat], note:'the map could not read its geology tiles for this hand-off: '+(e&&e.message||e)}; }
+  return {layers, total, geology, at:new Date().toISOString(), note:'viewport snapshot of loaded tiles, not an archive'};
 }
 async function open3D(lon, lat, name, opts={}){
   if ('project' in opts){
@@ -6440,7 +6562,8 @@ async function open3D(lon, lat, name, opts={}){
   const key = g3dSlug(name||'site')+'-'+lat.toFixed(3)+'_'+lon.toFixed(3);
   try{
     const h = g3dHandoff(lon, lat, radius);
-    if (h.total){ const db=await g3dDb(); await new Promise((res,rej)=>{ const tx=db.transaction('handoff','readwrite'); tx.objectStore('handoff').put({key:'site:'+key, data:h, at:h.at}); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+    const hasGeo = h.geology && (h.geology.total.units || h.geology.total.faults || h.geology.note);
+    if (h.total || hasGeo){ const db=await g3dDb(); await new Promise((res,rej)=>{ const tx=db.transaction('handoff','readwrite'); tx.objectStore('handoff').put({key:'site:'+key, data:h, at:h.at}); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
   }catch(e){ console.warn('[nwmm 3d handoff]', e); }
   const aoi = opts.aoi || (typeof aoiAtPoint==='function' ? aoiAtPoint(lon,lat) : null) || 'auto';
   const q = new URLSearchParams({lat:lat.toFixed(6), lon:lon.toFixed(6), name:name||'', r:String(radius), aoi});
@@ -6455,7 +6578,7 @@ function aoiAtPoint(lon,lat){
 function g3dButton(lon, lat, name, opts={}){
   if (lon==null||lat==null||!isFinite(+lon)||!isFinite(+lat)) return '';
   const o=JSON.stringify(opts).replace(/"/g,'&quot;');
-  return `<button class="dosbtn" onclick="open3D(${(+lon).toFixed(6)},${(+lat).toFixed(6)},'${esc(String(name||'')).replace(/'/g,"\\'")}',${o})" title="open a 3-D geological model around this site (new tab)">⛰ OPEN 3D MODEL</button>`;
+  return `<button class="dosbtn" onclick="open3D(${(+lon).toFixed(6)},${(+lat).toFixed(6)},'${esc(String(name||'')).replace(/'/g,"\\'")}',${o})" title="open a 3-D model around this site: terrain, the USGS geology and faults the map has loaded here, and the mine features around it (new tab)">⛰ OPEN 3D MODEL</button>`;
 }
 function loadGeomodel3D(){
   $('g3dGo').onclick=()=>{ const c=map.getCenter(); if(map.getZoom()<9){ $('g3dNote').textContent='zoom in to a site first (zoom ≥ 9) — the 3-D model is built around the view centre'; return; } open3D(c.lng, c.lat, `site ${c.lat.toFixed(4)} ${c.lng.toFixed(4)}`); };

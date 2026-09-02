@@ -15,6 +15,7 @@ import { performance } from 'node:perf_hooks';
 import { Worker } from 'node:worker_threads';
 import * as GM from '../site/assets/geomodel/gm-core.js';
 import * as E from '../site/assets/geomodel/gm-engine.js';
+import * as S from '../site/assets/geomodel/gm-structural.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -963,6 +964,154 @@ function rbfData() {
   return { pts, vals, tg: [[100, 100, 20], [250, 150, 50], [400, 20, 90], [10, 290, 5]] };
 }
 
+/* ======================================================= 10. model from map */
+/** The synthetic three-unit map both sides read: a 1 km square, topography a
+    plane rising east; Basement (Paleozoic) west, Middle (Neogene) centre,
+    Young (Quaternary) east, an Island younger than everything that touches
+    nothing older, and an Unaged unit.  Two derived readings, one of them
+    too far from the northern contacts, plus one derived along a fault. */
+function makeMapData() {
+  const topo = new GM.Grid2D({ nx: 41, ny: 41, x0: 0, y0: 0, dx: 25, dy: 25, name: 'Topography', role: 'topography' });
+  for (let j = 0; j < 41; j++) for (let i = 0; i < 41; i++) { const [x, y] = topo.nodeXY(i, j); topo.values[j * 41 + i] = 1200 + 0.1 * x + 0.02 * y; }
+  const rect = (name, x0, y0, x1, y1, step, feat) => {
+    const ls = new GM.LineSet({ name: name + ' outline', role: 'geology-outline' });
+    ls.addPolyline(E.densify([[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]], step).map(([x, y]) => [x, y, topo.sample(x, y) + 2]), feat);
+    return ls;
+  };
+  const units = [
+    { id: 'y', name: 'Young', t0: 2.6, t1: 0, outline: rect('Young', 700, 0, 1000, 1000, 25, { unit: 'Young', unit_id: 'y' }) },
+    { id: 'm', name: 'Middle', t0: 8.7, t1: 2.6, outline: rect('Middle', 400, 0, 700, 1000, 20, { unit: 'Middle', unit_id: 'm' }) },
+    { id: 'b', name: 'Basement', t0: 320, t1: 286, outline: rect('Basement', 0, 0, 400, 1000, 25, { unit: 'Basement', unit_id: 'b' }) },
+    { id: 'i', name: 'Island', t0: 0.1, t1: 0, outline: rect('Island', 800, 400, 900, 500, 10, { unit: 'Island', unit_id: 'i' }) },
+    { id: 'u', name: 'Unaged', outline: rect('Unaged', 100, 100, 200, 200, 10, { unit: 'Unaged', unit_id: 'u' }) },
+  ];
+  const struct = new GM.PointSet({ name: 'Derived structure', role: 'structural' });
+  struct.add(700, 500, topo.sample(700, 500), { dip: 30, dip_azimuth: 90, source: 'Young outline', part: 0 });
+  struct.add(400, 500, topo.sample(400, 500), { dip: 20, dip_azimuth: 90, source: 'Middle outline', part: 0 });   // both bases dip east, under their own unit
+  struct.add(410, 600, topo.sample(410, 600), { dip: 80, dip_azimuth: 0, source: 'Faults (mapped)', part: 0 });
+  const faults = new GM.LineSet({ name: 'Faults (mapped)', role: 'faults' }); faults.addPolyline([[410, 550, 1240], [410, 650, 1240]], { name: 'f1' });
+  const lattice = new GM.Grid2D({ nx: 11, ny: 11, x0: 0, y0: 0, dx: 100, dy: 100, name: 'lattice' });
+  return { topo, units, struct, faults, lattice };
+}
+const unitJSON = u => ({ id: u.id, name: u.name, t0: u.t0 === undefined ? null : u.t0, t1: u.t1 === undefined ? null : u.t1, outline: lsJSON(u.outline) });
+const contactsJSON = ps => ({ xyz: list(ps.xyz), n: ps.n, attrs: Object.fromEntries(Object.entries(ps.attributes).map(([k, v]) => [k, v.map(x => (typeof x === 'number' && x !== x) ? null : x)])), role: ps.role, prov: ps.provenance, derived_from_n: (ps.metadata.derived_from || []).length });
+const unitOut = u => ({ name: u.name, contact: u.contact, has_base: !!u.base, n: u.base ? u.base.n : null, n_contacts: u.n_contacts, n_offsets: u.n_offsets, against: u.against, warnings: u.warnings, t0: u.t0, t1: u.t1, method: u.provenance.method, confidence: u.provenance.confidence, inputs: u.provenance.inputs, derived_from_n: u.derived_from.length, base: u.base ? contactsJSON(u.base) : null });
+async function testMapModel() {
+  section('10. model from map (unit order / shared contacts / dip offsets / buildFromMap, worker round trip)');
+  const { topo, units, struct, faults, lattice } = makeMapData();
+  const tied = [{ id: 'a', name: 'A', t0: 5, t1: 1 }, { id: 'b', name: 'B', t0: 5, t1: 1 }, { id: 'c', name: 'C', t0: 9, t1: 5 }, { id: 'd', name: 'D' }, { id: 'e', name: 'E', t0: 1, t1: 0 }, { id: 'f', name: 'F', t1: 0.5 }];
+  const payload = { topo: gridJSON(topo), lattice: gridJSON(lattice), units: units.map(unitJSON), tied, struct: psetJSON(struct), faults: lsJSON(faults) };
+  const [P, pyMs] = await timed(() => py(`
+from geomodel import mapmodel
+topo, lat = grid(D['topo']), grid(D['lattice'])
+def unit(d):
+    u = {'id': d['id'], 'name': d['name'], 'outline': lineset(d['outline'])}
+    if d['t0'] is not None: u['t0'] = d['t0']
+    if d['t1'] is not None: u['t1'] = d['t1']
+    return u
+units = [unit(d) for d in D['units']]
+struct = pset(D['struct']); struct.role = 'structural'
+faults = lineset(D['faults'])
+def cj(ps):
+    return {'xyz': list(ps.xyz), 'n': ps.n, 'attrs': ps.attributes, 'role': ps.role, 'prov': ps.provenance, 'derived_from_n': len(ps.metadata.get('derived_from', []))}
+def uo(u):
+    return {'name': u['name'], 'contact': u['contact'], 'has_base': u['base'] is not None, 'n': u['base'].n if u['base'] else None,
+            'n_contacts': u['n_contacts'], 'n_offsets': u['n_offsets'], 'against': u['against'], 'warnings': u['warnings'], 't0': u['t0'], 't1': u['t1'],
+            'method': u['provenance']['method'], 'confidence': u['provenance']['confidence'], 'inputs': u['provenance']['inputs'],
+            'derived_from_n': len(u['derived_from']), 'base': cj(u['base']) if u['base'] else None}
+out = {}
+o = mapmodel.unit_order(units)
+out['order'] = {'order': o['order'], 'aged': o['aged'], 'unaged': o['unaged'], 'unaged_names': o['unaged_names'], 'ties': o['ties'], 'warnings': o['warnings']}
+o2 = mapmodel.unit_order(D['tied'])
+out['tied'] = {'order': o2['order'], 'ties': o2['ties'], 'unaged_names': o2['unaged_names'], 'warnings': o2['warnings']}
+sc = mapmodel.shared_contacts(units[0]['outline'], units[1]['outline'], 25.0, topo=topo)
+out['sc'] = {'count': sc['count'], 'edge_skipped': sc['edge_skipped'], 'nodata': sc['nodata'], 'tol': sc['tol'], 'points': cj(sc['points'])}
+sc0 = mapmodel.shared_contacts(units[0]['outline'], units[2]['outline'], 25.0, topo=topo)
+out['sc_none'] = sc0['count']
+scw = mapmodel.shared_contacts(units[0]['outline'], units[1]['outline'], 25.0)
+out['sc_noz'] = {'count': scw['count'], 'z': list(scw['points'].xyz)[2::3][:5]}
+do = mapmodel.dip_offsets(sc['points'], struct, radius=300.0, offset=100.0, exclude_sources=['Faults (mapped)'])
+out['do'] = {'used': do['used'], 'unmatched': do['unmatched'], 'readings': do['readings'], 'excluded': do['excluded'], 'points': cj(do['points'])}
+do2 = mapmodel.dip_offsets(sc['points'], struct, radius=300.0, offset=100.0)
+out['do_all'] = {'used': do2['used'], 'unmatched': do2['unmatched'], 'readings': do2['readings'], 'excluded': do2['excluded']}
+r = mapmodel.build_from_map(topo, units, faults=faults, structural=struct, opts={'radius': 300.0, 'offset': 100.0})
+out['bfm'] = {'units': [uo(u) for u in r['units']], 'stats': r['stats'], 'warnings': r['warnings']}
+sm, bases, topo2 = stratigraphy.build_stratigraphy(topo, mapmodel.strat_units(r), lattice=lat, method='rbf')
+out['strat'] = {'bases': [None if g is None else list(g.values) for g in bases], 'names': [None if g is None else g.name for g in bases], 'units': [u['name'] for u in sm.units], 'has_base': [u['base'] is not None for u in sm.units]}
+r2 = mapmodel.build_from_map(topo, units[:3])
+out['nodip'] = {'units': [uo(u) for u in r2['units']], 'stats': r2['stats'], 'warnings': r2['warnings']}
+few = [dict(units[0], outline=None), units[1], units[2]]
+# a Young outline with a single short shared stretch: 2 contact vertices only
+ls = LineSet(name='Young outline', role='geology-outline')
+ls.add_polyline([(700.0, 480.0, 1270.0), (700.0, 500.0, 1272.0), (900.0, 500.0, 1292.0), (900.0, 480.0, 1290.0), (700.0, 480.0, 1270.0)], {'unit': 'Young', 'unit_id': 'y'})
+few[0]['outline'] = ls
+r3 = mapmodel.build_from_map(topo, few, structural=struct)
+out['few'] = {'units': [uo(u) for u in r3['units']], 'rejected': r3['stats']['rejected'], 'warnings': r3['warnings']}
+def err(fn):
+    try:
+        fn(); return None
+    except (ValueError, TypeError) as e:
+        return str(e)
+out['err_topo'] = err(lambda: mapmodel.build_from_map(None, units))
+out['err_tol'] = err(lambda: mapmodel.shared_contacts(units[0]['outline'], units[1]['outline'], 0.0))
+out['err_outline'] = err(lambda: mapmodel.build_from_map(topo, [{'id': 'x', 'name': 'X', 't0': 1, 't1': 0}]))
+`, payload));
+  console.log(`   python reference: ${pyMs.toFixed(0)} ms`);
+  // a. order
+  const o = E.unitOrder(units);
+  cmp('unit_order: youngest first by t1 then t0, unaged last, reported', { order: o.order, aged: o.aged, unaged: o.unaged, unaged_names: o.unaged_names, ties: o.ties, warnings: o.warnings }, P.order, 0);
+  record('unit_order: Island (0.1–0) before Young (2.6–0), Unaged last', o.order.join(',') === '3,0,1,2,4' && o.unaged_names[0] === 'Unaged', o.order.join(','));
+  const o2 = E.unitOrder(tied);
+  cmp('unit_order: ties (same ages) and a single age reported', { order: o2.order, ties: o2.ties, unaged_names: o2.unaged_names, warnings: o2.warnings }, P.tied, 0);
+  record('unit_order: A / B tie is reported, D unaged, F (t1 only) placed', o2.ties.length === 1 && o2.ties[0].join('/') === 'A/B' && o2.unaged_names.join() === 'D' && o2.order[0] === 4 && o2.order[1] === 5, JSON.stringify(o2.order) + ' ties ' + JSON.stringify(o2.ties));
+  // b. shared contacts
+  const sc = E.sharedContacts(units[0].outline, units[1].outline, 25, { topo });
+  cmp('shared_contacts: Young / Middle share x = 700 — points, attributes, edge skips', { count: sc.count, edge_skipped: sc.edge_skipped, nodata: sc.nodata, tol: sc.tol, points: contactsJSON(sc.points) }, P.sc, 1e-12);
+  record('shared_contacts: every contact lies on x = 700, off the box edge, z from the topography', sc.count === 37 && [...Array(sc.count).keys()].every(i => sc.points.xyz[3 * i] === 700 && sc.points.xyz[3 * i + 1] > 25 && sc.points.xyz[3 * i + 1] < 975 && Math.abs(sc.points.xyz[3 * i + 2] - topo.sample(700, sc.points.xyz[3 * i + 1])) < 1e-9), `${sc.count} contacts, ${sc.edge_skipped} edge vertices skipped`);
+  cmp('shared_contacts: Young / Basement do not touch', E.sharedContacts(units[0].outline, units[2].outline, 25, { topo }).count, P.sc_none, 0);
+  const scw = E.sharedContacts(units[0].outline, units[1].outline, 25);
+  cmp('shared_contacts: without a topography the outline z is kept (and no edge skip)', { count: scw.count, z: Array.from(scw.points.xyz).filter((_, k) => k % 3 === 2).slice(0, 5) }, P.sc_noz, 1e-12);
+  // c. dip offsets
+  const d = E.dipOffsets(sc.points, struct, { radius: 300, offset: 100, exclude_sources: ['Faults (mapped)'] });
+  cmp('dip_offsets: nearest reading within 300 m, one point 100 m down dip, fault reading excluded', { used: d.used, unmatched: d.unmatched, readings: d.readings, excluded: d.excluded, points: contactsJSON(d.points) }, P.do, 1e-12);
+  let geomOk = d.used > 0;
+  for (let i = 0; i < d.points.n && geomOk; i++) {
+    const c = d.points.attributes.contact[i], v = S.dipVector(+d.points.attributes.dip[i], +d.points.attributes.dip_azimuth[i]);
+    for (let a = 0; a < 3; a++) if (Math.abs(d.points.xyz[3 * i + a] - (sc.points.xyz[3 * c + a] + 100 * v[a])) > 1e-9) geomOk = false;
+    if (+d.points.attributes.dip[i] !== 30 || +d.points.attributes.dip_azimuth[i] !== 90) geomOk = false;   // never the 80° fault reading
+  }
+  record('dip_offsets: offset = contact + 100 m × S.dipVector(dip, dip azimuth), from the bedding reading', geomOk && d.used === 23 && d.unmatched === 14, `${d.used} offsets, ${d.unmatched} contacts beyond 300 m of a reading`);
+  const dAll = E.dipOffsets(sc.points, struct, { radius: 300, offset: 100 });
+  cmp('dip_offsets: without the exclusion the fault reading is a candidate', { used: dAll.used, unmatched: dAll.unmatched, readings: dAll.readings, excluded: dAll.excluded }, P.do_all, 0);
+  // d. buildFromMap
+  const r = E.buildFromMap({ topo, units, faults, structural: struct, opts: { radius: 300, offset: 100 } });
+  cmp('build_from_map: units (bases, counts, provenance, warnings) / stats / warnings', { units: r.units.map(unitOut), stats: r.stats, warnings: r.warnings }, P.bfm, 1e-12);
+  record('build_from_map: Young + Middle get bases, Basement none, Island skipped and named, Unaged reported', r.units.map(u => u.name).join() === 'Young,Middle,Basement' && r.units[0].base && r.units[1].base && !r.units[2].base && r.stats.rejected.no_contacts.join() === 'Island' && r.stats.unaged.join() === 'Unaged' && r.warnings.some(w => /Island: its outline touches no older unit/.test(w)), r.warnings.join(' | ').slice(0, 160));
+  record('build_from_map: every base carries method "model from map", confidence inferred, derived_from', r.units.filter(u => u.base).every(u => u.base.provenance.method === 'model from map' && u.base.provenance.confidence === 'inferred' && u.base.metadata.derived_from.length >= 3 && u.provenance.method === 'model from map'));
+  const built = E.buildStratigraphy(topo, r.units.map(u => ({ name: u.name, color: u.color, lithology: u.lithology, description: u.description, contact: u.contact, base: u.base })), { lattice, method: 'rbf' });
+  cmp('build_from_map → build_stratigraphy: 2 base grids + basement', { bases: built.bases.map(g => g && g.values), names: built.bases.map(g => g && g.name), units: built.strat.units.map(u => u.name), has_base: built.strat.units.map(u => u.base != null) }, P.strat, 1e-9);
+  // refusals
+  const r2 = E.buildFromMap({ topo, units: units.slice(0, 3) });
+  cmp('build_from_map: no readings anywhere → heightfields, NO_DIP_WARNING on every base', { units: r2.units.map(unitOut), stats: r2.stats, warnings: r2.warnings }, P.nodip, 1e-12);
+  record('build_from_map: the no-dip warning is the stated sentence, on the result and on each base', r2.stats.no_dip && r2.warnings.includes(E.NO_DIP_WARNING) && r2.units.filter(u => u.base).every(u => u.warnings.includes(E.NO_DIP_WARNING)) && r2.stats.dips_used === 0, E.NO_DIP_WARNING);
+  const fewLs = new GM.LineSet({ name: 'Young outline', role: 'geology-outline' });
+  fewLs.addPolyline([[700, 480, 1270], [700, 500, 1272], [900, 500, 1292], [900, 480, 1290], [700, 480, 1270]], { unit: 'Young', unit_id: 'y' });
+  const r3 = E.buildFromMap({ topo, units: [Object.assign({}, units[0], { outline: fewLs }), units[1], units[2]], structural: struct });
+  cmp('build_from_map: fewer than 3 contacts → skipped and named', { units: r3.units.map(unitOut), rejected: r3.stats.rejected, warnings: r3.warnings }, P.few, 1e-12);
+  record('build_from_map: the 2-contact unit is refused with its count, the rest still builds', r3.stats.rejected.few_contacts.join() === 'Young' && r3.units.map(u => u.name).join() === 'Middle,Basement' && r3.warnings.some(w => /only 2 contact points/.test(w)), r3.warnings.find(w => /contact point/.test(w)) || '');
+  const err = fn => { try { fn(); return null; } catch (e) { return e.message; } };
+  cmp('build_from_map / shared_contacts refusals (no topography, tol 0, no outline)', [err(() => E.buildFromMap({ units })), err(() => E.sharedContacts(units[0].outline, units[1].outline, 0)), err(() => E.buildFromMap({ topo, units: [{ id: 'x', name: 'X', t0: 1, t1: 0 }] }))].map(m => m == null ? null : m.replace(/^sharedContacts/, 'shared_contacts').replace(/^buildFromMap/, 'build_from_map')), [P.err_topo, P.err_tol, P.err_outline], 0);
+  // the worker path the tool takes: mapModelInputs → buildStratigraphy → stratigraphyVolumes
+  const client = new E.EngineClient(WORKER_URL);
+  try {
+    const w = await client.call('mapModelInputs', { topo, units: units.map(u => ({ id: u.id, name: u.name, t0: u.t0, t1: u.t1, outline: u.outline })), faults, structural: struct, opts: { radius: 300, offset: 100 } });
+    record('worker mapModelInputs: same units and stats back through the worker', client.usingWorker && w.units.length === 3 && w.units[0].base instanceof GM.PointSet && w.units[0].base.n === r.units[0].base.n && JSON.stringify(w.stats) === JSON.stringify(r.stats), `${w.units.map(u => u.name + ':' + (u.base ? u.base.n : '-')).join(' ')}`);
+    const b = await client.call('buildStratigraphy', { topo, lattice, units: w.units.map(u => ({ name: u.name, color: u.color, contact: u.contact, base: u.base })), method: 'rbf', name: 'Rock from the map (inferred)' });
+    const vols = await client.call('stratigraphyVolumes', { strat: b.strat, grids: b.bases.filter(Boolean), topo: b.topo });
+    record('worker buildStratigraphy + stratigraphyVolumes on the map-model units: 2 bases, 3 volumes', b.bases.filter(Boolean).length === 2 && b.strat.name === 'Rock from the map (inferred)' && vols.length === 3 && vols.every(m => m instanceof GM.Mesh && m.nTriangles > 0), `${vols.map(m => m.nTriangles).join('/')} triangles`);
+  } finally { client.terminate(); }
+}
+
 /* ================================================================= main */
 async function main() {
   const t0 = performance.now();
@@ -978,6 +1127,7 @@ async function main() {
     ['worker', () => testWorker(stratInput || makeStratData())],
     ['kit', testKitAndSlicing],
     ['geometry', testGeometry],
+    ['mapmodel', testMapModel],
   ];
   if (!NO_BENCH) steps.push(['bench', bench]);
   for (const [name, fn] of steps) {

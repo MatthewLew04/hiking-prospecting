@@ -86,7 +86,9 @@ The same page does the other three things a geologist wants from Leapfrog:
 
 ```
 site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&aoi&r
-      │  (writes a viewport hand-off of loaded tiled points to IndexedDB 'nwmm-geomodel')
+      │  (writes a viewport hand-off to IndexedDB 'nwmm-geomodel': the loaded tiled
+      │   points AND the USGS geology polygons + fault traces the map has loaded
+      │   around the site — so every dot gets draped rock units, not only AOI bundles)
       ▼
  gm-viewer.js   app shell: boot, layer tree, inspector, import/export, autosave (IndexedDB)
  gm-site.js     site bootstrap: terrarium terrain → Grid2D, imagery mosaic → texture,
@@ -101,6 +103,7 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
  gm-struct-tools.js  the three structural tool panels
  gm-more-tools.js  measure · notes (pinned, with a source) · trace a fault / contact / vein
  gm-geom-tools.js  project a trace down dip (vein / fault sheet) · contours · plane from a measurement
+ gm-map-model.js   Model the rock from the map (contacts + derived dips → inferred pancake) · stated water level
  gm-formats.js  every reader/writer (OMF v0.9 + v2.0 incl. a Parquet/Thrift writer, Surfer,
                 Geosoft GRD/GXF/XYZ, Arc ASCII, ZMAP+, Irap, CPS-3, UBC, OBJ, DXF, GOCAD,
                 Leapfrog .msh, CSV tables, SEG-Y, LAS, PNG, ZIP)
@@ -108,7 +111,7 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
  gm-ui.js       DOM helpers, variogram plot
 
 pipelines/geomodel/          Python twin (stdlib only; numpy used when present)
-   model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  contours.py  kit.py
+   model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  contours.py  mapmodel.py  kit.py
    narrative.py  resolve.py  agentbuild.py  render2d.py  publish.py   <- prose -> model
    mapplate.py   assay.py                                             <- plates, grades
    formats/{omf1,omf2,parquet_lite,thrift_compact,surfer,geosoft,arcascii,zmap,irap,cps3,
@@ -319,6 +322,9 @@ node tools/test_model3d_ui.mjs      # the shell: tool host, arming, Esc, menu or
 node tools/test_model3d_render.mjs  # tube picking, pick-through, screen-space dashes, opacity, labels, declutter, slab clip (31 checks)
 node tools/test_model3d_tools.mjs   # section PNG/SVG, thick slice, contact-from-trace, input classification, implicit bounds, measure, notes, polylines (42 checks)
 node tools/test_model3d_geom.mjs    # extrude down dip, contours, plane from a measurement (29 checks)
+node tools/test_model3d_site.mjs    # hand-off geology draped for any site, ages parsed, USMIN glyphs (40 checks)
+node tools/test_model3d_mapmodel.mjs   # model the rock from the map, water level, refusals (20 checks)
+node tools/test_map_handoff.mjs     # the map's hand-off of USGS geology, faults and points (28 checks, real local PMTiles)
 ```
 
 ### Cross-check setup
@@ -648,6 +654,36 @@ Built in the Leapfrog-parity pass ([`LEAPFROG-PARITY.md`](LEAPFROG-PARITY.md)):
   refused as bases.
 * **Traced faults, contacts and veins** (`Trace a fault / contact / vein`),
   **measurements** (`Measure`) and **pinned notes with a source** (`Notes`).
+* **Rock for every site.** The map hands the modeller the USGS geology
+  polygons and fault traces it has loaded around the point (national SGMC
+  tiles, or a state survey's map where one replaces them), and `gm-site.js`
+  drapes them exactly as it drapes an AOI bundle — unit meshes, outlines,
+  faults — with the unit's age read into `t0 / t1` from `age_min / age_max`
+  or parsed from the age text with a geologic time table (an unreadable age
+  is a warning, never a guess). A site inside an AOI bundle keeps the bundle
+  and says the hand-off was skipped, so no contact is drawn twice. With
+  USGS GEOLOGY off on the map, the hand-off says so instead of pretending.
+* **Mine features for every site.** USMIN points (shafts, adits, prospect
+  pits, open pits, dumps, mills) come through the same hand-off as a
+  `features` layer drawn as type glyphs — square, triangle turned to the
+  adit's mapped azimuth, circle, diamond, hexagon, cross — labelled as
+  surface locations digitised from topographic maps: no depth, no extent.
+* **Model the rock from the map** (`TOOLS ▾`, and the one-click button on
+  the WHERE THINGS STAND card): Leapfrog's Model From Map made automatic and
+  honest. Units are ordered youngest-first by age; the vertices where a
+  unit's draped outline meets an older unit's are its contact points; each
+  contact takes the nearest orientation derived along a trace (§7.2) within
+  300 m and gets a point 100 m down dip; the existing pancake builder then
+  makes base surfaces and closed unit volumes, all `provenance.confidence =
+  inferred`, `method: model from map`. A unit touching nothing older, or with
+  fewer than three contacts, is skipped and named; with no readings anywhere
+  the bases follow the contacts at the surface and every base says so; ties
+  in age are not contacted against each other; readings derived along faults
+  are excluded and the faults are declared not honoured (fault blocks stay
+  out of scope, §7.8). The RESULT block lists every count.
+* **Water level as stated** — an elevation or *below the collar* with a
+  source → a horizontal plane (role `water`), *described* with a source and
+  *assumed* without, never a computed head.
 * Set elevation for any layer with a scope that never touches surveyed rows;
   implicit surfaces clipped below the topography with the daylight line
   computed; the global trend restored on reload and applied by the Implicit

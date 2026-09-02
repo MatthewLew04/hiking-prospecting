@@ -2258,6 +2258,287 @@ export function unitColor(u) {
   return [128 + (r >> 1), 128 + (g >> 1), 128 + (b >> 1)];
 }
 
+/* ================================================= model from the map */
+/* Leapfrog's Model From Map, reduced to what a geological map draped on a
+   DEM can honestly say (GEOMODEL.md §7):
+
+     unitOrder       the stack from the units' ages (youngest first);
+                     unaged units go last and are reported, ties are reported
+     sharedContacts  where a unit's draped outline meets an older unit's
+                     outline — that is the younger unit's base cropping out
+     dipOffsets      one extra point a fixed distance down dip of each
+                     contact, from the nearest orientation DERIVED from the
+                     traces themselves (gm-structural.js deriveFromTraces)
+     buildFromMap    a→c into the unit list buildStratigraphy takes
+
+   Nothing is defaulted: a unit that touches nothing older, or has fewer
+   than three contacts, is skipped and named; a map with no derivable dip
+   yields heightfields through the contacts, labelled as such; readings
+   derived from FAULT traces are never used as bedding dips.  Everything
+   produced carries provenance {method: 'model from map', confidence:
+   'inferred'}.  Python twin: pipelines/geomodel/mapmodel.py. */
+
+export const MAPMODEL_METHOD = 'model from map';
+export const MAPMODEL_DEFAULTS = { tol: null, radius: 300, offset: 100, min_contacts: 3 };
+export const NO_DIP_WARNING = 'no dip information — bases follow the mapped contacts at the surface';
+
+const finiteOrNull = v => (v == null || v === '') ? null : (isFinite(+v) ? +v : null);
+/** Unit vector down the dip line — the same formula as gm-structural.js
+    dipVector (that module imports this one, so it cannot be imported here). */
+function dipVec(dip, dipAz) { const d = dip * DEG, a = dipAz * DEG, cd = Math.cos(d); return [Math.sin(a) * cd, Math.cos(a) * cd, -Math.sin(d)]; }
+const unitLabel = (u, i) => (u && u.name != null && u.name !== '') ? String(u.name) : (u && u.id != null ? String(u.id) : `unit ${i}`);
+function ageKey(u) {   // [t1, t0] — youngest first sorts ascending; a single age stands for both
+  const t0 = finiteOrNull(u.t0), t1 = finiteOrNull(u.t1);
+  if (t0 == null && t1 == null) return null;
+  return [t1 == null ? t0 : t1, t0 == null ? t1 : t0];
+}
+
+/** Order units youngest first by t1 (younger Ma) then t0 (older Ma).  Units
+    with no ages go last in map order and are reported; units with the same
+    ages are reported as ties (their mutual order is not knowledge). */
+export function unitOrder(units) {
+  const list = Array.isArray(units) ? units : [];
+  const aged = [], unaged = [];
+  list.forEach((u, i) => { if (ageKey(u)) aged.push(i); else unaged.push(i); });
+  aged.sort((a, b) => { const ka = ageKey(list[a]), kb = ageKey(list[b]); return (ka[0] - kb[0]) || (ka[1] - kb[1]) || (a - b); });
+  const ties = [];
+  for (let p = 0; p < aged.length;) {
+    let q = p + 1;
+    while (q < aged.length && ageKey(list[aged[q]])[0] === ageKey(list[aged[p]])[0] && ageKey(list[aged[q]])[1] === ageKey(list[aged[p]])[1]) q++;
+    if (q - p > 1) ties.push(aged.slice(p, q).map(i => unitLabel(list[i], i)));
+    p = q;
+  }
+  const warnings = [];
+  if (unaged.length) warnings.push(`${unaged.length} unit${unaged.length > 1 ? 's' : ''} without an age (${unaged.map(i => unitLabel(list[i], i)).join(', ')}) — placed last, in map order, and not modelled: nothing says where ${unaged.length > 1 ? 'they sit' : 'it sits'} in the sequence`);
+  for (const t of ties) warnings.push(`same ages, order between them unknown: ${t.join(' / ')} — neither is treated as older than the other`);
+  return { order: aged.concat(unaged), aged, unaged, unaged_names: unaged.map(i => unitLabel(list[i], i)), ties, keys: list.map(u => ageKey(u)), warnings };
+}
+
+/** Squared distance from (px, py) to the segment a–b in plan. */
+function segDist2(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+  let t = L2 > 0 ? ((px - ax) * dx + (py - ay) * dy) / L2 : 0;
+  if (t < 0) t = 0; else if (t > 1) t = 1;
+  const qx = ax + t * dx - px, qy = ay + t * dy - py;
+  return qx * qx + qy * qy;
+}
+/** Spatial hash of a LineSet's plan segments in cells of ``cell`` metres. */
+function segmentHash(ls, cell) {
+  const segs = [], cells = new Map();
+  for (const part of ls.parts) {
+    for (let k = 0; k + 1 < part.length; k++) {
+      const a = ls.vertex(part[k]), b = ls.vertex(part[k + 1]);
+      if (a[0] !== a[0] || a[1] !== a[1] || b[0] !== b[0] || b[1] !== b[1]) continue;
+      const s = segs.length; segs.push([a[0], a[1], b[0], b[1]]);
+      const ix0 = Math.floor(Math.min(a[0], b[0]) / cell), ix1 = Math.floor(Math.max(a[0], b[0]) / cell), iy0 = Math.floor(Math.min(a[1], b[1]) / cell), iy1 = Math.floor(Math.max(a[1], b[1]) / cell);
+      for (let ix = ix0; ix <= ix1; ix++) for (let iy = iy0; iy <= iy1; iy++) { const key = ix + ',' + iy; let l = cells.get(key); if (!l) { l = []; cells.set(key, l); } l.push(s); }
+    }
+  }
+  return { segs, cells, cell, near(px, py, tol) {
+    const ix = Math.floor(px / cell), iy = Math.floor(py / cell), t2 = tol * tol; let best = INF;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      const l = cells.get((ix + dx) + ',' + (iy + dy)); if (!l) continue;
+      for (const s of l) { const g = segs[s]; const d2 = segDist2(px, py, g[0], g[1], g[2], g[3]); if (d2 < best) best = d2; }
+    }
+    return best <= t2 ? Math.sqrt(best) : null;
+  } };
+}
+/** One topo cell inside the model box: vertices on or beyond it are
+    clipping artefacts (clipRingRect), not contacts. */
+function innerBox(topo, box) {
+  if (box && box.length >= 4) return [+box[0], +box[1], +box[2], +box[3]];
+  if (!topo) return null;
+  return [topo.x0 + topo.dx, topo.y0 + topo.dy, topo.xmax - topo.dx, topo.ymax - topo.dy];
+}
+
+/** The vertices of outline A that lie within ``tol`` of outline B's line
+    (distance to B's segments, not just its vertices) — the contact between
+    the two units.  Vertices within one topo cell of the model box edge are
+    skipped; z is resampled from opts.topo (vertices over no-data are
+    skipped and counted).  Returns {points, count, edge_skipped, nodata, tol}. */
+export function sharedContacts(outlineA, outlineB, tol, opts = {}) {
+  const A = asObject(outlineA), B = asObject(outlineB);
+  const topo = opts.topo ? asObject(opts.topo) : null;
+  tol = +tol; if (!(tol > 0)) throw new Error('sharedContacts: tol must be > 0');
+  if (!A || A.kind !== 'lineset' || !B || B.kind !== 'lineset') throw new Error('sharedContacts: two LineSets are needed');
+  const box = innerBox(topo, opts.box);
+  const hash = segmentHash(B, tol);
+  const against = opts.against != null ? String(opts.against) : (B.name || '');
+  const points = new GM.PointSet({ name: opts.name || `${A.name || 'unit'} / ${B.name || 'older unit'} contacts`, role: 'contacts', color: opts.color || A.color });
+  const seen = new Set();
+  let edge = 0, nodata = 0;
+  A.parts.forEach((part, k) => {
+    const feat = A.features[k] || {};
+    const unit = feat.unit != null ? String(feat.unit) : (feat.unit_id != null ? String(feat.unit_id) : (A.name || ''));
+    for (const i of part) {
+      const v = A.vertex(i); const x = v[0], y = v[1];
+      if (x !== x || y !== y) continue;
+      if (box && (x <= box[0] || x >= box[2] || y <= box[1] || y >= box[3])) { edge++; continue; }
+      const d = hash.near(x, y, tol); if (d == null) continue;
+      const key = Math.floor(x * 1000 + 0.5) + ',' + Math.floor(y * 1000 + 0.5);
+      if (seen.has(key)) continue;
+      let z = v[2];
+      if (topo) { z = topo.sample(x, y); if (z !== z) { nodata++; continue; } }
+      seen.add(key);
+      points.add(x, y, z, { kind: 'contact', unit, against, part: k, distance_m: pyRound(d, 3) });
+    }
+  });
+  points.metadata.contact = { tol, against, edge_skipped: edge, nodata };
+  points.metadata.derived_from = [A.id, B.id].concat(topo ? [topo.id] : []);
+  points.provenance = { method: MAPMODEL_METHOD, confidence: 'inferred', inputs: [A.name, B.name].concat(topo ? [topo.name] : []), step: 'shared contacts', tol_m: tol };
+  return { points, count: points.n, edge_skipped: edge, nodata, tol };
+}
+
+/** Flatten one or several structural PointSets (live or packed) into typed
+    columns, dropping rows without a dip / azimuth and rows whose ``source``
+    is in opts.exclude_sources (readings derived from fault traces are not
+    bedding dips). */
+function readingsOf(structural, excludeSources) {
+  const layers = (structural == null ? [] : Array.isArray(structural) ? structural : [structural]).map(asObject).filter(o => o && o.kind === 'points' && o.n > 0);
+  const ex = new Set((excludeSources || []).map(String));
+  const xyz = [], dip = [], az = [], src = [], part = [], layer = [], row = [];
+  let excluded = 0;
+  for (const ps of layers) {
+    const D = ps.numeric('dip'), Az = ps.numeric('dip_azimuth'), S = ps.attributes.source || [], Pt = ps.attributes.part || [];
+    for (let i = 0; i < ps.n; i++) {
+      const d = D[i], a = Az[i], x = ps.xyz[3 * i], y = ps.xyz[3 * i + 1], z = ps.xyz[3 * i + 2];
+      if (d !== d || a !== a || x !== x || y !== y || z !== z) continue;
+      if (S[i] != null && ex.has(String(S[i]))) { excluded++; continue; }
+      xyz.push(x, y, z); dip.push(d); az.push(a); src.push(S[i] == null ? null : String(S[i])); part.push(Pt[i] == null ? null : Pt[i]); layer.push(ps.name || ps.id); row.push(i);
+    }
+  }
+  return { n: dip.length, xyz: Float64Array.from(xyz), dip, az, src, part, layer, row, layers: layers.map(l => l.id), excluded };
+}
+
+/** For each contact point find the nearest structural reading within
+    opts.radius (default 300 m) and add one point opts.offset (default
+    100 m) down its dip vector, recording which reading it came from.
+    Returns {points (the offsets only), used, unmatched, readings, excluded}. */
+export function dipOffsets(contactPts, structural, opts = {}) {
+  const pts = asObject(contactPts);
+  const radius = +opt(opts, 'radius', null, MAPMODEL_DEFAULTS.radius), offset = +opt(opts, 'offset', null, MAPMODEL_DEFAULTS.offset);
+  if (!(radius > 0) || !(offset > 0)) throw new Error('dipOffsets: radius and offset must be > 0');
+  const R = readingsOf(structural, opts.exclude_sources || opts.excludeSources);
+  const out = new GM.PointSet({ name: (pts.name || 'contacts') + ' — dip offsets', role: 'contacts', color: pts.color });
+  // cells no smaller than the search radius: a single reading would otherwise give a 2 m cell and a radius search that walks hundreds of rings
+  const index = R.n ? new GridIndex(R.xyz, 3, radius) : null;
+  let used = 0, unmatched = 0;
+  for (let i = 0; i < pts.n; i++) {
+    const x = pts.xyz[3 * i], y = pts.xyz[3 * i + 1], z = pts.xyz[3 * i + 2];
+    if (x !== x || y !== y || z !== z) { unmatched++; continue; }
+    const m = index ? index.nearest(x, y, z, 1, radius) : 0;
+    if (!m) { unmatched++; continue; }
+    const j = index.resI[0], d = index.resD[0];
+    const v = dipVec(R.dip[j], R.az[j]);
+    out.add(x + offset * v[0], y + offset * v[1], z + offset * v[2], { kind: 'offset', contact: i, dip: R.dip[j], dip_azimuth: R.az[j], reading_layer: R.layer[j], reading_row: R.row[j], reading_source: R.src[j], reading_part: R.part[j], reading_distance_m: pyRound(d, 2), offset_m: offset });
+    used++;
+  }
+  out.metadata.dip_offsets = { radius_m: radius, offset_m: offset, used, unmatched, readings: R.n, readings_excluded: R.excluded };
+  out.metadata.derived_from = [pts.id].concat(R.layers);
+  out.provenance = { method: MAPMODEL_METHOD, confidence: 'inferred', inputs: [pts.name].concat(R.layers), step: 'dip offsets', radius_m: radius, offset_m: offset };
+  return { points: out, used, unmatched, readings: R.n, excluded: R.excluded };
+}
+
+/** Append src's rows to dst, skipping rows whose plan position (to 1 mm)
+    is already in ``seen`` — a vertex at a triple junction is one contact,
+    not one per older unit. */
+function appendPoints(dst, src, seen = null) {
+  let added = 0;
+  for (let i = 0; i < src.n; i++) {
+    const x = src.xyz[3 * i], y = src.xyz[3 * i + 1];
+    if (seen) { const key = Math.floor(x * 1000 + 0.5) + ',' + Math.floor(y * 1000 + 0.5); if (seen.has(key)) continue; seen.add(key); }
+    const a = {}; for (const [k, col] of Object.entries(src.attributes)) a[k] = col[i];
+    dst.add(x, y, src.xyz[3 * i + 2], a); added++;
+  }
+  return added;
+}
+
+/** Orchestrate unitOrder → sharedContacts → dipOffsets into the unit list
+    buildStratigraphy takes.  args: {topo, units: [{id, name, t0, t1, color,
+    lithology, outline: LineSet}], faults: [LineSet], structural: PointSet |
+    [PointSet], opts: {tol, radius, offset, min_contacts}, onProgress}.
+    Returns {units, stats, warnings}: each unit has base = a PointSet of its
+    contacts + offsets (contact 'deposit'; the oldest unit is basement with
+    no base), provenance, derived_from and its own warnings; stats counts
+    everything that was used, skipped or refused. */
+export function buildFromMap(args = {}) {
+  const topo = asObject(args.topo || args.topography);
+  if (!topo || topo.kind !== 'grid2d') throw new Error('buildFromMap: a topography grid is required (contacts take their elevation from it)');
+  const o = Object.assign({}, MAPMODEL_DEFAULTS, args.opts || {});
+  const onProgress = typeof args.onProgress === 'function' ? args.onProgress : null;
+  const tol = o.tol > 0 ? +o.tol : Math.max(topo.dx, topo.dy);
+  const radius = +o.radius, offset = +o.offset, minContacts = Math.max(1, o.min_contacts | 0);
+  const units = (args.units || []).map((u, i) => Object.assign({}, u, { outline: asObject(u.outline), _i: i }));
+  for (const u of units) if (!u.outline || u.outline.kind !== 'lineset') throw new Error(`buildFromMap: unit ${unitLabel(u, u._i)} has no outline LineSet`);
+  const faults = (args.faults == null ? [] : Array.isArray(args.faults) ? args.faults : [args.faults]).map(asObject).filter(f => f && f.kind === 'lineset');
+  const faultNames = faults.map(f => f.name).filter(Boolean);
+  const structural = args.structural == null ? [] : (Array.isArray(args.structural) ? args.structural : [args.structural]).map(asObject).filter(s => s && s.kind === 'points');
+  const R = readingsOf(structural, faultNames);
+  const ord = unitOrder(units);
+  const warnings = ord.warnings.slice();
+  const stats = {
+    ordered: ord.aged.map(i => unitLabel(units[i], i)), unaged: ord.unaged_names, ties: ord.ties,
+    contacts_per_unit: {}, offsets_per_unit: {}, dips_used: 0, units_without_dip: [], units_modelled: [], basement: null,
+    rejected: { no_age: ord.unaged_names.slice(), no_contacts: [], few_contacts: [], edge_vertices: 0, nodata: 0, readings_excluded: R.excluded },
+    readings: R.n, no_dip: false, faults_ignored: faults.length, tol, radius, offset, min_contacts: minContacts,
+  };
+  if (faults.length) warnings.push(`${faults.length} mapped fault trace${faults.length > 1 ? 's are' : ' is'} not honoured: the bases are continuous across ${faults.length > 1 ? 'them' : 'it'} (fault blocks are not modelled), and ${R.excluded} reading${R.excluded === 1 ? '' : 's'} derived along fault traces ${R.excluded === 1 ? 'was' : 'were'} left out of the dip search`);
+  if (!R.n) { stats.no_dip = true; warnings.push(NO_DIP_WARNING); }
+  const out = [];
+  const aged = ord.aged;
+  aged.forEach((ui, p) => {
+    const u = units[ui], name = unitLabel(u, ui), key = ord.keys[ui];
+    const base = { id: u.id != null ? u.id : null, name, color: u.color || DEFAULT_COLORS[p % DEFAULT_COLORS.length], lithology: u.lithology || '', description: u.description || '', t0: finiteOrNull(u.t0), t1: finiteOrNull(u.t1), contact: 'deposit', base: null, n_contacts: 0, n_offsets: 0, against: [], warnings: [], derived_from: [u.outline.id, topo.id], provenance: { method: MAPMODEL_METHOD, confidence: 'inferred', inputs: [u.outline.name || name, topo.name || 'topography'], tol_m: tol, radius_m: radius, offset_m: offset } };
+    if (p === aged.length - 1) {
+      base.provenance.role = 'basement'; base.provenance.note = 'the oldest aged unit: no base is modelled';
+      stats.basement = name; out.push(base);
+      if (onProgress) onProgress((p + 1) / aged.length);
+      return;
+    }
+    const older = aged.slice(p + 1).filter(oj => { const k2 = ord.keys[oj]; return !(k2[0] === key[0] && k2[1] === key[1]); });
+    const contacts = new GM.PointSet({ name: `${name} — map contacts`, role: 'contacts', color: base.color });
+    const seen = new Set();
+    for (const oj of older) {
+      const ou = units[oj];
+      const r = sharedContacts(u.outline, ou.outline, tol, { topo, against: unitLabel(ou, oj), name: contacts.name });
+      stats.rejected.edge_vertices += r.edge_skipped; stats.rejected.nodata += r.nodata;
+      if (r.count && appendPoints(contacts, r.points, seen)) { base.against.push(unitLabel(ou, oj)); base.derived_from.push(ou.outline.id); base.provenance.inputs.push(ou.outline.name || unitLabel(ou, oj)); }
+    }
+    stats.contacts_per_unit[name] = contacts.n;
+    if (!contacts.n) {
+      stats.rejected.no_contacts.push(name);
+      warnings.push(`${name}: its outline touches no older unit inside the model (${older.length ? older.map(oj => unitLabel(units[oj], oj)).join(', ') : 'no older unit with an age'}) — skipped; nothing on the map says where its base is`);
+      if (onProgress) onProgress((p + 1) / aged.length);
+      return;
+    }
+    if (contacts.n < minContacts) {
+      stats.rejected.few_contacts.push(name);
+      warnings.push(`${name}: only ${contacts.n} contact point${contacts.n === 1 ? '' : 's'} with older units (${base.against.join(', ')}) — fewer than ${minContacts}, too little to fit a surface through; skipped`);
+      if (onProgress) onProgress((p + 1) / aged.length);
+      return;
+    }
+    const d = dipOffsets(contacts, structural, { radius, offset, exclude_sources: faultNames });
+    stats.offsets_per_unit[name] = d.used; stats.dips_used += d.used;
+    const merged = new GM.PointSet({ name: `${name} — map contacts + dip offsets`, role: 'contacts', color: base.color });
+    appendPoints(merged, contacts); appendPoints(merged, d.points);
+    merged.metadata.map_model = { unit: name, against: base.against.slice(), contacts: contacts.n, offsets: d.used, unmatched: d.unmatched, tol_m: tol, radius_m: radius, offset_m: offset };
+    merged.metadata.derived_from = base.derived_from.concat(R.layers);
+    merged.provenance = Object.assign({}, base.provenance, { inputs: base.provenance.inputs.concat(structural.map(s => s.name || s.id)), step: 'contacts + dip offsets' });
+    base.base = merged; base.n_contacts = contacts.n; base.n_offsets = d.used; base.derived_from = merged.metadata.derived_from.slice(); base.provenance = merged.provenance;
+    if (!d.used) {
+      stats.units_without_dip.push(name);
+      base.warnings.push(R.n ? `no orientation within ${radius} m of its contacts — the base is a heightfield through the contacts only, with no dip away from the line` : NO_DIP_WARNING);
+    }
+    stats.units_modelled.push(name);
+    out.push(base);
+    if (onProgress) onProgress((p + 1) / aged.length);
+  });
+  if (stats.no_dip) for (const u of out) if (u.base && !u.warnings.includes(NO_DIP_WARNING)) u.warnings.push(NO_DIP_WARNING);
+  if (!aged.length) warnings.push('no unit carries an age — nothing can be ordered, nothing is modelled');
+  else if (out.length === 1) warnings.push(`only ${stats.basement} can be placed: no younger unit has enough contacts with an older one — no base surface to build`);
+  return { units: out, stats, warnings };
+}
+
 /* ======================================================= worker ops */
 function undef(o) { const out = {}; for (const [k, v] of Object.entries(o)) if (v !== undefined) out[k] = v; return out; }
 
@@ -2323,6 +2604,8 @@ export const OPS = {
   restoreElevation: a => { const t = asObject(a.target); const restored = restoreElevation(t); return { target: t, restored }; },
   clipMeshToTopography: a => clipMeshToTopography(a.mesh, a.topo || a.topography || a.ground, a),
   daylightTrace: a => daylightTrace(a.source || a.mesh || a.grid, a.topo || a.topography || a.ground, a),
+  // model from the map: a→d of GEOMODEL.md §7 into buildStratigraphy's unit list
+  mapModelInputs: (a, p) => buildFromMap(Object.assign({}, a, { onProgress: p })),
 };
 
 /** Run one op on live objects (used by the worker and by the main-thread fallback). */

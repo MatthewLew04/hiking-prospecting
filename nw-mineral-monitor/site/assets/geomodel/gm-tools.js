@@ -172,6 +172,11 @@ export class Tools {
         h('span', { class: 's' }, st.state === 'done' ? st.has : st.state === 'blocked' ? `needs ${st.why}` : 'ready')));
     }
     card.appendChild(list);
+    // the one-click Model From Map, when the project has mapped outlines and
+    // the tool module is installed
+    const outlines = P.objects.filter(o => o.kind === 'lineset' && o.role === 'geology-outline' && o.parts.length).length;
+    if (this.all.mapmodel) card.appendChild(h('div', { class: 'frow' }, btn('MODEL THE ROCK FROM THE MAP', () => this.open('mapmodel'), { class: outlines ? 'primary' : '', disabled: !outlines, title: outlines ? `${outlines} mapped unit outline${outlines > 1 ? 's' : ''}: contacts + derived dips → unit surfaces, labelled inferred` : 'needs mapped geology — open the model from the map with USGS GEOLOGY on' })));
+    if (!outlines) card.appendChild(note('No mapped geology in this model. Open it from the map with USGS GEOLOGY on and the site in view, or drop a geology file, and the units drape on the terrain here.', 'note warn'));
     if (nextStep) card.appendChild(note(`Start here → ${nextStep.step} ${nextStep.title}.`, 'note ok'));
     card.appendChild(note('Click a layer on the left for its properties, hover or click anything in the scene for what it is and where it came from, TOOLS ▾ for the steps.'));
     return card;

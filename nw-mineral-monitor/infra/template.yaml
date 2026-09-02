@@ -199,6 +199,10 @@ Resources:
               - !Sub '${SiteBucket.Arn}/index.html'
               - !Sub '${SiteBucket.Arn}/viewer.html'
               - !Sub '${SiteBucket.Arn}/model3d.html'
+              # pregenerated 3-D models (pipelines/geomodel_autopopulate.py and the
+              # minevis publisher): the map's DESCRIBED WORKINGS button fetches
+              # models/<id>/model.geomodel.json through CloudFront
+              - !Sub '${SiteBucket.Arn}/models/*'
               - !Sub '${SiteBucket.Arn}/auth.json'
               - !Sub '${SiteBucket.Arn}/assets/*'
               - !Sub '${SiteBucket.Arn}/data/*'

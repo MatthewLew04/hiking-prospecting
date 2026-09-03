@@ -37,6 +37,7 @@ import sys
 
 from .model import Project, PointSet, utm_crs, sanitize
 from . import assay
+from . import composition
 from . import workings as wk
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -137,6 +138,14 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
     vein = assay.vein_surface(spec.get('vein'), placed, collar)
     if vein is not None:
         mine_objects.append(vein)
+    # what the text says the workings found, placed at the level its sentence
+    # names — through this build's own level stations, never a guess of its own
+    minerals = None
+    if spec.get('composition'):
+        minerals = composition.composition_points(spec, placed, station=_station_for(ctx),
+                                                  collar=collar)
+        if minerals.n:
+            mine_objects.append(minerals)
     for obj in mine_objects:
         proj.add(obj)
     _stabilise(mine_objects, spec)
@@ -164,6 +173,7 @@ def build(spec, site, context=False, radius_m=1200.0, zoom=13, offline=False, lo
         'confidence': _tally(spec.get('elements', []), placed),
         'assays': grades.n,
         'vein': dict(vein.metadata) if vein is not None else None,
+        'composition_points': minerals.n if minerals is not None else 0,
     }
 
 
@@ -203,6 +213,18 @@ def _level_z(ctx, label):
         return ctx['adit']['end'][2]
     raise Unplaceable('the elevation of the "%s" level is not stated and no adit fixes it.' % label,
                       field='level_depth_m')
+
+
+def _station_for(ctx):
+    """``_station`` as a callable the composition points can use without the
+    context: ``(xyz, how)`` or ``(None, reason)`` — an unplaceable level is a
+    reason, never an exception the caller has to know about."""
+    def station(label):
+        try:
+            return _station(ctx, label)
+        except Unplaceable as exc:
+            return None, str(exc)
+    return station
 
 
 def _station(ctx, label):

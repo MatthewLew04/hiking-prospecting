@@ -186,17 +186,6249 @@
   "y": 4631953.949871635,
   "z": 1924.595432916472
  },
+ "commodities": [
+  {
+   "commodity": "antimony",
+   "count": 13,
+   "minerals": [
+    "stibnite"
+   ]
+  },
+  {
+   "commodity": "silver",
+   "count": 8,
+   "minerals": [
+    "pyrargyrite",
+    "cerargyrite",
+    "electrum",
+    "argentite"
+   ]
+  },
+  {
+   "commodity": "talc",
+   "count": 1,
+   "minerals": [
+    "talc"
+   ]
+  },
+  {
+   "commodity": "gold",
+   "count": 7,
+   "minerals": [
+    "native gold",
+    "electrum"
+   ]
+  },
+  {
+   "commodity": "copper",
+   "count": 3,
+   "minerals": [
+    "tetrahedrite",
+    "chalcopyrite"
+   ]
+  },
+  {
+   "commodity": "zinc",
+   "count": 2,
+   "minerals": [
+    "sphalerite"
+   ]
+  },
+  {
+   "commodity": "mercury",
+   "count": 2,
+   "minerals": [
+    "cinnabar"
+   ]
+  },
+  {
+   "commodity": "lead",
+   "count": 1,
+   "minerals": [
+    "galena"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "altered",
+    "at": [
+     5633,
+     5640
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "span": [
+     5597,
+     5770
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     6148,
+     6157
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "In some veins the mar- ginal deposits are sulphides, for instance, fibrous stibnite (PL VI, B) ;",
+    "span": [
+     6104,
+     6202
+    ],
+    "statement": "c7",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     6716,
+     6725
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The small quantity of silver ore of shipping grade that has been obtained was found near the surface and had doubtless been enriched by oxidation.",
+    "span": [
+     6577,
+     6726
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "sulphide",
+    "at": [
+     7715,
+     7723
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The solutions contained much silica and some carbon dioxide or alkaline carbonate, besides some hydrogen sulphide or alkaline sulphides and a small content of metal.",
+    "span": [
+     7608,
+     7776
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     7737,
+     7746
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The solutions contained much silica and some carbon dioxide or alkaline carbonate, besides some hydrogen sulphide or alkaline sulphides and a small content of metal.",
+    "span": [
+     7608,
+     7776
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     10225,
+     10232
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Width of vein, 2 feet, a, Slightly altered latite;",
+    "span": [
+     10189,
+     10240
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     10349,
+     10356
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "e, altered and pyritic latite, with slips and gouge seams.",
+    "span": [
+     10345,
+     10405
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     10361,
+     10368
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "e, altered and pyritic latite, with slips and gouge seams.",
+    "span": [
+     10345,
+     10405
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     10777,
+     10785
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "No examination was made of the stopes above the third level as they were largely inaccessible and the rock ex- tremely clayey and oxidized.",
+    "span": [
+     10644,
+     10786
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     11708,
+     11715
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "In the rich stopes between levels Nos. 3 and 4\u00a3 the vein is similar through- out, consisting of a few feet of altered rock, soft and white, with good footwall, and is traversed by several gouge walls.",
+    "span": [
+     11595,
+     11799
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     13419,
+     13426
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "o, Slightly altered latite;",
+    "span": [
+     13406,
+     13434
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     13472,
+     13479
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "d, altered, sheared, and breeciated latite, with fragments of quartz.",
+    "span": [
+     13467,
+     13538
+    ],
+    "statement": "c32",
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     13687,
+     13694
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The width between good walls of soft, altered rock is 2 feet, and there are several minor slips between the foot and the hanging wall.",
+    "span": [
+     13646,
+     13784
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     14394,
+     14401
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "span": [
+     14356,
+     14484
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     14402,
+     14409
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "span": [
+     14356,
+     14484
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     17916,
+     17930
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "The veins appear to belong to one and the same epoch of mineralization, the gold shoot being a local development upon one of the normal stibnite veins.",
+    "span": [
+     17858,
+     18012
+    ],
+    "statement": "c47",
+    "zone": null
+   },
+   {
+    "as_written": "leaching",
+    "at": [
+     18429,
+     18437
+    ],
+    "element": null,
+    "level": null,
+    "name": "leached",
+    "quote": "Surely it is difficult to account for such abnormal concentration by any theory of leaching by water from country rock.",
+    "span": [
+     18343,
+     18465
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     19354,
+     19361
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "Toward the face the rock is pyritic and contains quartz seams.",
+    "span": [
+     19325,
+     19389
+    ],
+    "statement": "c49",
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     19856,
+     19864
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The ore is oxidized at the su.",
+    "span": [
+     19844,
+     19875
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     21803,
+     21810
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58",
+    "zone": null
+   },
+   {
+    "as_written": "sericitized",
+    "at": [
+     21905,
+     21916
+    ],
+    "element": null,
+    "level": null,
+    "name": "sericitized",
+    "quote": "The hanging wall is still more strongly sericitized.",
+    "span": [
+     21863,
+     21917
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     22096,
+     22106
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     22111,
+     22118
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     23265,
+     23279
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "A rhyolite dike about 50 feet wide, which first appears in the upper end of the town and can be traced up to the gap just west of the Auto Hill, shows decided evidences of mineralization.",
+    "span": [
+     23090,
+     23280
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized ore",
+    "at": [
+     23329,
+     23341
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "Rich oxidized ore with quartz seams was found on the ground of the",
+    "span": [
+     23323,
+     23394
+    ],
+    "statement": "c64",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     23777,
+     23785
+    ],
+    "element": "e11",
+    "level": "100",
+    "name": "oxidized",
+    "quote": "At the 100-foot level in the Auto shaft the vein was found in a short crosscut, run eastward, but was here pinched and oxidized.",
+    "span": [
+     23656,
+     23786
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     25273,
+     25280
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "No veins had been found, although some of the pyritic material gave assays of gold and silver amounting to $1 or $2 to the ton.",
+    "span": [
+     25225,
+     25355
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "kaolinized",
+    "at": [
+     25949,
+     25959
+    ],
+    "element": null,
+    "level": null,
+    "name": "kaolinized",
+    "quote": "The country rock is lat.ite, consider- ably kaolinized, and traversed by a network of pyrite stringers.",
+    "span": [
+     25903,
+     26008
+    ],
+    "statement": "c73",
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     26805,
+     26819
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "span": [
+     26717,
+     26984
+    ],
+    "statement": "c74",
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     27906,
+     27920
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "It was not denied that some mineralization had taken place along this fault fissure but it was of a different kind, and it was attempted to prove by assays that south of the intersection the fissure carried more silver in proportion than the vein.",
+    "span": [
+     27876,
+     28128
+    ],
+    "statement": null,
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "antimony",
+    "count": 13,
+    "minerals": [
+     "stibnite"
+    ]
+   },
+   {
+    "commodity": "silver",
+    "count": 8,
+    "minerals": [
+     "pyrargyrite",
+     "cerargyrite",
+     "electrum",
+     "argentite"
+    ]
+   },
+   {
+    "commodity": "talc",
+    "count": 1,
+    "minerals": [
+     "talc"
+    ]
+   },
+   {
+    "commodity": "gold",
+    "count": 7,
+    "minerals": [
+     "native gold",
+     "electrum"
+    ]
+   },
+   {
+    "commodity": "copper",
+    "count": 3,
+    "minerals": [
+     "tetrahedrite",
+     "chalcopyrite"
+    ]
+   },
+   {
+    "commodity": "zinc",
+    "count": 2,
+    "minerals": [
+     "sphalerite"
+    ]
+   },
+   {
+    "commodity": "mercury",
+    "count": 2,
+    "minerals": [
+     "cinnabar"
+    ]
+   },
+   {
+    "commodity": "lead",
+    "count": 1,
+    "minerals": [
+     "galena"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 332,
+   "sentences_with_minerals": 75
+  },
+  "host_rock": [
+   {
+    "as_written": "basalt",
+    "at": [
+     2914,
+     2920
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "I.) The northern and northeastern parts consist of Tertiary basalt, in many flows, one superimposed upon another, after the manner of the Miocene Columbia River basalt, with which these flows should, in fact, be correlated.",
+    "span": [
+     2852,
+     3079
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3016,
+     3022
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "I.) The northern and northeastern parts consist of Tertiary basalt, in many flows, one superimposed upon another, after the manner of the Miocene Columbia River basalt, with which these flows should, in fact, be correlated.",
+    "span": [
+     2852,
+     3079
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     3095,
+     3103
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "A few flows of rhyolite are intercalated in the flows of basalt, which is also intersected by dikes of rhyolite.",
+    "span": [
+     3079,
+     3194
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3138,
+     3144
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "A few flows of rhyolite are intercalated in the flows of basalt, which is also intersected by dikes of rhyolite.",
+    "span": [
+     3079,
+     3194
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     3185,
+     3193
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "A few flows of rhyolite are intercalated in the flows of basalt, which is also intersected by dikes of rhyolite.",
+    "span": [
+     3079,
+     3194
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     3204,
+     3210
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "Flows of latite and trachyte form, minor'parts of the series.",
+    "span": [
+     3194,
+     3257
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "trachyte",
+    "at": [
+     3215,
+     3223
+    ],
+    "element": null,
+    "level": null,
+    "name": "trachyte",
+    "quote": "Flows of latite and trachyte form, minor'parts of the series.",
+    "span": [
+     3194,
+     3257
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalts",
+    "at": [
+     3345,
+     3352
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "This Tertiary part of the range begins abruptly just north of Canyon Creek, where the basalts lie on lustrous clay slates.",
+    "span": [
+     3257,
+     3381
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "slates",
+    "at": [
+     3374,
+     3380
+    ],
+    "element": null,
+    "level": null,
+    "name": "slate",
+    "quote": "This Tertiary part of the range begins abruptly just north of Canyon Creek, where the basalts lie on lustrous clay slates.",
+    "span": [
+     3257,
+     3381
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3615,
+     3621
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The contact runs southeast- ward from the head of Canyon Creek, and probably the whole north- eastern part of the range northeast of Spring Peak and Thimble Peak is built up mainly of basalt.",
+    "span": [
+     3427,
+     3622
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "slates",
+    "at": [
+     4929,
+     4935
+    ],
+    "element": null,
+    "level": null,
+    "name": "slate",
+    "quote": "The range is built up of clay slates, calcareous slates, and some limestone.",
+    "span": [
+     4898,
+     4976
+    ],
+    "statement": "c2"
+   },
+   {
+    "as_written": "slates",
+    "at": [
+     4948,
+     4954
+    ],
+    "element": null,
+    "level": null,
+    "name": "slate",
+    "quote": "The range is built up of clay slates, calcareous slates, and some limestone.",
+    "span": [
+     4898,
+     4976
+    ],
+    "statement": "c2"
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     4966,
+     4975
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "The range is built up of clay slates, calcareous slates, and some limestone.",
+    "span": [
+     4898,
+     4976
+    ],
+    "statement": "c2"
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     5387,
+     5393
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5395,
+     5403
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     5405,
+     5411
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     5413,
+     5419
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     5420,
+     5424
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "trachyte",
+    "at": [
+     5430,
+     5438
+    ],
+    "element": null,
+    "level": null,
+    "name": "trachyte",
+    "quote": "The veins intersect latite, rhyolite, basalt, basalt tuff, and trachyte.",
+    "span": [
+     5366,
+     5439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6788,
+     6796
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Some of it was found also on Auto Hill in the mineral- ized rhyolite dike of that place.",
+    "span": [
+     6726,
+     6816
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     10233,
+     10239
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "Width of vein, 2 feet, a, Slightly altered latite;",
+    "span": [
+     10189,
+     10240
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     10370,
+     10376
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "e, altered and pyritic latite, with slips and gouge seams.",
+    "span": [
+     10345,
+     10405
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     12903,
+     12909
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "The country rock is latite.",
+    "span": [
+     12882,
+     12910
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     13427,
+     13433
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "o, Slightly altered latite;",
+    "span": [
+     13406,
+     13434
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     13505,
+     13511
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "d, altered, sheared, and breeciated latite, with fragments of quartz.",
+    "span": [
+     13467,
+     13538
+    ],
+    "statement": "c32"
+   },
+   {
+    "as_written": "latite",
+    "at": [
+     14424,
+     14430
+    ],
+    "element": null,
+    "level": null,
+    "name": "latite",
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "span": [
+     14356,
+     14484
+    ],
+    "statement": "c37"
+   },
+   {
+    "as_written": "Basalt",
+    "at": [
+     18897,
+     18903
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "Basalt lies in the footwall, and the vein when entering this rock splits into several seams.",
+    "span": [
+     18896,
+     18990
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     19316,
+     19324
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Tunnel No. 3 (elevation, 6,300 feet) was 500 feet long in June, 1911, and is entirely in rhyolite.",
+    "span": [
+     19225,
+     19325
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     19835,
+     19843
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It intersects a whitish de .posed rock, probably a rhyolite.",
+    "span": [
+     19781,
+     19844
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     21021,
+     21025
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "tuff",
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "span": [
+     20944,
+     21132
+    ],
+    "statement": "c55"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     21385,
+     21391
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The tunnel is driven wholly in decomposed basalt that includes some harder residual bowlders which show that the basalt contained phenocrysts of triclinic feldspar.",
+    "span": [
+     21342,
+     21509
+    ],
+    "statement": "c56"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     21457,
+     21463
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The tunnel is driven wholly in decomposed basalt that includes some harder residual bowlders which show that the basalt contained phenocrysts of triclinic feldspar.",
+    "span": [
+     21342,
+     21509
+    ],
+    "statement": "c56"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     21780,
+     21786
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58"
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     23093,
+     23101
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "A rhyolite dike about 50 feet wide, which first appears in the upper end of the town and can be traced up to the gap just west of the Auto Hill, shows decided evidences of mineralization.",
+    "span": [
+     23090,
+     23280
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     24365,
+     24371
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The country rock is basalt, but 370 feet from the portal the rhyolite dike, outcropping above, was encountered.",
+    "span": [
+     24343,
+     24457
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     24406,
+     24414
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The country rock is basalt, but 370 feet from the portal the rhyolite dike, outcropping above, was encountered.",
+    "span": [
+     24343,
+     24457
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     24940,
+     24948
+    ],
+    "element": "e16",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The portal of the tunnel and the first 200 feet are in rhyolite;",
+    "span": [
+     24883,
+     24949
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuffaceous",
+    "at": [
+     24974,
+     24984
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "span": [
+     24949,
+     25077
+    ],
+    "statement": "c69"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     25000,
+     25006
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "span": [
+     24949,
+     25077
+    ],
+    "statement": "c69"
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     25007,
+     25011
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "span": [
+     24949,
+     25077
+    ],
+    "statement": "c69"
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     28299,
+     28303
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "2532 of transcript), that the prevailing rock near the National vein is a rhyo- lite, a rhyoliticfelsite, or a rhyolitic tuff (see pp. 28-29 of this bulletin), but that the rock in the hanging wall of the fault fissure is of basic",
+    "span": [
+     28175,
+     28412
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "clay",
+    "at": [
+     3369,
+     3373
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "This Tertiary part of the range begins abruptly just north of Canyon Creek, where the basalts lie on lustrous clay slates.",
+    "role": "alteration",
+    "span": [
+     3257,
+     3381
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "clay",
+    "at": [
+     4924,
+     4928
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "The range is built up of clay slates, calcareous slates, and some limestone.",
+    "role": "alteration",
+    "span": [
+     4898,
+     4976
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     5664,
+     5670
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "role": "gangue",
+    "span": [
+     5597,
+     5770
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "calcite",
+    "at": [
+     5672,
+     5679
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "calcite",
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "role": "gangue",
+    "span": [
+     5597,
+     5770
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     5694,
+     5702
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "role": "alteration",
+    "span": [
+     5597,
+     5770
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "adularia",
+    "at": [
+     5707,
+     5715
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "adularia",
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "role": "gangue",
+    "span": [
+     5597,
+     5770
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     5865,
+     5871
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Seams of quartz lie along foot, hanging, or intermediate walls.",
+    "role": "gangue",
+    "span": [
+     5855,
+     5920
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     5925,
+     5931
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The quartz seams generally show symmetrical banding by deposition and are often vuggy, small quartz crystals projecting into the cavities.",
+    "role": "gangue",
+    "span": [
+     5920,
+     6060
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     6015,
+     6021
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The quartz seams generally show symmetrical banding by deposition and are often vuggy, small quartz crystals projecting into the cavities.",
+    "role": "gangue",
+    "span": [
+     5920,
+     6060
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     6074,
+     6080
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The massive quartz is mostly fine grained.",
+    "role": "gangue",
+    "span": [
+     6060,
+     6104
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     6181,
+     6189
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "In some veins the mar- ginal deposits are sulphides, for instance, fibrous stibnite (PL VI, B) ;",
+    "role": "ore",
+    "span": [
+     6104,
+     6202
+    ],
+    "statement": "c7",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     6286,
+     6292
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "in others, such as the National, the first deposit on each wall is trans- lucent quartz in radial aggregates.",
+    "role": "gangue",
+    "span": [
+     6202,
+     6314
+    ],
+    "statement": "c8",
+    "zone": null
+   },
+   {
+    "as_written": "Calcite",
+    "at": [
+     6316,
+     6323
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "calcite",
+    "quote": "Calcite and other gangue min- erals are rare.",
+    "role": "gangue",
+    "span": [
+     6314,
+     6362
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "adularia",
+    "at": [
+     6372,
+     6380
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "adularia",
+    "quote": "Granular adularia was noted in the quartz of the",
+    "role": "gangue",
+    "span": [
+     6362,
+     6415
+    ],
+    "statement": "c10",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     6398,
+     6404
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Granular adularia was noted in the quartz of the",
+    "role": "gangue",
+    "span": [
+     6362,
+     6415
+    ],
+    "statement": "c10",
+    "zone": null
+   },
+   {
+    "as_written": "ruby silver",
+    "at": [
+     6830,
+     6841
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "pyrargyrite",
+    "quote": "It contained ruby silver and silver chloride.",
+    "role": "ore",
+    "span": [
+     6816,
+     6863
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "silver \nchloride",
+    "at": [
+     6846,
+     6862
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "It contained ruby silver and silver chloride.",
+    "role": "ore",
+    "span": [
+     6816,
+     6863
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "talc",
+    "at": [
+     7178,
+     7182
+    ],
+    "commodities": [
+     "talc"
+    ],
+    "commodity": "talc",
+    "element": null,
+    "level": null,
+    "name": "talc",
+    "quote": "Roy Gayer, who was one of the earliest lessees, a body of soft \"talc\" was struck 30 feet west of the shaft at a depth of 17 feet.",
+    "role": "ore",
+    "span": [
+     7112,
+     7244
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "Ruby silver",
+    "at": [
+     7307,
+     7318
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "pyrargyrite",
+    "quote": "Ruby silver was probably the principal ore mineral.",
+    "role": "ore",
+    "span": [
+     7306,
+     7358
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     8385,
+     8393
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "Parallel veins near the National vein are of the normal stibnite type and silver-bearing ores were deposited near the apex and to the south of the gold shoot in the same vein.",
+    "role": "ore",
+    "span": [
+     8327,
+     8505
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "Native gold",
+    "at": [
+     8506,
+     8517
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "Native gold occurs also in the National- vein outside of the pay shoot and occa- sionally in some of the other veins;",
+    "role": "ore",
+    "span": [
+     8505,
+     8625
+    ],
+    "statement": "c15",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     8750,
+     8756
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Nevertheless, the source of the gold, its remarkable localization, the strong contrast between the richest and the poorest quartz in short, the cause of the ore shoot are problems that have not been solved.",
+    "role": "gangue",
+    "span": [
+     8625,
+     8835
+    ],
+    "statement": "c16",
+    "zone": null
+   },
+   {
+    "as_written": "placer \ngold",
+    "at": [
+     8967,
+     8979
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "It is possible that there are, in depth, in the silver veins other gold shoots like that of the National vein, but the absence of placer gold in the gulches is a strong argument against such a supposition, for if the whole eroded mass contained no gold in its veins there is little likelihood of finding much coarse gold in depth.",
+    "role": "ore",
+    "span": [
+     8835,
+     9170
+    ],
+    "statement": "c17",
+    "zone": null
+   },
+   {
+    "as_written": "coarse gold",
+    "at": [
+     9149,
+     9160
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "It is possible that there are, in depth, in the silver veins other gold shoots like that of the National vein, but the absence of placer gold in the gulches is a strong argument against such a supposition, for if the whole eroded mass contained no gold in its veins there is little likelihood of finding much coarse gold in depth.",
+    "role": "ore",
+    "span": [
+     8835,
+     9170
+    ],
+    "statement": "c17",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10307,
+     10313
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "c, radial translucent quartz;",
+    "role": "gangue",
+    "span": [
+     10283,
+     10314
+    ],
+    "statement": "c18",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10338,
+     10344
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "d, white, fine grained quartz;",
+    "role": "gangue",
+    "span": [
+     10314,
+     10345
+    ],
+    "statement": "c19",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10462,
+     10468
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The quartz is plainly banded.",
+    "role": "gangue",
+    "span": [
+     10457,
+     10487
+    ],
+    "statement": "c20",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10575,
+     10581
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Next to the footwall one finds ordinarily, a layer of semi transparent, often radial quartz from 2 to 10 inches thick, with drusy surface.",
+    "role": "gangue",
+    "span": [
+     10487,
+     10628
+    ],
+    "statement": "c21",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     11021,
+     11027
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It is only about 1 foot wide and is composed of several layers of quartz in soft rock, with intervening seams of clay.",
+    "role": "gangue",
+    "span": [
+     10953,
+     11074
+    ],
+    "statement": "c22",
+    "zone": null
+   },
+   {
+    "as_written": "clay",
+    "at": [
+     11069,
+     11073
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "It is only about 1 foot wide and is composed of several layers of quartz in soft rock, with intervening seams of clay.",
+    "role": "alteration",
+    "span": [
+     10953,
+     11074
+    ],
+    "statement": "c22",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     11588,
+     11594
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The vein is 5 to 6 feet wide and on the whole looks like a brecciated mass of rock with streaks of black gouge and small veins of quartz.",
+    "role": "gangue",
+    "span": [
+     11455,
+     11595
+    ],
+    "statement": "c23",
+    "zone": null
+   },
+   {
+    "as_written": "marcasite",
+    "at": [
+     11843,
+     11852
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "The vein is at many places brecciated and marcasite is abundant on secondary slips and joints.",
+    "role": "gangue",
+    "span": [
+     11799,
+     11896
+    ],
+    "statement": "c24",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     11958,
+     11964
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Postmineral movements have here and there broken the narrow quartz veins and rounded the fragments.",
+    "role": "gangue",
+    "span": [
+     11896,
+     11997
+    ],
+    "statement": "c25",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     12073,
+     12079
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "There are some seams of quartz at the hanging wall and between the walls, but most of the high-grade ore is found in the vein of white quartz, which in so many places fol- lows the footwall slip.",
+    "role": "gangue",
+    "span": [
+     12048,
+     12247
+    ],
+    "statement": "c26",
+    "zone": null
+   },
+   {
+    "as_written": "white quartz",
+    "at": [
+     12180,
+     12192
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "There are some seams of quartz at the hanging wall and between the walls, but most of the high-grade ore is found in the vein of white quartz, which in so many places fol- lows the footwall slip.",
+    "role": "gangue",
+    "span": [
+     12048,
+     12247
+    ],
+    "statement": "c26",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     12283,
+     12289
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "4, 5, and 6.) The rich quartz, though it forms a distinct shoot as a whole, is in detail very irregular.",
+    "role": "gangue",
+    "span": [
+     12259,
+     12365
+    ],
+    "statement": "c27",
+    "zone": null
+   },
+   {
+    "as_written": "electrum",
+    "at": [
+     12536,
+     12544
+    ],
+    "commodities": [
+     "gold",
+     "silver"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "electrum",
+    "quote": "The yellowish-gray electrum is extremely difficult to see by candlelight.",
+    "role": "ore",
+    "span": [
+     12516,
+     12591
+    ],
+    "statement": "c28",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     12609,
+     12615
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Most of the rich quartz is translucent and the gold is seen in transmitted light and is also recognized by the rough feel of the rich pieces.",
+    "role": "gangue",
+    "span": [
+     12591,
+     12735
+    ],
+    "statement": "c29",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13172,
+     13178
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It is 6 inches to 1 foot wide and consists of banded vuggy quartz and rather abundant stibnite.",
+    "role": "gangue",
+    "span": [
+     13111,
+     13208
+    ],
+    "statement": "c30",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     13199,
+     13207
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "It is 6 inches to 1 foot wide and consists of banded vuggy quartz and rather abundant stibnite.",
+    "role": "ore",
+    "span": [
+     13111,
+     13208
+    ],
+    "statement": "c30",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13454,
+     13460
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "c, quartz seams;",
+    "role": "gangue",
+    "span": [
+     13450,
+     13467
+    ],
+    "statement": "c31",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13531,
+     13537
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "d, altered, sheared, and breeciated latite, with fragments of quartz.",
+    "role": "gangue",
+    "span": [
+     13467,
+     13538
+    ],
+    "statement": "c32",
+    "zone": null
+   },
+   {
+    "as_written": "Marcasite",
+    "at": [
+     13785,
+     13794
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "Marcasite appears on all slips.",
+    "role": "gangue",
+    "span": [
+     13784,
+     13816
+    ],
+    "statement": "c33",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13860,
+     13866
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The footwall seam of white translucent quartz, 4 to 10 inches thick, shows radial drusy structure, clearly indicating filled spaces.",
+    "role": "gangue",
+    "span": [
+     13816,
+     13957
+    ],
+    "statement": "c34",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13966,
+     13972
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "In the quartz itself no sul- phides are now visi- ble, but yellow stains of antimony indicate the presence of stib- nite.",
+    "role": "gangue",
+    "span": [
+     13957,
+     14085
+    ],
+    "statement": "c35",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14275,
+     14281
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Diagram of quartz seam in National vein in high-grade stopes between levels Nos. 4 and 4J.",
+    "role": "gangue",
+    "span": [
+     14263,
+     14356
+    ],
+    "statement": "c36",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14468,
+     14474
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "role": "gangue",
+    "span": [
+     14356,
+     14484
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "comb quartz",
+    "at": [
+     14503,
+     14514
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "6, translu- cent comb quartz;",
+    "role": "gangue",
+    "span": [
+     14484,
+     14515
+    ],
+    "statement": "c38",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14545,
+     14551
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "c, dull white, fine-grained quartz, usually carrying the gold;",
+    "role": "gangue",
+    "span": [
+     14515,
+     14579
+    ],
+    "statement": "c39",
+    "zone": null
+   },
+   {
+    "as_written": "marcasite",
+    "at": [
+     14670,
+     14679
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "e, later solution cavities coated with marcasite.",
+    "role": "gangue",
+    "span": [
+     14629,
+     14680
+    ],
+    "statement": "c40",
+    "zone": null
+   },
+   {
+    "as_written": "ruby silver",
+    "at": [
+     14813,
+     14824
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "pyrargyrite",
+    "quote": "There was a good deal of ruby silver both in the quartz and on seams and joints.",
+    "role": "ore",
+    "span": [
+     14787,
+     14869
+    ],
+    "statement": "c41",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14838,
+     14844
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "There was a good deal of ruby silver both in the quartz and on seams and joints.",
+    "role": "gangue",
+    "span": [
+     14787,
+     14869
+    ],
+    "statement": "c41",
+    "zone": null
+   },
+   {
+    "as_written": "visible gold",
+    "at": [
+     15445,
+     15457
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "In drift No. 2, south of the ore shoot, detailed assays of which are shown in the following para- graphs, visible gold was found at two places, although apparently no such occurrences happened to be included in*-the assayed material.",
+    "role": "ore",
+    "span": [
+     15336,
+     15573
+    ],
+    "statement": "c42",
+    "zone": null
+   },
+   {
+    "as_written": "electrum",
+    "at": [
+     16013,
+     16021
+    ],
+    "commodities": [
+     "gold",
+     "silver"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "electrum",
+    "quote": "Hollis, that ore has been developed recently on a new vein in the northern part of the prop- erty, in which also occurs electrum of the same character as that in the old vein, though with a little higher percentage of gold.",
+    "role": "ore",
+    "span": [
+     15890,
+     16117
+    ],
+    "statement": "c43",
+    "zone": null
+   },
+   {
+    "as_written": "silver sulphides",
+    "at": [
+     16160,
+     16176
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "argentite",
+    "quote": "This ore is also said to contain primary silver sulphides.",
+    "role": "ore",
+    "span": [
+     16117,
+     16177
+    ],
+    "statement": "c44",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     16528,
+     16534
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The uniform samples, each of a few pounds of 1.00 (oz. silver) r quartz, were taken across the vein over a width of 1 foot to 6 feet.",
+    "role": "gangue",
+    "span": [
+     16460,
+     16596
+    ],
+    "statement": "c45",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     17683,
+     17689
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The isolated position of this wonderful ore \"shoot, in a district of quartz-stibnite veins poor in gold and silver, is surely remarkable.",
+    "role": "gangue",
+    "span": [
+     17612,
+     17751
+    ],
+    "statement": "c46",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     17690,
+     17698
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "The isolated position of this wonderful ore \"shoot, in a district of quartz-stibnite veins poor in gold and silver, is surely remarkable.",
+    "role": "ore",
+    "span": [
+     17612,
+     17751
+    ],
+    "statement": "c46",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     17997,
+     18005
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "The veins appear to belong to one and the same epoch of mineralization, the gold shoot being a local development upon one of the normal stibnite veins.",
+    "role": "ore",
+    "span": [
+     17858,
+     18012
+    ],
+    "statement": "c47",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     19090,
+     19096
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The vein strikes N. 7\u00b0 E., dips 70\u00b0 W., is 3 feet wide, and consists of a clay gouge with broken quartz seams.",
+    "role": "gangue",
+    "span": [
+     18990,
+     19103
+    ],
+    "statement": "c48",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     19376,
+     19382
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Toward the face the rock is pyritic and contains quartz seams.",
+    "role": "gangue",
+    "span": [
+     19325,
+     19389
+    ],
+    "statement": "c49",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     19418,
+     19424
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "At least one quartz vein intersects Radiator Hill.",
+    "role": "gangue",
+    "span": [
+     19404,
+     19455
+    ],
+    "statement": "c50",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     19579,
+     19585
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "A quartz vein exposed here strikes N. 10\u00b0 W. and stands vertical.",
+    "role": "gangue",
+    "span": [
+     19576,
+     19643
+    ],
+    "statement": "c51",
+    "zone": null
+   },
+   {
+    "as_written": "comb quartz",
+    "at": [
+     19675,
+     19686
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The vein consists of seams of comb quartz lined at the walls by radial stibnite (PL IV, B) and con- tains small specks of tetrahedrite.",
+    "role": "gangue",
+    "span": [
+     19643,
+     19781
+    ],
+    "statement": "c52",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     19716,
+     19724
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "The vein consists of seams of comb quartz lined at the walls by radial stibnite (PL IV, B) and con- tains small specks of tetrahedrite.",
+    "role": "ore",
+    "span": [
+     19643,
+     19781
+    ],
+    "statement": "c52",
+    "zone": null
+   },
+   {
+    "as_written": "tetrahedrite",
+    "at": [
+     19768,
+     19780
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "tetrahedrite",
+    "quote": "The vein consists of seams of comb quartz lined at the walls by radial stibnite (PL IV, B) and con- tains small specks of tetrahedrite.",
+    "role": "ore",
+    "span": [
+     19643,
+     19781
+    ],
+    "statement": "c52",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     19890,
+     19898
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "ace ' fresh stibnite is found at a depth of a few feet.",
+    "role": "ore",
+    "span": [
+     19875,
+     19933
+    ],
+    "statement": "c53",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     20068,
+     20074
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "An assay of a piece of selected quartz ^ stibnite gave a trace of gold and 12 ounces of silver to the ton.",
+    "role": "gangue",
+    "span": [
+     20035,
+     20143
+    ],
+    "statement": "c54",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     20078,
+     20086
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "An assay of a piece of selected quartz ^ stibnite gave a trace of gold and 12 ounces of silver to the ton.",
+    "role": "ore",
+    "span": [
+     20035,
+     20143
+    ],
+    "statement": "c54",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     21060,
+     21066
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "role": "gangue",
+    "span": [
+     20944,
+     21132
+    ],
+    "statement": "c55",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     21111,
+     21117
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "role": "gangue",
+    "span": [
+     20944,
+     21132
+    ],
+    "statement": "c55",
+    "zone": null
+   },
+   {
+    "as_written": "marcasite",
+    "at": [
+     21122,
+     21131
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "marcasite",
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "role": "gangue",
+    "span": [
+     20944,
+     21132
+    ],
+    "statement": "c55",
+    "zone": null
+   },
+   {
+    "as_written": "feldspar",
+    "at": [
+     21500,
+     21508
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "The tunnel is driven wholly in decomposed basalt that includes some harder residual bowlders which show that the basalt contained phenocrysts of triclinic feldspar.",
+    "role": "gangue",
+    "span": [
+     21342,
+     21509
+    ],
+    "statement": "c56",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     21595,
+     21601
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 601 PLATE VIII \\ fltfv, PHOTOMICROGRAPHS OF GOLD QUARTZ FROM NATIONAL MINE.",
+    "role": "gangue",
+    "span": [
+     21517,
+     21621
+    ],
+    "statement": "c57",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     21833,
+     21841
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "role": "alteration",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58",
+    "zone": null
+   },
+   {
+    "as_written": "calcite",
+    "at": [
+     21843,
+     21850
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "calcite",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "role": "gangue",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     21856,
+     21862
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "role": "gangue",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58",
+    "zone": null
+   },
+   {
+    "as_written": "clay",
+    "at": [
+     22013,
+     22017
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "Adjoining the unaltered footwall is a vein 3 feet wide of soft white rock containing several clay partings;",
+    "role": "alteration",
+    "span": [
+     21917,
+     22027
+    ],
+    "statement": "c59",
+    "zone": null
+   },
+   {
+    "as_written": "clay",
+    "at": [
+     22051,
+     22055
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "alteration",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     22217,
+     22223
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "gangue",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     22272,
+     22278
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "gangue",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     22318,
+     22324
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "gangue",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     22326,
+     22337
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "ore",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "chalcopyrite",
+    "at": [
+     22343,
+     22355
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcopyrite",
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "role": "ore",
+    "span": [
+     22027,
+     22356
+    ],
+    "statement": "c60",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     22400,
+     22408
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "In the vugs delicate capillary needles of stibnite rest upon the quartz crystals.",
+    "role": "ore",
+    "span": [
+     22356,
+     22440
+    ],
+    "statement": "c61",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     22423,
+     22429
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "In the vugs delicate capillary needles of stibnite rest upon the quartz crystals.",
+    "role": "gangue",
+    "span": [
+     22356,
+     22440
+    ],
+    "statement": "c61",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     22446,
+     22454
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "This stibnite and some marcasite are the latest minerals formed.",
+    "role": "ore",
+    "span": [
+     22440,
+     22506
+    ],
+    "statement": "c62",
+    "zone": null
+   },
+   {
+    "as_written": "marcasite",
+    "at": [
+     22464,
+     22473
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "This stibnite and some marcasite are the latest minerals formed.",
+    "role": "gangue",
+    "span": [
+     22440,
+     22506
+    ],
+    "statement": "c62",
+    "zone": null
+   },
+   {
+    "as_written": "tetrahedrite",
+    "at": [
+     22794,
+     22806
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "tetrahedrite",
+    "quote": "Some ore obtained here is said to have contained tetrahedrite and is reported to have contained $40 in gold and $625 in silver to the ton.",
+    "role": "ore",
+    "span": [
+     22743,
+     22884
+    ],
+    "statement": "c63",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     23347,
+     23353
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Rich oxidized ore with quartz seams was found on the ground of the",
+    "role": "gangue",
+    "span": [
+     23323,
+     23394
+    ],
+    "statement": "c64",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "cinnabar",
+    "at": [
+     23501,
+     23509
+    ],
+    "commodities": [
+     "mercury"
+    ],
+    "commodity": "mercury",
+    "element": null,
+    "level": null,
+    "name": "cinnabar",
+    "quote": "Much of the soft stuff on the dump contains cinnabar, shown by panning.",
+    "role": "ore",
+    "span": [
+     23455,
+     23528
+    ],
+    "statement": "c65",
+    "zone": null
+   },
+   {
+    "as_written": "Cinnabar",
+    "at": [
+     23529,
+     23537
+    ],
+    "commodities": [
+     "mercury"
+    ],
+    "commodity": "mercury",
+    "element": null,
+    "level": null,
+    "name": "cinnabar",
+    "quote": "Cinnabar was found at a depth of 30 feet, and more abundantly in solid streaks 1 inch to 2 inches wide at a depth of 60 feet.",
+    "role": "ore",
+    "span": [
+     23528,
+     23656
+    ],
+    "statement": "c66",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     23872,
+     23878
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "role": "gangue",
+    "span": [
+     23786,
+     23966
+    ],
+    "statement": "c67",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     23908,
+     23914
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "role": "gangue",
+    "span": [
+     23786,
+     23966
+    ],
+    "statement": "c67",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     23916,
+     23922
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "role": "ore",
+    "span": [
+     23786,
+     23966
+    ],
+    "statement": "c67",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     23925,
+     23936
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "role": "ore",
+    "span": [
+     23786,
+     23966
+    ],
+    "statement": "c67",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     24473,
+     24479
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "At the shaft a quartz seam 2 inches wide was cut, which continued .down into the shaft.",
+    "role": "gangue",
+    "span": [
+     24457,
+     24546
+    ],
+    "statement": "c68",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     25070,
+     25076
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "role": "gangue",
+    "span": [
+     24949,
+     25077
+    ],
+    "statement": "c69",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     25477,
+     25485
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": "e18",
+    "level": null,
+    "name": "stibnite",
+    "quote": "adit of the National mine and 40 feet below it,.a vein was cut 200 feet from the portal, which probably is one of the stibnite veins lying a",
+    "role": "ore",
+    "span": [
+     25358,
+     25502
+    ],
+    "statement": "c70",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     25750,
+     25756
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The quartz sparingly present along the vuggy vein yielded some stibnite and a few flakes of visible gold.",
+    "role": "gangue",
+    "span": [
+     25745,
+     25852
+    ],
+    "statement": "c71",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     25810,
+     25818
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "The quartz sparingly present along the vuggy vein yielded some stibnite and a few flakes of visible gold.",
+    "role": "ore",
+    "span": [
+     25745,
+     25852
+    ],
+    "statement": "c71",
+    "zone": null
+   },
+   {
+    "as_written": "visible gold",
+    "at": [
+     25839,
+     25851
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "The quartz sparingly present along the vuggy vein yielded some stibnite and a few flakes of visible gold.",
+    "role": "ore",
+    "span": [
+     25745,
+     25852
+    ],
+    "statement": "c71",
+    "zone": null
+   },
+   {
+    "as_written": "ruby silver",
+    "at": [
+     25858,
+     25869
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "pyrargyrite",
+    "quote": "Some ruby silver was also found near the surface.",
+    "role": "ore",
+    "span": [
+     25852,
+     25903
+    ],
+    "statement": "c72",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     25991,
+     25997
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The country rock is lat.ite, consider- ably kaolinized, and traversed by a network of pyrite stringers.",
+    "role": "gangue",
+    "span": [
+     25903,
+     26008
+    ],
+    "statement": "c73",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     26837,
+     26843
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "role": "gangue",
+    "span": [
+     26717,
+     26984
+    ],
+    "statement": "c74",
+    "zone": null
+   },
+   {
+    "as_written": "stibnite",
+    "at": [
+     26916,
+     26924
+    ],
+    "commodities": [
+     "antimony"
+    ],
+    "commodity": "antimony",
+    "element": null,
+    "level": null,
+    "name": "stibnite",
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "role": "ore",
+    "span": [
+     26717,
+     26984
+    ],
+    "statement": "c74",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     26926,
+     26932
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "role": "gangue",
+    "span": [
+     26717,
+     26984
+    ],
+    "statement": "c74",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     27594,
+     27600
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "that while the fault fissure had a width similar to that of the National vein it had much more clay gouge and contained very little quartz and that of a drusy or comb character, while that in the vein was more massive.",
+    "role": "gangue",
+    "span": [
+     27459,
+     27681
+    ],
+    "statement": "c75",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "footwall",
+    "at": [
+     5846,
+     5854
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "The veins consist of sheared rock a few feet wide and have a well- marked footwall.",
+    "span": [
+     5770,
+     5855
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vuggy",
+    "at": [
+     6002,
+     6007
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The quartz seams generally show symmetrical banding by deposition and are often vuggy, small quartz crystals projecting into the cavities.",
+    "span": [
+     5920,
+     6060
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     6051,
+     6059
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The quartz seams generally show symmetrical banding by deposition and are often vuggy, small quartz crystals projecting into the cavities.",
+    "span": [
+     5920,
+     6060
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     6514,
+     6519
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The veins of National are therefore essentially silver veins of very moderate tenor, and the gold shoot of the National vein is a unique occurrence in the camp.",
+    "span": [
+     6415,
+     6577
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     7979,
+     7984
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The principal problem that of the origin of the gold shoot of the National vein must unfortunately remain without definite solution.",
+    "span": [
+     7925,
+     8059
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     8482,
+     8487
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Parallel veins near the National vein are of the normal stibnite type and silver-bearing ores were deposited near the apex and to the south of the gold shoot in the same vein.",
+    "span": [
+     8327,
+     8505
+    ],
+    "statement": "c14"
+   },
+   {
+    "as_written": "pay shoot",
+    "at": [
+     8568,
+     8577
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Native gold occurs also in the National- vein outside of the pay shoot and occa- sionally in some of the other veins;",
+    "span": [
+     8505,
+     8625
+    ],
+    "statement": "c15"
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     8785,
+     8794
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Nevertheless, the source of the gold, its remarkable localization, the strong contrast between the richest and the poorest quartz in short, the cause of the ore shoot are problems that have not been solved.",
+    "span": [
+     8625,
+     8835
+    ],
+    "statement": "c16"
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     8909,
+     8915
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "It is possible that there are, in depth, in the silver veins other gold shoots like that of the National vein, but the absence of placer gold in the gulches is a strong argument against such a supposition, for if the whole eroded mass contained no gold in its veins there is little likelihood of finding much coarse gold in depth.",
+    "span": [
+     8835,
+     9170
+    ],
+    "statement": "c17"
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     10245,
+     10256
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "b, gouge seams on foot and hanging walls;",
+    "span": [
+     10240,
+     10283
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging walls",
+    "at": [
+     10269,
+     10282
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "b, gouge seams on foot and hanging walls;",
+    "span": [
+     10240,
+     10283
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     10393,
+     10404
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "e, altered and pyritic latite, with slips and gouge seams.",
+    "span": [
+     10345,
+     10405
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     10480,
+     10486
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "The quartz is plainly banded.",
+    "span": [
+     10457,
+     10487
+    ],
+    "statement": "c20"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     10501,
+     10509
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "Next to the footwall one finds ordinarily, a layer of semi transparent, often radial quartz from 2 to 10 inches thick, with drusy surface.",
+    "span": [
+     10487,
+     10628
+    ],
+    "statement": "c21"
+   },
+   {
+    "as_written": "drusy",
+    "at": [
+     10614,
+     10619
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "Next to the footwall one finds ordinarily, a layer of semi transparent, often radial quartz from 2 to 10 inches thick, with drusy surface.",
+    "span": [
+     10487,
+     10628
+    ],
+    "statement": "c21"
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     11283,
+     11292
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The ore shoot lies mainly north of this bend.",
+    "span": [
+     11278,
+     11325
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vein filling",
+    "at": [
+     11413,
+     11425
+    ],
+    "element": null,
+    "level": null,
+    "name": "vein filling",
+    "quote": "A descent through the rich but narrow stopes is interesting, though the soft claylike vein filling makes observations difficult.",
+    "span": [
+     11325,
+     11455
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "brecciated",
+    "at": [
+     11516,
+     11526
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The vein is 5 to 6 feet wide and on the whole looks like a brecciated mass of rock with streaks of black gouge and small veins of quartz.",
+    "span": [
+     11455,
+     11595
+    ],
+    "statement": "c23"
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     11546,
+     11553
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "The vein is 5 to 6 feet wide and on the whole looks like a brecciated mass of rock with streaks of black gouge and small veins of quartz.",
+    "span": [
+     11455,
+     11595
+    ],
+    "statement": "c23"
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     11563,
+     11568
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "The vein is 5 to 6 feet wide and on the whole looks like a brecciated mass of rock with streaks of black gouge and small veins of quartz.",
+    "span": [
+     11455,
+     11595
+    ],
+    "statement": "c23"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     11749,
+     11757
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "In the rich stopes between levels Nos. 3 and 4\u00a3 the vein is similar through- out, consisting of a few feet of altered rock, soft and white, with good footwall, and is traversed by several gouge walls.",
+    "span": [
+     11595,
+     11799
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     11787,
+     11792
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "In the rich stopes between levels Nos. 3 and 4\u00a3 the vein is similar through- out, consisting of a few feet of altered rock, soft and white, with good footwall, and is traversed by several gouge walls.",
+    "span": [
+     11595,
+     11799
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "brecciated",
+    "at": [
+     11828,
+     11838
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The vein is at many places brecciated and marcasite is abundant on secondary slips and joints.",
+    "span": [
+     11799,
+     11896
+    ],
+    "statement": "c24"
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     12088,
+     12100
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "There are some seams of quartz at the hanging wall and between the walls, but most of the high-grade ore is found in the vein of white quartz, which in so many places fol- lows the footwall slip.",
+    "span": [
+     12048,
+     12247
+    ],
+    "statement": "c26"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     12233,
+     12241
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "There are some seams of quartz at the hanging wall and between the walls, but most of the high-grade ore is found in the vein of white quartz, which in so many places fol- lows the footwall slip.",
+    "span": [
+     12048,
+     12247
+    ],
+    "statement": "c26"
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     12318,
+     12323
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "4, 5, and 6.) The rich quartz, though it forms a distinct shoot as a whole, is in detail very irregular.",
+    "span": [
+     12259,
+     12365
+    ],
+    "statement": "c27"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     12388,
+     12396
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "For some distance the footwall seam may be entirely barren and then suddenly rich and wholly irregular streaks begin and continue for a foot or two.",
+    "span": [
+     12365,
+     12516
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     12470,
+     12477
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "For some distance the footwall seam may be entirely barren and then suddenly rich and wholly irregular streaks begin and continue for a foot or two.",
+    "span": [
+     12365,
+     12516
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwalls",
+    "at": [
+     13052,
+     13061
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "These two veins are well defined, with good footwalls.",
+    "span": [
+     13006,
+     13062
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     13159,
+     13165
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "It is 6 inches to 1 foot wide and consists of banded vuggy quartz and rather abundant stibnite.",
+    "span": [
+     13111,
+     13208
+    ],
+    "statement": "c30"
+   },
+   {
+    "as_written": "vuggy",
+    "at": [
+     13166,
+     13171
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "It is 6 inches to 1 foot wide and consists of banded vuggy quartz and rather abundant stibnite.",
+    "span": [
+     13111,
+     13208
+    ],
+    "statement": "c30"
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     13438,
+     13449
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "6, gouge seams;",
+    "span": [
+     13434,
+     13450
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     13771,
+     13783
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "The width between good walls of soft, altered rock is 2 feet, and there are several minor slips between the foot and the hanging wall.",
+    "span": [
+     13646,
+     13784
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     13821,
+     13829
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "The footwall seam of white translucent quartz, 4 to 10 inches thick, shows radial drusy structure, clearly indicating filled spaces.",
+    "span": [
+     13816,
+     13957
+    ],
+    "statement": "c34"
+   },
+   {
+    "as_written": "drusy",
+    "at": [
+     13905,
+     13910
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The footwall seam of white translucent quartz, 4 to 10 inches thick, shows radial drusy structure, clearly indicating filled spaces.",
+    "span": [
+     13816,
+     13957
+    ],
+    "statement": "c34"
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     14446,
+     14454
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "span": [
+     14356,
+     14484
+    ],
+    "statement": "c37"
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     14649,
+     14657
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "e, later solution cavities coated with marcasite.",
+    "span": [
+     14629,
+     14680
+    ],
+    "statement": "c40"
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     14704,
+     14709
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "39 gouge carried nothing of value.",
+    "span": [
+     14700,
+     14735
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     14895,
+     14904
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "From the-point where the ore shoot was first opened it widened rapidly.",
+    "span": [
+     14869,
+     14942
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     15367,
+     15376
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "In drift No. 2, south of the ore shoot, detailed assays of which are shown in the following para- graphs, visible gold was found at two places, although apparently no such occurrences happened to be included in*-the assayed material.",
+    "span": [
+     15336,
+     15573
+    ],
+    "statement": "c42"
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     16233,
+     16242
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "In order to show the values in the vein outside of the ore shoot the following assay list is introduced.",
+    "span": [
+     16177,
+     16283
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     17658,
+     17663
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The isolated position of this wonderful ore \"shoot, in a district of quartz-stibnite veins poor in gold and silver, is surely remarkable.",
+    "span": [
+     17612,
+     17751
+    ],
+    "statement": "c46"
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     17941,
+     17946
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The veins appear to belong to one and the same epoch of mineralization, the gold shoot being a local development upon one of the normal stibnite veins.",
+    "span": [
+     17858,
+     18012
+    ],
+    "statement": "c47"
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     18140,
+     18145
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "No entirely satisfactory explanation can be given of the causes leading to the abundant precipitation of gold in the National shoot.",
+    "span": [
+     18012,
+     18146
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     18916,
+     18924
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "Basalt lies in the footwall, and the vein when entering this rock splits into several seams.",
+    "span": [
+     18896,
+     18990
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "clay gouge",
+    "at": [
+     19066,
+     19076
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "The vein strikes N. 7\u00b0 E., dips 70\u00b0 W., is 3 feet wide, and consists of a clay gouge with broken quartz seams.",
+    "span": [
+     18990,
+     19103
+    ],
+    "statement": "c48"
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     20485,
+     20491
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Evidently no shoots of any considerable value had been found.",
+    "span": [
+     20470,
+     20533
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     21077,
+     21085
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "vug",
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "span": [
+     20944,
+     21132
+    ],
+    "statement": "c55"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     21747,
+     21755
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "span": [
+     21718,
+     21863
+    ],
+    "statement": "c58"
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     21869,
+     21881
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "The hanging wall is still more strongly sericitized.",
+    "span": [
+     21863,
+     21917
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     21943,
+     21951
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "Adjoining the unaltered footwall is a vein 3 feet wide of soft white rock containing several clay partings;",
+    "span": [
+     21917,
+     22027
+    ],
+    "statement": "c59"
+   },
+   {
+    "as_written": "vugs",
+    "at": [
+     22365,
+     22369
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "In the vugs delicate capillary needles of stibnite rest upon the quartz crystals.",
+    "span": [
+     22356,
+     22440
+    ],
+    "statement": "c61"
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     22511,
+     22523
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "The hanging wall consists of soft white rock, which grad- ually gets harder with increase of distance from the vein.",
+    "span": [
+     22506,
+     22624
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     23425,
+     23434
+    ],
+    "element": null,
+    "level": null,
+    "name": "stringer",
+    "quote": "stringers 8 to 10 inches wide.",
+    "span": [
+     23424,
+     23455
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     23601,
+     23608
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "Cinnabar was found at a depth of 30 feet, and more abundantly in solid streaks 1 inch to 2 inches wide at a depth of 60 feet.",
+    "span": [
+     23528,
+     23656
+    ],
+    "statement": "c66"
+   },
+   {
+    "as_written": "crustified",
+    "at": [
+     23861,
+     23871
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "span": [
+     23786,
+     23966
+    ],
+    "statement": "c67"
+   },
+   {
+    "as_written": "brecciated",
+    "at": [
+     25023,
+     25033
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "span": [
+     24949,
+     25077
+    ],
+    "statement": "c69"
+   },
+   {
+    "as_written": "stringer",
+    "at": [
+     25727,
+     25735
+    ],
+    "element": "e19",
+    "level": null,
+    "name": "stringer",
+    "quote": "Near the portal a shaft was sunk to a depth of 82 feet, and in this probably the same stringer was cut.",
+    "span": [
+     25639,
+     25745
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vuggy",
+    "at": [
+     25785,
+     25790
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The quartz sparingly present along the vuggy vein yielded some stibnite and a few flakes of visible gold.",
+    "span": [
+     25745,
+     25852
+    ],
+    "statement": "c71"
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     25998,
+     26007
+    ],
+    "element": null,
+    "level": null,
+    "name": "stringer",
+    "quote": "The country rock is lat.ite, consider- ably kaolinized, and traversed by a network of pyrite stringers.",
+    "span": [
+     25903,
+     26008
+    ],
+    "statement": "c73"
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     26527,
+     26534
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Winchell and other engineers and geologists of the com- plainant testified that the fissure was continuous through the several",
+    "span": [
+     26441,
+     26572
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     26824,
+     26833
+    ],
+    "element": null,
+    "level": null,
+    "name": "stringer",
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "span": [
+     26717,
+     26984
+    ],
+    "statement": "c74"
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     27368,
+     27375
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "For the Charleston Hill National Mining Syndicate it was asserted by several geologic experts that what the complainant regarded as the southern continuation of the National fissure was really a later fault with a slightly flatter dip (about 45\u00b0-50\u00b0, against 56\u00b0);",
+    "span": [
+     27192,
+     27459
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     27482,
+     27489
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "that while the fault fissure had a width similar to that of the National vein it had much more clay gouge and contained very little quartz and that of a drusy or comb character, while that in the vein was more massive.",
+    "span": [
+     27459,
+     27681
+    ],
+    "statement": "c75"
+   },
+   {
+    "as_written": "clay gouge",
+    "at": [
+     27557,
+     27567
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "that while the fault fissure had a width similar to that of the National vein it had much more clay gouge and contained very little quartz and that of a drusy or comb character, while that in the vein was more massive.",
+    "span": [
+     27459,
+     27681
+    ],
+    "statement": "c75"
+   },
+   {
+    "as_written": "drusy",
+    "at": [
+     27616,
+     27621
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "that while the fault fissure had a width similar to that of the National vein it had much more clay gouge and contained very little quartz and that of a drusy or comb character, while that in the vein was more massive.",
+    "span": [
+     27459,
+     27681
+    ],
+    "statement": "c75"
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     27954,
+     27961
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "It was not denied that some mineralization had taken place along this fault fissure but it was of a different kind, and it was attempted to prove by assays that south of the intersection the fissure carried more silver in proportion than the vein.",
+    "span": [
+     27876,
+     28128
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     28071,
+     28078
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "It was not denied that some mineralization had taken place along this fault fissure but it was of a different kind, and it was attempted to prove by assays that south of the intersection the fissure carried more silver in proportion than the vein.",
+    "span": [
+     27876,
+     28128
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     28364,
+     28376
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "2532 of transcript), that the prevailing rock near the National vein is a rhyo- lite, a rhyoliticfelsite, or a rhyolitic tuff (see pp. 28-29 of this bulletin), but that the rock in the hanging wall of the fault fissure is of basic",
+    "span": [
+     28175,
+     28412
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     28390,
+     28397
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "2532 of transcript), that the prevailing rock near the National vein is a rhyo- lite, a rhyoliticfelsite, or a rhyolitic tuff (see pp. 28-29 of this bulletin), but that the rock in the hanging wall of the fault fissure is of basic",
+    "span": [
+     28175,
+     28412
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     28496,
+     28504
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "nature and different from the rock either in the footwall of the fault or in the hanging wall and footwall of the vein.",
+    "span": [
+     28446,
+     28567
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     28529,
+     28541
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "nature and different from the rock either in the footwall of the fault or in the hanging wall and footwall of the vein.",
+    "span": [
+     28446,
+     28567
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     28546,
+     28554
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "nature and different from the rock either in the footwall of the fault or in the hanging wall and footwall of the vein.",
+    "span": [
+     28446,
+     28567
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     28714,
+     28722
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "He therefore concluded that the fault itself represented a boundary for a large block of basic rock which contrasts with the acidic rook in the footwall of the fault all this confirming the existence of a fault of considerable throw.",
+    "span": [
+     28567,
+     28805
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     29289,
+     29296
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "It was admitted that the last well-defined exposure of the vein or the fault fissure toward the south was found in the tunnel on the so- called",
+    "span": [
+     29210,
+     29357
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "clay"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "clay"
+    ],
+    "page": null,
+    "quote": "This Tertiary part of the range begins abruptly just north of Canyon Creek, where the basalts lie on lustrous clay slates.",
+    "span": [
+     3257,
+     3381
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "clay"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "clay"
+    ],
+    "page": null,
+    "quote": "The range is built up of clay slates, calcareous slates, and some limestone.",
+    "span": [
+     4898,
+     4976
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "calcite",
+     "sericite",
+     "adularia"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "calcite",
+     "sericite",
+     "adularia"
+    ],
+    "page": null,
+    "quote": "The country rock near the veins is altered by the development of pyrite, calcite, and a little sericite and adularia, but this alteration does nob extend over wide areas.",
+    "span": [
+     5597,
+     5770
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Seams of quartz lie along foot, hanging, or intermediate walls.",
+    "span": [
+     5855,
+     5920
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The quartz seams generally show symmetrical banding by deposition and are often vuggy, small quartz crystals projecting into the cavities.",
+    "span": [
+     5920,
+     6060
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The massive quartz is mostly fine grained.",
+    "span": [
+     6060,
+     6104
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "In some veins the mar- ginal deposits are sulphides, for instance, fibrous stibnite (PL VI, B) ;",
+    "span": [
+     6104,
+     6202
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "in others, such as the National, the first deposit on each wall is trans- lucent quartz in radial aggregates.",
+    "span": [
+     6202,
+     6314
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Calcite"
+    ],
+    "element": null,
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "calcite"
+    ],
+    "page": null,
+    "quote": "Calcite and other gangue min- erals are rare.",
+    "span": [
+     6314,
+     6362
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "adularia",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "adularia",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Granular adularia was noted in the quartz of the",
+    "span": [
+     6362,
+     6415
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "ruby silver",
+     "silver \nchloride"
+    ],
+    "element": null,
+    "id": "c11",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrargyrite",
+     "cerargyrite"
+    ],
+    "page": null,
+    "quote": "It contained ruby silver and silver chloride.",
+    "span": [
+     6816,
+     6863
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "talc"
+    ],
+    "element": null,
+    "id": "c12",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "talc"
+    ],
+    "page": null,
+    "quote": "Roy Gayer, who was one of the earliest lessees, a body of soft \"talc\" was struck 30 feet west of the shaft at a depth of 17 feet.",
+    "span": [
+     7112,
+     7244
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Ruby silver"
+    ],
+    "element": null,
+    "id": "c13",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrargyrite"
+    ],
+    "page": null,
+    "quote": "Ruby silver was probably the principal ore mineral.",
+    "span": [
+     7306,
+     7358
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c14",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "Parallel veins near the National vein are of the normal stibnite type and silver-bearing ores were deposited near the apex and to the south of the gold shoot in the same vein.",
+    "span": [
+     8327,
+     8505
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Native gold"
+    ],
+    "element": null,
+    "id": "c15",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native gold"
+    ],
+    "page": null,
+    "quote": "Native gold occurs also in the National- vein outside of the pay shoot and occa- sionally in some of the other veins;",
+    "span": [
+     8505,
+     8625
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c16",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Nevertheless, the source of the gold, its remarkable localization, the strong contrast between the richest and the poorest quartz in short, the cause of the ore shoot are problems that have not been solved.",
+    "span": [
+     8625,
+     8835
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "placer \ngold",
+     "coarse gold"
+    ],
+    "element": null,
+    "id": "c17",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native gold"
+    ],
+    "page": null,
+    "quote": "It is possible that there are, in depth, in the silver veins other gold shoots like that of the National vein, but the absence of placer gold in the gulches is a strong argument against such a supposition, for if the whole eroded mass contained no gold in its veins there is little likelihood of finding much coarse gold in depth.",
+    "span": [
+     8835,
+     9170
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c18",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "c, radial translucent quartz;",
+    "span": [
+     10283,
+     10314
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c19",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "d, white, fine grained quartz;",
+    "span": [
+     10314,
+     10345
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c20",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The quartz is plainly banded.",
+    "span": [
+     10457,
+     10487
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c21",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Next to the footwall one finds ordinarily, a layer of semi transparent, often radial quartz from 2 to 10 inches thick, with drusy surface.",
+    "span": [
+     10487,
+     10628
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "clay"
+    ],
+    "element": null,
+    "id": "c22",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "clay"
+    ],
+    "page": null,
+    "quote": "It is only about 1 foot wide and is composed of several layers of quartz in soft rock, with intervening seams of clay.",
+    "span": [
+     10953,
+     11074
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c23",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The vein is 5 to 6 feet wide and on the whole looks like a brecciated mass of rock with streaks of black gouge and small veins of quartz.",
+    "span": [
+     11455,
+     11595
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "marcasite"
+    ],
+    "element": null,
+    "id": "c24",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "The vein is at many places brecciated and marcasite is abundant on secondary slips and joints.",
+    "span": [
+     11799,
+     11896
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c25",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Postmineral movements have here and there broken the narrow quartz veins and rounded the fragments.",
+    "span": [
+     11896,
+     11997
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "white quartz"
+    ],
+    "element": null,
+    "id": "c26",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "There are some seams of quartz at the hanging wall and between the walls, but most of the high-grade ore is found in the vein of white quartz, which in so many places fol- lows the footwall slip.",
+    "span": [
+     12048,
+     12247
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c27",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "4, 5, and 6.) The rich quartz, though it forms a distinct shoot as a whole, is in detail very irregular.",
+    "span": [
+     12259,
+     12365
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "electrum"
+    ],
+    "element": null,
+    "id": "c28",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "electrum"
+    ],
+    "page": null,
+    "quote": "The yellowish-gray electrum is extremely difficult to see by candlelight.",
+    "span": [
+     12516,
+     12591
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c29",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Most of the rich quartz is translucent and the gold is seen in transmitted light and is also recognized by the rough feel of the rich pieces.",
+    "span": [
+     12591,
+     12735
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c30",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "It is 6 inches to 1 foot wide and consists of banded vuggy quartz and rather abundant stibnite.",
+    "span": [
+     13111,
+     13208
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c31",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "c, quartz seams;",
+    "span": [
+     13450,
+     13467
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c32",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "d, altered, sheared, and breeciated latite, with fragments of quartz.",
+    "span": [
+     13467,
+     13538
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Marcasite"
+    ],
+    "element": null,
+    "id": "c33",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "Marcasite appears on all slips.",
+    "span": [
+     13784,
+     13816
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c34",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The footwall seam of white translucent quartz, 4 to 10 inches thick, shows radial drusy structure, clearly indicating filled spaces.",
+    "span": [
+     13816,
+     13957
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c35",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "In the quartz itself no sul- phides are now visi- ble, but yellow stains of antimony indicate the presence of stib- nite.",
+    "span": [
+     13957,
+     14085
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c36",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Diagram of quartz seam in National vein in high-grade stopes between levels Nos. 4 and 4J.",
+    "span": [
+     14263,
+     14356
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c37",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Width of seam, 3} inches, a, Highly altered pyritic and siliceous latite with solution cavities covered with quartz crystals;",
+    "span": [
+     14356,
+     14484
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "comb quartz"
+    ],
+    "element": null,
+    "id": "c38",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "6, translu- cent comb quartz;",
+    "span": [
+     14484,
+     14515
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c39",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "c, dull white, fine-grained quartz, usually carrying the gold;",
+    "span": [
+     14515,
+     14579
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "marcasite"
+    ],
+    "element": null,
+    "id": "c40",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "e, later solution cavities coated with marcasite.",
+    "span": [
+     14629,
+     14680
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "ruby silver",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c41",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrargyrite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "There was a good deal of ruby silver both in the quartz and on seams and joints.",
+    "span": [
+     14787,
+     14869
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "visible gold"
+    ],
+    "element": null,
+    "id": "c42",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native gold"
+    ],
+    "page": null,
+    "quote": "In drift No. 2, south of the ore shoot, detailed assays of which are shown in the following para- graphs, visible gold was found at two places, although apparently no such occurrences happened to be included in*-the assayed material.",
+    "span": [
+     15336,
+     15573
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "electrum"
+    ],
+    "element": null,
+    "id": "c43",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "electrum"
+    ],
+    "page": null,
+    "quote": "Hollis, that ore has been developed recently on a new vein in the northern part of the prop- erty, in which also occurs electrum of the same character as that in the old vein, though with a little higher percentage of gold.",
+    "span": [
+     15890,
+     16117
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "silver sulphides"
+    ],
+    "element": null,
+    "id": "c44",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "argentite"
+    ],
+    "page": null,
+    "quote": "This ore is also said to contain primary silver sulphides.",
+    "span": [
+     16117,
+     16177
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c45",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The uniform samples, each of a few pounds of 1.00 (oz. silver) r quartz, were taken across the vein over a width of 1 foot to 6 feet.",
+    "span": [
+     16460,
+     16596
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c46",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "The isolated position of this wonderful ore \"shoot, in a district of quartz-stibnite veins poor in gold and silver, is surely remarkable.",
+    "span": [
+     17612,
+     17751
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c47",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "The veins appear to belong to one and the same epoch of mineralization, the gold shoot being a local development upon one of the normal stibnite veins.",
+    "span": [
+     17858,
+     18012
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c48",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The vein strikes N. 7\u00b0 E., dips 70\u00b0 W., is 3 feet wide, and consists of a clay gouge with broken quartz seams.",
+    "span": [
+     18990,
+     19103
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c49",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Toward the face the rock is pyritic and contains quartz seams.",
+    "span": [
+     19325,
+     19389
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c50",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "At least one quartz vein intersects Radiator Hill.",
+    "span": [
+     19404,
+     19455
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c51",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "A quartz vein exposed here strikes N. 10\u00b0 W. and stands vertical.",
+    "span": [
+     19576,
+     19643
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "comb quartz",
+     "stibnite",
+     "tetrahedrite"
+    ],
+    "element": null,
+    "id": "c52",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite",
+     "tetrahedrite"
+    ],
+    "page": null,
+    "quote": "The vein consists of seams of comb quartz lined at the walls by radial stibnite (PL IV, B) and con- tains small specks of tetrahedrite.",
+    "span": [
+     19643,
+     19781
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c53",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "ace ' fresh stibnite is found at a depth of a few feet.",
+    "span": [
+     19875,
+     19933
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "stibnite"
+    ],
+    "element": null,
+    "id": "c54",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "An assay of a piece of selected quartz ^ stibnite gave a trace of gold and 12 ounces of silver to the ton.",
+    "span": [
+     20035,
+     20143
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "quartz",
+     "marcasite"
+    ],
+    "element": "e8",
+    "id": "c55",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "A tunnel on the Friction claim, 130 feet above the hotel, shows decomposed tuff containing irregular veinlets of quartz and small cavities filled with crystals of quartz and marcasite.",
+    "span": [
+     20944,
+     21132
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "feldspar"
+    ],
+    "element": null,
+    "id": "c56",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar"
+    ],
+    "page": null,
+    "quote": "The tunnel is driven wholly in decomposed basalt that includes some harder residual bowlders which show that the basalt contained phenocrysts of triclinic feldspar.",
+    "span": [
+     21342,
+     21509
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "QUARTZ"
+    ],
+    "element": null,
+    "id": "c57",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "GEOLOGICAL SURVEY BULLETIN 601 PLATE VIII \\ fltfv, PHOTOMICROGRAPHS OF GOLD QUARTZ FROM NATIONAL MINE.",
+    "span": [
+     21517,
+     21621
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sericite",
+     "calcite",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c58",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite",
+     "calcite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "47 The rock exposed in the footwall in the south drift is a basalt but is greatly altered by the development of sericite, calcite, and pyrite.",
+    "span": [
+     21718,
+     21863
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "clay"
+    ],
+    "element": null,
+    "id": "c59",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "clay"
+    ],
+    "page": null,
+    "quote": "Adjoining the unaltered footwall is a vein 3 feet wide of soft white rock containing several clay partings;",
+    "span": [
+     21917,
+     22027
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "clay",
+     "pyrite",
+     "quartz",
+     "pyrite",
+     "zinc blende",
+     "chalcopyrite"
+    ],
+    "element": null,
+    "id": "c60",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "clay",
+     "pyrite",
+     "quartz",
+     "sphalerite",
+     "chalcopyrite"
+    ],
+    "page": null,
+    "quote": "next follows a seam of clay, which widens to a 4 or 5 inch v^in of silicified and pyritic material, made up of frag- ments of country rock, and containing also small crystals of arsen6- pyrite, and between these fragments are crusts of fine quartz crystals resting upon narrow bands of pyrite, zinc blende, and chalcopyrite.",
+    "span": [
+     22027,
+     22356
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c61",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "In the vugs delicate capillary needles of stibnite rest upon the quartz crystals.",
+    "span": [
+     22356,
+     22440
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite",
+     "marcasite"
+    ],
+    "element": null,
+    "id": "c62",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite",
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "This stibnite and some marcasite are the latest minerals formed.",
+    "span": [
+     22440,
+     22506
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "tetrahedrite"
+    ],
+    "element": null,
+    "id": "c63",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "tetrahedrite"
+    ],
+    "page": null,
+    "quote": "Some ore obtained here is said to have contained tetrahedrite and is reported to have contained $40 in gold and $625 in silver to the ton.",
+    "span": [
+     22743,
+     22884
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c64",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Rich oxidized ore with quartz seams was found on the ground of the",
+    "span": [
+     23323,
+     23394
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "cinnabar"
+    ],
+    "element": null,
+    "id": "c65",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "cinnabar"
+    ],
+    "page": null,
+    "quote": "Much of the soft stuff on the dump contains cinnabar, shown by panning.",
+    "span": [
+     23455,
+     23528
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Cinnabar"
+    ],
+    "element": null,
+    "id": "c66",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "cinnabar"
+    ],
+    "page": null,
+    "quote": "Cinnabar was found at a depth of 30 feet, and more abundantly in solid streaks 1 inch to 2 inches wide at a depth of 60 feet.",
+    "span": [
+     23528,
+     23656
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "pyrite",
+     "galena",
+     "zinc blende"
+    ],
+    "element": null,
+    "id": "c67",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "pyrite",
+     "galena",
+     "sphalerite"
+    ],
+    "page": null,
+    "quote": "On the second level, 160 feet below the surface, where water now stands, crustified quartz seams were observed, showing pyrite, galena, zinc blende, and slight stains of copper.",
+    "span": [
+     23786,
+     23966
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c68",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "At the shaft a quartz seam 2 inches wide was cut, which continued .down into the shaft.",
+    "span": [
+     24457,
+     24546
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c69",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "next follows a clayey, tuffaceous rock, probably basalt tuff, which is brecciated in places and contains more or less pyrite.",
+    "span": [
+     24949,
+     25077
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "stibnite"
+    ],
+    "element": "e18",
+    "id": "c70",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "stibnite"
+    ],
+    "page": null,
+    "quote": "adit of the National mine and 40 feet below it,.a vein was cut 200 feet from the portal, which probably is one of the stibnite veins lying a",
+    "span": [
+     25358,
+     25502
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "stibnite",
+     "visible gold"
+    ],
+    "element": null,
+    "id": "c71",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite",
+     "native gold"
+    ],
+    "page": null,
+    "quote": "The quartz sparingly present along the vuggy vein yielded some stibnite and a few flakes of visible gold.",
+    "span": [
+     25745,
+     25852
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "ruby silver"
+    ],
+    "element": null,
+    "id": "c72",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrargyrite"
+    ],
+    "page": null,
+    "quote": "Some ruby silver was also found near the surface.",
+    "span": [
+     25852,
+     25903
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c73",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "The country rock is lat.ite, consider- ably kaolinized, and traversed by a network of pyrite stringers.",
+    "span": [
+     25903,
+     26008
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "stibnite",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c74",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "stibnite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "It was shown that the vein had the same width and character throughout, with similar mineralization and stringers of quartz, carrying near the bend abundant gold in places, and silver .minerals, stibnite, pyrite, and arsenic minerals not infrequently throughout.",
+    "span": [
+     26717,
+     26984
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c75",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "that while the fault fissure had a width similar to that of the National vein it had much more clay gouge and contained very little quartz and that of a drusy or comb character, while that in the vein was more massive.",
+    "span": [
+     27459,
+     27681
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "4e2f22ef1374025837514dd30e44f0c97bd65c4451f2e4a623f6bd4f03a1a5a3"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 5,
   "surveyed": 0
  },
- "content_sha256": "2dd5470ec1578431cedbe7cd3d3d2ca2c7072eded1d536e082782ecc8ed19cd4",
+ "content_sha256": "95b6e470dc5bb9510b5d8085bc3ea330a643e65698755cff76faa4b8b693472e",
  "coverage": {
   "assays": 2,
   "chars": 29357,
+  "composition_statements": 75,
   "elements": 5,
   "mentions": 20,
+  "minerals": 108,
   "mining_sentences": 55,
   "parsed_chars": 1951,
   "questions": 45,
@@ -315,18 +6547,18 @@
  ],
  "files": [
   {
-   "bytes": 332242,
+   "bytes": 332244,
    "content_type": "application/json",
    "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "af7dd2372c7def97eb3f2efca28e515d35607cf142631bdd53e3182940d1130d"
+   "sha256": "d7e787b42a75d801567cee748fe4c81354ea9a358c903dd6ad42c3eb4da6d597"
   },
   {
-   "bytes": 231477,
+   "bytes": 231478,
    "content_type": "application/octet-stream",
    "key": "models/national-mine-stall-bros-lease-gold-shoot-f0ea50c8/model.omf",
    "name": "model.omf",
-   "sha256": "512a055c89ba541b475f504b9fd94df1322f20bd35917a0ebe5c97fea6aa0e8a"
+   "sha256": "595366f3f20e89425bf5793a5b2d155fab8f5f37dee6801d5fd85505f47738fa"
   },
   {
    "bytes": 2666,
@@ -602,10 +6834,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:55Z",
+ "published_utc": "2026-09-03T03:06:41Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

@@ -54,17 +54,1948 @@
   "y": 3925212.3853611397,
   "z": 1054.5923288417412
  },
+ "commodities": [
+  {
+   "commodity": "iron",
+   "count": 2,
+   "minerals": [
+    "magnetite"
+   ]
+  },
+  {
+   "commodity": "titanium",
+   "count": 1,
+   "minerals": [
+    "rutile"
+   ]
+  },
+  {
+   "commodity": "lead",
+   "count": 1,
+   "minerals": [
+    "galena"
+   ]
+  },
+  {
+   "commodity": "copper",
+   "count": 4,
+   "minerals": [
+    "chalcopyrite",
+    "chalcocite",
+    "malachite",
+    "azurite"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "oxidation",
+    "at": [
+     1366,
+     1375
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphide",
+    "at": [
+     1388,
+     1396
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "secondary \nsulphides",
+    "at": [
+     4204,
+     4224
+    ],
+    "element": null,
+    "level": null,
+    "name": "secondary enrichment",
+    "quote": "No zone of secondary sulphides is known to have been found in any of the mines.",
+    "span": [
+     4192,
+     4273
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphide",
+    "at": [
+     4302,
+     4310
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Galena is the only primary sulphide remaining to any extent in the weathered veins, where it occurs as scattered lumps surrounded by its weather- ing products from a position within a few feet of the surface to the greatest depths of the ore shoots.",
+    "span": [
+     4273,
+     4527
+    ],
+    "statement": "c10",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     4949,
+     4958
+    ],
+    "element": null,
+    "level": "1100",
+    "name": "oxidized",
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "span": [
+     4778,
+     5014
+    ],
+    "statement": "c12",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     7019,
+     7026
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The workings are close to the eastern border of the quartz monzonite, in much shat- tered and greatly altered andesitic porphyry, which breaks readily into small dark- green or dark-red fragments and contains seams of epidote.",
+    "span": [
+     6914,
+     7144
+    ],
+    "statement": "c14",
+    "zone": null
+   }
+  ],
+  "by_level": {
+   "1100": [
+    "quartz"
+   ]
+  },
+  "commodities": [
+   {
+    "commodity": "iron",
+    "count": 2,
+    "minerals": [
+     "magnetite"
+    ]
+   },
+   {
+    "commodity": "titanium",
+    "count": 1,
+    "minerals": [
+     "rutile"
+    ]
+   },
+   {
+    "commodity": "lead",
+    "count": 1,
+    "minerals": [
+     "galena"
+    ]
+   },
+   {
+    "commodity": "copper",
+    "count": 4,
+    "minerals": [
+     "chalcopyrite",
+     "chalcocite",
+     "malachite",
+     "azurite"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 75,
+   "sentences_with_minerals": 15
+  },
+  "host_rock": [
+   {
+    "as_written": "hornfels",
+    "at": [
+     136,
+     144
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "It is overlain by a group of andesitic flows and breccias that have been largely converted to hornfels.",
+    "span": [
+     40,
+     145
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     202,
+     219
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "These rocks were intruded in a most complex pattern by andesite porphyry, but both the andesite porphyry and the earlier rocks subsequently were intruded by a large body of quartz monzonite.",
+    "span": [
+     145,
+     339
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite \nporphyry",
+    "at": [
+     234,
+     252
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "These rocks were intruded in a most complex pattern by andesite porphyry, but both the andesite porphyry and the earlier rocks subsequently were intruded by a large body of quartz monzonite.",
+    "span": [
+     145,
+     339
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     322,
+     338
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "These rocks were intruded in a most complex pattern by andesite porphyry, but both the andesite porphyry and the earlier rocks subsequently were intruded by a large body of quartz monzonite.",
+    "span": [
+     145,
+     339
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     399,
+     415
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The emplacement of the veins followed the invasion of the quartz monzonite.",
+    "span": [
+     339,
+     416
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     610,
+     616
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "The ages of the different rocks are unknown, though the gneiss is judged to be pre-Cambrian, and the later rocks are considered to be early and late Tertiary.",
+    "span": [
+     552,
+     713
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     899,
+     915
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The veins are distributed in an en echelon pattern along the western arid southern -margins of the quartz monzonite body.",
+    "span": [
+     798,
+     921
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "pegmatites",
+    "at": [
+     1556,
+     1566
+    ],
+    "element": null,
+    "level": null,
+    "name": "pegmatite",
+    "quote": "The original nature of the rock is assured, for sheared pegmatites and aplites were observed within the gneiss.",
+    "span": [
+     1498,
+     1612
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "aplites",
+    "at": [
+     1572,
+     1579
+    ],
+    "element": null,
+    "level": null,
+    "name": "aplite",
+    "quote": "The original nature of the rock is assured, for sheared pegmatites and aplites were observed within the gneiss.",
+    "span": [
+     1498,
+     1612
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     1605,
+     1611
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "The original nature of the rock is assured, for sheared pegmatites and aplites were observed within the gneiss.",
+    "span": [
+     1498,
+     1612
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     1619,
+     1625
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": ", The gneiss is largely brown in the outcrop but pinkish gray with discontinuous brown streaks on the fresh surface.",
+    "span": [
+     1612,
+     1730
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     2420,
+     2426
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "A pegmatitic facies of the gneiss, illustrating the type of banding, is shown hi plate 42.",
+    "span": [
+     2392,
+     2484
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite \nporphyry",
+    "at": [
+     2563,
+     2581
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "OLDER VOL.CAJSIC ROCKS The older volcanic rocks that were invaded by both the andesite porphyry and the quartz monzonite have been considerably modified by heat and solutions given off by the invading magmas.",
+    "span": [
+     2484,
+     2695
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     2590,
+     2606
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "OLDER VOL.CAJSIC ROCKS The older volcanic rocks that were invaded by both the andesite porphyry and the quartz monzonite have been considerably modified by heat and solutions given off by the invading magmas.",
+    "span": [
+     2484,
+     2695
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite",
+    "at": [
+     2746,
+     2754
+    ],
+    "element": null,
+    "level": null,
+    "name": "andesite",
+    "quote": "The orig- inal rocks appear to have been chiefly andesite flows and breccias (pi.",
+    "span": [
+     2695,
+     2779
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalts",
+    "at": [
+     2798,
+     2805
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "No original basalts or rhyolites were definitely recognized.",
+    "span": [
+     2784,
+     2846
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolites",
+    "at": [
+     2809,
+     2818
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "No original basalts or rhyolites were definitely recognized.",
+    "span": [
+     2784,
+     2846
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     2958,
+     2964
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "These volcanic rocks were probably deposited on an erosion surface, part of which was undoubtedly cut on the gneiss, which is much older..",
+    "span": [
+     2846,
+     2987
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     3475,
+     3483
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "The term \"hornfels\" is used for these partly metamorphosed volcanic rocks as they have been converted to a very fine grained aggregate",
+    "span": [
+     3463,
+     3603
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "GNEISS",
+    "at": [
+     3678,
+     3684
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 42 BLOCK OF PEGMATITIC FACIES OF THE GNEISS PARTLY ENCLOSED IN ANDESITE PORPHYRY.",
+    "span": [
+     3603,
+     3723
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ANDESITE PORPHYRY",
+    "at": [
+     3705,
+     3722
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 42 BLOCK OF PEGMATITIC FACIES OF THE GNEISS PARTLY ENCLOSED IN ANDESITE PORPHYRY.",
+    "span": [
+     3603,
+     3723
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     3809,
+     3815
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "The eataclastic Lauding of the gneiss is shown, as well as the characteristic plagioclaHe phenocrysts of the andesite porphyry.",
+    "span": [
+     3777,
+     3906
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     3888,
+     3905
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The eataclastic Lauding of the gneiss is shown, as well as the characteristic plagioclaHe phenocrysts of the andesite porphyry.",
+    "span": [
+     3777,
+     3906
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "HORNFELS",
+    "at": [
+     3965,
+     3973
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 43 HORNFELS FROM HILL 1,000 FEET SOUTH OF",
+    "span": [
+     3924,
+     4006
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     6968,
+     6984
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The workings are close to the eastern border of the quartz monzonite, in much shat- tered and greatly altered andesitic porphyry, which breaks readily into small dark- green or dark-red fragments and contains seams of epidote.",
+    "span": [
+     6914,
+     7144
+    ],
+    "statement": "c14"
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     7037,
+     7045
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The workings are close to the eastern border of the quartz monzonite, in much shat- tered and greatly altered andesitic porphyry, which breaks readily into small dark- green or dark-red fragments and contains seams of epidote.",
+    "span": [
+     6914,
+     7144
+    ],
+    "statement": "c14"
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "quartz",
+    "at": [
+     1314,
+     1320
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "role": "gangue",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "Feldspar",
+    "at": [
+     1796,
+     1804
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Feldspar forms len- ticular grains, mostly less than 2 millimeters in diameter, that are surrounded by quartz in mosaic aggregate.",
+    "role": "gangue",
+    "span": [
+     1795,
+     1928
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1901,
+     1907
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Feldspar forms len- ticular grains, mostly less than 2 millimeters in diameter, that are surrounded by quartz in mosaic aggregate.",
+    "role": "gangue",
+    "span": [
+     1795,
+     1928
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "feldspar",
+    "at": [
+     1941,
+     1949
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Many of the feldspar grains have granulated margins.",
+    "role": "gangue",
+    "span": [
+     1928,
+     1982
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "oligoclase",
+    "at": [
+     2015,
+     2025
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "plagioclase",
+    "quote": "Except for scattered grains of oligoclase, the feldspar is wholly orthoclase.",
+    "role": "host",
+    "span": [
+     1982,
+     2061
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "feldspar",
+    "at": [
+     2031,
+     2039
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Except for scattered grains of oligoclase, the feldspar is wholly orthoclase.",
+    "role": "gangue",
+    "span": [
+     1982,
+     2061
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "orthoclase",
+    "at": [
+     2050,
+     2060
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "orthoclase",
+    "quote": "Except for scattered grains of oligoclase, the feldspar is wholly orthoclase.",
+    "role": "host",
+    "span": [
+     1982,
+     2061
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "plagioclase",
+    "at": [
+     2104,
+     2115
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "plagioclase",
+    "quote": "There is some evidence of replacement of plagioclase by orthoclase.",
+    "role": "host",
+    "span": [
+     2061,
+     2130
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "orthoclase",
+    "at": [
+     2119,
+     2129
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "orthoclase",
+    "quote": "There is some evidence of replacement of plagioclase by orthoclase.",
+    "role": "host",
+    "span": [
+     2061,
+     2130
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "magnetite",
+    "at": [
+     2185,
+     2194
+    ],
+    "commodities": [
+     "iron"
+    ],
+    "commodity": "iron",
+    "element": null,
+    "level": null,
+    "name": "magnetite",
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "role": "ore",
+    "span": [
+     2130,
+     2237
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "iron oxide",
+    "at": [
+     2202,
+     2212
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "limonite",
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "role": "alteration",
+    "span": [
+     2130,
+     2237
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "chlorite",
+    "at": [
+     2214,
+     2222
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "chlorite",
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "role": "alteration",
+    "span": [
+     2130,
+     2237
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "epidote",
+    "at": [
+     2229,
+     2236
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "epidote",
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "role": "alteration",
+    "span": [
+     2130,
+     2237
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "chlorite",
+    "at": [
+     2242,
+     2250
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "chlorite",
+    "quote": "The chlorite is evidently an alteration product of biotite, which is preserved in some places.",
+    "role": "alteration",
+    "span": [
+     2237,
+     2333
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "biotite",
+    "at": [
+     2290,
+     2297
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "biotite",
+    "quote": "The chlorite is evidently an alteration product of biotite, which is preserved in some places.",
+    "role": "host",
+    "span": [
+     2237,
+     2333
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "Apatite",
+    "at": [
+     2334,
+     2341
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "apatite",
+    "quote": "Apatite is abundant, and zircon and rutile were observed.",
+    "role": "gangue",
+    "span": [
+     2333,
+     2392
+    ],
+    "statement": "c8",
+    "zone": null
+   },
+   {
+    "as_written": "zircon",
+    "at": [
+     2360,
+     2366
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "zircon",
+    "quote": "Apatite is abundant, and zircon and rutile were observed.",
+    "role": "gangue",
+    "span": [
+     2333,
+     2392
+    ],
+    "statement": "c8",
+    "zone": null
+   },
+   {
+    "as_written": "rutile",
+    "at": [
+     2371,
+     2377
+    ],
+    "commodities": [
+     "titanium"
+    ],
+    "commodity": "titanium",
+    "element": null,
+    "level": null,
+    "name": "rutile",
+    "quote": "Apatite is abundant, and zircon and rutile were observed.",
+    "role": "ore",
+    "span": [
+     2333,
+     2392
+    ],
+    "statement": "c8",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     3119,
+     3125
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "role": "gangue",
+    "span": [
+     2987,
+     3233
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "epidote",
+    "at": [
+     3148,
+     3155
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "epidote",
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "role": "alteration",
+    "span": [
+     2987,
+     3233
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "magnetite",
+    "at": [
+     3200,
+     3209
+    ],
+    "commodities": [
+     "iron"
+    ],
+    "commodity": "iron",
+    "element": null,
+    "level": null,
+    "name": "magnetite",
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "role": "ore",
+    "span": [
+     2987,
+     3233
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "biotite",
+    "at": [
+     3211,
+     3218
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "biotite",
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "role": "host",
+    "span": [
+     2987,
+     3233
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "chlorite",
+    "at": [
+     3224,
+     3232
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "chlorite",
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "role": "alteration",
+    "span": [
+     2987,
+     3233
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "Galena",
+    "at": [
+     4274,
+     4280
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "Galena is the only primary sulphide remaining to any extent in the weathered veins, where it occurs as scattered lumps surrounded by its weather- ing products from a position within a few feet of the surface to the greatest depths of the ore shoots.",
+    "role": "ore",
+    "span": [
+     4273,
+     4527
+    ],
+    "statement": "c10",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "chalcopyrite",
+    "at": [
+     4607,
+     4619
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcopyrite",
+    "quote": "Jaggar and Palache in a private report on the Quartette mine report traces of chalcopyrite and chal- cocite in that mine.",
+    "role": "ore",
+    "span": [
+     4527,
+     4651
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     4987,
+     4993
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "1100",
+    "name": "quartz",
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "role": "gangue",
+    "span": [
+     4778,
+     5014
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     5119,
+     5125
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+    "role": "gangue",
+    "span": [
+     5014,
+     5167
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "epidote",
+    "at": [
+     7136,
+     7143
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "epidote",
+    "quote": "The workings are close to the eastern border of the quartz monzonite, in much shat- tered and greatly altered andesitic porphyry, which breaks readily into small dark- green or dark-red fragments and contains seams of epidote.",
+    "role": "alteration",
+    "span": [
+     6914,
+     7144
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     7288,
+     7298
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "Some small bunches of good ore were found, consisting of chalcocite, malachite, azurite, chryso- colla, and cerusite, but an average value of about $6 per ton was the best that could be obtained for any considerable part of the deposit.",
+    "role": "ore",
+    "span": [
+     7228,
+     7469
+    ],
+    "statement": "c15",
+    "zone": null
+   },
+   {
+    "as_written": "malachite",
+    "at": [
+     7300,
+     7309
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "malachite",
+    "quote": "Some small bunches of good ore were found, consisting of chalcocite, malachite, azurite, chryso- colla, and cerusite, but an average value of about $6 per ton was the best that could be obtained for any considerable part of the deposit.",
+    "role": "ore",
+    "span": [
+     7228,
+     7469
+    ],
+    "statement": "c15",
+    "zone": null
+   },
+   {
+    "as_written": "azurite",
+    "at": [
+     7311,
+     7318
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "azurite",
+    "quote": "Some small bunches of good ore were found, consisting of chalcocite, malachite, azurite, chryso- colla, and cerusite, but an average value of about $6 per ton was the best that could be obtained for any considerable part of the deposit.",
+    "role": "ore",
+    "span": [
+     7228,
+     7469
+    ],
+    "statement": "c15",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "breccias",
+    "at": [
+     91,
+     99
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "It is overlain by a group of andesitic flows and breccias that have been largely converted to hornfels.",
+    "span": [
+     40,
+     145
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Ore shoots",
+    "at": [
+     1118,
+     1128
+    ],
+    "element": "e1",
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Ore shoots were mined to a maximum depth of about 900 feet down the dip, but many veins were stoped only near the surface.",
+    "span": [
+     1116,
+     1241
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoots",
+    "at": [
+     1246,
+     1256
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "breccias",
+    "at": [
+     1269,
+     1277
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "vuggy",
+    "at": [
+     1308,
+     1313
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     1419,
+     1428
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "A peculiar ore shoot at the",
+    "span": [
+     1406,
+     1439
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     1701,
+     1708
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": ", The gneiss is largely brown in the outcrop but pinkish gray with discontinuous brown streaks on the fresh surface.",
+    "span": [
+     1612,
+     1730
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     1788,
+     1794
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "Foliation is well developed but the rock is not broadly banded.",
+    "span": [
+     1730,
+     1795
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "replacement",
+    "at": [
+     2089,
+     2100
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "There is some evidence of replacement of plagioclase by orthoclase.",
+    "span": [
+     2061,
+     2130
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     2140,
+     2147
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "span": [
+     2130,
+     2237
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "breccias",
+    "at": [
+     2765,
+     2773
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The orig- inal rocks appear to have been chiefly andesite flows and breccias (pi.",
+    "span": [
+     2695,
+     2779
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoots",
+    "at": [
+     4516,
+     4526
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Galena is the only primary sulphide remaining to any extent in the weathered veins, where it occurs as scattered lumps surrounded by its weather- ing products from a position within a few feet of the surface to the greatest depths of the ore shoots.",
+    "span": [
+     4273,
+     4527
+    ],
+    "statement": "c10"
+   },
+   {
+    "as_written": "vein material",
+    "at": [
+     4664,
+     4677
+    ],
+    "element": null,
+    "level": null,
+    "name": "vein filling",
+    "quote": "Unweathered vein material probably representative of that in many of the weathered veins was found on the dump at the Big",
+    "span": [
+     4651,
+     4778
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     4874,
+     4883
+    ],
+    "element": null,
+    "level": "1100",
+    "name": "ore shoot",
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "span": [
+     4778,
+     5014
+    ],
+    "statement": "c12"
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     4969,
+     4980
+    ],
+    "element": null,
+    "level": "1100",
+    "name": "gouge",
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "span": [
+     4778,
+     5014
+    ],
+    "statement": "c12"
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     4994,
+     5003
+    ],
+    "element": null,
+    "level": "1100",
+    "name": "stringer",
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "span": [
+     4778,
+     5014
+    ],
+    "statement": "c12"
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     5051,
+     5063
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+    "span": [
+     5014,
+     5167
+    ],
+    "statement": "c13"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     5068,
+     5076
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+    "span": [
+     5014,
+     5167
+    ],
+    "statement": "c13"
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     5126,
+     5135
+    ],
+    "element": null,
+    "level": null,
+    "name": "stringer",
+    "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+    "span": [
+     5014,
+     5167
+    ],
+    "statement": "c13"
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     5816,
+     5826
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "Mining was carried on by the company until 1911, when extensive explorations failed to yield new ore bodies.",
+    "span": [
+     5716,
+     5827
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoots",
+    "at": [
+     6367,
+     6377
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Nothing is known to the writer of any successful development of ore shoots in the eastern or Eambler portion of the vein, nor is it known how extensive explorations in that area may have been.",
+    "span": [
+     6301,
+     6497
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     6556,
+     6565
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The vein is so long, however, that the possibility of an ore shoot in this area should be entertained.",
+    "span": [
+     6497,
+     6601
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     6726,
+     6736
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "The Boston group of the Quartette Mining Co. was extensively prospected some years ago, but the attempt to find workable ore bodies was unsuccessful.",
+    "span": [
+     6604,
+     6754
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The ore shoots consist of breccias of country rock cemented with vuggy quartz and, in the most productive veins, with the oxidation products of sulphide minerals.",
+    "span": [
+     1241,
+     1406
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "Feldspar",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Feldspar forms len- ticular grains, mostly less than 2 millimeters in diameter, that are surrounded by quartz in mosaic aggregate.",
+    "span": [
+     1795,
+     1928
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "feldspar"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar"
+    ],
+    "page": null,
+    "quote": "Many of the feldspar grains have granulated margins.",
+    "span": [
+     1928,
+     1982
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "oligoclase",
+     "feldspar",
+     "orthoclase"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "plagioclase",
+     "feldspar",
+     "orthoclase"
+    ],
+    "page": null,
+    "quote": "Except for scattered grains of oligoclase, the feldspar is wholly orthoclase.",
+    "span": [
+     1982,
+     2061
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "plagioclase",
+     "orthoclase"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "plagioclase",
+     "orthoclase"
+    ],
+    "page": null,
+    "quote": "There is some evidence of replacement of plagioclase by orthoclase.",
+    "span": [
+     2061,
+     2130
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "magnetite",
+     "iron oxide",
+     "chlorite",
+     "epidote"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "magnetite",
+     "limonite",
+     "chlorite",
+     "epidote"
+    ],
+    "page": null,
+    "quote": "The dark streaks con- sist of extremely fine-grained magnetite, brown iron oxide, chlorite, and epidote.",
+    "span": [
+     2130,
+     2237
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "chlorite",
+     "biotite"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chlorite",
+     "biotite"
+    ],
+    "page": null,
+    "quote": "The chlorite is evidently an alteration product of biotite, which is preserved in some places.",
+    "span": [
+     2237,
+     2333
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Apatite",
+     "zircon",
+     "rutile"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "apatite",
+     "zircon",
+     "rutile"
+    ],
+    "page": null,
+    "quote": "Apatite is abundant, and zircon and rutile were observed.",
+    "span": [
+     2333,
+     2392
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "epidote",
+     "magnetite",
+     "biotite",
+     "chlorite"
+    ],
+    "element": null,
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "epidote",
+     "magnetite",
+     "biotite",
+     "chlorite"
+    ],
+    "page": null,
+    "quote": "Through contact or thermal metamorphism these volcanic rocks have been changed to a dense, hard rock, chiefly by the addition of quartz and the formation of epidote or clinozoisite with minor quantities of b magnetite, biotite, and chlorite.",
+    "span": [
+     2987,
+     3233
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Galena"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "Galena is the only primary sulphide remaining to any extent in the weathered veins, where it occurs as scattered lumps surrounded by its weather- ing products from a position within a few feet of the surface to the greatest depths of the ore shoots.",
+    "span": [
+     4273,
+     4527
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "chalcopyrite"
+    ],
+    "element": null,
+    "id": "c11",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcopyrite"
+    ],
+    "page": null,
+    "quote": "Jaggar and Palache in a private report on the Quartette mine report traces of chalcopyrite and chal- cocite in that mine.",
+    "span": [
+     4527,
+     4651
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c12",
+    "level": "1100",
+    "level_source": "sentence",
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Available'data on the Quartette mine indicate that two levels were run below the bottom of the ore shoot near the 1,100-foot level without revealing further ore, though oxidation products, gouge seams, and quartz stringers continued.",
+    "span": [
+     4778,
+     5014
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c13",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Long crosscuts were driven in both hanging wall and footwall without revealing more than a few barren quartz stringers parallel to the principal vein.",
+    "span": [
+     5014,
+     5167
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "epidote"
+    ],
+    "element": null,
+    "id": "c14",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "epidote"
+    ],
+    "page": null,
+    "quote": "The workings are close to the eastern border of the quartz monzonite, in much shat- tered and greatly altered andesitic porphyry, which breaks readily into small dark- green or dark-red fragments and contains seams of epidote.",
+    "span": [
+     6914,
+     7144
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "chalcocite",
+     "malachite",
+     "azurite"
+    ],
+    "element": null,
+    "id": "c15",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcocite",
+     "malachite",
+     "azurite"
+    ],
+    "page": null,
+    "quote": "Some small bunches of good ore were found, consisting of chalcocite, malachite, azurite, chryso- colla, and cerusite, but an average value of about $6 per ton was the best that could be obtained for any considerable part of the deposit.",
+    "span": [
+     7228,
+     7469
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "2b3200170516db32cb6915b332498082b9d0ceb6047a00c37376e78f1750afc1"
+ },
+ "composition_points": 1,
  "confidence": {
   "assumed": 0,
   "described": 1,
   "surveyed": 0
  },
- "content_sha256": "09fd7a7ad60fafccc9fa80f325337ea756cecab12a3b4a8b8484e1c917c3473e",
+ "content_sha256": "c8c9099cbd936dce5b9c3575b18a65a5a1d661ef4de0e3beb65c2f70c07b4ec9",
  "coverage": {
   "assays": 1,
   "chars": 7574,
+  "composition_statements": 15,
   "elements": 1,
   "mentions": 3,
+  "minerals": 31,
   "mining_sentences": 8,
   "parsed_chars": 252,
   "questions": 7,
@@ -104,18 +2035,18 @@
  ],
  "files": [
   {
-   "bytes": 251459,
+   "bytes": 254115,
    "content_type": "application/json",
    "key": "models/quartette-mine-d3ec07a6/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "f886f9598590e1e64f1dc00d4689030ed44f76002c810f175f0d2badd07e639c"
+   "sha256": "4fb28602cb29287d56d3915f0857a64a4a1761330ff01a651a547b6b5b3cf950"
   },
   {
-   "bytes": 170694,
+   "bytes": 173828,
    "content_type": "application/octet-stream",
    "key": "models/quartette-mine-d3ec07a6/model.omf",
    "name": "model.omf",
-   "sha256": "b9d0eeccddd3c2be32c13412bcdbe5c71a8977f1b4921873f0ae5c116e46e8b5"
+   "sha256": "8f0d59897b0f11f6b5329c3a8c8c8a937e57e6542cd1c6a1b7d7aa2aead0ba44"
   },
   {
    "bytes": 1098,
@@ -220,10 +2151,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:54:21Z",
+ "published_utc": "2026-09-03T03:06:36Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {
@@ -243,5 +2175,7 @@
   "publisher": "nwmm-publish/1",
   "renderer": "nwmm-render2d/1"
  },
- "warnings": []
+ "warnings": [
+  "the \"1100\" level lies 213 m below the bottom of the shaft"
+ ]
 }

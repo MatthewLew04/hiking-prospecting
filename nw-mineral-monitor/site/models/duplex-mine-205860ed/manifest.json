@@ -74,17 +74,1839 @@
   "y": 3926042.764218423,
   "z": 1106.734442972386
  },
+ "commodities": [
+  {
+   "commodity": "copper",
+   "count": 6,
+   "minerals": [
+    "chrysocolla",
+    "copper carbonates"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "sulphide ore",
+    "at": [
+     742,
+     754
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Primary sulphide ore in minable quantities has been found in only one mine.",
+    "span": [
+     733,
+     810
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     2023,
+     2034
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Most of the fractures subsequently mineralized to a varying degree have a west-northwest trend, but there is a much less prominent and less extensively mineralized system nearly at right angles.",
+    "span": [
+     1987,
+     2184
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     2142,
+     2153
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Most of the fractures subsequently mineralized to a varying degree have a west-northwest trend, but there is a much less prominent and less extensively mineralized system nearly at right angles.",
+    "span": [
+     1987,
+     2184
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     3395,
+     3406
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Regional stresses acting against the .quartz monzonite body produced the fractures around that body that were later mineralized.",
+    "span": [
+     3276,
+     3407
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     3445,
+     3456
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Later uplifts caused faulting in the mineralized area and faulting and tilting of the later volcanics away from the older rocks.",
+    "span": [
+     3407,
+     3538
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     5432,
+     5443
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Regional movements acting against the competent buttress afforded by the quartz monzonite body produced the fractures that were later mineralized.",
+    "span": [
+     5295,
+     5444
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     5449,
+     5463
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "The mineralization may have been closely related to the quartz monzonite in that the solutions came from very deep within that body after the magma near the surface had consolidated.",
+    "span": [
+     5444,
+     5629
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     5646,
+     5660
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "How- ever, the mineralization may have been related to a later igneous epoch, its relation to the quartz monzonite being determined only by the previously available fracture system.",
+    "span": [
+     5629,
+     5814
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     5952,
+     5961
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "Possibly the oxidation of the veins took place at this time, when the relief was great, providing for circulation of ground water and accounting for the lack of coincidence between oxidation and present ground- water level.",
+    "span": [
+     5937,
+     6165
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     6122,
+     6131
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "Possibly the oxidation of the veins took place at this time, when the relief was great, providing for circulation of ground water and accounting for the lack of coincidence between oxidation and present ground- water level.",
+    "span": [
+     5937,
+     6165
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     6399,
+     6406
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Large masses of the volcanic rocks were altered by hydro thermal solu- tions.",
+    "span": [
+     6357,
+     6437
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     9205,
+     9212
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "altered",
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "span": [
+     9084,
+     9321
+    ],
+    "statement": "c1",
+    "zone": null
+   }
+  ],
+  "by_level": {
+   "300": [
+    "chrysocolla",
+    "limonite",
+    "quartz",
+    "copper carbonates"
+   ]
+  },
+  "commodities": [
+   {
+    "commodity": "copper",
+    "count": 6,
+    "minerals": [
+     "chrysocolla",
+     "copper carbonates"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 145,
+   "sentences_with_minerals": 6
+  },
+  "host_rock": [
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     229,
+     245
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The ore has been obtained from veins most of which strike N. 57\u00b0-70\u00b0 W., dip 60\u00b0 or less to the south, and are distributed along the contact of a large body of quartz monzonite, though only to a very slight extent within the intrusive body.",
+    "span": [
+     65,
+     310
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     366,
+     383
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The country rocks of the veins are chiefly intrustive andesite porphyry and a group of partly metamorphosed volcanic rocks or hornfels.",
+    "span": [
+     310,
+     448
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     439,
+     447
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "The country rocks of the veins are chiefly intrustive andesite porphyry and a group of partly metamorphosed volcanic rocks or hornfels.",
+    "span": [
+     310,
+     448
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Gneiss",
+    "at": [
+     450,
+     456
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "Gneiss, judged to be pre-Cambrian, occurs in the southern part of the district.",
+    "span": [
+     448,
+     530
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     1495,
+     1511
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "the Searchlight shaft of the Duplex mine a dike of quartz monzonite lies parallel to the vein fracture.",
+    "span": [
+     1444,
+     1548
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     1553,
+     1569
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The quartz monzonite seems to have resisted rupture, and as a consequence, so far as could be ascer- tained, the older rocks molded to it are not greatly faulted.",
+    "span": [
+     1548,
+     1713
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz \nmonzonite",
+    "at": [
+     1780,
+     1797
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "During regional movements that followed the consolidation of the quartz monzonite, that body appears to have acted as a competent mass, so that fractures were formed in regular pattern around its margin in the less competent older volcanic rocks and andesite porphyry.",
+    "span": [
+     1713,
+     1987
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     1969,
+     1986
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "During regional movements that followed the consolidation of the quartz monzonite, that body appears to have acted as a competent mass, so that fractures were formed in regular pattern around its margin in the less competent older volcanic rocks and andesite porphyry.",
+    "span": [
+     1713,
+     1987
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     3148,
+     3164
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "In general, it appears that the quartz monzonite and the older rocks immediately associated with it constitute an uplifted mass that has resisted deformation.",
+    "span": [
+     3115,
+     3276
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz \nmonzonite",
+    "at": [
+     3315,
+     3332
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "Regional stresses acting against the .quartz monzonite body produced the fractures around that body that were later mineralized.",
+    "span": [
+     3276,
+     3407
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     3703,
+     3709
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "The pre-Cambrian (?) gneiss was denuded of the great thickness of Paleozoic and Mesozoic rocks exposed to the west 15 and north.",
+    "span": [
+     3680,
+     3811
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuffs",
+    "at": [
+     4417,
+     4422
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "148 CONTRIBUTIONS TO ECONOMIC GEOLOGY, 1938-39 extruded a series of andesitic lava flows and tuffs or volcanic breccias j> of unknown thickness.",
+    "span": [
+     4323,
+     4468
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     4529,
+     4535
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "These rocks were intruded by a magma that invaded both the gneiss and the volcanic rocks in a most intricate pattern.",
+    "span": [
+     4468,
+     4588
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     4627,
+     4644
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The first intrusions consolidated as andesite porphyry, but at a later stage a part of the magma invaded the porphyry as well as the older rocks and solidified as quartz monzonite.",
+    "span": [
+     4588,
+     4772
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     4700,
+     4708
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The first intrusions consolidated as andesite porphyry, but at a later stage a part of the magma invaded the porphyry as well as the older rocks and solidified as quartz monzonite.",
+    "span": [
+     4588,
+     4772
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     4755,
+     4771
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The first intrusions consolidated as andesite porphyry, but at a later stage a part of the magma invaded the porphyry as well as the older rocks and solidified as quartz monzonite.",
+    "span": [
+     4588,
+     4772
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     4819,
+     4836
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "It is suggested that both the texture of the andesite porphyry and the pattern of the intrusive masses indicate that the magma first broke into a thin cover of volcanic rocks.",
+    "span": [
+     4772,
+     4951
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     5077,
+     5093
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "It may even have reached the surface and spread out as flows, affording the later magma sufficient cover to crystallize as quartz monzonite.",
+    "span": [
+     4951,
+     5094
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     5129,
+     5137
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "The early lavas were changed to hornfels by heat and solutions from the intrusive rocks.",
+    "span": [
+     5094,
+     5185
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     5191,
+     5208
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The andesite porphyry was also somewhat modified as a consequence of the intrusion of the quartz monzonite.",
+    "span": [
+     5185,
+     5295
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     5278,
+     5294
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The andesite porphyry was also somewhat modified as a consequence of the intrusion of the quartz monzonite.",
+    "span": [
+     5185,
+     5295
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     5370,
+     5386
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "Regional movements acting against the competent buttress afforded by the quartz monzonite body produced the fractures that were later mineralized.",
+    "span": [
+     5295,
+     5444
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     5502,
+     5518
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "The mineralization may have been closely related to the quartz monzonite in that the solutions came from very deep within that body after the magma near the surface had consolidated.",
+    "span": [
+     5444,
+     5629
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     5730,
+     5746
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "How- ever, the mineralization may have been related to a later igneous epoch, its relation to the quartz monzonite being determined only by the previously available fracture system.",
+    "span": [
+     5629,
+     5814
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6263,
+     6271
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Another series of lavas and fragmental rocks was laid down on the erosion surface, and dikes of rhyolite and possibly of andesite penetrated the older rocks, including the quartz monzonite.",
+    "span": [
+     6165,
+     6357
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite",
+    "at": [
+     6289,
+     6297
+    ],
+    "element": null,
+    "level": null,
+    "name": "andesite",
+    "quote": "Another series of lavas and fragmental rocks was laid down on the erosion surface, and dikes of rhyolite and possibly of andesite penetrated the older rocks, including the quartz monzonite.",
+    "span": [
+     6165,
+     6357
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     6340,
+     6356
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "Another series of lavas and fragmental rocks was laid down on the erosion surface, and dikes of rhyolite and possibly of andesite penetrated the older rocks, including the quartz monzonite.",
+    "span": [
+     6165,
+     6357
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gneiss",
+    "at": [
+     7042,
+     7048
+    ],
+    "element": null,
+    "level": null,
+    "name": "gneiss",
+    "quote": "As volcanic rocks in this region are generally believed to be of Tertiary age, all the rocks later than the gneiss are probably Tertiary.",
+    "span": [
+     6930,
+     7071
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     8873,
+     8881
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "48.) The country rock is chiefly hornfels, but dikes and masses of andesite porphyry are revealed on most of the levels.",
+    "span": [
+     8838,
+     8961
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite porphyry",
+    "at": [
+     8907,
+     8924
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "48.) The country rock is chiefly hornfels, but dikes and masses of andesite porphyry are revealed on most of the levels.",
+    "span": [
+     8838,
+     8961
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     10114,
+     10122
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "Both are narrow quartz veins in hornfels and ande- site porphyry.",
+    "span": [
+     10081,
+     10148
+    ],
+    "statement": "c3"
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     10139,
+     10147
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "Both are narrow quartz veins in hornfels and ande- site porphyry.",
+    "span": [
+     10081,
+     10148
+    ],
+    "statement": "c3"
+   },
+   {
+    "as_written": "ANDESITE PORPHYRY",
+    "at": [
+     10527,
+     10544
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "ANDESITE PORPHYRY",
+    "at": [
+     10861,
+     10878
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "PORPHYRY",
+    "at": [
+     10959,
+     10967
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "ANDESITE \nPORPHYRY",
+    "at": [
+     10995,
+     11013
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "Andesite porphyry",
+    "at": [
+     11073,
+     11090
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "porphyry",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     11287,
+     11303
+    ],
+    "element": "e11",
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "A group of shafts in quartz monzonite 1,400 feet east-northeast of the vein last described were sunk on stringers of quartz with a little copper stain trending nearly east-west and dipping 40\u00b0-70\u00b0 S.",
+    "span": [
+     11265,
+     11467
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "quartz monzonite",
+    "at": [
+     11483,
+     11499
+    ],
+    "element": "e12",
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "A shaft at the quartz monzonite contact 1,100 feet east-northeast of the Fraction shaft of the Duplex mine reveals a vein trending N. 80\u00b0 E. and dipping 60\u00b0 S.",
+    "span": [
+     11467,
+     11629
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartz \nmonzonite",
+    "at": [
+     11672,
+     11689
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartz monzonite",
+    "quote": "A little vuggy quartz occurs in both the quartz monzonite and the intruded hornfels.",
+    "span": [
+     11629,
+     11716
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "hornfels",
+    "at": [
+     11707,
+     11715
+    ],
+    "element": null,
+    "level": null,
+    "name": "hornfels",
+    "quote": "A little vuggy quartz occurs in both the quartz monzonite and the intruded hornfels.",
+    "span": [
+     11629,
+     11716
+    ],
+    "statement": "c6"
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "quartz",
+    "at": [
+     9245,
+     9251
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e7",
+    "level": null,
+    "name": "quartz",
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "role": "gangue",
+    "span": [
+     9084,
+     9321
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "copper silicate",
+    "at": [
+     9379,
+     9394
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": "300",
+    "name": "chrysocolla",
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "role": "ore",
+    "span": [
+     9321,
+     9488
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "iron oxides",
+    "at": [
+     9399,
+     9410
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "300",
+    "name": "limonite",
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "role": "alteration",
+    "span": [
+     9321,
+     9488
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     9421,
+     9427
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "300",
+    "name": "quartz",
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "role": "gangue",
+    "span": [
+     9321,
+     9488
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "copper stain",
+    "at": [
+     9432,
+     9444
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": "300",
+    "name": "copper carbonates",
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "role": "ore",
+    "span": [
+     9321,
+     9488
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10098,
+     10104
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Both are narrow quartz veins in hornfels and ande- site porphyry.",
+    "role": "gangue",
+    "span": [
+     10081,
+     10148
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "COPPER STAIN",
+    "at": [
+     10419,
+     10431
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": "e8",
+    "level": null,
+    "name": "copper carbonates",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "ore",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10468,
+     10474
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "WHITE QUARTZ",
+    "at": [
+     10607,
+     10619
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10671,
+     10677
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "COPPER STAIN",
+    "at": [
+     10683,
+     10695
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": "e8",
+    "level": null,
+    "name": "copper carbonates",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "ore",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10734,
+     10740
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10774,
+     10780
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "COPPER STAIN",
+    "at": [
+     10832,
+     10844
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": "e8",
+    "level": null,
+    "name": "copper carbonates",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "ore",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10854,
+     10860
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "QUARTZ",
+    "at": [
+     10888,
+     10894
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "Quartz",
+    "at": [
+     11051,
+     11057
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e8",
+    "level": null,
+    "name": "quartz",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "role": "gangue",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     11384,
+     11390
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e11",
+    "level": null,
+    "name": "quartz",
+    "quote": "A group of shafts in quartz monzonite 1,400 feet east-northeast of the vein last described were sunk on stringers of quartz with a little copper stain trending nearly east-west and dipping 40\u00b0-70\u00b0 S.",
+    "role": "gangue",
+    "span": [
+     11265,
+     11467
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "copper stain",
+    "at": [
+     11406,
+     11418
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": "e11",
+    "level": null,
+    "name": "copper carbonates",
+    "quote": "A group of shafts in quartz monzonite 1,400 feet east-northeast of the vein last described were sunk on stringers of quartz with a little copper stain trending nearly east-west and dipping 40\u00b0-70\u00b0 S.",
+    "role": "ore",
+    "span": [
+     11265,
+     11467
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     11646,
+     11652
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "A little vuggy quartz occurs in both the quartz monzonite and the intruded hornfels.",
+    "role": "gangue",
+    "span": [
+     11629,
+     11716
+    ],
+    "statement": "c6",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "ore bodies",
+    "at": [
+     2415,
+     2425
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "This seems to account for the restric- tion of the ore bodies.",
+    "span": [
+     2362,
+     2426
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vein material",
+    "at": [
+     2557,
+     2570
+    ],
+    "element": null,
+    "level": null,
+    "name": "vein filling",
+    "quote": "Movements subsequent to the deposition of the ores caused relative displacement between the walls of the veins, brecciating the vein material and forming gouge seams through both the vein material and the country rock.",
+    "span": [
+     2426,
+     2648
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     2583,
+     2594
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "Movements subsequent to the deposition of the ores caused relative displacement between the walls of the veins, brecciating the vein material and forming gouge seams through both the vein material and the country rock.",
+    "span": [
+     2426,
+     2648
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vein material",
+    "at": [
+     2613,
+     2626
+    ],
+    "element": null,
+    "level": null,
+    "name": "vein filling",
+    "quote": "Movements subsequent to the deposition of the ores caused relative displacement between the walls of the veins, brecciating the vein material and forming gouge seams through both the vein material and the country rock.",
+    "span": [
+     2426,
+     2648
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccias",
+    "at": [
+     4435,
+     4443
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "148 CONTRIBUTIONS TO ECONOMIC GEOLOGY, 1938-39 extruded a series of andesitic lava flows and tuffs or volcanic breccias j> of unknown thickness.",
+    "span": [
+     4323,
+     4468
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "vein \nmaterial",
+    "at": [
+     9089,
+     9103
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "vein filling",
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "span": [
+     9084,
+     9321
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     9261,
+     9268
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "breccia",
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "span": [
+     9084,
+     9321
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     9276,
+     9284
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "footwall",
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "span": [
+     9084,
+     9321
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "vein material",
+    "at": [
+     9326,
+     9339
+    ],
+    "element": null,
+    "level": "300",
+    "name": "vein filling",
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "span": [
+     9321,
+     9488
+    ],
+    "statement": "c2"
+   },
+   {
+    "as_written": "GOUGE SEAM",
+    "at": [
+     10389,
+     10399
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "gouge",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "BRECCIA",
+    "at": [
+     10484,
+     10491
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "breccia",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "FOOTWALL",
+    "at": [
+     10496,
+     10504
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "footwall",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "HANGING WALL",
+    "at": [
+     10514,
+     10526
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "hanging wall",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "HANGING WALL",
+    "at": [
+     10570,
+     10582
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "hanging wall",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "FOOTWALL",
+    "at": [
+     10588,
+     10596
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "footwall",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "LENSES",
+    "at": [
+     10597,
+     10603
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "lens",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "BRECCIA",
+    "at": [
+     10753,
+     10760
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "breccia",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "BRECCIA",
+    "at": [
+     10786,
+     10793
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "breccia",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "GouGE",
+    "at": [
+     10938,
+     10943
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "gouge",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "Gouge seam",
+    "at": [
+     11026,
+     11036
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "gouge",
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     11371,
+     11380
+    ],
+    "element": "e11",
+    "level": null,
+    "name": "stringer",
+    "quote": "A group of shafts in quartz monzonite 1,400 feet east-northeast of the vein last described were sunk on stringers of quartz with a little copper stain trending nearly east-west and dipping 40\u00b0-70\u00b0 S.",
+    "span": [
+     11265,
+     11467
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "vuggy",
+    "at": [
+     11640,
+     11645
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "A little vuggy quartz occurs in both the quartz monzonite and the intruded hornfels.",
+    "span": [
+     11629,
+     11716
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "breccia zones",
+    "at": [
+     11737,
+     11750
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "Two nearly parallel breccia zones trending N. 78\u00b0 W. and dipping 68\u00b0 SW.",
+    "span": [
+     11716,
+     11790
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": "e7",
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The vein material near the surface in the vicinity of the air shaft consists of a zone 6 feet wide made up largely of altered rock but contains 26 inches of quartz-cemented breccia on the footwall and 6 inches on the hang- ing wall.",
+    "span": [
+     9084,
+     9321
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "copper silicate",
+     "iron oxides",
+     "quartz",
+     "copper stain"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": "300",
+    "level_source": "sentence",
+    "minerals": [
+     "chrysocolla",
+     "limonite",
+     "quartz",
+     "copper carbonates"
+    ],
+    "page": null,
+    "quote": "The vein material in the upper workings is stained with copper silicate and iron oxides, but both quartz and copper stain are largely wanting on the 300-foot level.",
+    "span": [
+     9321,
+     9488
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Both are narrow quartz veins in hornfels and ande- site porphyry.",
+    "span": [
+     10081,
+     10148
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "COPPER STAIN",
+     "QUARTZ",
+     "WHITE QUARTZ",
+     "QUARTZ",
+     "COPPER STAIN",
+     "QUARTZ",
+     "QUARTZ",
+     "COPPER STAIN",
+     "QUARTZ",
+     "QUARTZ",
+     "Quartz"
+    ],
+    "element": "e8",
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "copper carbonates",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "GEOLOGICAL SURVEY BULLETIN 906 PLATE 47 VEIN PINCHES TO A GOUGE SEAM WITH A LITTLE } COPPER STAIN 1 AIR SHAFT , VEIN 6' WIDE WITH 26 QUARTZ-CEMENTED BRECCIA ON FOOTWALL AND 6 ON HANGING WALL ANDESITE PORPHYRY IN VEIN BUTHORNFELS IN HANGING WALL AND FOOTWALL LENSES OF WHITE QUARTZ !2w/DE 4O VEIN A LITTLE COP- CAVED 1931 A LITTLE QUARTZ AND COPPER STAIN IN SHA TTERED HORNFEL S 30 'VEIN, IS\"QUARTZ- CEMENT ED BRECCIA 3O OfCRUSHED QUARTZ AND BRECCIA A LITTL\u00a3 Q(JAKT2 AND A VERY LITTLE COPPER STAIN A LITTLE QUARTZ ANDESITE PORPHYRY A LITTLE QUARTZ .ZOO-FOOT LEVEL +00-FOOT STATION 12 TO i8\"GouGE AND >, CRUSHED PORPHYRY \"-CONTACT ON 3OO-FOOTLEVEL ANDESITE PORPHYRY EXPLANATION Gouge seam, showing dip Quartz vein'm'aterial Andesite porphyry",
+    "span": [
+     10329,
+     11093
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "copper stain"
+    ],
+    "element": "e11",
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "copper carbonates"
+    ],
+    "page": null,
+    "quote": "A group of shafts in quartz monzonite 1,400 feet east-northeast of the vein last described were sunk on stringers of quartz with a little copper stain trending nearly east-west and dipping 40\u00b0-70\u00b0 S.",
+    "span": [
+     11265,
+     11467
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "A little vuggy quartz occurs in both the quartz monzonite and the intruded hornfels.",
+    "span": [
+     11629,
+     11716
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "1698567b58997992cb6c9408aa31d0e5307c2e2fb96ebdfe7dcd494bd7f450fd"
+ },
+ "composition_points": 3,
  "confidence": {
   "assumed": 0,
   "described": 7,
   "surveyed": 0
  },
- "content_sha256": "51c1c919f5d619c22f744ae5831a817534eb8645f144e0789ab7ec14aa2d6476",
+ "content_sha256": "58e2ddf3bb7c82e9bca55465a18200ffd312b4853485f76e6a3296359bbdf974",
  "coverage": {
   "assays": 0,
   "chars": 11877,
+  "composition_statements": 6,
   "elements": 7,
   "mentions": 8,
+  "minerals": 20,
   "mining_sentences": 17,
   "parsed_chars": 2175,
   "questions": 15,
@@ -244,18 +2066,18 @@
  ],
  "files": [
   {
-   "bytes": 256664,
+   "bytes": 259536,
    "content_type": "application/json",
    "key": "models/duplex-mine-205860ed/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "f2ffdc200b4d758203a06035c8fad10143c26825115bc542cf9bc87bd59ba495"
+   "sha256": "14992189457becb5b06788b0ec5b835ca976f5131a7ee56348e27cd01871759d"
   },
   {
-   "bytes": 168528,
+   "bytes": 172303,
    "content_type": "application/octet-stream",
    "key": "models/duplex-mine-205860ed/model.omf",
    "name": "model.omf",
-   "sha256": "a99fe18b0190840a7912de645fa5955b1986d96608925e230aa432e4c9e6a783"
+   "sha256": "e08f0dccf13ad6fca5220368a66da181b654f0557dda9225301af037dc25b3a4"
   },
   {
    "bytes": 3433,
@@ -413,10 +2235,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:54:22Z",
+ "published_utc": "2026-09-03T03:06:38Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

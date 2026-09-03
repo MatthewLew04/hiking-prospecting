@@ -38,17 +38,326 @@
   "y": 4489384.01959808,
   "z": 1969.1583783939282
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 22,
+   "sentences_with_minerals": 2
+  },
+  "host_rock": [
+   {
+    "as_written": "quartzite",
+    "at": [
+     353,
+     362
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "quartzite",
+    "quote": "The upper tunnel enters a strong fissure, after passing eastward 525 feet through quartzite.",
+    "span": [
+     269,
+     363
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     635,
+     644
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "quartzite",
+    "quote": "The lower tunnel enters quartzite 550 feet below and 1,350 feet northeast of the upper, strikes a fracture zone, and except for incidental departures follows it southeastward for nearly 800 feet The zone trends N. 10\u00b0 to 20\u00b0 W. and dips westward at angles ranging from 65\u00b0 to 80\u00b0, the average being 70\u00b0, and varies in thickness from a close fissure to 4 feet For the greater portion of its course it lies within quartzite walls and carries stained ocherous material.",
+    "span": [
+     609,
+     1083
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     1028,
+     1037
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "quartzite",
+    "quote": "The lower tunnel enters quartzite 550 feet below and 1,350 feet northeast of the upper, strikes a fracture zone, and except for incidental departures follows it southeastward for nearly 800 feet The zone trends N. 10\u00b0 to 20\u00b0 W. and dips westward at angles ranging from 65\u00b0 to 80\u00b0, the average being 70\u00b0, and varies in thickness from a close fissure to 4 feet For the greater portion of its course it lies within quartzite walls and carries stained ocherous material.",
+    "span": [
+     609,
+     1083
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     1155,
+     1163
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "Soon after cutting the fissure, however, it crosses a narrow dike of porphyry, small fault blocks transported by subsequent movement on the fissure, and a dike 80 feet in thickness on the top.",
+    "span": [
+     1083,
+     1279
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     1591,
+     1600
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "The crushed quartzite exposed on the open cuts on the apex is highly stained with brilliant red, yellow, and brown colors, and it is stated that some excellent ore occurred there.",
+    "span": [
+     1578,
+     1760
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "marcasite",
+    "at": [
+     2074,
+     2083
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "They show brown carbonate ore blotched with marcasite and a few cores of",
+    "role": "gangue",
+    "span": [
+     2027,
+     2105
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "Clays",
+    "at": [
+     2205,
+     2210
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "clay",
+    "quote": "the base of the road to the Midland mine, near the slaughterhouse, it and the portion known as the Clays rim have been thoroughly explored along a general northeasterly course to the mouth of Damphool Gulch.",
+    "role": "alteration",
+    "span": [
+     2105,
+     2314
+    ],
+    "statement": "c2",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "fissure",
+    "at": [
+     303,
+     310
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The upper tunnel enters a strong fissure, after passing eastward 525 feet through quartzite.",
+    "span": [
+     269,
+     363
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "crushed zone",
+    "at": [
+     532,
+     544
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "It' trends N. 10\u00b0 W., S. 10\u00b0 E., dips westward at angles ranging from 70\u00b0 to 80\u00b0, and the crushed zone between slicken- sided walls varies in width from 3 to 15 feet.",
+    "span": [
+     439,
+     609
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     956,
+     963
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The lower tunnel enters quartzite 550 feet below and 1,350 feet northeast of the upper, strikes a fracture zone, and except for incidental departures follows it southeastward for nearly 800 feet The zone trends N. 10\u00b0 to 20\u00b0 W. and dips westward at angles ranging from 65\u00b0 to 80\u00b0, the average being 70\u00b0, and varies in thickness from a close fissure to 4 feet For the greater portion of its course it lies within quartzite walls and carries stained ocherous material.",
+    "span": [
+     609,
+     1083
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     1108,
+     1115
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Soon after cutting the fissure, however, it crosses a narrow dike of porphyry, small fault blocks transported by subsequent movement on the fissure, and a dike 80 feet in thickness on the top.",
+    "span": [
+     1083,
+     1279
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     1227,
+     1234
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Soon after cutting the fissure, however, it crosses a narrow dike of porphyry, small fault blocks transported by subsequent movement on the fissure, and a dike 80 feet in thickness on the top.",
+    "span": [
+     1083,
+     1279
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     1471,
+     1478
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Above the upper tunnel near the crest of the divide, a strong fracture zone, which has been explored by a series of open cuts, shows a trend and location conformable to that of the m'ain fissure if the vertical dip at the surface be considered to continue down nearly to the upper tunnel.",
+    "span": [
+     1279,
+     1573
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     1824,
+     1831
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "It occurs in the fissure in three distinct shoots, which appear to pitch steeply to the south.",
+    "span": [
+     1805,
+     1902
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     1850,
+     1856
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "It occurs in the fissure in three distinct shoots, which appear to pitch steeply to the south.",
+    "span": [
+     1805,
+     1902
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "marcasite"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "They show brown carbonate ore blotched with marcasite and a few cores of",
+    "span": [
+     2027,
+     2105
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Clays"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "clay"
+    ],
+    "page": null,
+    "quote": "the base of the road to the Midland mine, near the slaughterhouse, it and the portion known as the Clays rim have been thoroughly explored along a general northeasterly course to the mouth of Damphool Gulch.",
+    "span": [
+     2105,
+     2314
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "fd10a30d213bfa01907aa34c38ba5e7f4d20ad22b6fcf5a97c43089a5ac49412"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "9992ecf227b8914e329140227a49211168ac56fcc6638668e9751944fa6d34ba",
+ "content_sha256": "e4ac847a8f8168f77dae76e213fc2b1761edec2f4797d57b8cc0a9c52a0a6bec",
  "coverage": {
   "assays": 0,
   "chars": 2824,
+  "composition_statements": 2,
   "elements": 2,
   "mentions": 5,
+  "minerals": 2,
   "mining_sentences": 7,
   "parsed_chars": 864,
   "questions": 8,
@@ -107,18 +416,18 @@
  ],
  "files": [
   {
-   "bytes": 284495,
+   "bytes": 284497,
    "content_type": "application/json",
    "key": "models/midland-1ad101c6/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "712ad12cedf4828acb499dc029bf3e800ca2dac5af137850208270c1f3294ef5"
+   "sha256": "25421fdf54c34d2533100fe485937c1e0a6643d524ff15f3192093baaac90d5b"
   },
   {
    "bytes": 194719,
    "content_type": "application/octet-stream",
    "key": "models/midland-1ad101c6/model.omf",
    "name": "model.omf",
-   "sha256": "a7b9e8d3e65b12bb01088294b55f69d313cb35d6a5fe2baeea32e408bcf08aa1"
+   "sha256": "08bb79730e3b890342ad187375285f7b2171eb52f8e52193c9086d0d33d98e16"
   },
   {
    "bytes": 1488,
@@ -243,10 +552,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:54:17Z",
+ "published_utc": "2026-09-03T03:06:32Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

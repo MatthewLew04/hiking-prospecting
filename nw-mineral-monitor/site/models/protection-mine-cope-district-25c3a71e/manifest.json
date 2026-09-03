@@ -45,17 +45,251 @@
   "y": 4633096.671261425,
   "z": 1759.031372356894
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "altered",
+    "at": [
+     148,
+     155
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "At some places near the vein the granite wall rock is but little altered;",
+    "span": [
+     81,
+     156
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "leached",
+    "at": [
+     247,
+     254
+    ],
+    "element": null,
+    "level": null,
+    "name": "leached",
+    "quote": "at others it is a light-colored decomposed rock, the ferromagnesian minerals having been leached out and the feldspar sericitized.",
+    "span": [
+     156,
+     289
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "sericitized",
+    "at": [
+     277,
+     288
+    ],
+    "element": null,
+    "level": null,
+    "name": "sericitized",
+    "quote": "at others it is a light-colored decomposed rock, the ferromagnesian minerals having been leached out and the feldspar sericitized.",
+    "span": [
+     156,
+     289
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     1220,
+     1231
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "Along this fault there are stringers of quartz in place, and in the level above both the Protection vein and the faults are mineralized on both sides of their intersection.",
+    "span": [
+     1093,
+     1269
+    ],
+    "statement": "c2",
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 11,
+   "sentences_with_minerals": 2
+  },
+  "host_rock": [
+   {
+    "as_written": "granite",
+    "at": [
+     115,
+     122
+    ],
+    "element": null,
+    "level": null,
+    "name": "granite",
+    "quote": "At some places near the vein the granite wall rock is but little altered;",
+    "span": [
+     81,
+     156
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "feldspar",
+    "at": [
+     267,
+     275
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "at others it is a light-colored decomposed rock, the ferromagnesian minerals having been leached out and the feldspar sericitized.",
+    "role": "gangue",
+    "span": [
+     156,
+     289
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1135,
+     1141
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Along this fault there are stringers of quartz in place, and in the level above both the Protection vein and the faults are mineralized on both sides of their intersection.",
+    "role": "gangue",
+    "span": [
+     1093,
+     1269
+    ],
+    "statement": "c2",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "hanging-wall",
+    "at": [
+     811,
+     823
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "hanging wall",
+    "quote": "A drift has been run on this fault for'400 feet, but no vein has been encountered on the hanging-wall side at this end of the drift.",
+    "span": [
+     719,
+     855
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     1122,
+     1131
+    ],
+    "element": null,
+    "level": null,
+    "name": "stringer",
+    "quote": "Along this fault there are stringers of quartz in place, and in the level above both the Protection vein and the faults are mineralized on both sides of their intersection.",
+    "span": [
+     1093,
+     1269
+    ],
+    "statement": "c2"
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     1313,
+     1320
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The relations indicate that the Protection fissure was displaced by faulting before deposition of the ore and that there has been considerable movement subsequently.",
+    "span": [
+     1269,
+     1437
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "feldspar"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar"
+    ],
+    "page": null,
+    "quote": "at others it is a light-colored decomposed rock, the ferromagnesian minerals having been leached out and the feldspar sericitized.",
+    "span": [
+     156,
+     289
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Along this fault there are stringers of quartz in place, and in the level above both the Protection vein and the faults are mineralized on both sides of their intersection.",
+    "span": [
+     1093,
+     1269
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "93c4943b686615b8cd3dd325069522e98e1079412419d067eab2ac86e6bc9d3e"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 1,
   "surveyed": 0
  },
- "content_sha256": "9c6739878377a55ce051810e4072a9d57222ae8417f0480b8ed55bd446d6fc0b",
+ "content_sha256": "c246df778c727874211dc6e677399917bfb9afa4ef4fafd7b68ad955fe7de406",
  "coverage": {
   "assays": 1,
   "chars": 1438,
+  "composition_statements": 2,
   "elements": 1,
   "mentions": 0,
+  "minerals": 2,
   "mining_sentences": 5,
   "parsed_chars": 210,
   "questions": 3,
@@ -95,18 +329,18 @@
  ],
  "files": [
   {
-   "bytes": 326194,
+   "bytes": 326196,
    "content_type": "application/json",
    "key": "models/protection-mine-cope-district-25c3a71e/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "00a8be4274aa36eaa324d5cd4544d02be1aa072c79b51fbacea397dc34c32346"
+   "sha256": "9ec3f94ba7a2ec12198ebefd34f2a9102ab075861da9f84b20443ebcc6c0adf0"
   },
   {
    "bytes": 223490,
    "content_type": "application/octet-stream",
    "key": "models/protection-mine-cope-district-25c3a71e/model.omf",
    "name": "model.omf",
-   "sha256": "db908fb7a788f89a09fdee16ad75c289c95281a09d7508c9a2181c4ac5f3c528"
+   "sha256": "afa3ab747ff2819ad29470b366ec16a3899217d4ad71d07963eca32fa661edc7"
   },
   {
    "bytes": 1096,
@@ -178,10 +412,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:46:40Z",
+ "published_utc": "2026-09-03T03:06:39Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

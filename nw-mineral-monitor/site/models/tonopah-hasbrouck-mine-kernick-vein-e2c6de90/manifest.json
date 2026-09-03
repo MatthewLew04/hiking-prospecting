@@ -111,17 +111,374 @@
   "y": 4204887.47404455,
   "z": 1738.6041167444282
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "silicified",
+    "at": [
+     737,
+     747
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "silicified",
+    "quote": "The adit was continued for 700 feet beyond the vein and in the last 100 feet penetrated a silicified rhyolite tun7, which is in the condition of an iron-stained rubble and was said to carry $4 in gold to the ton.",
+    "span": [
+     644,
+     860
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "iron-stained",
+    "at": [
+     796,
+     808
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "iron-stained",
+    "quote": "The adit was continued for 700 feet beyond the vein and in the last 100 feet penetrated a silicified rhyolite tun7, which is in the condition of an iron-stained rubble and was said to carry $4 in gold to the ton.",
+    "span": [
+     644,
+     860
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     1962,
+     1972
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "It consists of angular fragments of the country rock, highly silicified, inclosed in a cement of exceedingly fine grained bluish quartz.",
+    "span": [
+     1898,
+     2038
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     2242,
+     2252
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "The country rock inclosing the vein is a silicified well-bedded tuff, locally showing cross-bedding.",
+    "span": [
+     2199,
+     2302
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     2451,
+     2461
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "The main adit affords an instructive section across the stratified tuffs, showing their change from comparatively soft strata to ex- tremely hard silicified rocks near the vein.",
+    "span": [
+     2302,
+     2482
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     2676,
+     2684
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The vein is a few feet wide, but only a few inches of postminerally crushed and oxidized gouge pays to extract.",
+    "span": [
+     2594,
+     2707
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   }
+  ],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 27,
+   "sentences_with_minerals": 1
+  },
+  "host_rock": [
+   {
+    "as_written": "rhyolite",
+    "at": [
+     748,
+     756
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The adit was continued for 700 feet beyond the vein and in the last 100 feet penetrated a silicified rhyolite tun7, which is in the condition of an iron-stained rubble and was said to carry $4 in gold to the ton.",
+    "span": [
+     644,
+     860
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     1385,
+     1393
+    ],
+    "element": null,
+    "level": "200",
+    "name": "rhyolite",
+    "quote": "The country rock in these workings is all Fraction rhyolite breccia in unshattered condition, in marked contrast to the highly broken state of the rocks on the 200-foot level.",
+    "span": [
+     1332,
+     1510
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     1618,
+     1622
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "In the face of the south crosscut at the time of visit was a thin intercalated layer of banded fine gray tuff, whose attitude proves that the formation dips 20\u00b0 W. here, in conformity with the general dip throughout the district.",
+    "span": [
+     1510,
+     1744
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuff",
+    "at": [
+     2265,
+     2269
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "The country rock inclosing the vein is a silicified well-bedded tuff, locally showing cross-bedding.",
+    "span": [
+     2199,
+     2302
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "tuffs",
+    "at": [
+     2371,
+     2376
+    ],
+    "element": null,
+    "level": null,
+    "name": "tuff",
+    "quote": "The main adit affords an instructive section across the stratified tuffs, showing their change from comparatively soft strata to ex- tremely hard silicified rocks near the vein.",
+    "span": [
+     2302,
+     2482
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "quartz",
+    "at": [
+     2031,
+     2037
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It consists of angular fragments of the country rock, highly silicified, inclosed in a cement of exceedingly fine grained bluish quartz.",
+    "role": "gangue",
+    "span": [
+     1898,
+     2038
+    ],
+    "statement": "c1",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "breccia",
+    "at": [
+     1394,
+     1401
+    ],
+    "element": null,
+    "level": "200",
+    "name": "breccia",
+    "quote": "The country rock in these workings is all Fraction rhyolite breccia in unshattered condition, in marked contrast to the highly broken state of the rocks on the 200-foot level.",
+    "span": [
+     1332,
+     1510
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     1601,
+     1607
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "In the face of the south crosscut at the time of visit was a thin intercalated layer of banded fine gray tuff, whose attitude proves that the formation dips 20\u00b0 W. here, in conformity with the general dip throughout the district.",
+    "span": [
+     1510,
+     1744
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     2535,
+     2540
+    ],
+    "element": "e6",
+    "level": null,
+    "name": "ore shoot",
+    "quote": "At the intersection of the vein by the adit a fair shoot .of ore 50 feet long was stoped out above the level.",
+    "span": [
+     2482,
+     2594
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     2685,
+     2690
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "The vein is a few feet wide, but only a few inches of postminerally crushed and oxidized gouge pays to extract.",
+    "span": [
+     2594,
+     2707
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     2753,
+     2761
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "In places 10 inches of such material on the footwall will, it is claimed, 1278\u00b0 21 12",
+    "span": [
+     2707,
+     2798
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     2965,
+     2973
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "The former operators broke out 3 to 4 feet across the vein and sorted out the material of the footwall streak;",
+    "span": [
+     2868,
+     2981
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "streak",
+    "at": [
+     2974,
+     2980
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "The former operators broke out 3 to 4 feet across the vein and sorted out the material of the footwall streak;",
+    "span": [
+     2868,
+     2981
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "It consists of angular fragments of the country rock, highly silicified, inclosed in a cement of exceedingly fine grained bluish quartz.",
+    "span": [
+     1898,
+     2038
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "31d9de3cdc61df9af20d05db56bf8d450fd1e7e7f23b3096f7641c217b326d5e"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "4a2a7a64ed6cdcc692571e6db101ebdf5f034eae0714370cb452cde38dab3aa9",
+ "content_sha256": "982fea16668cbb415e8b847274c42bfc15cb1edabc4102f326a05057bed11a39",
  "coverage": {
   "assays": 3,
   "chars": 3338,
+  "composition_statements": 1,
   "elements": 2,
   "mentions": 4,
+  "minerals": 1,
   "mining_sentences": 10,
   "parsed_chars": 830,
   "questions": 5,
@@ -181,18 +538,18 @@
  ],
  "files": [
   {
-   "bytes": 285461,
+   "bytes": 285463,
    "content_type": "application/json",
    "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "5a30edff00842879216a36a7314e73706813bc9e43b976d73c2bdc44757d2f74"
+   "sha256": "9a65d27ad8694e86190c9c2648ec5bc5bbeb9b6263aea907b34ce2864be99d83"
   },
   {
    "bytes": 192566,
    "content_type": "application/octet-stream",
    "key": "models/tonopah-hasbrouck-mine-kernick-vein-e2c6de90/model.omf",
    "name": "model.omf",
-   "sha256": "bf0be3225bde4b95798183eb6aca0ca6bc34a442304fd6acf29dbc19a68938d7"
+   "sha256": "add1b0af344a3c95f939ed8528b6c7bec43a08771e33897dab181f97bed97dcd"
   },
   {
    "bytes": 1490,
@@ -308,10 +665,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:46:27Z",
+ "published_utc": "2026-09-03T03:06:31Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

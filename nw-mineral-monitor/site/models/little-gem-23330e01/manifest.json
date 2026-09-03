@@ -90,17 +90,1186 @@
   "y": 4462968.662214379,
   "z": 1722.3758421274738
  },
+ "commodities": [
+  {
+   "commodity": "copper",
+   "count": 4,
+   "minerals": [
+    "copper carbonates",
+    "chalcopyrite",
+    "bornite",
+    "chalcocite"
+   ]
+  },
+  {
+   "commodity": "silver",
+   "count": 1,
+   "minerals": [
+    "cerargyrite"
+   ]
+  },
+  {
+   "commodity": "gold",
+   "count": 2,
+   "minerals": [
+    "native gold"
+   ]
+  },
+  {
+   "commodity": "arsenic",
+   "count": 2,
+   "minerals": [
+    "arsenopyrite"
+   ]
+  },
+  {
+   "commodity": "lead",
+   "count": 1,
+   "minerals": [
+    "galena"
+   ]
+  },
+  {
+   "commodity": "zinc",
+   "count": 1,
+   "minerals": [
+    "sphalerite"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "altered",
+    "at": [
+     654,
+     661
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The andesite is strongly sheeted par- allel to the lode and is altered near the lode, but at most places it is not strongly leached;",
+    "span": [
+     589,
+     724
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "leached",
+    "at": [
+     716,
+     723
+    ],
+    "element": null,
+    "level": null,
+    "name": "leached",
+    "quote": "The andesite is strongly sheeted par- allel to the lode and is altered near the lode, but at most places it is not strongly leached;",
+    "span": [
+     589,
+     724
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "sulphide \nore",
+    "at": [
+     1059,
+     1072
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     1272,
+     1281
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     1716,
+     1725
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The lode is from 1 to 6 feet wide and, in the main, is a zone composed of several closely spaced parallel sheets of quartz and sulphides, between which the country rock, is highly fractured and seamed with veinlets crossing the general strike of the vein.",
+    "span": [
+     1586,
+     1846
+    ],
+    "statement": "c5",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphide",
+    "at": [
+     1905,
+     1913
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Thin drusy cavities parallel to the walls are lined with sulphide coatings, and these are in turn covered with quartz crystals pointing to the center.",
+    "span": [
+     1846,
+     1999
+    ],
+    "statement": "c6",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     2947,
+     2955
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The ore is highly oxidized;",
+    "span": [
+     2928,
+     2956
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     2994,
+     3003
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "about 75 feet below the surface the sulphides appear, arsenopyrite and pyrite predominating.",
+    "span": [
+     2956,
+     3051
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     3144,
+     3151
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "altered",
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "span": [
+     3051,
+     3223
+    ],
+    "statement": "c9",
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "copper",
+    "count": 4,
+    "minerals": [
+     "copper carbonates",
+     "chalcopyrite",
+     "bornite",
+     "chalcocite"
+    ]
+   },
+   {
+    "commodity": "silver",
+    "count": 1,
+    "minerals": [
+     "cerargyrite"
+    ]
+   },
+   {
+    "commodity": "gold",
+    "count": 2,
+    "minerals": [
+     "native gold"
+    ]
+   },
+   {
+    "commodity": "arsenic",
+    "count": 2,
+    "minerals": [
+     "arsenopyrite"
+    ]
+   },
+   {
+    "commodity": "lead",
+    "count": 1,
+    "minerals": [
+     "galena"
+    ]
+   },
+   {
+    "commodity": "zinc",
+    "count": 1,
+    "minerals": [
+     "sphalerite"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 32,
+   "sentences_with_minerals": 9
+  },
+  "host_rock": [
+   {
+    "as_written": "andesite",
+    "at": [
+     470,
+     478
+    ],
+    "element": null,
+    "level": null,
+    "name": "andesite",
+    "quote": "The country rock is a dark, fine-grained andesite, showing very few phenocrysts even where most porphyritic.",
+    "span": [
+     428,
+     538
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "andesite",
+    "at": [
+     594,
+     602
+    ],
+    "element": null,
+    "level": null,
+    "name": "andesite",
+    "quote": "The andesite is strongly sheeted par- allel to the lode and is altered near the lode, but at most places it is not strongly leached;",
+    "span": [
+     589,
+     724
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     2665,
+     2674
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "The country rock is quartzite, cut by an intruding quartz-bearing porphyry and by basalt.",
+    "span": [
+     2644,
+     2735
+    ],
+    "statement": "c7"
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     2712,
+     2720
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "The country rock is quartzite, cut by an intruding quartz-bearing porphyry and by basalt.",
+    "span": [
+     2644,
+     2735
+    ],
+    "statement": "c7"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     2728,
+     2734
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The country rock is quartzite, cut by an intruding quartz-bearing porphyry and by basalt.",
+    "span": [
+     2644,
+     2735
+    ],
+    "statement": "c7"
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     3152,
+     3161
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "quartzite",
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "span": [
+     3051,
+     3223
+    ],
+    "statement": "c9"
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "chlorite",
+    "at": [
+     725,
+     733
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "chlorite",
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "role": "alteration",
+    "span": [
+     724,
+     866
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     738,
+     744
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "role": "gangue",
+    "span": [
+     724,
+     866
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     756,
+     764
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "role": "alteration",
+    "span": [
+     724,
+     866
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "calcite",
+    "at": [
+     770,
+     777
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "calcite",
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "role": "gangue",
+    "span": [
+     724,
+     866
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "chlorite",
+    "at": [
+     817,
+     825
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "chlorite",
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "role": "alteration",
+    "span": [
+     724,
+     866
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "iron oxide",
+    "at": [
+     948,
+     958
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "limonite",
+    "quote": "The ore outcrops near the collar of the shaft and at the outcrop is composed of iron oxide and quartz carry-",
+    "role": "alteration",
+    "span": [
+     866,
+     979
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     963,
+     969
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The ore outcrops near the collar of the shaft and at the outcrop is composed of iron oxide and quartz carry-",
+    "role": "gangue",
+    "span": [
+     866,
+     979
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "copper carbonates",
+    "at": [
+     1004,
+     1021
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "copper carbonates",
+    "quote": "117 ing copper carbonates, silver chloride, and free gold.",
+    "role": "ore",
+    "span": [
+     994,
+     1054
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "silver chloride",
+    "at": [
+     1023,
+     1038
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "117 ing copper carbonates, silver chloride, and free gold.",
+    "role": "ore",
+    "span": [
+     994,
+     1054
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "free gold",
+    "at": [
+     1044,
+     1053
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "117 ing copper carbonates, silver chloride, and free gold.",
+    "role": "ore",
+    "span": [
+     994,
+     1054
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1137,
+     1143
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "gangue",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "arsenopyrite",
+    "at": [
+     1145,
+     1157
+    ],
+    "commodities": [
+     "arsenic"
+    ],
+    "commodity": "arsenic",
+    "element": null,
+    "level": null,
+    "name": "arsenopyrite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     1159,
+     1165
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "gangue",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "chalcopyrite",
+    "at": [
+     1167,
+     1179
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcopyrite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     1181,
+     1187
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     1193,
+     1204
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "bornite",
+    "at": [
+     1221,
+     1228
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "bornite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     1298,
+     1308
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "role": "ore",
+    "span": [
+     1054,
+     1309
+    ],
+    "statement": "c4",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1705,
+     1711
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The lode is from 1 to 6 feet wide and, in the main, is a zone composed of several closely spaced parallel sheets of quartz and sulphides, between which the country rock, is highly fractured and seamed with veinlets crossing the general strike of the vein.",
+    "role": "gangue",
+    "span": [
+     1586,
+     1846
+    ],
+    "statement": "c5",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1959,
+     1965
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Thin drusy cavities parallel to the walls are lined with sulphide coatings, and these are in turn covered with quartz crystals pointing to the center.",
+    "role": "gangue",
+    "span": [
+     1846,
+     1999
+    ],
+    "statement": "c6",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2697,
+     2703
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The country rock is quartzite, cut by an intruding quartz-bearing porphyry and by basalt.",
+    "role": "gangue",
+    "span": [
+     2644,
+     2735
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "arsenopyrite",
+    "at": [
+     3012,
+     3024
+    ],
+    "commodities": [
+     "arsenic"
+    ],
+    "commodity": "arsenic",
+    "element": null,
+    "level": null,
+    "name": "arsenopyrite",
+    "quote": "about 75 feet below the surface the sulphides appear, arsenopyrite and pyrite predominating.",
+    "role": "ore",
+    "span": [
+     2956,
+     3051
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     3029,
+     3035
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "about 75 feet below the surface the sulphides appear, arsenopyrite and pyrite predominating.",
+    "role": "gangue",
+    "span": [
+     2956,
+     3051
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "iron oxide",
+    "at": [
+     3193,
+     3203
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": "e4",
+    "level": null,
+    "name": "limonite",
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "role": "alteration",
+    "span": [
+     3051,
+     3223
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "free gold",
+    "at": [
+     3213,
+     3222
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": "e4",
+    "level": null,
+    "name": "native gold",
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "role": "ore",
+    "span": [
+     3051,
+     3223
+    ],
+    "statement": "c9",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "drusy",
+    "at": [
+     1852,
+     1857
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "Thin drusy cavities parallel to the walls are lined with sulphide coatings, and these are in turn covered with quartz crystals pointing to the center.",
+    "span": [
+     1846,
+     1999
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     1858,
+     1866
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "Thin drusy cavities parallel to the walls are lined with sulphide coatings, and these are in turn covered with quartz crystals pointing to the center.",
+    "span": [
+     1846,
+     1999
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     3180,
+     3189
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "stringer",
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "span": [
+     3051,
+     3223
+    ],
+    "statement": "c9"
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     3229,
+     3237
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "This ore body is 4 feet wide, strikes N. 20\u00b0 W., and dips 35\u00b0 NE.",
+    "span": [
+     3223,
+     3290
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "stringers",
+    "at": [
+     3435,
+     3444
+    ],
+    "element": null,
+    "level": "100",
+    "name": "stringer",
+    "quote": "at the bot- tom of the incline the lode breaks into several small stringers, and this deposit has not been encountered below the 100-foot level.",
+    "span": [
+     3367,
+     3514
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "chlorite",
+     "pyrite",
+     "sericite",
+     "calcite",
+     "chlorite"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chlorite",
+     "pyrite",
+     "sericite",
+     "calcite"
+    ],
+    "page": null,
+    "quote": "chlorite and pyrite, with some sericite and calcite, are developed by secondary processes, chlorite being formed in the greatest abundance.",
+    "span": [
+     724,
+     866
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "iron oxide",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "limonite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The ore outcrops near the collar of the shaft and at the outcrop is composed of iron oxide and quartz carry-",
+    "span": [
+     866,
+     979
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "copper carbonates",
+     "silver chloride",
+     "free gold"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "copper carbonates",
+     "cerargyrite",
+     "native gold"
+    ],
+    "page": null,
+    "quote": "117 ing copper carbonates, silver chloride, and free gold.",
+    "span": [
+     994,
+     1054
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "arsenopyrite",
+     "pyrite",
+     "chalcopyrite",
+     "galena",
+     "zinc blende",
+     "bornite",
+     "chalcocite"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "arsenopyrite",
+     "pyrite",
+     "chalcopyrite",
+     "galena",
+     "sphalerite",
+     "bornite",
+     "chalcocite"
+    ],
+    "page": null,
+    "quote": "The sulphide ore, which appears about 75 feet below the surface, is composed of quartz, arsenopyrite, pyrite, chalcopyrite, galena, and zinc blende, with a little bornite and a sooty black film which covers other sulphides and is probably chalcocite.",
+    "span": [
+     1054,
+     1309
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The lode is from 1 to 6 feet wide and, in the main, is a zone composed of several closely spaced parallel sheets of quartz and sulphides, between which the country rock, is highly fractured and seamed with veinlets crossing the general strike of the vein.",
+    "span": [
+     1586,
+     1846
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Thin drusy cavities parallel to the walls are lined with sulphide coatings, and these are in turn covered with quartz crystals pointing to the center.",
+    "span": [
+     1846,
+     1999
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The country rock is quartzite, cut by an intruding quartz-bearing porphyry and by basalt.",
+    "span": [
+     2644,
+     2735
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "arsenopyrite",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "arsenopyrite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "about 75 feet below the surface the sulphides appear, arsenopyrite and pyrite predominating.",
+    "span": [
+     2956,
+     3051
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "iron oxide",
+     "free gold"
+    ],
+    "element": "e4",
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "limonite",
+     "native gold"
+    ],
+    "page": null,
+    "quote": "In the main shaft, between the 35-foot and 100- foot levels, there is a body of shattered, altered quartzite, which is cut by stringers of iron oxide carrying free gold.",
+    "span": [
+     3051,
+     3223
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "bbc7c6a4517966249b4eca84b00ec330799725dad7364383a6a1a32b3987a62c"
+ },
+ "composition_points": 1,
  "confidence": {
   "assumed": 0,
   "described": 3,
   "surveyed": 0
  },
- "content_sha256": "c7755151087ad6338a55d690ca64e1773a7f1c3f4cb9138f84ac0c0a8f6936a3",
+ "content_sha256": "68bdbda03ba3349de5a2918225d937f3cc06e98da1eb334e3c2d1c56184c6bf6",
  "coverage": {
   "assays": 4,
   "chars": 3515,
+  "composition_statements": 9,
   "elements": 3,
   "mentions": 4,
+  "minerals": 25,
   "mining_sentences": 13,
   "parsed_chars": 564,
   "questions": 10,
@@ -183,18 +1352,18 @@
  ],
  "files": [
   {
-   "bytes": 287887,
+   "bytes": 289881,
    "content_type": "application/json",
    "key": "models/little-gem-23330e01/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "7d0660951047e218f7d12d579c22364385d641cf29dfcc0d2007652ef7f20204"
+   "sha256": "c64c4905b96ed772e3945629352450c06e0ac3cdd4d86c0d9b9c28fdd880ead1"
   },
   {
-   "bytes": 199629,
+   "bytes": 202734,
    "content_type": "application/octet-stream",
    "key": "models/little-gem-23330e01/model.omf",
    "name": "model.omf",
-   "sha256": "81ed42b9e2edebaaa08da856f56da6a666110f56ecf5035d28fb9e1c18e3fa15"
+   "sha256": "fa479b99c9afaa557b7318ba8599a971060df71408c975b5a6ce692238b97a13"
   },
   {
    "bytes": 1883,
@@ -309,10 +1478,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:41:51Z",
+ "published_utc": "2026-09-03T03:06:33Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

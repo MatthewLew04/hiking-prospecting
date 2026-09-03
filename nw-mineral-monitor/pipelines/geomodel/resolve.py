@@ -233,6 +233,35 @@ def which_mine_gap(result):
     }
 
 
+# ----------------------------------------------------------------- distance
+#: mean Earth radius, km (IUGG); the "same hole in the ground" test is a
+#: 2 km threshold, so the spheroid's 0.3 % does not matter here
+EARTH_RADIUS_KM = 6371.0088
+
+
+def distance_km(lon1, lat1, lon2, lat2):
+    """Great-circle distance between two lon/lat points, in kilometres.
+
+    Haversine on a sphere.  Used to decide whether two same-named site
+    records in one state are one physical mine (``geomodel_corpus.SiteIndex``
+    merges them when they lie within ``SAME_MINE_KM``) — a decision that must
+    be made from the coordinates the sources actually carry, never from the
+    name alone, because there are Bluebirds in four states and North Stars
+    in every district.  Any ``None`` coordinate raises: an unlocated row has
+    no distance to anything.
+    """
+    import math
+
+    if None in (lon1, lat1, lon2, lat2):
+        raise ValueError('distance_km needs four coordinates, got %r' % ((lon1, lat1, lon2, lat2),))
+    phi1, phi2 = math.radians(float(lat1)), math.radians(float(lat2))
+    dphi = phi2 - phi1
+    dlam = math.radians(float(lon2) - float(lon1))
+    a = (math.sin(dphi / 2.0) ** 2 +
+         math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2.0) ** 2)
+    return 2.0 * EARTH_RADIUS_KM * math.asin(min(1.0, math.sqrt(a)))
+
+
 # ---------------------------------------------------------------- elevation
 def elevation(lon, lat, zoom=13, offline=False):
     """Collar elevation (m) from the cached terrarium tiles, or ``None``.

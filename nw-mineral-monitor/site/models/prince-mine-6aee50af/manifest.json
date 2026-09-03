@@ -20,17 +20,297 @@
   "y": 4197847.377832395,
   "z": 1782.9914604965861
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "leached",
+    "at": [
+     1186,
+     1193
+    ],
+    "element": null,
+    "level": null,
+    "name": "leached",
+    "quote": "Early in 1920 the water level was leached at a depth of 496 feet and pumping equip- ment was installed.",
+    "span": [
+     1150,
+     1256
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     3306,
+     3314
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The ore bodies above the water level consist of five beds of soft black oxidized material, which grades into material that is nearly similar in appearance but is too siliceous to be'a fluxing ore.",
+    "span": [
+     3232,
+     3432
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   }
+  ],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 38,
+   "sentences_with_minerals": 0
+  },
+  "host_rock": [
+   {
+    "as_written": "limestone",
+    "at": [
+     2153,
+     2162
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "land Peak limestone.",
+    "span": [
+     2143,
+     2163
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     2681,
+     2690
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "The vertical displacement on this normal fault is not accurately known, but it is certainly less than 400 feet (the thickness of the Lyn- don limestone) and appears to be 200 or 300 feet.",
+    "span": [
+     2535,
+     2726
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     3562,
+     3571
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "the highest the Davidson ore body is at the base of the High- land Peak limestone.",
+    "span": [
+     3486,
+     3572
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [],
+  "ore_terms": [
+   {
+    "as_written": "ore \nbody",
+    "at": [
+     484,
+     493
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "Large ore bins were built in 1912 and the large ore body was developed.",
+    "span": [
+     434,
+     508
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "bedded \ndeposit",
+    "at": [
+     963,
+     978
+    ],
+    "element": null,
+    "level": null,
+    "name": "bedded deposit",
+    "quote": "This body was also cut at a like depth by anot'her hole 250 feet distant, indicating that the body is a bedded deposit.",
+    "span": [
+     856,
+     979
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     1103,
+     1113
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "In order to reach these ore bodies a vertical shaft was begun in 1918.",
+    "span": [
+     1077,
+     1150
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     1487,
+     1495
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "In order to obtain all of the ore in the much faulted cen- tral section of the ore body, where it was difficult to sustain the roof, the overburden was removed and two large glory holes were made.",
+    "span": [
+     1405,
+     1606
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     1736,
+     1744
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "ore body",
+    "quote": "By the beginning of 1920 these ore beds had been largely exhausted, and the bulk of the output in 1920 came from the Davidson ore body, which had been taken over in July, 1918, and principally from a big stope that was 1,000 feet from the hoisting shaft.",
+    "span": [
+     1606,
+     1866
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore \nbodies",
+    "at": [
+     2989,
+     3000
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "Underground many other faults have been found, which break the continuity of the ore bodies.",
+    "span": [
+     2906,
+     3001
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ORE BODIES",
+    "at": [
+     3026,
+     3036
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "GENERAL FEATURES OF THE ORE BODIES The ore zone is 1,500 feet long and 500 feet wide in its widest portion, although no one of the ore beds was workable or was continuous over these maximum limits.",
+    "span": [
+     3001,
+     3202
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     3237,
+     3247
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "The ore bodies above the water level consist of five beds of soft black oxidized material, which grades into material that is nearly similar in appearance but is too siliceous to be'a fluxing ore.",
+    "span": [
+     3232,
+     3432
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     3437,
+     3447
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "The ore bodies occur successively one below another;",
+    "span": [
+     3432,
+     3486
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     3514,
+     3522
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "the highest the Davidson ore body is at the base of the High- land Peak limestone.",
+    "span": [
+     3486,
+     3572
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore \nbody",
+    "at": [
+     3595,
+     3604
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "Between the Davidson ore body and the next ore bed below it, which is in the",
+    "span": [
+     3572,
+     3652
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [],
+  "text_sha256": "c6529f7ff3c5ad64fc5e2435ee785f00d3aafbcd4bf16d822bc79c787e7d5b95"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "8d0a8558ac2e954061bb7ff333060cbc288dfd9d4e5a27166c3d2dd185cf0c2d",
+ "content_sha256": "1bacaa4978ce76730aef595399155c1a896b43f149803fc37cd50384391b47a6",
  "coverage": {
   "assays": 0,
   "chars": 3653,
+  "composition_statements": 0,
   "elements": 2,
   "mentions": 4,
+  "minerals": 0,
   "mining_sentences": 10,
   "parsed_chars": 343,
   "questions": 10,
@@ -90,18 +370,18 @@
  ],
  "files": [
   {
-   "bytes": 284137,
+   "bytes": 284139,
    "content_type": "application/json",
    "key": "models/prince-mine-6aee50af/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "6a59a07d12a5f1386f94545b8d5cf952333676f43d9e016fdee6cccd8926ca81"
+   "sha256": "73c2d1fe1df04976f34ac581e2c170ba31d79bb723f1482603f76ccf4138a63f"
   },
   {
    "bytes": 188526,
    "content_type": "application/octet-stream",
    "key": "models/prince-mine-6aee50af/model.omf",
    "name": "model.omf",
-   "sha256": "6ac394de35942856bac77e7b6e705c1a3ef3677bd43d6e176323aac0686a4f30"
+   "sha256": "8752592986a9654af48f3720adb21add98dd7447ba822ceaf1c860f7f1342cab"
   },
   {
    "bytes": 1493,
@@ -214,10 +494,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:54:15Z",
+ "published_utc": "2026-09-03T03:06:29Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

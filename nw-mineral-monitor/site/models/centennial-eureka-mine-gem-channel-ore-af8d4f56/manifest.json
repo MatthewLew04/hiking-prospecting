@@ -38,17 +38,104 @@
   "y": 4422127.142878411,
   "z": 2105.0372774434463
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "MINERALIZATION",
+    "at": [
+     277,
+     291
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "MINERALIZATION.",
+    "span": [
+     277,
+     292
+    ],
+    "statement": null,
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 25,
+   "sentences_with_minerals": 0
+  },
+  "host_rock": [
+   {
+    "as_written": "porphyry",
+    "at": [
+     1637,
+     1645
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "dips of the strata, best shown on lev\u00b7el 18, and apparently also by fiat intrusions of porphyry.",
+    "span": [
+     1547,
+     1646
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [],
+  "ore_terms": [
+   {
+    "as_written": "ore bodies",
+    "at": [
+     1060,
+     1070
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "FIGURE 30.-Section showing approximate outlines of ore bodies south of the shaft in the Centennial Eureka mine.",
+    "span": [
+     1009,
+     1120
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     1133,
+     1138
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "ore shoot",
+    "quote": "most great shoot, which may be called the California column, as it contains the California stope, connects with the Gem\u00b7 stopes on level 6 and then follows the first great easterly cross break downward, though not on its dip of 68 \u00b0 but pitching about 45\u00b0 southeast to the Kan- sas stopes on level14.",
+    "span": [
+     1120,
+     1427
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [],
+  "text_sha256": "a92b12000807eaaf4c5175d566a8afda794f786e0766368fdcca4271202b5c4e"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 1,
   "surveyed": 0
  },
- "content_sha256": "efc00a30d8119f7430f5cff8c237efce793c3bae5c272d7cdd23dd615216fa00",
+ "content_sha256": "141f8d7ce038755e9298d2a81c09f8e3979516b9f53421de2174601e80d51563",
  "coverage": {
   "assays": 0,
   "chars": 2275,
+  "composition_statements": 0,
   "elements": 1,
   "mentions": 4,
+  "minerals": 0,
   "mining_sentences": 11,
   "parsed_chars": 574,
   "questions": 11,
@@ -88,18 +175,18 @@
  ],
  "files": [
   {
-   "bytes": 284270,
+   "bytes": 284272,
    "content_type": "application/json",
    "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "f494d01138ba653310013a6d22fa8057319e2a5df4c869df141c9e1a6faf96a3"
+   "sha256": "a203a3b8c9558f2f1f753e694a2d6202f187ab7c018367631c7e3f8d18f1d6d3"
   },
   {
-   "bytes": 197276,
+   "bytes": 197274,
    "content_type": "application/octet-stream",
    "key": "models/centennial-eureka-mine-gem-channel-ore-af8d4f56/model.omf",
    "name": "model.omf",
-   "sha256": "ff32baf15c4d777c4888decaee1744fb04a0dd26651b464c3e709907d0f0d728"
+   "sha256": "e751681dede673a911fe3b0b217985b3d0a2c84ddc238c1f7396e981df3b13e1"
   },
   {
    "bytes": 1100,
@@ -214,10 +301,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:44Z",
+ "published_utc": "2026-09-03T03:06:25Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

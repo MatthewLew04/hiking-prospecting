@@ -128,6 +128,29 @@ class GradeColumnTests(unittest.TestCase):
         self.assertEqual(idx.row(1)['grades'], {'yd3': 1.75})
 
 
+class DistanceTests(unittest.TestCase):
+    """The "same hole in the ground" test is made from coordinates, so the
+    distance must be a real one."""
+
+    def test_a_point_is_zero_from_itself_and_the_measure_is_symmetric(self):
+        self.assertEqual(resolve.distance_km(-117.0, 38.0, -117.0, 38.0), 0.0)
+        a = resolve.distance_km(-117.0, 38.0, -116.0, 39.0)
+        b = resolve.distance_km(-116.0, 39.0, -117.0, 38.0)
+        self.assertAlmostEqual(a, b, places=9)
+
+    def test_a_degree_of_latitude_is_about_111_km(self):
+        self.assertAlmostEqual(resolve.distance_km(-117.0, 38.0, -117.0, 39.0), 111.2, delta=0.3)
+
+    def test_the_merge_threshold_is_measured_not_eyeballed(self):
+        # 0.003 deg of longitude at 37 N is ~270 m; 0.02 deg of latitude is ~2.2 km
+        self.assertLess(resolve.distance_km(-116.0, 37.0, -116.003, 37.0), 0.3)
+        self.assertGreater(resolve.distance_km(-116.0, 37.0, -116.0, 37.02), 2.0)
+
+    def test_an_unlocated_row_has_no_distance(self):
+        with self.assertRaises(ValueError):
+            resolve.distance_km(None, 38.0, -117.0, 38.0)
+
+
 class RealBundleTests(unittest.TestCase):
     """The shipped bundle is the index the tool actually queries."""
 

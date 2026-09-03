@@ -183,17 +183,1383 @@
   "y": 4205403.9469962595,
   "z": 1897.5424043344403
  },
+ "commodities": [
+  {
+   "commodity": "silver",
+   "count": 3,
+   "minerals": [
+    "argentite",
+    "cerargyrite"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "altered",
+    "at": [
+     566,
+     573
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Subsequent work has not greatly altered this state of affairs;",
+    "span": [
+     533,
+     597
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     2173,
+     2184
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "The lean primary silver-bearing material found in depth is a light- gray rock that is not conspicuously mineralized.",
+    "span": [
+     2067,
+     2185
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "chloritized",
+    "at": [
+     2729,
+     2740
+    ],
+    "element": null,
+    "level": null,
+    "name": "chloritized",
+    "quote": "Some of the feldspar is chloritized and some is sericitized.",
+    "span": [
+     2704,
+     2765
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "sericitized",
+    "at": [
+     2753,
+     2764
+    ],
+    "element": null,
+    "level": null,
+    "name": "sericitized",
+    "quote": "Some of the feldspar is chloritized and some is sericitized.",
+    "span": [
+     2704,
+     2765
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     3074,
+     3082
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The pyrite in the upper part of the lodes has been oxidized and is represented by limonite, but at depths of 100 feet or so it begins to appear.",
+    "span": [
+     3022,
+     3169
+    ],
+    "statement": "c8",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "iron staining",
+    "at": [
+     4726,
+     4739
+    ],
+    "element": null,
+    "level": null,
+    "name": "iron-stained",
+    "quote": "The silver lode of the Tonopah Divide mine crops out promi- nently 150 feet southwest of the shaft, but on account of the feeble iron staining and the absence of silicification, sericitization, or other pronounced evidence of the action of mineralizing solutions, the outcrop would not be suspected as the top of a large and valuable ore body.",
+    "span": [
+     4595,
+     4943
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicification",
+    "at": [
+     4759,
+     4773
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "The silver lode of the Tonopah Divide mine crops out promi- nently 150 feet southwest of the shaft, but on account of the feeble iron staining and the absence of silicification, sericitization, or other pronounced evidence of the action of mineralizing solutions, the outcrop would not be suspected as the top of a large and valuable ore body.",
+    "span": [
+     4595,
+     4943
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "sericitization",
+    "at": [
+     4775,
+     4789
+    ],
+    "element": null,
+    "level": null,
+    "name": "sericitized",
+    "quote": "The silver lode of the Tonopah Divide mine crops out promi- nently 150 feet southwest of the shaft, but on account of the feeble iron staining and the absence of silicification, sericitization, or other pronounced evidence of the action of mineralizing solutions, the outcrop would not be suspected as the top of a large and valuable ore body.",
+    "span": [
+     4595,
+     4943
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     9133,
+     9140
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "iron-stained",
+    "at": [
+     9146,
+     9158
+    ],
+    "element": null,
+    "level": null,
+    "name": "iron-stained",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     10091,
+     10102
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "but as crosscuts had not been extended into either wall it is not certain that the full thickness of the mineralized zone has been determined.",
+    "span": [
+     9983,
+     10129
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     10802,
+     10810
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "Although argentite, which is associated with pyrite, was found in the winze, as already mentioned, the prevailing ore is highly oxidized, and the silver occurs as cerargyrite.",
+    "span": [
+     10671,
+     10850
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "mineralized",
+    "at": [
+     11023,
+     11034
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "The lode is traversed by many well-defined slips that strike and dip in various directions, evidently having been formed by irregular movements of adjustment within the mineralized zone.",
+    "span": [
+     10850,
+     11040
+    ],
+    "statement": null,
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "silver",
+    "count": 3,
+    "minerals": [
+     "argentite",
+     "cerargyrite"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 95,
+   "sentences_with_minerals": 10
+  },
+  "host_rock": [
+   {
+    "as_written": "andesite",
+    "at": [
+     2284,
+     2292
+    ],
+    "element": null,
+    "level": null,
+    "name": "andesite",
+    "quote": "It contains numer- ous crystal fragments of quartz and sanidine and fragments of rhyo- lite and andesite, is sparsely impregnated with pyrite, and is traversed by a few thin veinlets of fine-grained quartz nearly resembling chal- cedony.",
+    "span": [
+     2185,
+     2427
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     2606,
+     2615
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "where it has been com- pletely replaced the resultant aggregate resembles a quartzite frag1- ment, but the outlines of some of the sanidine crystals are perfectly retained.",
+    "span": [
+     2528,
+     2704
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5698,
+     5706
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The lode is inclosed in the Fraction rhyolite breccia and is a few hundred feet northeast of the intrusive mass of Oddie rhyolite of Gold Mountain.",
+    "span": [
+     5660,
+     5810
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5783,
+     5791
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The lode is inclosed in the Fraction rhyolite breccia and is a few hundred feet northeast of the intrusive mass of Oddie rhyolite of Gold Mountain.",
+    "span": [
+     5660,
+     5810
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5841,
+     5849
+    ],
+    "element": null,
+    "level": "265",
+    "name": "rhyolite",
+    "quote": "The contact between the Oddie rhyolite and the Fraction rhyolite breccia is exposed in the crosscut on the 265-foot level at a point 250 feet southwest of the footwall of the lode.",
+    "span": [
+     5810,
+     5993
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5868,
+     5876
+    ],
+    "element": null,
+    "level": "265",
+    "name": "rhyolite",
+    "quote": "The contact between the Oddie rhyolite and the Fraction rhyolite breccia is exposed in the crosscut on the 265-foot level at a point 250 feet southwest of the footwall of the lode.",
+    "span": [
+     5810,
+     5993
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6186,
+     6194
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It is marked by a fault gouge from 6 inches to 1 foot thick dipping 75\u00b0 N., the contact, originally that of an intrusion, having been a locus of movement subsequent to the intrusion of the rhyolite.",
+    "span": [
+     5993,
+     6195
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6198,
+     6206
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "A rhyolite dike in the Fraction breccia is well shown in an open cut at the end of the dump at the main shaft, and a rhyolite dike has been cut on the 365 and 470 foot levels.",
+    "span": [
+     6195,
+     6374
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6315,
+     6323
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "A rhyolite dike in the Fraction breccia is well shown in an open cut at the end of the dump at the main shaft, and a rhyolite dike has been cut on the 365 and 470 foot levels.",
+    "span": [
+     6195,
+     6374
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     8142,
+     8150
+    ],
+    "element": "e5",
+    "level": "265",
+    "name": "rhyolite",
+    "quote": "The main crosscut on the 265-foot level after cutting through the silver lode was continued southwestward, penetrating the rhyolite stock of Gold Mountain, and at 450 feet from the silver lode it cut a narrow gold vein, probably the downward extension of the gold vein formerly worked higher on the mountain.",
+    "span": [
+     8017,
+     8330
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     9043,
+     9051
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     9159,
+     9167
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "Sericite",
+    "at": [
+     1294,
+     1302
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "F., Sericite, a low-temperature hydrothermal mineral:",
+    "role": "alteration",
+    "span": [
+     1289,
+     1343
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     1430,
+     1438
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "This determination of the refractive indices of sericite by Rogers appears to be one of the few on record;",
+    "role": "alteration",
+    "span": [
+     1380,
+     1488
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "sericites",
+    "at": [
+     1521,
+     1530
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "assuredly the indices of other sericites should be measured.",
+    "role": "alteration",
+    "span": [
+     1488,
+     1550
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2231,
+     2237
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It contains numer- ous crystal fragments of quartz and sanidine and fragments of rhyo- lite and andesite, is sparsely impregnated with pyrite, and is traversed by a few thin veinlets of fine-grained quartz nearly resembling chal- cedony.",
+    "role": "gangue",
+    "span": [
+     2185,
+     2427
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     2323,
+     2329
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "It contains numer- ous crystal fragments of quartz and sanidine and fragments of rhyo- lite and andesite, is sparsely impregnated with pyrite, and is traversed by a few thin veinlets of fine-grained quartz nearly resembling chal- cedony.",
+    "role": "gangue",
+    "span": [
+     2185,
+     2427
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2388,
+     2394
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It contains numer- ous crystal fragments of quartz and sanidine and fragments of rhyo- lite and andesite, is sparsely impregnated with pyrite, and is traversed by a few thin veinlets of fine-grained quartz nearly resembling chal- cedony.",
+    "role": "gangue",
+    "span": [
+     2185,
+     2427
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2521,
+     2527
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Under the microscope much of the sanidine is seen to be more or less thoroughly replaced by quartz;",
+    "role": "gangue",
+    "span": [
+     2427,
+     2528
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "feldspar",
+    "at": [
+     2717,
+     2725
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Some of the feldspar is chloritized and some is sericitized.",
+    "role": "gangue",
+    "span": [
+     2704,
+     2765
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     2803,
+     2809
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The wall rocks contain disseminated pyrite, and under the micro- scope they show that the sanidine has been partly replaced by cal- cite, instead of by quartz, as in the lodes:",
+    "role": "gangue",
+    "span": [
+     2765,
+     2945
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2921,
+     2927
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The wall rocks contain disseminated pyrite, and under the micro- scope they show that the sanidine has been partly replaced by cal- cite, instead of by quartz, as in the lodes:",
+    "role": "gangue",
+    "span": [
+     2765,
+     2945
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     3027,
+     3033
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The pyrite in the upper part of the lodes has been oxidized and is represented by limonite, but at depths of 100 feet or so it begins to appear.",
+    "role": "gangue",
+    "span": [
+     3022,
+     3169
+    ],
+    "statement": "c8",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "limonite",
+    "at": [
+     3106,
+     3114
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "limonite",
+    "quote": "The pyrite in the upper part of the lodes has been oxidized and is represented by limonite, but at depths of 100 feet or so it begins to appear.",
+    "role": "alteration",
+    "span": [
+     3022,
+     3169
+    ],
+    "statement": "c8",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "argentite",
+    "at": [
+     10553,
+     10562
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": "e10",
+    "level": null,
+    "name": "argentite",
+    "quote": "A winze was sunk here, 6 feet deep at the time of my visit, and ore rich in sooty argentite was found.",
+    "role": "ore",
+    "span": [
+     10467,
+     10573
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "argentite",
+    "at": [
+     10682,
+     10691
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "argentite",
+    "quote": "Although argentite, which is associated with pyrite, was found in the winze, as already mentioned, the prevailing ore is highly oxidized, and the silver occurs as cerargyrite.",
+    "role": "ore",
+    "span": [
+     10671,
+     10850
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     10718,
+     10724
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "Although argentite, which is associated with pyrite, was found in the winze, as already mentioned, the prevailing ore is highly oxidized, and the silver occurs as cerargyrite.",
+    "role": "gangue",
+    "span": [
+     10671,
+     10850
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "cerargyrite",
+    "at": [
+     10838,
+     10849
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "Although argentite, which is associated with pyrite, was found in the winze, as already mentioned, the prevailing ore is highly oxidized, and the silver occurs as cerargyrite.",
+    "role": "ore",
+    "span": [
+     10671,
+     10850
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "ore body",
+    "at": [
+     382,
+     390
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "As a result of the exploratory work undertaken up to the time of my visit one ore body had been partly blocked out, the possibility of another one was indicated, and indications of silver were found at a large number of places.",
+    "span": [
+     302,
+     533
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "replaced",
+    "at": [
+     2509,
+     2517
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "Under the microscope much of the sanidine is seen to be more or less thoroughly replaced by quartz;",
+    "span": [
+     2427,
+     2528
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "replaced",
+    "at": [
+     2561,
+     2569
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "where it has been com- pletely replaced the resultant aggregate resembles a quartzite frag1- ment, but the outlines of some of the sanidine crystals are perfectly retained.",
+    "span": [
+     2528,
+     2704
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "disseminated",
+    "at": [
+     2790,
+     2802
+    ],
+    "element": null,
+    "level": null,
+    "name": "disseminated",
+    "quote": "The wall rocks contain disseminated pyrite, and under the micro- scope they show that the sanidine has been partly replaced by cal- cite, instead of by quartz, as in the lodes:",
+    "span": [
+     2765,
+     2945
+    ],
+    "statement": "c7"
+   },
+   {
+    "as_written": "replaced",
+    "at": [
+     2883,
+     2891
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "The wall rocks contain disseminated pyrite, and under the micro- scope they show that the sanidine has been partly replaced by cal- cite, instead of by quartz, as in the lodes:",
+    "span": [
+     2765,
+     2945
+    ],
+    "statement": "c7"
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     3832,
+     3837
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "It forms a shoot pitching steeply southward in a vertical lode;",
+    "span": [
+     3820,
+     3885
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     3992,
+     3997
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The silver is irregularly distributed within this shoot, which contains, according to the estimate of Mr.",
+    "span": [
+     3940,
+     4048
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     4189,
+     4194
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Because a knowledge of this shoot is of paramount importance to an understanding of the ore deposits of the district it is described in some detail on pages 165-167.",
+    "span": [
+     4159,
+     4328
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoot",
+    "at": [
+     4373,
+     4378
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "In August, 1919, the downward limit of the shoot had not been determined, nor had the water level been reached at the greatest depth then attained (581 feet).",
+    "span": [
+     4328,
+     4489
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     4934,
+     4942
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "The silver lode of the Tonopah Divide mine crops out promi- nently 150 feet southwest of the shaft, but on account of the feeble iron staining and the absence of silicification, sericitization, or other pronounced evidence of the action of mineralizing solutions, the outcrop would not be suspected as the top of a large and valuable ore body.",
+    "span": [
+     4595,
+     4943
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "streak",
+    "at": [
+     5513,
+     5519
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "Careful sampling of the outcrop showed it to be barren, except for a narrow streak against the wall of the old prospect shaft, which yielded, according to Super- intendent William Watters, 100 ounces of silver to the ton.",
+    "span": [
+     5435,
+     5660
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     5707,
+     5714
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The lode is inclosed in the Fraction rhyolite breccia and is a few hundred feet northeast of the intrusive mass of Oddie rhyolite of Gold Mountain.",
+    "span": [
+     5660,
+     5810
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     5877,
+     5884
+    ],
+    "element": null,
+    "level": "265",
+    "name": "breccia",
+    "quote": "The contact between the Oddie rhyolite and the Fraction rhyolite breccia is exposed in the crosscut on the 265-foot level at a point 250 feet southwest of the footwall of the lode.",
+    "span": [
+     5810,
+     5993
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     5972,
+     5980
+    ],
+    "element": null,
+    "level": "265",
+    "name": "footwall",
+    "quote": "The contact between the Oddie rhyolite and the Fraction rhyolite breccia is exposed in the crosscut on the 265-foot level at a point 250 feet southwest of the footwall of the lode.",
+    "span": [
+     5810,
+     5993
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     6019,
+     6024
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "It is marked by a fault gouge from 6 inches to 1 foot thick dipping 75\u00b0 N., the contact, originally that of an intrusion, having been a locus of movement subsequent to the intrusion of the rhyolite.",
+    "span": [
+     5993,
+     6195
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     6229,
+     6236
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "breccia",
+    "quote": "A rhyolite dike in the Fraction breccia is well shown in an open cut at the end of the dump at the main shaft, and a rhyolite dike has been cut on the 365 and 470 foot levels.",
+    "span": [
+     6195,
+     6374
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     9052,
+     9059
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     9168,
+     9175
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The country rock is typical Fraction rhyolite breccia, and the out- crop of the newly discovered lode, consisting of somewhat altered and iron-stained rhyolite breccia, resembles in all respects the similarly unpromising-looking material of the Tonopah Divide lode.",
+    "span": [
+     9005,
+     9274
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     9600,
+     9608
+    ],
+    "element": "e6",
+    "level": null,
+    "name": "footwall",
+    "quote": "A crosscut, at a depth of 45 feet, was driven west and at 20 feet from the shaft reached 7 to 9 feet of ore lying against a well-defined wall, supposedly the footwall of the lode.",
+    "span": [
+     9439,
+     9621
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     9663,
+     9675
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "hanging wall",
+    "quote": "A crosscut was also run eastward to the hanging wall, where 7 feet of ore carrying 40 to 60 ounces of silver to the ton was cut.",
+    "span": [
+     9621,
+     9752
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     9813,
+     9821
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "The intervening rock between these two belts of ore on the footwall and hanging wall averages 2 ounces in silver to the ton.",
+    "span": [
+     9752,
+     9879
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging wall",
+    "at": [
+     9826,
+     9838
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "The intervening rock between these two belts of ore on the footwall and hanging wall averages 2 ounces in silver to the ton.",
+    "span": [
+     9752,
+     9879
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "hanging-wall",
+    "at": [
+     10318,
+     10330
+    ],
+    "element": null,
+    "level": null,
+    "name": "hanging wall",
+    "quote": "This body of ore is probably the downward extension of the hanging-wall belt of ore found on.",
+    "span": [
+     10257,
+     10353
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore body",
+    "at": [
+     10447,
+     10455
+    ],
+    "element": null,
+    "level": "45",
+    "name": "ore body",
+    "quote": "if this supposition is proved true by further development work, then the ore body dips 57\u00b0 E.",
+    "span": [
+     10372,
+     10467
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "Sericite"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite"
+    ],
+    "page": null,
+    "quote": "F., Sericite, a low-temperature hydrothermal mineral:",
+    "span": [
+     1289,
+     1343
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sericite"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite"
+    ],
+    "page": null,
+    "quote": "This determination of the refractive indices of sericite by Rogers appears to be one of the few on record;",
+    "span": [
+     1380,
+     1488
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sericites"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite"
+    ],
+    "page": null,
+    "quote": "assuredly the indices of other sericites should be measured.",
+    "span": [
+     1488,
+     1550
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "pyrite",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "It contains numer- ous crystal fragments of quartz and sanidine and fragments of rhyo- lite and andesite, is sparsely impregnated with pyrite, and is traversed by a few thin veinlets of fine-grained quartz nearly resembling chal- cedony.",
+    "span": [
+     2185,
+     2427
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Under the microscope much of the sanidine is seen to be more or less thoroughly replaced by quartz;",
+    "span": [
+     2427,
+     2528
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "feldspar"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar"
+    ],
+    "page": null,
+    "quote": "Some of the feldspar is chloritized and some is sericitized.",
+    "span": [
+     2704,
+     2765
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The wall rocks contain disseminated pyrite, and under the micro- scope they show that the sanidine has been partly replaced by cal- cite, instead of by quartz, as in the lodes:",
+    "span": [
+     2765,
+     2945
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "limonite"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "limonite"
+    ],
+    "page": null,
+    "quote": "The pyrite in the upper part of the lodes has been oxidized and is represented by limonite, but at depths of 100 feet or so it begins to appear.",
+    "span": [
+     3022,
+     3169
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "argentite"
+    ],
+    "element": "e10",
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "argentite"
+    ],
+    "page": null,
+    "quote": "A winze was sunk here, 6 feet deep at the time of my visit, and ore rich in sooty argentite was found.",
+    "span": [
+     10467,
+     10573
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "argentite",
+     "pyrite",
+     "cerargyrite"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "argentite",
+     "pyrite",
+     "cerargyrite"
+    ],
+    "page": null,
+    "quote": "Although argentite, which is associated with pyrite, was found in the winze, as already mentioned, the prevailing ore is highly oxidized, and the silver occurs as cerargyrite.",
+    "span": [
+     10671,
+     10850
+    ],
+    "zone": "oxidized"
+   }
+  ],
+  "text_sha256": "eba19e047caac63df431c0e230a1121a76b07b7425e9e17503dd19ebaad86279"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 4,
   "surveyed": 0
  },
- "content_sha256": "34b0dec8706fb32e41bae4ddeeaabd2ae19b78f92f0116c30b30331c3764fbcc",
+ "content_sha256": "d5b24a2378f1792d3817246cba8e86a8a18ef00c3693e1847ded029eeac8ee90",
  "coverage": {
   "assays": 6,
   "chars": 11092,
+  "composition_statements": 10,
   "elements": 4,
   "mentions": 8,
+  "minerals": 16,
   "mining_sentences": 30,
   "parsed_chars": 1658,
   "questions": 24,
@@ -293,18 +1659,18 @@
  ],
  "files": [
   {
-   "bytes": 290808,
+   "bytes": 290810,
    "content_type": "application/json",
    "key": "models/tonopah-divide-mine-4c141151/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "e0fb14984b666407afa960026439a427eae77b5ac0a63734d3f298958498db08"
+   "sha256": "b8c09c463c6a09787acbf1c44c3b9e0b6fd0f8763b830e47b65e81d447484283"
   },
   {
-   "bytes": 200350,
+   "bytes": 200351,
    "content_type": "application/octet-stream",
    "key": "models/tonopah-divide-mine-4c141151/model.omf",
    "name": "model.omf",
-   "sha256": "fbca909f6bc0333642639085392263457fb607d0bfdb160b615a2ed2bc0e5395"
+   "sha256": "97c43f65cb553abf5da29c063c43769af91513d46bd247a469a6814385bc3d07"
   },
   {
    "bytes": 2286,
@@ -464,10 +1830,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:45Z",
+ "published_utc": "2026-09-03T03:06:28Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

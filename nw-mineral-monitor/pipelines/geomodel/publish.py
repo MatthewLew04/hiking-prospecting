@@ -304,6 +304,12 @@ def manifest(built, spec, site, files, mid, content_hash, now=None, access='app-
         # not an average, and flattening the two would misdescribe the deposit
         'assays': list(spec.get('assays') or []),
         'vein': built.get('vein'),
+        # the minerals, host rocks, alteration and ore terms the text names,
+        # each with its sentence, the level it is tied to and the zone word it
+        # sits with; the quotes are the audit, so nothing is trimmed off
+        'composition': spec.get('composition') or None,
+        'commodities': list((spec.get('composition') or {}).get('commodities') or []),
+        'composition_points': built.get('composition_points', 0),
         # the scanned plates any surveyed geometry was traced off, with the
         # georeference that was used and how well its control points agreed
         'plates': [{'plate_id': p.get('plate_id'), 'plane': p.get('plane'),
@@ -336,6 +342,10 @@ def manifest(built, spec, site, files, mid, content_hash, now=None, access='app-
             'their geometry is the survey\'s, not this builder\'s.',
             'assay "basis" separates a selected sample from an average; no grade surface is '
             'interpolated from quoted figures.',
+            'composition lists the minerals, host rocks, alteration and ore terms the text '
+            'names, each with its sentence; a commodity is implied only by a named ore '
+            'mineral, never by the word "ore", and a statement is placed at depth only when '
+            'its sentence names a level.',
             'access "app-gate" means the model sits under the public models/ prefix and is '
             'reachable by anyone who can construct its URL; "presigned" means it sits under '
             'private/ and is reachable only through a short-lived signed link.',

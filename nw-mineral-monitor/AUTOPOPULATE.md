@@ -94,43 +94,54 @@ Publishing is content-addressed (same description ⇒ same URL; republishing
 unchanged is a no-op), and a full run prunes model directories the fresh
 index no longer references.
 
-## 4. What the map reads — `site/data/models/index.json`
+## 4. What the map reads — `site/data/models/index.json` (schema 2)
+
+The index is **compact** so it scales from 16 mines to tens of thousands:
+one short row per mine (about 150 bytes, under 256 at every cap) and the
+full record in a `card.json` beside each model, fetched only when a card
+opens. `geomodel_autopopulate.write_index(results, site_dir, previous)` writes
+both; the WS13 driver (`WS13-GEOMODEL.md`) calls the same function.
 
 ```jsonc
-{"schema_version": 1, "generated": "…", "stats": {…}, "by_mine": {
-  "grades:12": {
-    "label": "Tonopah Divide mine", "methods": ["citation_quote"],
-    "grade_rows": [12, 868],
-    "documents": [{"title": "The Divide Silver District, Nevada",
-                   "source_url": "…", "publication_year": 1921,
-                   "cited_pages": [2], "sections": 8}],
-    "models": [{"model_id": "tonopah-divide-mine-…", "primary": true,
-                "project_url": "/models/tonopah-divide-mine-…/model.geomodel.json",
-                "confidence": {"surveyed": 0, "described": 7, "assumed": 0},
-                "omitted": 14}],
-    "primary": "tonopah-divide-mine-…",
-    "lexicon": {"kinds": {"shaft": {"count": 16, "surfaces": {"shaft": 16}}}, …},
-    "minerals": ["Gold", "Silver"],
-    "extent": {"total_m": 1039.7, "by_type": {"shaft": 902.5, "crosscut": 137.2},
-               "levels": ["45", "100", …], "deepest_level_m": 213.4}},
-  "grades:868": {"alias": "grades:12"}
+{"schema_version": 2, "generated": "…", "stats": {…}, "by_mine": {
+  "grades:12":  {"l": "Tonopah Divide mine",          // label
+                 "p": "tonopah-divide-mine-4c141151",  // primary model id
+                 "n": 1,                               // models for this mine
+                 "m": ["Gold", "Silver"],              // minerals / commodities (≤ 6)
+                 "x": 1040,                            // total workings length, m
+                 "w": 7,                               // elements drawn
+                 "c": [7, 0, 0]},                      // described, assumed, surveyed
+  "grades:868": {"a": "grades:12"}                     // alias: the same mine
 }}
 ```
 
-`site/index.html` lazily fetches the index once (the `ws12DocsFor` pattern)
-and appends an **UNDERGROUND — FROM THE DOCUMENTS** section to the grade
-card: minerals, workings by type, extent, levels, vocabulary, the model
-button (which opens `model3d.html?project=…` — no map involvement, no
-front-end change was needed in the viewer), and the source-document list. A
-mine with documents but no buildable description says so: *nothing is drawn
-rather than guessed.* When more than one document describes a mine, each
-gets its own model and the strongest (most described elements, then total
-length, then newest) is `primary`.
+`site/models/<model_id>/card.json` carries what the compact row does not:
+the source documents (title, url, year, cited pages), every model's
+confidence, omitted count, summary, levels and level depths, assay
+commodities and assays, the vein, the composition (minerals by level, the
+commodities they imply, the placed points), the lexicon, the extent and the
+methods that linked the document to the mine.
+
+Keys are namespaced by the dot they belong to — `grades:<row>`,
+`stategeo:<id>`, `mrds:<dep_id>`, `usmin:<fid>`, `ardf:<id>` — and the map's
+MRDS, USMIN, state-survey, ARDF and graded-mine cards all look themselves up.
+`site/index.html` fetches the index once, renders the **UNDERGROUND — FROM
+THE DOCUMENTS** section from the compact row at once (minerals, extent,
+counts, the OPEN 3D MODEL — DESCRIBED WORKINGS button), then fetches the
+card to fill the documents, levels and assays, with a placeholder while it
+loads and a message naming the file if it fails. A mine with documents but no
+buildable description says so: *nothing is drawn rather than guessed.* When
+more than one document describes a mine, each gets its own model and the
+strongest (most described elements, then total length, then newest) is `p`.
+A schema-1 index still renders (the rows are read inline) until the next run
+rewrites it.
 
 `narrative.lexicon(text)` is the vocabulary half: a deterministic census of
 the workings words a description uses (surface forms by canonical kind,
 mining verbs, level labels), separate from `parse()` which turns words into
-elements and questions.
+elements and questions. `geomodel/composition.py` is the mineral half: every
+ore, gangue, alteration and host term the text names, with its quote, the
+level it is tied to and the commodity it implies.
 
 ## 5. Honest limits
 

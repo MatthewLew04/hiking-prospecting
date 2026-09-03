@@ -2772,6 +2772,7 @@ function showFeature(f){
       ${p.nm?`<div class="links">${nationalResearchAnchors(p.nm,'',p.st)}</div>`:''}
       ${(()=>{const xy=pointXY(f)||[]; return xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.typ||'mine feature')+'<div class="g3dhint">The 3-D model shows what is mapped here; underground workings appear only where a document describes them.</div>':'';})()}
       <div class="src">USGS USMIN mine symbols, streamed from the 49-state PMTiles baseline. Historical map evidence is not permission to enter a site. <b>Never enter adits or shafts.</b></div>`);
+    { const uid = p.fid!=null ? p.fid : (p.id!=null ? p.id : f.id); if (uid!=null && uid!=='') fillUnderground3D('usmin:'+uid); }
     return;
   }
   if(lid==='national-ardf-c'){
@@ -2783,6 +2784,7 @@ function showFeature(f){
       <div class="links"><a href="https://mrdata.usgs.gov/ardf/" target="_blank">USGS ARDF ↗</a>${xy.length===2?`<a href="${gmaps(xy[1],xy[0])}" target="_blank">Google Maps ↗</a>`:''}${nationalResearchAnchors(p.nm,'','AK')}</div>
       ${xy.length===2? g3dButton(xy[0],xy[1],p.nm||p.id):''}
       <div class="src">Primary reference: ${esc(p.ref||'not supplied in this record')}. ARDF is Alaska's occurrence backbone; it is historical geologic evidence, not land status or access permission.</div>`);
+    if (p.id!=null && p.id!=='') fillUnderground3D('ardf:'+p.id);
     return;
   }
   if(lid==='national-geology-fill'||lid==='national-fault-line'){
@@ -6585,14 +6587,23 @@ function loadGeomodel3D(){
 }
 
 /* ---------- autopopulated underground models (data/models/index.json) ----
-   pipelines/geomodel_autopopulate.py reads the WS12 document store, carves
-   each mine's own section out of its source documents, parses the prose and
-   publishes a 3-D model per (mine, document) under /models/. The index maps
-   grades:N (and state-survey ids) to those models plus the documents and the
-   underground vocabulary they used. Everything described is drawn dashed in
-   the viewer: a description is never a survey. */
-const UG3D = {};
+   pipelines/geomodel_autopopulate.py — its write_index(), which the WS13
+   driver shares — publishes a 3-D model per (mine, document) under /models/
+   and a COMPACT index (schema 2) keyed by every dot namespace the map draws:
+   grades:<row>, mrds:<dep_id>, usmin:<fid>, stategeo:<id>, ardf:<id>. A row
+   is {l: label, p: primary model id, n: models, m: minerals, x: metres of
+   described workings, w: elements drawn, c: [described, assumed, surveyed]}
+   or {a: <canonical key>} for an alias row — a few hundred bytes a mine, so
+   tens of thousands of mines fit one file. The full record a card needs
+   (the source documents, levels, assays, the vocabulary) is
+   models/<p>/card.json, fetched only when that card opens. Schema-1 rows
+   (the full record inline) still render, so a stale deploy of either half
+   keeps working. Everything described is drawn dashed in the viewer: a
+   description is never a survey. */
+const UG3D = {cards: {}};
 let UG_SEQ = 0;
+const UG_MODEL_ID = /^[a-z0-9][a-z0-9._-]{0,120}$/i;   // <slug>-<hash8>; anything else never becomes a URL
+const UG_COMMODITY = {au:'Gold', ag:'Silver', pb:'Lead', zn:'Zinc', cu:'Copper', sb:'Antimony', wo3:'Tungsten', hgf:'Mercury'};
 async function ugIndex(){
   // the promise is the cache, so concurrent cards share one fetch and a
   // failure is decided once rather than re-fetched per card
@@ -6601,60 +6612,141 @@ async function ugIndex(){
   UG3D.idx = await UG3D.p;
   return UG3D.idx;
 }
+/* One shape whichever schema the row came in. `full` is the inline schema-1
+   record, or null until card.json arrives; `project` is the viewer URL. */
+function ugNormalise(key, e){
+  if (e.n !== undefined || e.p !== undefined){                       // schema 2
+    const c = Array.isArray(e.c) ? e.c : [];
+    const p = e.p ? String(e.p) : null;
+    return {key, label: String(e.l||''), primary: p, n: e.n|0,
+      minerals: Array.isArray(e.m) ? e.m : [], total_m: +e.x||0, workings: e.w|0,
+      counts: {described: c[0]|0, assumed: c[1]|0, surveyed: c[2]|0},
+      carried: e.cf||null, full: null,
+      project: p ? `/models/${p}/model.geomodel.json` : null};
+  }
+  const models = e.models||[];                                       // schema 1
+  const primary = models.find(m=>m.primary) || models[0] || null;
+  const conf = primary && primary.confidence || {};
+  return {key: e.key||key, label: String(e.label||''),
+    primary: primary ? String(primary.model_id||'') : null, n: models.length,
+    minerals: e.minerals||[], total_m: e.extent && +e.extent.total_m || 0,
+    workings: models.reduce((n,m)=>n+(m.elements|0),0),
+    counts: {described: conf.described|0, assumed: conf.assumed|0, surveyed: conf.surveyed|0},
+    carried: e.carried_forward||null, full: e,
+    project: primary ? String(primary.project_url||'') : null};
+}
 function ugEntry(key){
   const idx = UG3D.idx; if (!idx || !idx.by_mine) return null;
+  key = String(key||'');
   // grades:N keys are row indexes into grades.json; if the bundle was
   // regenerated after this index, the rows may have shifted and a lookup
   // would attach the wrong mine's model — better nothing than that
   if (key.startsWith('grades:') && idx.grades_generated && GR && GR.generated
       && idx.grades_generated !== GR.generated) return null;
-  let e = idx.by_mine[key];
-  if (e && e.alias) e = idx.by_mine[e.alias];
-  return e || null;
+  let e = idx.by_mine[key], canon = key;
+  const alias = e && (e.a || e.alias);
+  if (alias){ canon = String(alias); e = idx.by_mine[canon]; }
+  if (!e || typeof e !== 'object' || e.a || e.alias) return null;
+  return ugNormalise(canon, e);
 }
 function ugFmtM(m){ return m>=1000 ? (m/1000).toFixed(1)+' km' : Math.round(m)+' m'; }
+const ugHead = t => `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">${t}</h3>`;
+const ugNote = t => `<div style="font-size:10.5px;color:var(--mut);margin-top:6px">${t}</div>`;
+/* The part of the section the compact row alone can state: label, counts,
+   minerals, extent and the model button. */
 function ugHtml(e){
-  const head = t => `<h3 style="font-size:11px;color:var(--mut);letter-spacing:.1em;margin:12px 0 4px">${t}</h3>`;
-  const note = t => `<div style="font-size:10.5px;color:var(--mut);margin-top:6px">${t}</div>`;
-  let h = '';
-  const primary = (e.models||[]).find(m=>m.primary) || (e.models||[])[0];
-  if (primary){
-    const x = e.extent || {};
-    const kinds = Object.entries((e.lexicon&&e.lexicon.kinds)||{}).filter(([k])=>k!=='level')
-      .sort((a,b)=>b[1].count-a[1].count).slice(0,6)
-      .map(([k,v])=>`${esc(k)} ×${v.count}`).join(' · ');
-    h += head('UNDERGROUND — FROM THE DOCUMENTS');
+  let h = ugHead('UNDERGROUND — FROM THE DOCUMENTS');
+  if (e.primary){
+    const c = e.counts;
     h += kv([
-      ['Minerals', e.minerals && e.minerals.length ? esc(e.minerals.join(', ')) : null],
-      ['Workings', x.by_type && Object.keys(x.by_type).length ?
-         esc(Object.entries(x.by_type).map(([k,v])=>`${k} ${ugFmtM(v)}`).join(' · ')) : null],
-      ['Extent', x.total_m ? ugFmtM(x.total_m)+' of described workings' : null],
-      ['Levels', x.levels && x.levels.length ?
-         esc(x.levels.join(', ')) + (x.deepest_level_m ? ` — deepest ~${Math.round(x.deepest_level_m)} m` : '') : null],
-      ['Vocabulary', kinds || null]]);
-    const conf = primary.confidence || {};
+      ['Minerals', e.minerals.length ? esc(e.minerals.join(', ')) : null],
+      ['Extent', e.total_m ? ugFmtM(e.total_m)+' of described workings' : null],
+      ['Drawn', `${e.workings} element${e.workings===1?'':'s'}`
+        + (e.n>1 ? ` across ${e.n} models` : '')
+        + ` — ${c.described} described, ${c.assumed} assumed, ${c.surveyed} surveyed`]]);
     // JSON.stringify + esc: quotes, backslashes and angle brackets in index
     // data can never break out of the attribute or the JS string
-    h += `<button class="dosbtn" onclick="open3D(0,0,${esc(JSON.stringify(String(e.label||'')))},{project:${esc(JSON.stringify(String(primary.project_url||'')))}})" title="open the 3-D model built from this mine's documents (new tab)">⛰ OPEN 3D MODEL — DESCRIBED WORKINGS</button>`;
-    h += note(`Built from the text: ${conf.described||0} described element(s)`
-      + ((primary.omitted|0) ? `, ${primary.omitted} left out where the prose was silent` : '')
-      + `. Dashed means described, never surveyed — the model's manifest carries every sentence it came from.`);
+    h += `<button class="dosbtn" onclick="open3D(0,0,${esc(JSON.stringify(String(e.label||'')))},{project:${esc(JSON.stringify(String(e.project||'')))}})" title="open the 3-D model built from this mine's documents (new tab)">⛰ OPEN 3D MODEL — DESCRIBED WORKINGS</button>`;
+    h += ugNote('Dashed means described, never surveyed — the model\'s manifest carries every sentence it came from.'
+      + (e.carried ? ' This entry was carried forward from an earlier run: the latest rebuild failed and the published model stands.' : ''));
   }
-  const docs = e.documents || [];
+  if (e.full) h += ugDetailHtml(e.full, e);
+  else if (!e.primary) h += ugNote('Documents are attached to this mine, but their text yields no buildable description — nothing is drawn rather than guessed.');
+  return h;
+}
+/* The part that needs the full record (card.json, or a schema-1 row):
+   workings by type, levels, assays, vocabulary and the source documents. */
+function ugDetailHtml(full, e){
+  const models = full.models||[];
+  const primary = models.find(m=>m.model_id===e.primary) || models.find(m=>m.primary) || models[0] || null;
+  let h = '';
+  if (primary){
+    const x = full.extent || {};
+    const kinds = Object.entries((full.lexicon&&full.lexicon.kinds)||{}).filter(([k])=>k!=='level')
+      .sort((a,b)=>b[1].count-a[1].count).slice(0,6)
+      .map(([k,v])=>`${esc(k)} ×${v.count}`).join(' · ');
+    const levels = (x.levels&&x.levels.length ? x.levels : primary.levels) || [];
+    const depths = Object.values(primary.level_depths_m||{}).filter(v=>typeof v==='number');
+    const deepest = x.deepest_level_m || (depths.length ? Math.max(...depths) : null);
+    const assays = (primary.assay_commodities||[]).map(a=>UG_COMMODITY[a]||String(a).toUpperCase());
+    h += kv([
+      ['Workings', x.by_type && Object.keys(x.by_type).length ?
+         esc(Object.entries(x.by_type).map(([k,v])=>`${k} ${ugFmtM(v)}`).join(' · ')) : null],
+      ['Levels', levels.length ?
+         esc(levels.join(', ')) + (deepest ? ` — deepest ~${Math.round(deepest)} m` : '') : null],
+      ['Assays', primary.assays ? `${primary.assays} quoted grade${primary.assays===1?'':'s'}`
+         + (assays.length ? ' — '+esc(assays.join(', ')) : '') : null],
+      ['Vein', primary.vein ? 'attitude stated in the text' : null],
+      ['Vocabulary', kinds || null]]);
+    const conf = primary.confidence || {};
+    h += ugNote(`Built from the text: ${conf.described||0} described element(s)`
+      + ((primary.omitted|0) ? `, ${primary.omitted} left out where the prose was silent` : '')
+      + (models.length>1 ? `. ${models.length} documents describe this mine — each has its own model and the strongest is the one opened` : '')
+      + '.');
+  }
+  const docs = full.documents || [];
   if (docs.length){
-    h += head(`SOURCE DOCUMENTS — ${docs.length}`);
+    h += ugHead(`SOURCE DOCUMENTS — ${docs.length}`);
     h += docs.map(d=>{
       const pg = (d.cited_pages||[]).length ? ` · cited p. ${d.cited_pages.join(', ')}` : '';
       const yr = d.publication_year ? ` (${d.publication_year})` : '';
       const t = esc(d.title || String(d.doc_id||'').slice(0,12));
       return `<div style="font-size:11px;margin:3px 0">${d.source_url?`<a href="${esc(d.source_url)}" target="_blank">${t} ↗</a>`:t}${yr}${esc(pg)}</div>`;
     }).join('');
-    if (!primary) h += note('Documents are attached, but their text yields no buildable description — nothing is drawn rather than guessed.');
+    if (!primary) h += ugNote('Documents are attached, but their text yields no buildable description — nothing is drawn rather than guessed.');
   }
   return h;
 }
+/* models/<p>/card.json, one fetch per model per session. A failure is not
+   cached: the next card that needs it asks again. */
+function ugCard(p){
+  p = String(p||'');
+  if (!UG_MODEL_ID.test(p)) return Promise.reject(new Error('is not a model id'));
+  if (!UG3D.cards[p])
+    UG3D.cards[p] = jget('models/'+encodeURIComponent(p)+'/card.json')
+      .catch(err => { delete UG3D.cards[p]; throw err; });
+  return UG3D.cards[p];
+}
+/* The section lands in two steps: what the compact row states, at once;
+   then the documents, levels and assays once card.json arrives. A card that
+   does not arrive says which file is missing — never a silent blank. */
+async function ugFill(slot, seq, e){
+  slot.innerHTML = ugHtml(e);
+  if (e.full || !e.primary) return;          // nothing further to fetch
+  slot.innerHTML += ugNote('⌁ loading documents…');
+  let card = null, failed = null;
+  try{ card = await ugCard(e.primary); }
+  catch(err){ failed = err; }
+  if (seq !== UG_SEQ || !slot.isConnected) return;
+  if (!card || typeof card !== 'object'){
+    slot.innerHTML = ugHtml(e) + ugNote(`The documents behind this model did not load: <code>models/${esc(e.primary)}/card.json</code> is missing or unreadable${failed ? ' ('+esc(failed.message||failed)+')' : ''}.`);
+    return;
+  }
+  slot.innerHTML = ugHtml(e) + ugDetailHtml(card, e);
+}
 /* The card is synchronous; this appends the underground section once the
-   index arrives, exactly as fillMineDocs appends the documents slot. */
+   index arrives, exactly as fillMineDocs appends the documents slot. A key
+   with no row appends nothing at all. */
 async function fillUnderground3D(key){
   const seq = ++UG_SEQ;
   const slot = document.createElement('div');
@@ -6663,11 +6755,12 @@ async function fillUnderground3D(key){
   if (seq !== UG_SEQ || !slot.isConnected) return;
   const e = ugEntry(key);
   if (!e){ slot.remove(); return; }
-  slot.innerHTML = ugHtml(e);
+  await ugFill(slot, seq, e);
 }
-/* Map-feature popups (state-survey records and friends) carry a subject with
-   the namespaced id spellings; the index keys latlon builds by the same
-   'stategeo:<record>' form, so try each spelling the way mineDocsFetch does. */
+/* Map-feature popups (MRDS and state-survey records) carry a subject with
+   the namespaced id spellings; the index keys those builds by the same
+   'mrds:<dep_id>' / 'stategeo:<record>' form, so try each spelling the way
+   mineDocsFetch does. */
 async function fillUnderground3DSubject(subject){
   if (!subject || !Array.isArray(subject.ids) || !subject.ids.length) return;
   const seq = ++UG_SEQ;
@@ -6677,7 +6770,7 @@ async function fillUnderground3DSubject(subject){
   if (seq !== UG_SEQ || !slot.isConnected) return;
   const e = subject.ids.map(ugEntry).find(Boolean);
   if (!e){ slot.remove(); return; }
-  slot.innerHTML = ugHtml(e);
+  await ugFill(slot, seq, e);
 }
 
 /* ---------- county gold-signal ranking (49 states · 3,138 counties) ---------- */

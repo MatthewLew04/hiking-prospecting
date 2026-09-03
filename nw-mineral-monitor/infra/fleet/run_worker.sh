@@ -114,5 +114,85 @@ if [ "$WS13_MODE" = confidence ]; then
   echo "$rc" > /opt/ws13/status/"$1"
   exit 0
 fi
+if [ "$WS13_MODE" = geomodel ]; then
+  # The 3-D modeller over the corpus (ws13_geomodel.py). It answers
+  # with the confidence pass's exit-code contract on purpose --
+  #   0  this shard is finished (0 documents remaining)
+  #   10 documents remain and this sweep finished some -> sweep again
+  #   11 documents remain and this sweep finished NONE -> back off
+  #   2  shard arithmetic outside 0..shards-1  } real failures,
+  #   3  no DSN / bucket / models bucket /     } passed through
+  #      terrain cache                         }
+  #   12 --verify-complete found work remaining
+  #   1  unhandled: retried, then failed after GEO_MAX_FAULTS in a row
+  # -- so it is swept by the same loop as the confidence branch above,
+  # for the same reasons (read that comment; every line of it applies).
+  # The loop is REPEATED here rather than shared as a function because
+  # the confidence branch is pinned line by line by
+  # tests/test_ws13_fleet_template.py, and a shared body would make a
+  # fix in one mode a silent behaviour change in the other. Keep the
+  # two in step by hand; the only differences are the program, the
+  # log name and the counter names.
+  #
+  # The shard is this PROCESS's index inside the node's slot, exactly
+  # as above, and --shard/--shards are passed explicitly so the driver's
+  # own log line names them. --limit bounds one sweep the way
+  # WS13_SWEEP_DOCS bounds a confidence sweep (defaulted, because the
+  # geomodel fleet template may not export it). --publish s3 writes
+  # models/<id>/ to NWMM_MODELS_BUCKET and the heartbeat to WS13_BUCKET.
+  SHARD=$(( WS13_NODE_SLOT * WS13_WORKERS_PER_NODE + $1 - 1 ))
+  LOG=/var/log/ws13-geomodel-"$1".log
+  END=$(( $(date +%s) + WS13_SWEEP_MAX_SECONDS ))
+  GEO_BACKOFF_START=60
+  GEO_BACKOFF_MAX=900
+  GEO_MAX_STALLS=6
+  GEO_MAX_FAULTS=3
+  backoff=$GEO_BACKOFF_START
+  stalls=0
+  faults=0
+  rc=10
+  while [ "$rc" -eq 10 ] || [ "$rc" -eq 11 ] || [ "$rc" -eq 1 ]; do
+    if [ -f "$WS13_DRAIN_FILE" ]; then
+      echo "drain requested; shard $SHARD left unfinished for another node" >> "$LOG"
+      rc=0
+      break
+    fi
+    if [ "$(date +%s)" -ge "$END" ]; then
+      echo "shard $SHARD still unfinished after $WS13_SWEEP_MAX_SECONDS s; giving up (last rc=$rc)" >> "$LOG"
+      break
+    fi
+    WS13_SHARD=$SHARD WS13_WORKER_ID="$(hostname)-$1" \
+      python3 /opt/ws13/ws13_geomodel.py --shard "$SHARD" --shards "$WS13_SHARD_COUNT" \
+        --publish s3 --limit "${WS13_SWEEP_DOCS:-200}" >> "$LOG" 2>&1
+    rc=$?
+    if [ "$rc" -eq 10 ]; then
+      backoff=$GEO_BACKOFF_START; stalls=0; faults=0
+    elif [ "$rc" -eq 11 ]; then
+      faults=0
+      stalls=$((stalls + 1))
+      if [ "$stalls" -ge "$GEO_MAX_STALLS" ]; then
+        echo "shard $SHARD finished nothing in $stalls consecutive sweeps; not sweeping again" >> "$LOG"
+        break
+      fi
+      echo "shard $SHARD finished nothing; sleeping ${backoff}s before sweep $((stalls + 1))" >> "$LOG"
+      sleep $backoff
+      backoff=$((backoff * 2))
+      [ "$backoff" -gt "$GEO_BACKOFF_MAX" ] && backoff=$GEO_BACKOFF_MAX
+    elif [ "$rc" -eq 1 ]; then
+      stalls=0
+      faults=$((faults + 1))
+      if [ "$faults" -ge "$GEO_MAX_FAULTS" ]; then
+        echo "shard $SHARD exited 1 (unhandled) $faults times; leaving it failed for the node agent" >> "$LOG"
+        break
+      fi
+      echo "shard $SHARD exited 1 (unhandled); sleeping ${backoff}s" >> "$LOG"
+      sleep $backoff
+      backoff=$((backoff * 2))
+      [ "$backoff" -gt "$GEO_BACKOFF_MAX" ] && backoff=$GEO_BACKOFF_MAX
+    fi
+  done
+  echo "$rc" > /opt/ws13/status/"$1"
+  exit 0
+fi
 WS13_WORKER_ID="$(hostname)-$1" python3 ws13_worker.py >> /var/log/ws13-worker-"$1".log 2>&1
 echo $? > /opt/ws13/status/"$1"

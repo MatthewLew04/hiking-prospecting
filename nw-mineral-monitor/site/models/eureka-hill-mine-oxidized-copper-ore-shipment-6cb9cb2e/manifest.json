@@ -38,17 +38,1815 @@
   "y": 4422620.844014048,
   "z": 1987.0513829764977
  },
+ "commodities": [
+  {
+   "commodity": "copper",
+   "count": 28,
+   "minerals": [
+    "enargite",
+    "tetrahedrite",
+    "covellite",
+    "malachite",
+    "cuprite",
+    "chalcocite",
+    "bornite"
+   ]
+  },
+  {
+   "commodity": "lead",
+   "count": 6,
+   "minerals": [
+    "galena",
+    "anglesite"
+   ]
+  },
+  {
+   "commodity": "zinc",
+   "count": 1,
+   "minerals": [
+    "sphalerite"
+   ]
+  },
+  {
+   "commodity": "gypsum",
+   "count": 1,
+   "minerals": [
+    "gypsum"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "OXIDATION",
+    "at": [
+     36,
+     45
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "OXIDATION.",
+    "span": [
+     34,
+     46
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     154,
+     163
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "oxidation~ The water in the sedimentary rocks stands from 1,650 to 2,400 feet below the surface, according to the alti- tude of the shaft collar, and broadly speaking, is found about 300 feet above the level of",
+    "span": [
+     153,
+     371
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidized zone",
+    "at": [
+     1199,
+     1212
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "One definite fact ascertained during the pres- ent examination is that covellite and chalco- cite occur everywhere and at all levels in the copper ores of the oxidized zone, though no- where in great masses.",
+    "span": [
+     1037,
+     1247
+    ],
+    "statement": "c7",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "secondary sulphides",
+    "at": [
+     1290,
+     1309
+    ],
+    "element": null,
+    "level": null,
+    "name": "secondary enrichment",
+    "quote": "They are not remains of an older zone of secondary sulphides b~t form normally during oxidation.",
+    "span": [
+     1247,
+     1346
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     1336,
+     1345
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "They are not remains of an older zone of secondary sulphides b~t form normally during oxidation.",
+    "span": [
+     1247,
+     1346
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     1447,
+     1456
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "This condi- tion, which is contrary to the generalized idea of a distinct zone of secondary copper sulphides, is no doubt due in part to the scarcity of pyrite, to the neutralization by CaC03 of such acid as may be formed, and in part also to the great amount of oxygen necessary for the complete oxidation of enargite.",
+    "span": [
+     1346,
+     1672
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     1650,
+     1659
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "This condi- tion, which is contrary to the generalized idea of a distinct zone of secondary copper sulphides, is no doubt due in part to the scarcity of pyrite, to the neutralization by CaC03 of such acid as may be formed, and in part also to the great amount of oxygen necessary for the complete oxidation of enargite.",
+    "span": [
+     1346,
+     1672
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "secondary sulphides",
+    "at": [
+     1715,
+     1734
+    ],
+    "element": null,
+    "level": null,
+    "name": "secondary enrichment",
+    "quote": "There can be no ques- tion, however, that secondary sulphides may form freely in other deposits, under certain conditions, in the zone accessible to oxygen.",
+    "span": [
+     1672,
+     1831
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     1847,
+     1856
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The manner of oxidation of enargite, with simultaneous development of chalcocite, covel- lite, and copper arsenates, is described on page 164.",
+    "span": [
+     1831,
+     1977
+    ],
+    "statement": "c9",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     2091,
+     2099
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "span": [
+     1977,
+     2184
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     2574,
+     2583
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "During the oxidation of enargite and similar minerals chalcocite is always the first mineral to form along the margins and fissures in the grain.",
+    "span": [
+     2561,
+     2711
+    ],
+    "statement": "c13",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "secondary sulphides",
+    "at": [
+     3259,
+     3278
+    ],
+    "element": null,
+    "level": null,
+    "name": "secondary enrichment",
+    "quote": "It has not proved possible to obtain enough of these secondary sulphides in pure form for assay, but it is stated that where they are abundant they generally contain much silver.",
+    "span": [
+     3203,
+     3386
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphides",
+    "at": [
+     3476,
+     3485
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Secondary copper sulphides thus form indP,- pendently of the water level-in fact, at all points above it and at least to a depth of 250 feet below it, as shown by the development of covellite in pearceite in ore from level19-in the",
+    "span": [
+     3457,
+     3697
+    ],
+    "statement": "c19",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     3972,
+     3980
+    ],
+    "element": "e1",
+    "level": "200",
+    "name": "oxidized",
+    "quote": "it adjoins a mass of limestone de- 200-foot level a out 430 feet north of the tritus, the coarse fragments of which ~re dis- shaft the drift c osses an old depression which tinctly oxidized.",
+    "span": [
+     3788,
+     3981
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   }
+  ],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "copper",
+    "count": 28,
+    "minerals": [
+     "enargite",
+     "tetrahedrite",
+     "covellite",
+     "malachite",
+     "cuprite",
+     "chalcocite",
+     "bornite"
+    ]
+   },
+   {
+    "commodity": "lead",
+    "count": 6,
+    "minerals": [
+     "galena",
+     "anglesite"
+    ]
+   },
+   {
+    "commodity": "zinc",
+    "count": 1,
+    "minerals": [
+     "sphalerite"
+    ]
+   },
+   {
+    "commodity": "gypsum",
+    "count": 1,
+    "minerals": [
+     "gypsum"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 70,
+   "sentences_with_minerals": 22
+  },
+  "host_rock": [
+   {
+    "as_written": "limestone",
+    "at": [
+     3810,
+     3819
+    ],
+    "element": "e1",
+    "level": "200",
+    "name": "limestone",
+    "quote": "it adjoins a mass of limestone de- 200-foot level a out 430 feet north of the tritus, the coarse fragments of which ~re dis- shaft the drift c osses an old depression which tinctly oxidized.",
+    "span": [
+     3788,
+     3981
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     4240,
+     4249
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "The depth of the limestone about 25 feet from the contact.",
+    "span": [
+     4220,
+     4281
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     4437,
+     4445
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It contains abundant p.ipe of fragmental rhyolite appears in the boulders of rhy lite and limestone, in part limestone.",
+    "span": [
+     4394,
+     4516
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     4486,
+     4495
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "It contains abundant p.ipe of fragmental rhyolite appears in the boulders of rhy lite and limestone, in part limestone.",
+    "span": [
+     4394,
+     4516
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     4506,
+     4515
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "It contains abundant p.ipe of fragmental rhyolite appears in the boulders of rhy lite and limestone, in part limestone.",
+    "span": [
+     4394,
+     4516
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     4538,
+     4546
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The contact with the rhyolite well rounded.",
+    "span": [
+     4516,
+     4560
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     4701,
+     4709
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Charles eissbaker, respectively mana- little of the rhyolite is actually s~en.",
+    "span": [
+     4647,
+     4727
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "Quartz",
+    "at": [
+     392,
+     398
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Quartz, enargite, tetrahedrite, galena.",
+    "role": "gangue",
+    "span": [
+     391,
+     431
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     400,
+     408
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "Quartz, enargite, tetrahedrite, galena.",
+    "role": "ore",
+    "span": [
+     391,
+     431
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "tetrahedrite",
+    "at": [
+     410,
+     422
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "tetrahedrite",
+    "quote": "Quartz, enargite, tetrahedrite, galena.",
+    "role": "ore",
+    "span": [
+     391,
+     431
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     424,
+     430
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "Quartz, enargite, tetrahedrite, galena.",
+    "role": "ore",
+    "span": [
+     391,
+     431
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "Anglesite",
+    "at": [
+     436,
+     445
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "anglesite",
+    "quote": "Anglesite, covellite.",
+    "role": "ore",
+    "span": [
+     435,
+     457
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     447,
+     456
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "Anglesite, covellite.",
+    "role": "ore",
+    "span": [
+     435,
+     457
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "malachite",
+    "at": [
+     492,
+     501
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "malachite",
+    "quote": "In a few specimens malachite and clinoclasite are earlier than olivenite.",
+    "role": "ore",
+    "span": [
+     471,
+     547
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "malachite",
+    "at": [
+     595,
+     604
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "malachite",
+    "quote": "Pharmacosiderite may be earlier or later than malachite.",
+    "role": "ore",
+    "span": [
+     547,
+     605
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "cuprite",
+    "at": [
+     882,
+     889
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "cuprite",
+    "quote": "Some of them, as well as the cuprite and malachite, are very poor, but wherever chalcocite is present a concentration of silver seems to have taken place.",
+    "role": "ore",
+    "span": [
+     852,
+     1010
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "malachite",
+    "at": [
+     895,
+     904
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "malachite",
+    "quote": "Some of them, as well as the cuprite and malachite, are very poor, but wherever chalcocite is present a concentration of silver seems to have taken place.",
+    "role": "ore",
+    "span": [
+     852,
+     1010
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     935,
+     945
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "Some of them, as well as the cuprite and malachite, are very poor, but wherever chalcocite is present a concentration of silver seems to have taken place.",
+    "role": "ore",
+    "span": [
+     852,
+     1010
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "CHALCOCITE",
+    "at": [
+     1012,
+     1022
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "CHALCOCITE AND COVELLITE.",
+    "role": "ore",
+    "span": [
+     1010,
+     1037
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "COVELLITE",
+    "at": [
+     1027,
+     1036
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "CHALCOCITE AND COVELLITE.",
+    "role": "ore",
+    "span": [
+     1010,
+     1037
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     1110,
+     1119
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "One definite fact ascertained during the pres- ent examination is that covellite and chalco- cite occur everywhere and at all levels in the copper ores of the oxidized zone, though no- where in great masses.",
+    "role": "ore",
+    "span": [
+     1037,
+     1247
+    ],
+    "statement": "c7",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     1502,
+     1508
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "This condi- tion, which is contrary to the generalized idea of a distinct zone of secondary copper sulphides, is no doubt due in part to the scarcity of pyrite, to the neutralization by CaC03 of such acid as may be formed, and in part also to the great amount of oxygen necessary for the complete oxidation of enargite.",
+    "role": "gangue",
+    "span": [
+     1346,
+     1672
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     1663,
+     1671
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "This condi- tion, which is contrary to the generalized idea of a distinct zone of secondary copper sulphides, is no doubt due in part to the scarcity of pyrite, to the neutralization by CaC03 of such acid as may be formed, and in part also to the great amount of oxygen necessary for the complete oxidation of enargite.",
+    "role": "ore",
+    "span": [
+     1346,
+     1672
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     1860,
+     1868
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "The manner of oxidation of enargite, with simultaneous development of chalcocite, covel- lite, and copper arsenates, is described on page 164.",
+    "role": "ore",
+    "span": [
+     1831,
+     1977
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     1904,
+     1914
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "The manner of oxidation of enargite, with simultaneous development of chalcocite, covel- lite, and copper arsenates, is described on page 164.",
+    "role": "ore",
+    "span": [
+     1831,
+     1977
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     1996,
+     2006
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "role": "ore",
+    "span": [
+     1977,
+     2184
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     2116,
+     2125
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "role": "ore",
+    "span": [
+     1977,
+     2184
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "anglesite",
+    "at": [
+     2160,
+     2169
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "anglesite",
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "role": "ore",
+    "span": [
+     1977,
+     2184
+    ],
+    "statement": "c10",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     2210,
+     2219
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "A close associa- tion of covellite and anglesite is, in fact, very common and is seen in specimens, thin sec- tions\u00b7, and polished sections.",
+    "role": "ore",
+    "span": [
+     2184,
+     2326
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "anglesite",
+    "at": [
+     2224,
+     2233
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "anglesite",
+    "quote": "A close associa- tion of covellite and anglesite is, in fact, very common and is seen in specimens, thin sec- tions\u00b7, and polished sections.",
+    "role": "ore",
+    "span": [
+     2184,
+     2326
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "Covellite",
+    "at": [
+     2327,
+     2336
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "Covellite fre- quently replaces galena and zinc blende, but its most common occurrence is in enargite;",
+    "role": "ore",
+    "span": [
+     2326,
+     2430
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     2359,
+     2365
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "Covellite fre- quently replaces galena and zinc blende, but its most common occurrence is in enargite;",
+    "role": "ore",
+    "span": [
+     2326,
+     2430
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     2370,
+     2381
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "Covellite fre- quently replaces galena and zinc blende, but its most common occurrence is in enargite;",
+    "role": "ore",
+    "span": [
+     2326,
+     2430
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     2421,
+     2429
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "Covellite fre- quently replaces galena and zinc blende, but its most common occurrence is in enargite;",
+    "role": "ore",
+    "span": [
+     2326,
+     2430
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     2587,
+     2595
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "During the oxidation of enargite and similar minerals chalcocite is always the first mineral to form along the margins and fissures in the grain.",
+    "role": "ore",
+    "span": [
+     2561,
+     2711
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     2618,
+     2628
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "During the oxidation of enargite and similar minerals chalcocite is always the first mineral to form along the margins and fissures in the grain.",
+    "role": "ore",
+    "span": [
+     2561,
+     2711
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     2775,
+     2785
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "Plate XXVII, .A, B, 0, and D, shows how, besides the marginal chalcocite and covel- lite in th~ enargite, bands and streaks of these minerals, delicately folded and faulted, develop in the veinlets of olivenite or other arsenates.",
+    "role": "ore",
+    "span": [
+     2711,
+     2945
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     2809,
+     2817
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "Plate XXVII, .A, B, 0, and D, shows how, besides the marginal chalcocite and covel- lite in th~ enargite, bands and streaks of these minerals, delicately folded and faulted, develop in the veinlets of olivenite or other arsenates.",
+    "role": "ore",
+    "span": [
+     2711,
+     2945
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "Chalcocite",
+    "at": [
+     2949,
+     2959
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "' Chalcocite rarely shows the normal white color in reflected light but is usually bluish gray;",
+    "role": "ore",
+    "span": [
+     2945,
+     3043
+    ],
+    "statement": "c15",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     3113,
+     3122
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "this color is caused by an almost submicro- scopic intergrowth with covellite.",
+    "role": "ore",
+    "span": [
+     3043,
+     3123
+    ],
+    "statement": "c16",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     3164,
+     3173
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "Subse- quently larger blades of normal covellite were developed in this mass.",
+    "role": "ore",
+    "span": [
+     3123,
+     3203
+    ],
+    "statement": "c17",
+    "zone": null
+   },
+   {
+    "as_written": "bornite",
+    "at": [
+     3434,
+     3441
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "bornite",
+    "quote": "No bornite has been found.",
+    "role": "ore",
+    "span": [
+     3429,
+     3457
+    ],
+    "statement": "c18",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     3644,
+     3653
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "Secondary copper sulphides thus form indP,- pendently of the water level-in fact, at all points above it and at least to a depth of 250 feet below it, as shown by the development of covellite in pearceite in ore from level19-in the",
+    "role": "ore",
+    "span": [
+     3457,
+     3697
+    ],
+    "statement": "c19",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     3728,
+     3734
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "and contains much fine-grained pyrite and covered in the Eureka Hill mine.",
+    "role": "gangue",
+    "span": [
+     3697,
+     3771
+    ],
+    "statement": "c20",
+    "zone": null
+   },
+   {
+    "as_written": "gypsum",
+    "at": [
+     3781,
+     3787
+    ],
+    "commodities": [
+     "gypsum"
+    ],
+    "commodity": "gypsum",
+    "element": null,
+    "level": null,
+    "name": "gypsum",
+    "quote": "On the gypsum;",
+    "role": "ore",
+    "span": [
+     3771,
+     3788
+    ],
+    "statement": "c21",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     5522,
+     5528
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "In some of the stopeJ galena is associated with .",
+    "role": "ore",
+    "span": [
+     5497,
+     5550
+    ],
+    "statement": "c22",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "druses",
+    "at": [
+     2177,
+     2183
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "span": [
+     1977,
+     2184
+    ],
+    "statement": "c10"
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     2688,
+     2696
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "During the oxidation of enargite and similar minerals chalcocite is always the first mineral to form along the margins and fissures in the grain.",
+    "span": [
+     2561,
+     2711
+    ],
+    "statement": "c13"
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     2829,
+     2836
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "Plate XXVII, .A, B, 0, and D, shows how, besides the marginal chalcocite and covel- lite in th~ enargite, bands and streaks of these minerals, delicately folded and faulted, develop in the veinlets of olivenite or other arsenates.",
+    "span": [
+     2711,
+     2945
+    ],
+    "statement": "c14"
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "Quartz",
+     "enargite",
+     "tetrahedrite",
+     "galena"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "enargite",
+     "tetrahedrite",
+     "galena"
+    ],
+    "page": null,
+    "quote": "Quartz, enargite, tetrahedrite, galena.",
+    "span": [
+     391,
+     431
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Anglesite",
+     "covellite"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "anglesite",
+     "covellite"
+    ],
+    "page": null,
+    "quote": "Anglesite, covellite.",
+    "span": [
+     435,
+     457
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "malachite"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "malachite"
+    ],
+    "page": null,
+    "quote": "In a few specimens malachite and clinoclasite are earlier than olivenite.",
+    "span": [
+     471,
+     547
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "malachite"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "malachite"
+    ],
+    "page": null,
+    "quote": "Pharmacosiderite may be earlier or later than malachite.",
+    "span": [
+     547,
+     605
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "cuprite",
+     "malachite",
+     "chalcocite"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "cuprite",
+     "malachite",
+     "chalcocite"
+    ],
+    "page": null,
+    "quote": "Some of them, as well as the cuprite and malachite, are very poor, but wherever chalcocite is present a concentration of silver seems to have taken place.",
+    "span": [
+     852,
+     1010
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "CHALCOCITE",
+     "COVELLITE"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcocite",
+     "covellite"
+    ],
+    "page": null,
+    "quote": "CHALCOCITE AND COVELLITE.",
+    "span": [
+     1010,
+     1037
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "covellite"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite"
+    ],
+    "page": null,
+    "quote": "One definite fact ascertained during the pres- ent examination is that covellite and chalco- cite occur everywhere and at all levels in the copper ores of the oxidized zone, though no- where in great masses.",
+    "span": [
+     1037,
+     1247
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "enargite"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "enargite"
+    ],
+    "page": null,
+    "quote": "This condi- tion, which is contrary to the generalized idea of a distinct zone of secondary copper sulphides, is no doubt due in part to the scarcity of pyrite, to the neutralization by CaC03 of such acid as may be formed, and in part also to the great amount of oxygen necessary for the complete oxidation of enargite.",
+    "span": [
+     1346,
+     1672
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "enargite",
+     "chalcocite"
+    ],
+    "element": null,
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "enargite",
+     "chalcocite"
+    ],
+    "page": null,
+    "quote": "The manner of oxidation of enargite, with simultaneous development of chalcocite, covel- lite, and copper arsenates, is described on page 164.",
+    "span": [
+     1831,
+     1977
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "chalcocite",
+     "covellite",
+     "anglesite"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcocite",
+     "covellite",
+     "anglesite"
+    ],
+    "page": null,
+    "quote": "In the specimens chalcocite and cov.ellite usually form dark sooty or dull- bluish spots in or near the partly oxidized enar- gite, and covellite often crystallizes together with anglesite in the druses.",
+    "span": [
+     1977,
+     2184
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "covellite",
+     "anglesite"
+    ],
+    "element": null,
+    "id": "c11",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite",
+     "anglesite"
+    ],
+    "page": null,
+    "quote": "A close associa- tion of covellite and anglesite is, in fact, very common and is seen in specimens, thin sec- tions\u00b7, and polished sections.",
+    "span": [
+     2184,
+     2326
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Covellite",
+     "galena",
+     "zinc blende",
+     "enargite"
+    ],
+    "element": null,
+    "id": "c12",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite",
+     "galena",
+     "sphalerite",
+     "enargite"
+    ],
+    "page": null,
+    "quote": "Covellite fre- quently replaces galena and zinc blende, but its most common occurrence is in enargite;",
+    "span": [
+     2326,
+     2430
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "enargite",
+     "chalcocite"
+    ],
+    "element": null,
+    "id": "c13",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "enargite",
+     "chalcocite"
+    ],
+    "page": null,
+    "quote": "During the oxidation of enargite and similar minerals chalcocite is always the first mineral to form along the margins and fissures in the grain.",
+    "span": [
+     2561,
+     2711
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "chalcocite",
+     "enargite"
+    ],
+    "element": null,
+    "id": "c14",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcocite",
+     "enargite"
+    ],
+    "page": null,
+    "quote": "Plate XXVII, .A, B, 0, and D, shows how, besides the marginal chalcocite and covel- lite in th~ enargite, bands and streaks of these minerals, delicately folded and faulted, develop in the veinlets of olivenite or other arsenates.",
+    "span": [
+     2711,
+     2945
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Chalcocite"
+    ],
+    "element": null,
+    "id": "c15",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "chalcocite"
+    ],
+    "page": null,
+    "quote": "' Chalcocite rarely shows the normal white color in reflected light but is usually bluish gray;",
+    "span": [
+     2945,
+     3043
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "covellite"
+    ],
+    "element": null,
+    "id": "c16",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite"
+    ],
+    "page": null,
+    "quote": "this color is caused by an almost submicro- scopic intergrowth with covellite.",
+    "span": [
+     3043,
+     3123
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "covellite"
+    ],
+    "element": null,
+    "id": "c17",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite"
+    ],
+    "page": null,
+    "quote": "Subse- quently larger blades of normal covellite were developed in this mass.",
+    "span": [
+     3123,
+     3203
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "bornite"
+    ],
+    "element": null,
+    "id": "c18",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "bornite"
+    ],
+    "page": null,
+    "quote": "No bornite has been found.",
+    "span": [
+     3429,
+     3457
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "covellite"
+    ],
+    "element": null,
+    "id": "c19",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "covellite"
+    ],
+    "page": null,
+    "quote": "Secondary copper sulphides thus form indP,- pendently of the water level-in fact, at all points above it and at least to a depth of 250 feet below it, as shown by the development of covellite in pearceite in ore from level19-in the",
+    "span": [
+     3457,
+     3697
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c20",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "and contains much fine-grained pyrite and covered in the Eureka Hill mine.",
+    "span": [
+     3697,
+     3771
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "gypsum"
+    ],
+    "element": null,
+    "id": "c21",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "gypsum"
+    ],
+    "page": null,
+    "quote": "On the gypsum;",
+    "span": [
+     3771,
+     3788
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena"
+    ],
+    "element": null,
+    "id": "c22",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "In some of the stopeJ galena is associated with .",
+    "span": [
+     5497,
+     5550
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "ede25569c859a30e12dc62225edcf3c6d13d246f67eb8189c7c26b156185bc55"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "62dbe51b83fb52b55ae703e0bcd2a86ffeef1cb4beb9697844996ff31dc6be4d",
+ "content_sha256": "cba73bbce262a7d1ba8fcd95d676b2c0e81b2b5f0f9f3b83b88488c4630b5edb",
  "coverage": {
   "assays": 0,
   "chars": 6153,
+  "composition_statements": 22,
   "elements": 2,
   "mentions": 5,
+  "minerals": 39,
   "mining_sentences": 12,
   "parsed_chars": 839,
   "questions": 11,
@@ -110,18 +1908,18 @@
  ],
  "files": [
   {
-   "bytes": 285003,
+   "bytes": 285005,
    "content_type": "application/json",
    "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "6124bb432d69244006d00c63d66be8f8241b5a00942071775a911646f8def840"
+   "sha256": "847487ce4aafc849dfd3fe479786bff2910075393d8470db7c24f3efdc1bb1b5"
   },
   {
    "bytes": 196354,
    "content_type": "application/octet-stream",
    "key": "models/eureka-hill-mine-oxidized-copper-ore-shipment-6cb9cb2e/model.omf",
    "name": "model.omf",
-   "sha256": "2233da1baa74b46fac685193c85763d441fb2836d1c8ed8969dde0163b0c38fe"
+   "sha256": "79429c655fb10911fccfdf7e686ff53fafbf6631649bc901e7f34c31f7924f66"
   },
   {
    "bytes": 1486,
@@ -248,10 +2046,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:43Z",
+ "published_utc": "2026-09-03T03:06:23Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

@@ -72,17 +72,70 @@
   "y": 4457457.246435821,
   "z": 1687.938375419779
  },
+ "commodities": [],
+ "composition": {
+  "alteration": [],
+  "by_level": {},
+  "commodities": [],
+  "coverage": {
+   "sentences": 20,
+   "sentences_with_minerals": 0
+  },
+  "host_rock": [
+   {
+    "as_written": "rhyolite",
+    "at": [
+     664,
+     672
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It is in an ex- tremely hard mottled blue and white massive rhyolite, known locally as the \" hard blue.\" The fact that this rock is ore runs counter to all ideas as to what ore should look like., The pit is 150 feet long and 100 feet wide and attains an extreme depth of about 30 feet.",
+    "span": [
+     602,
+     892
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [],
+  "ore_terms": [
+   {
+    "as_written": "stockworks",
+    "at": [
+     42,
+     52
+    ],
+    "element": null,
+    "level": null,
+    "name": "stockwork",
+    "quote": "the Nevada Packard mine, the only mine on stockworks.",
+    "span": [
+     0,
+     53
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [],
+  "text_sha256": "93f7832d2e641c9c6f9f0ab310cbb3ce1942a0645d9c6b8298190801f00ff948"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 3,
   "surveyed": 0
  },
- "content_sha256": "f835aafa44ff64f02a9ed431a0b6194905accc0faa122d477f318ffd84a2b72d",
+ "content_sha256": "225feb7fa3442ad7c8833dffd81db6bfd3757e1f04e91b72c1a40df3c716d445",
  "coverage": {
   "assays": 1,
   "chars": 1676,
+  "composition_statements": 0,
   "elements": 3,
   "mentions": 4,
+  "minerals": 0,
   "mining_sentences": 10,
   "parsed_chars": 779,
   "questions": 8,
@@ -159,18 +212,18 @@
  ],
  "files": [
   {
-   "bytes": 286372,
+   "bytes": 286380,
    "content_type": "application/json",
    "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "4efcb43f2c0dba4cc08b3d802834ce66d84207c0ee3efed44b6a0071d2901394"
+   "sha256": "d7e8c6ce770b1f8b61cc41ff36daedb191496b636e83b7861eab42906e0a60bc"
   },
   {
-   "bytes": 200204,
+   "bytes": 200208,
    "content_type": "application/octet-stream",
    "key": "models/nevada-packard-mine-margrave-cut-88ab97dc/model.omf",
    "name": "model.omf",
-   "sha256": "94700f1d2b4bae6d70bc1833bffa609c07a1d05baeec36910daf488d9ca08ea7"
+   "sha256": "ca5de413df88446fa39ec383dc71333eb5c90c97c087ff13a59155961bde622b"
   },
   {
    "bytes": 1884,
@@ -285,10 +338,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:50Z",
+ "published_utc": "2026-09-03T03:06:35Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

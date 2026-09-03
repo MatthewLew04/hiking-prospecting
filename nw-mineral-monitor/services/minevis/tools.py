@@ -29,7 +29,7 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 if os.path.join(ROOT, 'pipelines') not in sys.path:
     sys.path.insert(0, os.path.join(ROOT, 'pipelines'))
 
-from geomodel import agentbuild, assay, mapplate, narrative, publish, render2d, resolve  # noqa: E402
+from geomodel import agentbuild, assay, composition, mapplate, narrative, publish, render2d, resolve  # noqa: E402
 
 DOCS_INDEX = os.path.join(ROOT, 'site', 'data', 'docs', 'index.json')
 
@@ -271,13 +271,29 @@ def _parse_mine_description(args, ctx):
     text = args.get('text')
     if not isinstance(text, str) or not text.strip():
         raise ToolError('parse_mine_description needs some text')
-    spec = assay.attach(narrative.parse(text, mine_id=args.get('mine_id')), text)
+    spec = _read(text, args.get('mine_id'))
     ctx.specs.put(spec)
     return {'spec_id': spec['spec_id'], 'elements': spec['elements'],
             'mentions': spec['mentions'], 'gaps': spec['gaps'],
             'assays': spec['assays'], 'vein': spec['vein'],
+            'composition': spec['composition'], 'minerals': spec['minerals'],
             'coverage': spec['coverage'], 'levels': spec['levels'],
             'parser_version': spec['parser_version']}
+
+
+def _read(text, mine_id=None):
+    """Prose -> the spec every tool holds: elements and questions, the quoted
+    grades, and the minerals the text names.  One place, so a spec held from
+    parse_mine_description carries the same composition run_build reads."""
+    spec = assay.attach(narrative.parse(text, mine_id=mine_id), text)
+    return composition.attach(spec, text=text)
+
+
+def _composition_counts(spec, built):
+    comp = spec.get('composition') or {}
+    return {'minerals': len(comp.get('minerals') or []),
+            'points': int(built.get('composition_points') or 0),
+            'commodities': [c['commodity'] for c in (comp.get('commodities') or [])]}
 
 
 def _check_map_plate(args, ctx):
@@ -468,6 +484,7 @@ def run_build(args, ctx):
     result['coverage'] = spec['coverage']
     result['assays'] = built['assays']
     result['vein'] = built['vein']
+    result['composition'] = _composition_counts(spec, built)
     result['storage'] = ctx.target_kind
     if ctx.target_kind == 'local' and result.get('access') == 'presigned':
         result['note'] = ('no models bucket is configured on this box, so the model was '
@@ -496,7 +513,7 @@ def _load_spec(args, ctx):
         if args.get('mine_id') or args.get('lon') is not None:
             site = _resolve_site(args, ctx)
         return spec, site
-    spec = assay.attach(narrative.parse(args['text'], mine_id=args.get('mine_id')), args['text'])
+    spec = _read(args['text'], args.get('mine_id'))
     site = _resolve_site(args, ctx)
     ctx.specs.put(spec, site)
     return spec, site

@@ -74,17 +74,1914 @@
   "y": 4085270.411710334,
   "z": 1227.3395361029568
  },
+ "commodities": [
+  {
+   "commodity": "iron",
+   "count": 1,
+   "minerals": [
+    "magnetite"
+   ]
+  },
+  {
+   "commodity": "gold",
+   "count": 1,
+   "minerals": [
+    "native gold"
+   ]
+  },
+  {
+   "commodity": "silver",
+   "count": 1,
+   "minerals": [
+    "cerargyrite"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "silicified",
+    "at": [
+     1779,
+     1789
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "The rocks stand from 20 to 30 feet above the nearly flat surface and have been incorrectly regarded by some as the silicified outcrop of rocks along the extension of the Montgomery-Shoshone fault.",
+    "span": [
+     1662,
+     1862
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     5748,
+     5755
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     8756,
+     8770
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "The rhyolite exposed in them is practically and lithologically uniform and presents only such color variations as are due to changes connected with mineralization and weathering.",
+    "span": [
+     8605,
+     8787
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "oxidized ore",
+    "at": [
+     9942,
+     9954
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "On the 100-foot and A levels the rhyolite between the two main branches of the veins for distances ranging from 50 to 150 feet south of the basalt was all irregularly fissured and constituted the large body of rich oxidized ore worked in 1906 and 1907, of which only the outer shell now remains.",
+    "span": [
+     9721,
+     10023
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     10240,
+     10247
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Within this soft material could be detected residual frag- ments of less-altered rhyolite, loose quartz phenocrysts, and small anastomosing veinlets of quartz.",
+    "span": [
+     10165,
+     10327
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "zone of oxidation",
+    "at": [
+     10930,
+     10947
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "This ratio suggests much secondary concen- tration within the zone of oxidation.",
+    "span": [
+     10866,
+     10948
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   }
+  ],
+  "by_level": {
+   "300": [
+    "calcite",
+    "orthoclase",
+    "plagioclase"
+   ]
+  },
+  "commodities": [
+   {
+    "commodity": "iron",
+    "count": 1,
+    "minerals": [
+     "magnetite"
+    ]
+   },
+   {
+    "commodity": "gold",
+    "count": 1,
+    "minerals": [
+     "native gold"
+    ]
+   },
+   {
+    "commodity": "silver",
+    "count": 1,
+    "minerals": [
+     "cerargyrite"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 112,
+   "sentences_with_minerals": 11
+  },
+  "host_rock": [
+   {
+    "as_written": "RHYOLITE",
+    "at": [
+     102,
+     110
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "RHYOLITE No. 13.",
+    "span": [
+     101,
+     118
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Rhyolite",
+    "at": [
+     148,
+     156
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Rhyolite No. 13 followed closely the extrusion of rhyolite No. 12 and outcrops as a narrow band paralleling this rock on the west slope of Rainbow Mountain.",
+    "span": [
+     147,
+     306
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     199,
+     207
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Rhyolite No. 13 followed closely the extrusion of rhyolite No. 12 and outcrops as a narrow band paralleling this rock on the west slope of Rainbow Mountain.",
+    "span": [
+     147,
+     306
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Rhyolite",
+    "at": [
+     476,
+     484
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Rhyolite No. 13 is in the main reddish brown or grayish brown, but in places contains layers of green glass that resemble rhyolite No. 12.",
+    "span": [
+     475,
+     616
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     600,
+     608
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Rhyolite No. 13 is in the main reddish brown or grayish brown, but in places contains layers of green glass that resemble rhyolite No. 12.",
+    "span": [
+     475,
+     616
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Rhyolite",
+    "at": [
+     618,
+     626
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "span": [
+     616,
+     740
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "rhyolites",
+    "at": [
+     928,
+     937
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Intricately curving flow lines are strikingly developed at every outcrop and at most places weathering has produced a parting between them which distinguishes this flow from the other rhyolites.",
+    "span": [
+     740,
+     938
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolites",
+    "at": [
+     1310,
+     1319
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The spherulites are smaller than those of rhyolites Nos. 1 or 5 and are not visible in",
+    "span": [
+     1266,
+     1357
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     2191,
+     2199
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Careful mapping at this place showed that the outcrop or reef is the faulted portion of a hard layer of rhyo- lite No. 11, which outcrops on the West spur of Burton Mountain and occurs at many places from 50 to 75 feet below the top of rhyolite No.",
+    "span": [
+     1951,
+     2206
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     2465,
+     2473
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Sericite is rare, even in the rhyolite frag- ments in the veins.",
+    "span": [
+     2434,
+     2500
+    ],
+    "statement": "c5"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3565,
+     3571
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The drifts running southwest from the vicinity of the main shaft to the Polaris shaft are in general parallel with the Montgomery-Shoshone fault and lie on the southeast side of the basalt strip that occupies part of the fault zone.",
+    "span": [
+     3379,
+     3616
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3819,
+     3825
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The fissure that bounds the basalt on the southeast and that continues below this rock into the rhyolite (see PI.",
+    "span": [
+     3789,
+     3905
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     3888,
+     3896
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The fissure that bounds the basalt on the southeast and that continues below this rock into the rhyolite (see PI.",
+    "span": [
+     3789,
+     3905
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     3984,
+     3990
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "As a rule the basalt and rhyolite are separated by a thin sheet of gouge, which would not ordinarily be taken as indicating more than slight movement of one rock past the other.",
+    "span": [
+     3969,
+     4149
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     3995,
+     4003
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "As a rule the basalt and rhyolite are separated by a thin sheet of gouge, which would not ordinarily be taken as indicating more than slight movement of one rock past the other.",
+    "span": [
+     3969,
+     4149
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     4804,
+     4810
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The basalt is generally more or less decomposed, and much of it is traversed by many irregular curved fissures with slickensided walls.",
+    "span": [
+     4799,
+     4936
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5120,
+     5128
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It has undergone much internal movement, and this fact and the resulting plasticity of the mass as a whole accounts in great part for the absence of conspicuous brecciation of the rhyolite in contact with it.",
+    "span": [
+     4936,
+     5149
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     5201,
+     5207
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "In the progress of faulting the comparatively soft basalt, with its innumerable fractures and polished slipping surfaces, was able to adjust itself readily to change of form and to slide smoothly over inequalities in the rhyolite walls without shattering them to fault breccia.",
+    "span": [
+     5149,
+     5431
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     5374,
+     5382
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "In the progress of faulting the comparatively soft basalt, with its innumerable fractures and polished slipping surfaces, was able to adjust itself readily to change of form and to slide smoothly over inequalities in the rhyolite walls without shattering them to fault breccia.",
+    "span": [
+     5149,
+     5431
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     5454,
+     5460
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "Petrographically, the basalt is an ordinary feldspathic, olivinitic variety, in which few of the mineral constituents are visible to the naked eye.",
+    "span": [
+     5431,
+     5581
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     6471,
+     6477
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "The basalt at this place is a dull, reddish, earthy-looking rock, with lighter mottling.",
+    "span": [
+     6466,
+     6556
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     6802,
+     6808
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "Montgomery-Shoshone mine is a down-faulted portion of plagio- clase basalt No. 4, which is a flow overlying rhyolite No. 10 and is extensively exposed between Montgomery Mountain and Beatty.",
+    "span": [
+     6733,
+     6925
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     6842,
+     6850
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Montgomery-Shoshone mine is a down-faulted portion of plagio- clase basalt No. 4, which is a flow overlying rhyolite No. 10 and is extensively exposed between Montgomery Mountain and Beatty.",
+    "span": [
+     6733,
+     6925
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     7010,
+     7016
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "(See PL I.) There are some notable irregularities of the southeast contact of the basalt with rhyolite No. 10 in the Montgomery-Shoshone mine, par- ticularly on the 200-foot and 300-foot levels, southeast of the shaft.",
+    "span": [
+     6925,
+     7147
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7022,
+     7030
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "(See PL I.) There are some notable irregularities of the southeast contact of the basalt with rhyolite No. 10 in the Montgomery-Shoshone mine, par- ticularly on the 200-foot and 300-foot levels, southeast of the shaft.",
+    "span": [
+     6925,
+     7147
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7307,
+     7315
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "(See PL XIV.) These are due to displacement of the main fault con- tact by minor slips, which appear to be connected with movements along the veins in the rhyolite.",
+    "span": [
+     7147,
+     7316
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7345,
+     7353
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "u ' The total thickness of rhyolite No. 10, according to Messrs.",
+    "span": [
+     7316,
+     7382
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7565,
+     7573
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "At many places in the district it has a distinct glassy facies at its base, which serves to mark the division between it and the underlying rhyolite No. 9, which is about 250 feet thick.",
+    "span": [
+     7422,
+     7612
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7713,
+     7721
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "It thus appears that the Montgomery-Shoshone workings, with a depth of 600 feet, should go through rhyolite No. 10 into rhyo- lite No. 9.",
+    "span": [
+     7612,
+     7752
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     7825,
+     7833
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The specimens of rhyolite from levels below the 300-foot are slightly more porphyritic than those collected above, but the microscope shows no essential difference in the rocks.",
+    "span": [
+     7806,
+     7987
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     8063,
+     8071
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Emmons and Garrey, on page 45, certain varieties of rhyolite No. 9 are very similar to rhyolite No. 10, and where the base of No. 10 is not glassy positive distinction between the two rocks is probably not pos- sible in ordinary underground exposures.",
+    "span": [
+     8009,
+     8265
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     8099,
+     8107
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Emmons and Garrey, on page 45, certain varieties of rhyolite No. 9 are very similar to rhyolite No. 10, and where the base of No. 10 is not glassy positive distinction between the two rocks is probably not pos- sible in ordinary underground exposures.",
+    "span": [
+     8009,
+     8265
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     8610,
+     8618
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The rhyolite exposed in them is practically and lithologically uniform and presents only such color variations as are due to changes connected with mineralization and weathering.",
+    "span": [
+     8605,
+     8787
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     8870,
+     8878
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The veins worked in the Montgomery-Shoshone mine are filled fis- sures in rhyolite.",
+    "span": [
+     8794,
+     8879
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     9066,
+     9074
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "109 veins contain many fragments of rhyolite embedded in the materials deposited from solution.",
+    "span": [
+     9028,
+     9126
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     9714,
+     9720
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "On the north they terminate against the basalt.",
+    "span": [
+     9672,
+     9721
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     9757,
+     9765
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "On the 100-foot and A levels the rhyolite between the two main branches of the veins for distances ranging from 50 to 150 feet south of the basalt was all irregularly fissured and constituted the large body of rich oxidized ore worked in 1906 and 1907, of which only the outer shell now remains.",
+    "span": [
+     9721,
+     10023
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     9866,
+     9872
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "On the 100-foot and A levels the rhyolite between the two main branches of the veins for distances ranging from 50 to 150 feet south of the basalt was all irregularly fissured and constituted the large body of rich oxidized ore worked in 1906 and 1907, of which only the outer shell now remains.",
+    "span": [
+     9721,
+     10023
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     10248,
+     10256
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "Within this soft material could be detected residual frag- ments of less-altered rhyolite, loose quartz phenocrysts, and small anastomosing veinlets of quartz.",
+    "span": [
+     10165,
+     10327
+    ],
+    "statement": "c9"
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     10507,
+     10515
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The whole clearly represented the altera- tion, within the belt of weathering, of a mass of thoroughly shattered rhyolite which had been veined and cemented by quartz.",
+    "span": [
+     10391,
+     10561
+    ],
+    "statement": "c11"
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     11145,
+     11151
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "basalt",
+    "quote": "and since much of the structure has been obliterated by stoping and caving, it has not been practicable to trace the veins up to the basalt, as has been done on the 200-foot and 300- foot levels shown in Plate XIV.",
+    "span": [
+     11009,
+     11227
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     11313,
+     11319
+    ],
+    "element": null,
+    "level": "400",
+    "name": "basalt",
+    "quote": "As may be seen on the 400-foot level, the veins in some places are deflected at the basalt and continue for some distance along its contact.",
+    "span": [
+     11227,
+     11370
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     11939,
+     11945
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "No ore has been found, but the workings are of interest in connection with the fault and its associated strip of basalt.",
+    "span": [
+     11822,
+     11946
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     12104,
+     12112
+    ],
+    "element": "e5",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The new shaft is about 870 feet northeast of the main shaft of the Montgomery-Shoshone mine and is in rhyolite No. 10.",
+    "span": [
+     12000,
+     12121
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     12299,
+     12305
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "basalt",
+    "quote": "The crosscut northwest from the shaft goes through a foot or two of crushed and squeezed basalt into rhyolite No. 16, showing that the fault zone has at this point nar- rowed to practically a single fissure.",
+    "span": [
+     12208,
+     12419
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolite",
+    "at": [
+     12312,
+     12320
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "rhyolite",
+    "quote": "The crosscut northwest from the shaft goes through a foot or two of crushed and squeezed basalt into rhyolite No. 16, showing that the fault zone has at this point nar- rowed to practically a single fissure.",
+    "span": [
+     12208,
+     12419
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "rhyolites",
+    "at": [
+     12469,
+     12478
+    ],
+    "element": null,
+    "level": null,
+    "name": "rhyolite",
+    "quote": "In the drift northeast of this crosscut the two rhyolites are separated merely by a seam of gouge which dips 53\u00b0 NW.",
+    "span": [
+     12419,
+     12538
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "basalt",
+    "at": [
+     12561,
+     12567
+    ],
+    "element": null,
+    "level": null,
+    "name": "basalt",
+    "quote": "West of the shaft the basalt widens to 30 feet and has gouge seams on both sides.",
+    "span": [
+     12538,
+     12621
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "feldspar",
+    "at": [
+     700,
+     708
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "role": "gangue",
+    "span": [
+     616,
+     740
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     710,
+     716
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "role": "gangue",
+    "span": [
+     616,
+     740
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "hornblende",
+    "at": [
+     719,
+     729
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "hornblende",
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "role": "host",
+    "span": [
+     616,
+     740
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "mica",
+    "at": [
+     735,
+     739
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "mica",
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "role": "gangue",
+    "span": [
+     616,
+     740
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1259,
+     1265
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "It is pink in thin section and originally was slightly vesicular, but most of the vesicles have been lined or filled with secondary quartz.",
+    "role": "gangue",
+    "span": [
+     1124,
+     1266
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "white quartz",
+    "at": [
+     1938,
+     1950
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The rocks themselves are brecciated and in some places cut by veinlets of white quartz.",
+    "role": "gangue",
+    "span": [
+     1862,
+     1951
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "calcite",
+    "at": [
+     2310,
+     2317
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "300",
+    "name": "calcite",
+    "quote": "collected from the 300-foot level of the Montgomery-Shoshone mine the microscope shows that some calcite has developed in the rock by replacement of orthoclase and plagioclase phenocrysts and of parts of the groundmass.",
+    "role": "gangue",
+    "span": [
+     2212,
+     2434
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "orthoclase",
+    "at": [
+     2363,
+     2373
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "300",
+    "name": "orthoclase",
+    "quote": "collected from the 300-foot level of the Montgomery-Shoshone mine the microscope shows that some calcite has developed in the rock by replacement of orthoclase and plagioclase phenocrysts and of parts of the groundmass.",
+    "role": "host",
+    "span": [
+     2212,
+     2434
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "plagioclase",
+    "at": [
+     2378,
+     2389
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": "300",
+    "name": "plagioclase",
+    "quote": "collected from the 300-foot level of the Montgomery-Shoshone mine the microscope shows that some calcite has developed in the rock by replacement of orthoclase and plagioclase phenocrysts and of parts of the groundmass.",
+    "role": "host",
+    "span": [
+     2212,
+     2434
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "Sericite",
+    "at": [
+     2435,
+     2443
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "Sericite is rare, even in the rhyolite frag- ments in the veins.",
+    "role": "alteration",
+    "span": [
+     2434,
+     2500
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "augite",
+    "at": [
+     5703,
+     5709
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "augite",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "host",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "olivine",
+    "at": [
+     5714,
+     5721
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "olivine",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "host",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "serpentine",
+    "at": [
+     5759,
+     5769
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "serpentine",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "host",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "plagioclase",
+    "at": [
+     5821,
+     5832
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "plagioclase",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "host",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "augite",
+    "at": [
+     5834,
+     5840
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "augite",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "host",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "magnetite",
+    "at": [
+     5844,
+     5853
+    ],
+    "commodities": [
+     "iron"
+    ],
+    "commodity": "iron",
+    "element": null,
+    "level": null,
+    "name": "magnetite",
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "role": "ore",
+    "span": [
+     5581,
+     5887
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "calcite",
+    "at": [
+     6624,
+     6631
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "calcite",
+    "quote": "It is clearly mu'ch decomposed and contains a large proportion of calcite.",
+    "role": "gangue",
+    "span": [
+     6556,
+     6632
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "kaolinite",
+    "at": [
+     10106,
+     10115
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "kaolin",
+    "quote": "A large proportion of this ore was a soft crumbling mass, consisting largely of kaolinite irregularly streaked with stains of iroii oxide.",
+    "role": "alteration",
+    "span": [
+     10023,
+     10165
+    ],
+    "statement": "c8",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10264,
+     10270
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Within this soft material could be detected residual frag- ments of less-altered rhyolite, loose quartz phenocrysts, and small anastomosing veinlets of quartz.",
+    "role": "gangue",
+    "span": [
+     10165,
+     10327
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10320,
+     10326
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Within this soft material could be detected residual frag- ments of less-altered rhyolite, loose quartz phenocrysts, and small anastomosing veinlets of quartz.",
+    "role": "gangue",
+    "span": [
+     10165,
+     10327
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "Native gold",
+    "at": [
+     10328,
+     10339
+    ],
+    "commodities": [
+     "gold"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "native gold",
+    "quote": "Native gold and cerargyrite were both visible in the best ore.",
+    "role": "ore",
+    "span": [
+     10327,
+     10391
+    ],
+    "statement": "c10",
+    "zone": null
+   },
+   {
+    "as_written": "cerargyrite",
+    "at": [
+     10344,
+     10355
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "Native gold and cerargyrite were both visible in the best ore.",
+    "role": "ore",
+    "span": [
+     10327,
+     10391
+    ],
+    "statement": "c10",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     10554,
+     10560
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The whole clearly represented the altera- tion, within the belt of weathering, of a mass of thoroughly shattered rhyolite which had been veined and cemented by quartz.",
+    "role": "gangue",
+    "span": [
+     10391,
+     10561
+    ],
+    "statement": "c11",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "brecciated",
+    "at": [
+     1888,
+     1898
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "The rocks themselves are brecciated and in some places cut by veinlets of white quartz.",
+    "span": [
+     1862,
+     1951
+    ],
+    "statement": "c3"
+   },
+   {
+    "as_written": "replacement",
+    "at": [
+     2348,
+     2359
+    ],
+    "element": null,
+    "level": "300",
+    "name": "replacement",
+    "quote": "collected from the 300-foot level of the Montgomery-Shoshone mine the microscope shows that some calcite has developed in the rock by replacement of orthoclase and plagioclase phenocrysts and of parts of the groundmass.",
+    "span": [
+     2212,
+     2434
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "fault zone",
+    "at": [
+     3605,
+     3615
+    ],
+    "element": null,
+    "level": null,
+    "name": "shear zone",
+    "quote": "The drifts running southwest from the vicinity of the main shaft to the Polaris shaft are in general parallel with the Montgomery-Shoshone fault and lie on the southeast side of the basalt strip that occupies part of the fault zone.",
+    "span": [
+     3379,
+     3616
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     3794,
+     3801
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The fissure that bounds the basalt on the southeast and that continues below this rock into the rhyolite (see PI.",
+    "span": [
+     3789,
+     3905
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     4038,
+     4043
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "As a rule the basalt and rhyolite are separated by a thin sheet of gouge, which would not ordinarily be taken as indicating more than slight movement of one rock past the other.",
+    "span": [
+     3969,
+     4149
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     4179,
+     4184
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "In some places this seam of gouge is not thicker than a sheet of stout cardboard, yet, as shown by the cross section (PI.",
+    "span": [
+     4149,
+     4273
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     4321,
+     4328
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "XIV), the minimum displacement along this one fissure can not be less than 200 feet.",
+    "span": [
+     4273,
+     4360
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fault zone",
+    "at": [
+     4599,
+     4609
+    ],
+    "element": null,
+    "level": null,
+    "name": "shear zone",
+    "quote": "This shows that the latest movement along the fault zone at this place was nearly horizontal and that the total displacement therefore was considerably greater than the 200 feet required on the supposition of movement in vertical planes alone.",
+    "span": [
+     4551,
+     4799
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     4903,
+     4911
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The basalt is generally more or less decomposed, and much of it is traversed by many irregular curved fissures with slickensided walls.",
+    "span": [
+     4799,
+     4936
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "breccia",
+    "at": [
+     5423,
+     5430
+    ],
+    "element": null,
+    "level": null,
+    "name": "breccia",
+    "quote": "In the progress of faulting the comparatively soft basalt, with its innumerable fractures and polished slipping surfaces, was able to adjust itself readily to change of form and to slide smoothly over inequalities in the rhyolite walls without shattering them to fault breccia.",
+    "span": [
+     5149,
+     5431
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     9663,
+     9671
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "There are two main branches in this zone, which converge southward and which inclose between their northern portions numerous less per- sistent fissures.",
+    "span": [
+     9515,
+     9672
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fault \nzone",
+    "at": [
+     11767,
+     11778
+    ],
+    "element": null,
+    "level": null,
+    "name": "shear zone",
+    "quote": "The Providence is a prospect on the Montgomery-Shoshone fault zone, northeast of the Montgomery-Shoshone mine.",
+    "span": [
+     11711,
+     11822
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fault zone",
+    "at": [
+     12346,
+     12356
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "shear zone",
+    "quote": "The crosscut northwest from the shaft goes through a foot or two of crushed and squeezed basalt into rhyolite No. 16, showing that the fault zone has at this point nar- rowed to practically a single fissure.",
+    "span": [
+     12208,
+     12419
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     12411,
+     12418
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The crosscut northwest from the shaft goes through a foot or two of crushed and squeezed basalt into rhyolite No. 16, showing that the fault zone has at this point nar- rowed to practically a single fissure.",
+    "span": [
+     12208,
+     12419
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge",
+    "at": [
+     12513,
+     12518
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "In the drift northeast of this crosscut the two rhyolites are separated merely by a seam of gouge which dips 53\u00b0 NW.",
+    "span": [
+     12419,
+     12538
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "gouge seams",
+    "at": [
+     12595,
+     12606
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "West of the shaft the basalt widens to 30 feet and has gouge seams on both sides.",
+    "span": [
+     12538,
+     12621
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "feldspar",
+     "quartz",
+     "hornblende",
+     "mica"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar",
+     "quartz",
+     "hornblende",
+     "mica"
+    ],
+    "page": null,
+    "quote": "Rhyolite No. 13 has a dense, glassy groundmass and contains a few phenocrysts of feldspar, quartz, hornblende, and mica.",
+    "span": [
+     616,
+     740
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "It is pink in thin section and originally was slightly vesicular, but most of the vesicles have been lined or filled with secondary quartz.",
+    "span": [
+     1124,
+     1266
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "white quartz"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The rocks themselves are brecciated and in some places cut by veinlets of white quartz.",
+    "span": [
+     1862,
+     1951
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "calcite",
+     "orthoclase",
+     "plagioclase"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": "300",
+    "level_source": "sentence",
+    "minerals": [
+     "calcite",
+     "orthoclase",
+     "plagioclase"
+    ],
+    "page": null,
+    "quote": "collected from the 300-foot level of the Montgomery-Shoshone mine the microscope shows that some calcite has developed in the rock by replacement of orthoclase and plagioclase phenocrysts and of parts of the groundmass.",
+    "span": [
+     2212,
+     2434
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Sericite"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite"
+    ],
+    "page": null,
+    "quote": "Sericite is rare, even in the rhyolite frag- ments in the veins.",
+    "span": [
+     2434,
+     2500
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "augite",
+     "olivine",
+     "serpentine",
+     "plagioclase",
+     "augite",
+     "magnetite"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "augite",
+     "olivine",
+     "serpentine",
+     "plagioclase",
+     "magnetite"
+    ],
+    "page": null,
+    "quote": "The most compact and freshest specimens collected underground show under the microscope small jforphyritic crystals of augite and olivine, the latter almost wholly altered to serpentine, in a microlitic groundmass consisting chiefly of plagioclase, augite', magnetite, and a large proportion of glass.",
+    "span": [
+     5581,
+     5887
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "calcite"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "calcite"
+    ],
+    "page": null,
+    "quote": "It is clearly mu'ch decomposed and contains a large proportion of calcite.",
+    "span": [
+     6556,
+     6632
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "kaolinite"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "kaolin"
+    ],
+    "page": null,
+    "quote": "A large proportion of this ore was a soft crumbling mass, consisting largely of kaolinite irregularly streaked with stains of iroii oxide.",
+    "span": [
+     10023,
+     10165
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "Within this soft material could be detected residual frag- ments of less-altered rhyolite, loose quartz phenocrysts, and small anastomosing veinlets of quartz.",
+    "span": [
+     10165,
+     10327
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Native gold",
+     "cerargyrite"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native gold",
+     "cerargyrite"
+    ],
+    "page": null,
+    "quote": "Native gold and cerargyrite were both visible in the best ore.",
+    "span": [
+     10327,
+     10391
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c11",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The whole clearly represented the altera- tion, within the belt of weathering, of a mass of thoroughly shattered rhyolite which had been veined and cemented by quartz.",
+    "span": [
+     10391,
+     10561
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "f45bede377fd045f41c0548f2640b4cf816b66c04acc6a3d61bf4caf36621b36"
+ },
+ "composition_points": 1,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "bb1f81676d6067479509decc232c8261094cc59b5a2344f557a7f6b2790e95db",
+ "content_sha256": "70f19d9a0183aa21130b8c67a2ce32df20a434d7a4e0b290648aa351de353f75",
  "coverage": {
   "assays": 0,
   "chars": 12628,
+  "composition_statements": 11,
   "elements": 2,
   "mentions": 9,
+  "minerals": 23,
   "mining_sentences": 25,
   "parsed_chars": 1144,
   "questions": 22,
@@ -146,18 +2043,18 @@
  ],
  "files": [
   {
-   "bytes": 285168,
+   "bytes": 287480,
    "content_type": "application/json",
    "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "481e49751fe436891ca2194cb987a4878b5e379709c9578398d2ef6f6234a88c"
+   "sha256": "46b11858015339a197754a287d703741fac8e540867c3f6d87e414e379749b56"
   },
   {
-   "bytes": 196167,
+   "bytes": 199361,
    "content_type": "application/octet-stream",
    "key": "models/montgomery-shoshone-mine-bonanza-ore-above-200-f-505a56b9/model.omf",
    "name": "model.omf",
-   "sha256": "8f1afaef800d7a79450e062dacb91add63bb66c14ad8deacad3d2e0c2807a347"
+   "sha256": "c47572ed1eb25fba508e228e83a1fc6f6385cd1038c57185c5c362d474279569"
   },
   {
    "bytes": 1489,
@@ -327,10 +2224,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:42Z",
+ "published_utc": "2026-09-03T03:06:22Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

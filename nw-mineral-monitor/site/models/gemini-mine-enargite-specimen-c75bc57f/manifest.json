@@ -135,17 +135,4623 @@
   "y": 4424163.141272274,
   "z": 2061.357358275894
  },
+ "commodities": [
+  {
+   "commodity": "copper",
+   "count": 9,
+   "minerals": [
+    "enargite",
+    "chalcopyrite",
+    "chalcocite",
+    "covellite",
+    "tetrahedrite"
+   ]
+  },
+  {
+   "commodity": "silver",
+   "count": 7,
+   "minerals": [
+    "native silver",
+    "proustite",
+    "argentite",
+    "cerargyrite"
+   ]
+  },
+  {
+   "commodity": "lead",
+   "count": 23,
+   "minerals": [
+    "galena",
+    "anglesite"
+   ]
+  },
+  {
+   "commodity": "barite",
+   "count": 9,
+   "minerals": [
+    "barite"
+   ]
+  },
+  {
+   "commodity": "zinc",
+   "count": 6,
+   "minerals": [
+    "sphalerite"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [
+   {
+    "as_written": "oxidation",
+    "at": [
+     1377,
+     1386
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "oxidation with the with some pyrite and chalcopyrite, or famati- development of small cerusite crystals, through",
+    "span": [
+     1376,
+     1494
+    ],
+    "statement": "c2",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     1948,
+     1957
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "' inant quartz in t~1e form of an extremely fine- In a large part of the upper zone not enough grained cherty material replacing limestone or oxygen was available for\u00b7 complete oxidation.",
+    "span": [
+     1768,
+     1958
+    ],
+    "statement": "c4",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     2134,
+     2143
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "span": [
+     2101,
+     2267
+    ],
+    "statement": "c6",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "sulphide",
+    "at": [
+     2859,
+     2867
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "The gangue min- No positive conclusions have been reached as erals consist of chlcite, dolomite, and a little to the existence_of sulphide enrichment below quartz;",
+    "span": [
+     2726,
+     2892
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "mineralization",
+    "at": [
+     3397,
+     3411
+    ],
+    "element": null,
+    "level": null,
+    "name": "mineralized",
+    "quote": "This arrangement than the first mineralization.",
+    "span": [
+     3363,
+     3412
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "Oxidation",
+    "at": [
+     3460,
+     3469
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "may correspond to deposition in successively Oxidation is of so great importance in con- cooler zones and j a gradual spreading of the nection with the Tintic mines that a separate ore-forming solu.",
+    "span": [
+     3412,
+     3614
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidation",
+    "at": [
+     4316,
+     4325
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "In the monzonite quartz occurs in well- upon processes of oxidation.",
+    "span": [
+     4257,
+     4326
+    ],
+    "statement": "c12",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "sulphide ore",
+    "at": [
+     10841,
+     10853
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Rich sulphide ore in pipe on level14 extending up from winze 19, Gem channel.",
+    "span": [
+     10835,
+     10913
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphide ore",
+    "at": [
+     10923,
+     10935
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Rich sulphide ore in winze stope on level 16!, Gem channel.",
+    "span": [
+     10917,
+     10977
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "sulphide ore",
+    "at": [
+     10989,
+     11001
+    ],
+    "element": null,
+    "level": null,
+    "name": "sulphide",
+    "quote": "Rich sulphide ore from Gem channel on level 17.",
+    "span": [
+     10983,
+     11031
+    ],
+    "statement": null,
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     11084,
+     11094
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "cation extends a few feet beyond the ore, and the silicified rock is accompanied by sparsely disseminated galena and zinc blende.",
+    "span": [
+     11031,
+     11164
+    ],
+    "statement": "c19",
+    "zone": null
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     11187,
+     11195
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The Gemini ores were oxidized in large part down to the water level, or about 1:650 feet below the collar, but in the deeper levels the oxi- dation is only partial and much galena is seen on levels 14, 15, and 16.",
+    "span": [
+     11164,
+     11382
+    ],
+    "statement": "c20",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidized ore",
+    "at": [
+     12544,
+     12556
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "The oxidized ore is a soft and honey- combed mass of silica, cerusite, anglesite, etc., with small amounts of limonit\u00a3.",
+    "span": [
+     12539,
+     12660
+    ],
+    "statement": "c28",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "oxidized",
+    "at": [
+     12714,
+     12722
+    ],
+    "element": null,
+    "level": null,
+    "name": "oxidized",
+    "quote": "by bodies of oxidized zinc ores' some of which",
+    "span": [
+     12699,
+     12751
+    ],
+    "statement": null,
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "silicified zone",
+    "at": [
+     12872,
+     12887
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "replaces limestone outside of the silicified zone .",
+    "span": [
+     12836,
+     12890
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "iron-stained",
+    "at": [
+     13181,
+     13193
+    ],
+    "element": null,
+    "level": null,
+    "name": "iron-stained",
+    "quote": "thin sections it far as, co~ld be det~rmined in the iron-stained appears as a :f4le-grained felt like mass of quartz",
+    "span": [
+     13127,
+     13249
+    ],
+    "statement": "c29",
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     13812,
+     13822
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "A specimen of the brecci- ated rock consists of inclusions of silicified shale as muoh as.",
+    "span": [
+     13748,
+     13841
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicified",
+    "at": [
+     15434,
+     15444
+    ],
+    "element": "e6",
+    "level": null,
+    "name": "silicified",
+    "quote": "the , stope consisted of silicified shale beds dipping southward at a low angle and indicating a local shallow trough- like structure.",
+    "span": [
+     15407,
+     15544
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "silicification",
+    "at": [
+     15837,
+     15851
+    ],
+    "element": null,
+    "level": null,
+    "name": "silicified",
+    "quote": "No trace of quartzite was found, even at the south end of the stope, and it is therefore inferred that a cross break or easterly fault exists between the south end of the stope and the point where the quart_zite disappears below the floor of the winze, \u00b7its exact position concealed by silicification.",
+    "span": [
+     15544,
+     15852
+    ],
+    "statement": null,
+    "zone": null
+   },
+   {
+    "as_written": "pyritic",
+    "at": [
+     17847,
+     17854
+    ],
+    "element": null,
+    "level": null,
+    "name": "pyritized",
+    "quote": "In places these layers consist of thin parall 1 streaks of galena and cerusite along beddin planes in a partly de- composed pyritic sh e showing small white spots of kaolin.",
+    "span": [
+     17720,
+     17897
+    ],
+    "statement": "c47",
+    "zone": null
+   },
+   {
+    "as_written": "altered",
+    "at": [
+     17964,
+     17971
+    ],
+    "element": null,
+    "level": null,
+    "name": "altered",
+    "quote": "Th se spots have some re- semblance to phenocr sts of feldspar in altered porphyry, and this v riety of the ore has ac- cordingly been term d \"porphyry ore.",
+    "span": [
+     17897,
+     18055
+    ],
+    "statement": "c48",
+    "zone": null
+   }
+  ],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "copper",
+    "count": 9,
+    "minerals": [
+     "enargite",
+     "chalcopyrite",
+     "chalcocite",
+     "covellite",
+     "tetrahedrite"
+    ]
+   },
+   {
+    "commodity": "silver",
+    "count": 7,
+    "minerals": [
+     "native silver",
+     "proustite",
+     "argentite",
+     "cerargyrite"
+    ]
+   },
+   {
+    "commodity": "lead",
+    "count": 23,
+    "minerals": [
+     "galena",
+     "anglesite"
+    ]
+   },
+   {
+    "commodity": "barite",
+    "count": 9,
+    "minerals": [
+     "barite"
+    ]
+   },
+   {
+    "commodity": "zinc",
+    "count": 6,
+    "minerals": [
+     "sphalerite"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 283,
+   "sentences_with_minerals": 49
+  },
+  "host_rock": [
+   {
+    "as_written": "cherty",
+    "at": [
+     1873,
+     1879
+    ],
+    "element": null,
+    "level": null,
+    "name": "chert",
+    "quote": "' inant quartz in t~1e form of an extremely fine- In a large part of the upper zone not enough grained cherty material replacing limestone or oxygen was available for\u00b7 complete oxidation.",
+    "span": [
+     1768,
+     1958
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     1899,
+     1908
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "' inant quartz in t~1e form of an extremely fine- In a large part of the upper zone not enough grained cherty material replacing limestone or oxygen was available for\u00b7 complete oxidation.",
+    "span": [
+     1768,
+     1958
+    ],
+    "statement": "c4"
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     4093,
+     4102
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "The deposits of the Tintic district show in a marked degree a variation of mineral associa- Far less marke is the variation in the com- tion apparently dependent upon the intrusive position of thier with variations in depth in monzonite.",
+    "span": [
+     3862,
+     4103
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     4265,
+     4274
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "In the monzonite quartz occurs in well- upon processes of oxidation.",
+    "span": [
+     4257,
+     4326
+    ],
+    "statement": "c12"
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     4771,
+     4780
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "monzonite the gangue consists of some fine- GENESIS OF THE DEPOSITS.",
+    "span": [
+     4769,
+     4839
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     5498,
+     5507
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "The metal deposits o~ the district were formed at ores also carry gold, averaging in the better one time, and that the genesis of the ores in grade of ore $10 to $12 a ton, and some silver monzonite is the same as that of the ores in probably averaging 20 ounces to the ton.",
+    "span": [
+     5306,
+     5584
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     5975,
+     5984
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "The finally the actuall tracing of one of the normal silver content is higher than farther south, the veins across the monzonite-limestone contact average of the ores being perhaps 30 to 40 suffice to prove ithis assertion.",
+    "span": [
+     5854,
+     6080
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     5985,
+     5994
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "The finally the actuall tracing of one of the normal silver content is higher than farther south, the veins across the monzonite-limestone contact average of the ores being perhaps 30 to 40 suffice to prove ithis assertion.",
+    "span": [
+     5854,
+     6080
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "monzonite",
+    "at": [
+     6925,
+     6934
+    ],
+    "element": null,
+    "level": null,
+    "name": "monzonite",
+    "quote": "the latera movement of the depositing solu- tions fron the monzonite area northward is true, it is ot likely that the ore will continue",
+    "span": [
+     6864,
+     7006
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     8900,
+     8909
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "In the earlier years only the richer parts were extracted, and there remained much poorer ore that 6 feet in diameter and surrounded by limestone, were noted in triangular arrangement within a circle of 25 feet.",
+    "span": [
+     8759,
+     8976
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     12847,
+     12856
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "replaces limestone outside of the silicified zone .",
+    "span": [
+     12836,
+     12890
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     13542,
+     13547
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "_The quartz and shale of the pyJ.itic portion may \u00b7 be in- terpreted as\u00b7 mostly a recrystallization of the constituents of s}lale or shaly limestone, but the predominance of quartz also indicates an ad-dition of silica.",
+    "span": [
+     13524,
+     13748
+    ],
+    "statement": "c32"
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     13666,
+     13675
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "_The quartz and shale of the pyJ.itic portion may \u00b7 be in- terpreted as\u00b7 mostly a recrystallization of the constituents of s}lale or shaly limestone, but the predominance of quartz also indicates an ad-dition of silica.",
+    "span": [
+     13524,
+     13748
+    ],
+    "statement": "c32"
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     13823,
+     13828
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "A specimen of the brecci- ated rock consists of inclusions of silicified shale as muoh as.",
+    "span": [
+     13748,
+     13841
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     15445,
+     15450
+    ],
+    "element": "e6",
+    "level": null,
+    "name": "shale",
+    "quote": "the , stope consisted of silicified shale beds dipping southward at a low angle and indicating a local shallow trough- like structure.",
+    "span": [
+     15407,
+     15544
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     15557,
+     15566
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "No trace of quartzite was found, even at the south end of the stope, and it is therefore inferred that a cross break or easterly fault exists between the south end of the stope and the point where the quart_zite disappears below the floor of the winze, \u00b7its exact position concealed by silicification.",
+    "span": [
+     15544,
+     15852
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     15874,
+     15883
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "Such a fault in the quartzite may be r~pre~ented by a flexure or ''roll'\" in the shale.",
+    "span": [
+     15852,
+     15942
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     15936,
+     15941
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "Such a fault in the quartzite may be r~pre~ented by a flexure or ''roll'\" in the shale.",
+    "span": [
+     15852,
+     15942
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     16435,
+     16440
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "The h~gh-grade layers evidently replac d shale along the more open bedding planes nd doubtless replaced any beds or lenses of \u00b7 estone that were pres- ent in the shale.",
+    "span": [
+     16392,
+     16565
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     16559,
+     16564
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "The h~gh-grade layers evidently replac d shale along the more open bedding planes nd doubtless replaced any beds or lenses of \u00b7 estone that were pres- ent in the shale.",
+    "span": [
+     16392,
+     16565
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     16592,
+     16601
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "No emnants of unreplaced limestone were found.",
+    "span": [
+     16565,
+     16613
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     17714,
+     17719
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "The lower-grade lay rs represent the less per- meable beds of shale.",
+    "span": [
+     17650,
+     17720
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     17973,
+     17981
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "Th se spots have some re- semblance to phenocr sts of feldspar in altered porphyry, and this v riety of the ore has ac- cordingly been term d \"porphyry ore.",
+    "span": [
+     17897,
+     18055
+    ],
+    "statement": "c48"
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     18042,
+     18050
+    ],
+    "element": null,
+    "level": null,
+    "name": "porphyry",
+    "quote": "Th se spots have some re- semblance to phenocr sts of feldspar in altered porphyry, and this v riety of the ore has ac- cordingly been term d \"porphyry ore.",
+    "span": [
+     17897,
+     18055
+    ],
+    "statement": "c48"
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     18137,
+     18142
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "Thin section of this shale or '' por- phyry\" show it to consist of fine-grained quartz and sericite accompanied by very fine grained",
+    "span": [
+     18115,
+     18253
+    ],
+    "statement": "c49"
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     19230,
+     19239
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "this part of the mine is evidently the intersec- The ratio ounces of silver to per cent of lead tion of the easterly fault with the quartzite- varies widely, from 0.41 -to 1.38.",
+    "span": [
+     19096,
+     19275
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     19287,
+     19292
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "The silver shale contact and with associated northerly content up to 20 ounces to the ton varies for fissures.",
+    "span": [
+     19275,
+     19387
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     19481,
+     19490
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "The ore solutions doubtless rose the most part directly, though not uniformly, through the quartzite along northerly fissures with that of lead.",
+    "span": [
+     19387,
+     19535
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "quartzite",
+    "at": [
+     19779,
+     19788
+    ],
+    "element": null,
+    "level": null,
+    "name": "quartzite",
+    "quote": "terrupted or tightened at the quartzite-shale These data suggest that a silver content in contact;",
+    "span": [
+     19748,
+     19848
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     19789,
+     19794
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "terrupted or tightened at the quartzite-shale These data suggest that a silver content in contact;",
+    "span": [
+     19748,
+     19848
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shale",
+    "at": [
+     20641,
+     20646
+    ],
+    "element": null,
+    "level": null,
+    "name": "shale",
+    "quote": "According to part of the shale into the overlying limestone.",
+    "span": [
+     20614,
+     20676
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "limestone",
+    "at": [
+     20666,
+     20675
+    ],
+    "element": null,
+    "level": null,
+    "name": "limestone",
+    "quote": "According to part of the shale into the overlying limestone.",
+    "span": [
+     20614,
+     20676
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "porphyry",
+    "at": [
+     20805,
+     20813
+    ],
+    "element": "e9",
+    "level": null,
+    "name": "porphyry",
+    "quote": "Raddatz, manager of the mine, the Further developments in this part of the mine upper 525 feet of this shaft is in porphyry (rhy- should afford interesting data regarding the olite), and the remainder in \"",
+    "span": [
+     20688,
+     20896
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "enargite",
+    "at": [
+     1342,
+     1350
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "Other ore shoots contain much enargite, Gemini mine shows some .",
+    "role": "ore",
+    "span": [
+     1311,
+     1376
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     1407,
+     1413
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "oxidation with the with some pyrite and chalcopyrite, or famati- development of small cerusite crystals, through",
+    "role": "gangue",
+    "span": [
+     1376,
+     1494
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "chalcopyrite",
+    "at": [
+     1418,
+     1430
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcopyrite",
+    "quote": "oxidation with the with some pyrite and chalcopyrite, or famati- development of small cerusite crystals, through",
+    "role": "ore",
+    "span": [
+     1376,
+     1494
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "native silver",
+    "at": [
+     1556,
+     1569
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "native silver",
+    "quote": "127 which wires of native silver pllSS,\u00b7SO that oxi1a- ounces to the t!jn.",
+    "role": "ore",
+    "span": [
+     1534,
+     1611
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     1778,
+     1784
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "' inant quartz in t~1e form of an extremely fine- In a large part of the upper zone not enough grained cherty material replacing limestone or oxygen was available for\u00b7 complete oxidation.",
+    "role": "gangue",
+    "span": [
+     1768,
+     1958
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "dolomite",
+    "at": [
+     1959,
+     1967
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "dolomite",
+    "quote": "dolomite, but the~e is also a moderate amount In such places much galena remains, some of of barite.",
+    "role": "gangue",
+    "span": [
+     1958,
+     2060
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     2026,
+     2032
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "dolomite, but the~e is also a moderate amount In such places much galena remains, some of of barite.",
+    "role": "ore",
+    "span": [
+     1958,
+     2060
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     2053,
+     2059
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "dolomite, but the~e is also a moderate amount In such places much galena remains, some of of barite.",
+    "role": "ore",
+    "span": [
+     1958,
+     2060
+    ],
+    "statement": "c5",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     2102,
+     2110
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "role": "ore",
+    "span": [
+     2101,
+     2267
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "chalcocite",
+    "at": [
+     2209,
+     2219
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcocite",
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "role": "ore",
+    "span": [
+     2101,
+     2267
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "covellite",
+    "at": [
+     2224,
+     2233
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "covellite",
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "role": "ore",
+    "span": [
+     2101,
+     2267
+    ],
+    "statement": "c6",
+    "zone": null
+   },
+   {
+    "as_written": "Proustite",
+    "at": [
+     2399,
+     2408
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "proustite",
+    "quote": "Proustite and argentite, found north of the end 1 f the copper zone.",
+    "role": "ore",
+    "span": [
+     2397,
+     2467
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "argentite",
+    "at": [
+     2413,
+     2422
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "argentite",
+    "quote": "Proustite and argentite, found north of the end 1 f the copper zone.",
+    "role": "ore",
+    "span": [
+     2397,
+     2467
+    ],
+    "statement": "c7",
+    "zone": null
+   },
+   {
+    "as_written": "dolomite",
+    "at": [
+     2815,
+     2823
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "dolomite",
+    "quote": "The gangue min- No positive conclusions have been reached as erals consist of chlcite, dolomite, and a little to the existence_of sulphide enrichment below quartz;",
+    "role": "gangue",
+    "span": [
+     2726,
+     2892
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     2885,
+     2891
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The gangue min- No positive conclusions have been reached as erals consist of chlcite, dolomite, and a little to the existence_of sulphide enrichment below quartz;",
+    "role": "gangue",
+    "span": [
+     2726,
+     2892
+    ],
+    "statement": "c8",
+    "zone": "sulphide"
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     2922,
+     2928
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "the ore ~ I inerals comprise galena and m\u00b7 at water level.",
+    "role": "ore",
+    "span": [
+     2892,
+     2952
+    ],
+    "statement": "c9",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     2979,
+     2990
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "A very peculiar rich ore zinc blende;",
+    "role": "ore",
+    "span": [
+     2952,
+     2991
+    ],
+    "statement": "c10",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     3117,
+     3123
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "contains galena, pearceite, zinc blende, and Gold and coppkr seem thus to occur on the marcasite.",
+    "role": "ore",
+    "span": [
+     3106,
+     3207
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     3136,
+     3147
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "contains galena, pearceite, zinc blende, and Gold and coppkr seem thus to occur on the marcasite.",
+    "role": "ore",
+    "span": [
+     3106,
+     3207
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "marcasite",
+    "at": [
+     3197,
+     3206
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "marcasite",
+    "quote": "contains galena, pearceite, zinc blende, and Gold and coppkr seem thus to occur on the marcasite.",
+    "role": "gangue",
+    "span": [
+     3106,
+     3207
+    ],
+    "statement": "c11",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     4275,
+     4281
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "In the monzonite quartz occurs in well- upon processes of oxidation.",
+    "role": "gangue",
+    "span": [
+     4257,
+     4326
+    ],
+    "statement": "c12",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     4373,
+     4379
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "gangue",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     4436,
+     4442
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "ore",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     4444,
+     4450
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "ore",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     4452,
+     4460
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "ore",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     4462,
+     4473
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "ore",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "chalcopyrite",
+    "at": [
+     4525,
+     4537
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "chalcopyrite",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "role": "ore",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     4861,
+     4867
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "role": "gangue",
+    "span": [
+     4839,
+     4991
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     4918,
+     4924
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "role": "gangue",
+    "span": [
+     4839,
+     4991
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     4984,
+     4990
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "role": "ore",
+    "span": [
+     4839,
+     4991
+    ],
+    "statement": "c14",
+    "zone": null
+   },
+   {
+    "as_written": "enargite",
+    "at": [
+     5014,
+     5022
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "enargite",
+    "quote": "The ores contain much enargite and in more detail in another place (pp. 182-184).",
+    "role": "ore",
+    "span": [
+     4991,
+     5073
+    ],
+    "statement": "c15",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     5094,
+     5100
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "in places a little pyrite, also tetrahedrite and It is well to state ere, however, that there can famatinite.",
+    "role": "gangue",
+    "span": [
+     5073,
+     5185
+    ],
+    "statement": "c16",
+    "zone": null
+   },
+   {
+    "as_written": "tetrahedrite",
+    "at": [
+     5107,
+     5119
+    ],
+    "commodities": [
+     "copper"
+    ],
+    "commodity": "copper",
+    "element": null,
+    "level": null,
+    "name": "tetrahedrite",
+    "quote": "in places a little pyrite, also tetrahedrite and It is well to state ere, however, that there can famatinite.",
+    "role": "ore",
+    "span": [
+     5073,
+     5185
+    ],
+    "statement": "c16",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     5831,
+     5842
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "Farther north, in the same vein zones, usual type of ~eralization in both classes of the sedimentary rocks contain principally ga- rocks, the general continuity in strike, and lena, with a little zinc blende and pyrite.",
+    "role": "ore",
+    "span": [
+     5632,
+     5854
+    ],
+    "statement": "c17",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     5847,
+     5853
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "Farther north, in the same vein zones, usual type of ~eralization in both classes of the sedimentary rocks contain principally ga- rocks, the general continuity in strike, and lena, with a little zinc blende and pyrite.",
+    "role": "gangue",
+    "span": [
+     5632,
+     5854
+    ],
+    "statement": "c17",
+    "zone": null
+   },
+   {
+    "as_written": "silver chloride",
+    "at": [
+     10789,
+     10804
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "Lead and silver chloride ore from Red Bird channel.",
+    "role": "ore",
+    "span": [
+     10779,
+     10831
+    ],
+    "statement": "c18",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     11141,
+     11147
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "cation extends a few feet beyond the ore, and the silicified rock is accompanied by sparsely disseminated galena and zinc blende.",
+    "role": "ore",
+    "span": [
+     11031,
+     11164
+    ],
+    "statement": "c19",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     11152,
+     11163
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "cation extends a few feet beyond the ore, and the silicified rock is accompanied by sparsely disseminated galena and zinc blende.",
+    "role": "ore",
+    "span": [
+     11031,
+     11164
+    ],
+    "statement": "c19",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     11341,
+     11347
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The Gemini ores were oxidized in large part down to the water level, or about 1:650 feet below the collar, but in the deeper levels the oxi- dation is only partial and much galena is seen on levels 14, 15, and 16.",
+    "role": "ore",
+    "span": [
+     11164,
+     11382
+    ],
+    "statement": "c20",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "dolomite",
+    "at": [
+     11500,
+     11508
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "dolomite",
+    "quote": "The gangue is fine- grained bluish gray flinty j asperoid, replacing dolomite aJ;ld usually containing small plates of barite.",
+    "role": "gangue",
+    "span": [
+     11429,
+     11558
+    ],
+    "statement": "c21",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     11551,
+     11557
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "The gangue is fine- grained bluish gray flinty j asperoid, replacing dolomite aJ;ld usually containing small plates of barite.",
+    "role": "ore",
+    "span": [
+     11429,
+     11558
+    ],
+    "statement": "c21",
+    "zone": null
+   },
+   {
+    "as_written": "Galena",
+    "at": [
+     11744,
+     11750
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "Galena and cerusite, with more- or less anglesite, are the principal.",
+    "role": "ore",
+    "span": [
+     11742,
+     11814
+    ],
+    "statement": "c22",
+    "zone": null
+   },
+   {
+    "as_written": "anglesite",
+    "at": [
+     11785,
+     11794
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "anglesite",
+    "quote": "Galena and cerusite, with more- or less anglesite, are the principal.",
+    "role": "ore",
+    "span": [
+     11742,
+     11814
+    ],
+    "statement": "c22",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     11843,
+     11849
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The average galena contains 30 to 40 ounces of were found even in level17 ~ Tower and Smith \u00b7 mention crusts of horn silver a quarter of an inch thick from the upper levels.",
+    "role": "ore",
+    "span": [
+     11829,
+     12008
+    ],
+    "statement": "c23",
+    "zone": null
+   },
+   {
+    "as_written": "horn silver",
+    "at": [
+     11946,
+     11957
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "cerargyrite",
+    "quote": "The average galena contains 30 to 40 ounces of were found even in level17 ~ Tower and Smith \u00b7 mention crusts of horn silver a quarter of an inch thick from the upper levels.",
+    "role": "ore",
+    "span": [
+     11829,
+     12008
+    ],
+    "statement": "c23",
+    "zone": null
+   },
+   {
+    "as_written": "Native silver",
+    "at": [
+     12009,
+     12022
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "native silver",
+    "quote": "Native silver is not uncommon, and wire silver with cerusite was noted in specimens from level 19-that is, 250 feet below water level.",
+    "role": "ore",
+    "span": [
+     12008,
+     12146
+    ],
+    "statement": "c24",
+    "zone": null
+   },
+   {
+    "as_written": "wire silver",
+    "at": [
+     12045,
+     12056
+    ],
+    "commodities": [
+     "silver"
+    ],
+    "commodity": "silver",
+    "element": null,
+    "level": null,
+    "name": "native silver",
+    "quote": "Native silver is not uncommon, and wire silver with cerusite was noted in specimens from level 19-that is, 250 feet below water level.",
+    "role": "ore",
+    "span": [
+     12008,
+     12146
+    ],
+    "statement": "c24",
+    "zone": null
+   },
+   {
+    "as_written": "jasperoid",
+    "at": [
+     12226,
+     12235
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "jasper",
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "role": "gangue",
+    "span": [
+     12146,
+     12334
+    ],
+    "statement": "c25",
+    "zone": null
+   },
+   {
+    "as_written": "zinc blende",
+    "at": [
+     12305,
+     12316
+    ],
+    "commodities": [
+     "zinc"
+    ],
+    "commodity": "zinc",
+    "element": null,
+    "level": null,
+    "name": "sphalerite",
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "role": "ore",
+    "span": [
+     12146,
+     12334
+    ],
+    "statement": "c25",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     12322,
+     12328
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "role": "gangue",
+    "span": [
+     12146,
+     12334
+    ],
+    "statement": "c25",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     12409,
+     12415
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Cavities in this ore are coated with white fine-grained quartz, at the base of which galena is often deposited in abundance.",
+    "role": "gangue",
+    "span": [
+     12351,
+     12478
+    ],
+    "statement": "c26",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     12439,
+     12445
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "Cavities in this ore are coated with white fine-grained quartz, at the base of which galena is often deposited in abundance.",
+    "role": "ore",
+    "span": [
+     12351,
+     12478
+    ],
+    "statement": "c26",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     12493,
+     12499
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "More or less barite is present but is rarely con- spicuous.",
+    "role": "ore",
+    "span": [
+     12478,
+     12539
+    ],
+    "statement": "c27",
+    "zone": null
+   },
+   {
+    "as_written": "anglesite",
+    "at": [
+     12611,
+     12620
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "anglesite",
+    "quote": "The oxidized ore is a soft and honey- combed mass of silica, cerusite, anglesite, etc., with small amounts of limonit\u00a3.",
+    "role": "ore",
+    "span": [
+     12539,
+     12660
+    ],
+    "statement": "c28",
+    "zone": "oxidized"
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13239,
+     13245
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "thin sections it far as, co~ld be det~rmined in the iron-stained appears as a :f4le-grained felt like mass of quartz",
+    "role": "gangue",
+    "span": [
+     13127,
+     13249
+    ],
+    "statement": "c29",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     13299,
+     13307
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "251 and .sericite, with thickly disseminated pyrite, ~ontaining parallel bands of, galena and rela- tively coarse prismatic grains of qua:r;tz.",
+    "role": "alteration",
+    "span": [
+     13287,
+     13434
+    ],
+    "statement": "c30",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     13335,
+     13341
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "251 and .sericite, with thickly disseminated pyrite, ~ontaining parallel bands of, galena and rela- tively coarse prismatic grains of qua:r;tz.",
+    "role": "gangue",
+    "span": [
+     13287,
+     13434
+    ],
+    "statement": "c30",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     13374,
+     13380
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "251 and .sericite, with thickly disseminated pyrite, ~ontaining parallel bands of, galena and rela- tively coarse prismatic grains of qua:r;tz.",
+    "role": "ore",
+    "span": [
+     13287,
+     13434
+    ],
+    "statement": "c30",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     13441,
+     13447
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The galena is i.n ,part replaced by cerusite, which is accompanied by a little kaolin.",
+    "role": "ore",
+    "span": [
+     13434,
+     13524
+    ],
+    "statement": "c31",
+    "zone": null
+   },
+   {
+    "as_written": "kaolin",
+    "at": [
+     13517,
+     13523
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "kaolin",
+    "quote": "The galena is i.n ,part replaced by cerusite, which is accompanied by a little kaolin.",
+    "role": "alteration",
+    "span": [
+     13434,
+     13524
+    ],
+    "statement": "c31",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13530,
+     13536
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "_The quartz and shale of the pyJ.itic portion may \u00b7 be in- terpreted as\u00b7 mostly a recrystallization of the constituents of s}lale or shaly limestone, but the predominance of quartz also indicates an ad-dition of silica.",
+    "role": "gangue",
+    "span": [
+     13524,
+     13748
+    ],
+    "statement": "c32",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     13702,
+     13708
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "_The quartz and shale of the pyJ.itic portion may \u00b7 be in- terpreted as\u00b7 mostly a recrystallization of the constituents of s}lale or shaly limestone, but the predominance of quartz also indicates an ad-dition of silica.",
+    "role": "gangue",
+    "span": [
+     13524,
+     13748
+    ],
+    "statement": "c32",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     13983,
+     13989
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "half an inch in diameter slightly impregnated with extremely fine grained py- rite, in a siliceous rna trix of less fine grain con- taining pyrite, galena, and a little barite.",
+    "role": "gangue",
+    "span": [
+     13841,
+     14019
+    ],
+    "statement": "c33",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     13991,
+     13997
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "half an inch in diameter slightly impregnated with extremely fine grained py- rite, in a siliceous rna trix of less fine grain con- taining pyrite, galena, and a little barite.",
+    "role": "ore",
+    "span": [
+     13841,
+     14019
+    ],
+    "statement": "c33",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     14012,
+     14018
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "half an inch in diameter slightly impregnated with extremely fine grained py- rite, in a siliceous rna trix of less fine grain con- taining pyrite, galena, and a little barite.",
+    "role": "ore",
+    "span": [
+     13841,
+     14019
+    ],
+    "statement": "c33",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     14102,
+     14110
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "In thin sections the inclusions consisted mainly of very fine grained q-q.artz, sericite, and pyrite, with here and.",
+    "role": "alteration",
+    "span": [
+     14019,
+     14139
+    ],
+    "statement": "c34",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     14116,
+     14122
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "In thin sections the inclusions consisted mainly of very fine grained q-q.artz, sericite, and pyrite, with here and.",
+    "role": "gangue",
+    "span": [
+     14019,
+     14139
+    ],
+    "statement": "c34",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14196,
+     14202
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "partly .developed crystal of quartz.",
+    "role": "gangue",
+    "span": [
+     14165,
+     14203
+    ],
+    "statement": "c35",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14281,
+     14287
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The matrix con- sisted mainly of coarser grains of the same miner~ls, _ the quartz mostly in rather well developed crystals and the sericite partly segregated into tuftlike aggregates.",
+    "role": "gangue",
+    "span": [
+     14203,
+     14391
+    ],
+    "statement": "c36",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     14338,
+     14346
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "The matrix con- sisted mainly of coarser grains of the same miner~ls, _ the quartz mostly in rather well developed crystals and the sericite partly segregated into tuftlike aggregates.",
+    "role": "alteration",
+    "span": [
+     14203,
+     14391
+    ],
+    "statement": "c36",
+    "zone": null
+   },
+   {
+    "as_written": "Pyrite",
+    "at": [
+     14392,
+     14398
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "Pyrite as a whole presents distinct crystal boundaries but incloses and.is intergroWli to some extent with quartz and sericite.",
+    "role": "gangue",
+    "span": [
+     14391,
+     14522
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14502,
+     14508
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Pyrite as a whole presents distinct crystal boundaries but incloses and.is intergroWli to some extent with quartz and sericite.",
+    "role": "gangue",
+    "span": [
+     14391,
+     14522
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     14513,
+     14521
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "Pyrite as a whole presents distinct crystal boundaries but incloses and.is intergroWli to some extent with quartz and sericite.",
+    "role": "alteration",
+    "span": [
+     14391,
+     14522
+    ],
+    "statement": "c37",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     14529,
+     14535
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The galena s4ows similar relations to quartz \u00b7 and sericite, b~t has only irregular outlines.",
+    "role": "ore",
+    "span": [
+     14524,
+     14620
+    ],
+    "statement": "c38",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14564,
+     14570
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The galena s4ows similar relations to quartz \u00b7 and sericite, b~t has only irregular outlines.",
+    "role": "gangue",
+    "span": [
+     14524,
+     14620
+    ],
+    "statement": "c38",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     14577,
+     14585
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "The galena s4ows similar relations to quartz \u00b7 and sericite, b~t has only irregular outlines.",
+    "role": "alteration",
+    "span": [
+     14524,
+     14620
+    ],
+    "statement": "c38",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     14625,
+     14631
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "The barite \u00b7 foi;'Ills typical tabular crystals of synchronous growth with so.me of the quartz, but also cut and re- plaoed by veinlets \u00b7 of q~a:rtz and se:ricite.",
+    "role": "ore",
+    "span": [
+     14620,
+     14787
+    ],
+    "statement": "c39",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     14711,
+     14717
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The barite \u00b7 foi;'Ills typical tabular crystals of synchronous growth with so.me of the quartz, but also cut and re- plaoed by veinlets \u00b7 of q~a:rtz and se:ricite.",
+    "role": "gangue",
+    "span": [
+     14620,
+     14787
+    ],
+    "statement": "c39",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     16317,
+     16323
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "-grade and low-grade galena.",
+    "role": "ore",
+    "span": [
+     16294,
+     16324
+    ],
+    "statement": "c40",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     16630,
+     16636
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The high-grade galena consists of aggregates f grains 3 millimeters or less in diameter, in w ich are scattered lenses from half an inch to 2 i ches long of fine-grained galena.",
+    "role": "ore",
+    "span": [
+     16613,
+     16796
+    ],
+    "statement": "c41",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     16789,
+     16795
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The high-grade galena consists of aggregates f grains 3 millimeters or less in diameter, in w ich are scattered lenses from half an inch to 2 i ches long of fine-grained galena.",
+    "role": "ore",
+    "span": [
+     16613,
+     16796
+    ],
+    "statement": "c41",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     16849,
+     16855
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "There is not ing to indicate that the fine-grained galena w s deposited later than the_ .coarse.",
+    "role": "ore",
+    "span": [
+     16796,
+     16895
+    ],
+    "statement": "c42",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     16913,
+     16919
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "The fine grained galena is also associated with small crystals of barite and pyrite at.",
+    "role": "ore",
+    "span": [
+     16895,
+     16985
+    ],
+    "statement": "c43",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     16963,
+     16969
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "The fine grained galena is also associated with small crystals of barite and pyrite at.",
+    "role": "ore",
+    "span": [
+     16895,
+     16985
+    ],
+    "statement": "c43",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     16975,
+     16981
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "The fine grained galena is also associated with small crystals of barite and pyrite at.",
+    "role": "gangue",
+    "span": [
+     16895,
+     16985
+    ],
+    "statement": "c43",
+    "zone": null
+   },
+   {
+    "as_written": "pyrite",
+    "at": [
+     17214,
+     17220
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "pyrite",
+    "quote": "Polished sur- faces of the g1,1lena a seen under the micro- scope to inclose scat ered minute -crystals of pyrite and droplike or rregular grains of argen- tite, none of which s owed indications of _sec- ondary origin.",
+    "role": "gangue",
+    "span": [
+     17103,
+     17325
+    ],
+    "statement": "c44",
+    "zone": null
+   },
+   {
+    "as_written": "barite",
+    "at": [
+     17480,
+     17486
+    ],
+    "commodities": [
+     "barite"
+    ],
+    "commodity": "barite",
+    "element": null,
+    "level": null,
+    "name": "barite",
+    "quote": "A thin section of e gangue showed it to consist of barite in t ical crystals, with fine fringes of sericite, hich separated it from galena.",
+    "role": "ore",
+    "span": [
+     17425,
+     17572
+    ],
+    "statement": "c45",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     17530,
+     17538
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "A thin section of e gangue showed it to consist of barite in t ical crystals, with fine fringes of sericite, hich separated it from galena.",
+    "role": "alteration",
+    "span": [
+     17425,
+     17572
+    ],
+    "statement": "c45",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     17565,
+     17571
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "A thin section of e gangue showed it to consist of barite in t ical crystals, with fine fringes of sericite, hich separated it from galena.",
+    "role": "ore",
+    "span": [
+     17425,
+     17572
+    ],
+    "statement": "c45",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     17613,
+     17619
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "inclosed in the galena, but quartz w s inconspicuous.",
+    "role": "ore",
+    "span": [
+     17595,
+     17650
+    ],
+    "statement": "c46",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     17625,
+     17631
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "inclosed in the galena, but quartz w s inconspicuous.",
+    "role": "gangue",
+    "span": [
+     17595,
+     17650
+    ],
+    "statement": "c46",
+    "zone": null
+   },
+   {
+    "as_written": "galena",
+    "at": [
+     17781,
+     17787
+    ],
+    "commodities": [
+     "lead"
+    ],
+    "commodity": "lead",
+    "element": null,
+    "level": null,
+    "name": "galena",
+    "quote": "In places these layers consist of thin parall 1 streaks of galena and cerusite along beddin planes in a partly de- composed pyritic sh e showing small white spots of kaolin.",
+    "role": "ore",
+    "span": [
+     17720,
+     17897
+    ],
+    "statement": "c47",
+    "zone": null
+   },
+   {
+    "as_written": "kaolin",
+    "at": [
+     17890,
+     17896
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "kaolin",
+    "quote": "In places these layers consist of thin parall 1 streaks of galena and cerusite along beddin planes in a partly de- composed pyritic sh e showing small white spots of kaolin.",
+    "role": "alteration",
+    "span": [
+     17720,
+     17897
+    ],
+    "statement": "c47",
+    "zone": null
+   },
+   {
+    "as_written": "feldspar",
+    "at": [
+     17952,
+     17960
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "feldspar",
+    "quote": "Th se spots have some re- semblance to phenocr sts of feldspar in altered porphyry, and this v riety of the ore has ac- cordingly been term d \"porphyry ore.",
+    "role": "gangue",
+    "span": [
+     17897,
+     18055
+    ],
+    "statement": "c48",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     18196,
+     18202
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "Thin section of this shale or '' por- phyry\" show it to consist of fine-grained quartz and sericite accompanied by very fine grained",
+    "role": "gangue",
+    "span": [
+     18115,
+     18253
+    ],
+    "statement": "c49",
+    "zone": null
+   },
+   {
+    "as_written": "sericite",
+    "at": [
+     18208,
+     18216
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "sericite",
+    "quote": "Thin section of this shale or '' por- phyry\" show it to consist of fine-grained quartz and sericite accompanied by very fine grained",
+    "role": "alteration",
+    "span": [
+     18115,
+     18253
+    ],
+    "statement": "c49",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "ore shoots",
+    "at": [
+     1318,
+     1328
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Other ore shoots contain much enargite, Gemini mine shows some .",
+    "span": [
+     1311,
+     1376
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "drusy",
+    "at": [
+     2089,
+     2094
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "The 4uartz crystals in the_ drusy the .",
+    "span": [
+     2060,
+     2101
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "cavities",
+    "at": [
+     2145,
+     2153
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "span": [
+     2101,
+     2267
+    ],
+    "statement": "c6"
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     2631,
+     2637
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "Farther nor h and east,, beyond the area deposited during the general process of oxida- containing the le~d-silver shoots, the minerali- tion wherever the supply of oxygen was scant.",
+    "span": [
+     2514,
+     2698
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     4217,
+     4223
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "int.o lead shoots nd z.",
+    "span": [
+     4204,
+     4229
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     4234,
+     4240
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "inc shoots is dependent 1.",
+    "span": [
+     4229,
+     4257
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     4428,
+     4434
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "span": [
+     4326,
+     4538
+    ],
+    "statement": "c13"
+   },
+   {
+    "as_written": "replacement",
+    "at": [
+     4849,
+     4860
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "span": [
+     4839,
+     4991
+    ],
+    "statement": "c14"
+   },
+   {
+    "as_written": "druses",
+    "at": [
+     4890,
+     4896
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "span": [
+     4839,
+     4991
+    ],
+    "statement": "c14"
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     5207,
+     5213
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "There are a few lead shoots, and be no reasonable doub.t that all the precious the copper shoots contain a little lead.",
+    "span": [
+     5185,
+     5306
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "shoots",
+    "at": [
+     5277,
+     5283
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "There are a few lead shoots, and be no reasonable doub.t that all the precious the copper shoots contain a little lead.",
+    "span": [
+     5185,
+     5306
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     7980,
+     7990
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "FIGURE 25.---Composite cross section of the Gemini mine, showing form of ore bodies.",
+    "span": [
+     7907,
+     7991
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "lenses",
+    "at": [
+     8073,
+     8079
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "lens",
+    "quote": "Stope 2,300 feet north of shaft which they follow for 1,000 feet as lenses sepa- and 16 most of the ore bodies Tie from 1,000 rated by barren stretches.",
+    "span": [
+     8001,
+     8158
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     8105,
+     8115
+    ],
+    "element": "e2",
+    "level": null,
+    "name": "ore body",
+    "quote": "Stope 2,300 feet north of shaft which they follow for 1,000 feet as lenses sepa- and 16 most of the ore bodies Tie from 1,000 rated by barren stretches.",
+    "span": [
+     8001,
+     8158
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     8252,
+     8262
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "On levels 8 and 9 to 2,000 feet north of the shaft on the Tank and on the Red Bird isolated ore bodies continue as Intermediate channels and pitch to \u00b7 the north.",
+    "span": [
+     8158,
+     8322
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     8426,
+     8436
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "On levels 10 They range in width from a few feet up to 35 to 13 the ore bodies lie mainly for 500 feet feet and at many places\u00b7 turn and follow cross",
+    "span": [
+     8355,
+     8511
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     9925,
+     9935
+    ],
+    "element": "e4",
+    "level": null,
+    "name": "ore body",
+    "quote": "For the possibilities are far from being ex- instance, in 1914 an old 8-foot stope on the hausted~ Moreover, many of the ore bodies Intermediate channel on level 14 was re-",
+    "span": [
+     9800,
+     9979
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "disseminated",
+    "at": [
+     11128,
+     11140
+    ],
+    "element": null,
+    "level": null,
+    "name": "disseminated",
+    "quote": "cation extends a few feet beyond the ore, and the silicified rock is accompanied by sparsely disseminated galena and zinc blende.",
+    "span": [
+     11031,
+     11164
+    ],
+    "statement": "c19"
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     12246,
+     12252
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "span": [
+     12146,
+     12334
+    ],
+    "statement": "c25"
+   },
+   {
+    "as_written": "disseminated",
+    "at": [
+     12267,
+     12279
+    ],
+    "element": null,
+    "level": null,
+    "name": "disseminated",
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "span": [
+     12146,
+     12334
+    ],
+    "statement": "c25"
+   },
+   {
+    "as_written": "Cavities",
+    "at": [
+     12352,
+     12360
+    ],
+    "element": null,
+    "level": null,
+    "name": "vug",
+    "quote": "Cavities in this ore are coated with white fine-grained quartz, at the base of which galena is often deposited in abundance.",
+    "span": [
+     12351,
+     12478
+    ],
+    "statement": "c26"
+   },
+   {
+    "as_written": "disseminated",
+    "at": [
+     13322,
+     13334
+    ],
+    "element": null,
+    "level": null,
+    "name": "disseminated",
+    "quote": "251 and .sericite, with thickly disseminated pyrite, ~ontaining parallel bands of, galena and rela- tively coarse prismatic grains of qua:r;tz.",
+    "span": [
+     13287,
+     13434
+    ],
+    "statement": "c30"
+   },
+   {
+    "as_written": "replaced",
+    "at": [
+     13461,
+     13469
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "The galena is i.n ,part replaced by cerusite, which is accompanied by a little kaolin.",
+    "span": [
+     13434,
+     13524
+    ],
+    "statement": "c31"
+   },
+   {
+    "as_written": "fissure",
+    "at": [
+     15981,
+     15988
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Besides this fault and the iwrthe!lY fissure zone followed by the winze, two other northerly fissures were noted in the stope.",
+    "span": [
+     15942,
+     16072
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     16038,
+     16046
+    ],
+    "element": "e7",
+    "level": null,
+    "name": "fissure vein",
+    "quote": "Besides this fault and the iwrthe!lY fissure zone followed by the winze, two other northerly fissures were noted in the stope.",
+    "span": [
+     15942,
+     16072
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     16077,
+     16086
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The ore shoot appears to owe its existence, therefore, to the opening up of the strata whe:re tl}.e northerly fissures inter- sect the easterly fault.",
+    "span": [
+     16072,
+     16225
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     16185,
+     16193
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The ore shoot appears to owe its existence, therefore, to the opening up of the strata whe:re tl}.e northerly fissures inter- sect the easterly fault.",
+    "span": [
+     16072,
+     16225
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "replaced",
+    "at": [
+     16491,
+     16499
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "The h~gh-grade layers evidently replac d shale along the more open bedding planes nd doubtless replaced any beds or lenses of \u00b7 estone that were pres- ent in the shale.",
+    "span": [
+     16392,
+     16565
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "lenses",
+    "at": [
+     16513,
+     16519
+    ],
+    "element": null,
+    "level": null,
+    "name": "lens",
+    "quote": "The h~gh-grade layers evidently replac d shale along the more open bedding planes nd doubtless replaced any beds or lenses of \u00b7 estone that were pres- ent in the shale.",
+    "span": [
+     16392,
+     16565
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "lenses",
+    "at": [
+     16729,
+     16735
+    ],
+    "element": null,
+    "level": null,
+    "name": "lens",
+    "quote": "The high-grade galena consists of aggregates f grains 3 millimeters or less in diameter, in w ich are scattered lenses from half an inch to 2 i ches long of fine-grained galena.",
+    "span": [
+     16613,
+     16796
+    ],
+    "statement": "c41"
+   },
+   {
+    "as_written": "streaks",
+    "at": [
+     17770,
+     17777
+    ],
+    "element": null,
+    "level": null,
+    "name": "pay streak",
+    "quote": "In places these layers consist of thin parall 1 streaks of galena and cerusite along beddin planes in a partly de- composed pyritic sh e showing small white spots of kaolin.",
+    "span": [
+     17720,
+     17897
+    ],
+    "statement": "c47"
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     19378,
+     19386
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The silver shale contact and with associated northerly content up to 20 ounces to the ton varies for fissures.",
+    "span": [
+     19275,
+     19387
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     19507,
+     19515
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "The ore solutions doubtless rose the most part directly, though not uniformly, through the quartzite along northerly fissures with that of lead.",
+    "span": [
+     19387,
+     19535
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "fissures",
+    "at": [
+     19690,
+     19698
+    ],
+    "element": null,
+    "level": null,
+    "name": "fissure vein",
+    "quote": "As the silver content rises .in this vicinity, as in the Tintic district to the above 20 ounces to the ton the lead content west, and spread where these fissures were in- tends to decrease, though not uniformly.",
+    "span": [
+     19535,
+     19748
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "replacement",
+    "at": [
+     20453,
+     20464
+    ],
+    "element": "e8",
+    "level": null,
+    "name": "replacement",
+    "quote": "The ore by the writer.1 body found in the new shaft is presumably, Since the writer's last visit to this mine, in like that in the East Tintic Development vein, December, 1916, the new or northern shaft, a replacement vein deposited where solutions having three compartments, has been com- worked their way through a muc;h shattered pleted to a depth of 1,300 feet.",
+    "span": [
+     20242,
+     20614
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "enargite"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "enargite"
+    ],
+    "page": null,
+    "quote": "Other ore shoots contain much enargite, Gemini mine shows some .",
+    "span": [
+     1311,
+     1376
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "chalcopyrite"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "chalcopyrite"
+    ],
+    "page": null,
+    "quote": "oxidation with the with some pyrite and chalcopyrite, or famati- development of small cerusite crystals, through",
+    "span": [
+     1376,
+     1494
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "native silver"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native silver"
+    ],
+    "page": null,
+    "quote": "127 which wires of native silver pllSS,\u00b7SO that oxi1a- ounces to the t!jn.",
+    "span": [
+     1534,
+     1611
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "' inant quartz in t~1e form of an extremely fine- In a large part of the upper zone not enough grained cherty material replacing limestone or oxygen was available for\u00b7 complete oxidation.",
+    "span": [
+     1768,
+     1958
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "dolomite",
+     "galena",
+     "barite"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "dolomite",
+     "galena",
+     "barite"
+    ],
+    "page": null,
+    "quote": "dolomite, but the~e is also a moderate amount In such places much galena remains, some of of barite.",
+    "span": [
+     1958,
+     2060
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "enargite",
+     "chalcocite",
+     "covellite"
+    ],
+    "element": null,
+    "id": "c6",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "enargite",
+     "chalcocite",
+     "covellite"
+    ],
+    "page": null,
+    "quote": "enargite has suffered a partial oxidation, cavities that occl!l.r here and there are rarely and secondary chalcocite and covellite have more than 1 m~ \u00b7 1meter in .",
+    "span": [
+     2101,
+     2267
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Proustite",
+     "argentite"
+    ],
+    "element": null,
+    "id": "c7",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "proustite",
+     "argentite"
+    ],
+    "page": null,
+    "quote": "Proustite and argentite, found north of the end 1 f the copper zone.",
+    "span": [
+     2397,
+     2467
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "dolomite",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c8",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "dolomite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The gangue min- No positive conclusions have been reached as erals consist of chlcite, dolomite, and a little to the existence_of sulphide enrichment below quartz;",
+    "span": [
+     2726,
+     2892
+    ],
+    "zone": "sulphide"
+   },
+   {
+    "as_written": [
+     "galena"
+    ],
+    "element": null,
+    "id": "c9",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "the ore ~ I inerals comprise galena and m\u00b7 at water level.",
+    "span": [
+     2892,
+     2952
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "zinc blende"
+    ],
+    "element": null,
+    "id": "c10",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sphalerite"
+    ],
+    "page": null,
+    "quote": "A very peculiar rich ore zinc blende;",
+    "span": [
+     2952,
+     2991
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "zinc blende",
+     "marcasite"
+    ],
+    "element": null,
+    "id": "c11",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "sphalerite",
+     "marcasite"
+    ],
+    "page": null,
+    "quote": "contains galena, pearceite, zinc blende, and Gold and coppkr seem thus to occur on the marcasite.",
+    "span": [
+     3106,
+     3207
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c12",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "In the monzonite quartz occurs in well- upon processes of oxidation.",
+    "span": [
+     4257,
+     4326
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "barite",
+     "galena",
+     "enargite",
+     "zinc blende",
+     "chalcopyrite"
+    ],
+    "element": null,
+    "id": "c13",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "barite",
+     "galena",
+     "enargite",
+     "sphalerite",
+     "chalcopyrite"
+    ],
+    "page": null,
+    "quote": "In any one mine developed crystals with much pyrite and some within the coppe~ zone lead and copper shoots barite, galena, enargite, zinc blende, and may occur in clo~e proxi~ty, but there is no chalcopyrite.",
+    "span": [
+     4326,
+     4538
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "quartz",
+     "barite"
+    ],
+    "element": null,
+    "id": "c14",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "barite"
+    ],
+    "page": null,
+    "quote": "grained replacement quartz, with a few small ~ druses of well-crystallized quartz and much The mode of or' gin of the deposits is taken up barite.",
+    "span": [
+     4839,
+     4991
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "enargite"
+    ],
+    "element": null,
+    "id": "c15",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "enargite"
+    ],
+    "page": null,
+    "quote": "The ores contain much enargite and in more detail in another place (pp. 182-184).",
+    "span": [
+     4991,
+     5073
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "tetrahedrite"
+    ],
+    "element": null,
+    "id": "c16",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "tetrahedrite"
+    ],
+    "page": null,
+    "quote": "in places a little pyrite, also tetrahedrite and It is well to state ere, however, that there can famatinite.",
+    "span": [
+     5073,
+     5185
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "zinc blende",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c17",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sphalerite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "Farther north, in the same vein zones, usual type of ~eralization in both classes of the sedimentary rocks contain principally ga- rocks, the general continuity in strike, and lena, with a little zinc blende and pyrite.",
+    "span": [
+     5632,
+     5854
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "silver chloride"
+    ],
+    "element": null,
+    "id": "c18",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "cerargyrite"
+    ],
+    "page": null,
+    "quote": "Lead and silver chloride ore from Red Bird channel.",
+    "span": [
+     10779,
+     10831
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "zinc blende"
+    ],
+    "element": null,
+    "id": "c19",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "sphalerite"
+    ],
+    "page": null,
+    "quote": "cation extends a few feet beyond the ore, and the silicified rock is accompanied by sparsely disseminated galena and zinc blende.",
+    "span": [
+     11031,
+     11164
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena"
+    ],
+    "element": null,
+    "id": "c20",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "The Gemini ores were oxidized in large part down to the water level, or about 1:650 feet below the collar, but in the deeper levels the oxi- dation is only partial and much galena is seen on levels 14, 15, and 16.",
+    "span": [
+     11164,
+     11382
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "dolomite",
+     "barite"
+    ],
+    "element": null,
+    "id": "c21",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "dolomite",
+     "barite"
+    ],
+    "page": null,
+    "quote": "The gangue is fine- grained bluish gray flinty j asperoid, replacing dolomite aJ;ld usually containing small plates of barite.",
+    "span": [
+     11429,
+     11558
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Galena",
+     "anglesite"
+    ],
+    "element": null,
+    "id": "c22",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "anglesite"
+    ],
+    "page": null,
+    "quote": "Galena and cerusite, with more- or less anglesite, are the principal.",
+    "span": [
+     11742,
+     11814
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "horn silver"
+    ],
+    "element": null,
+    "id": "c23",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "cerargyrite"
+    ],
+    "page": null,
+    "quote": "The average galena contains 30 to 40 ounces of were found even in level17 ~ Tower and Smith \u00b7 mention crusts of horn silver a quarter of an inch thick from the upper levels.",
+    "span": [
+     11829,
+     12008
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Native silver",
+     "wire silver"
+    ],
+    "element": null,
+    "id": "c24",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "native silver"
+    ],
+    "page": null,
+    "quote": "Native silver is not uncommon, and wire silver with cerusite was noted in specimens from level 19-that is, 250 feet below water level.",
+    "span": [
+     12008,
+     12146
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "jasperoid",
+     "zinc blende",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c25",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "jasper",
+     "sphalerite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "The primary lean ore of the three easterly channels consists of blue or gray jasperoid, locally banded, in which are disseminated small grains of gale~a, zinc blende, and pyrite (Pl.",
+    "span": [
+     12146,
+     12334
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "galena"
+    ],
+    "element": null,
+    "id": "c26",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "galena"
+    ],
+    "page": null,
+    "quote": "Cavities in this ore are coated with white fine-grained quartz, at the base of which galena is often deposited in abundance.",
+    "span": [
+     12351,
+     12478
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "barite"
+    ],
+    "element": null,
+    "id": "c27",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "barite"
+    ],
+    "page": null,
+    "quote": "More or less barite is present but is rarely con- spicuous.",
+    "span": [
+     12478,
+     12539
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "anglesite"
+    ],
+    "element": null,
+    "id": "c28",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "anglesite"
+    ],
+    "page": null,
+    "quote": "The oxidized ore is a soft and honey- combed mass of silica, cerusite, anglesite, etc., with small amounts of limonit\u00a3.",
+    "span": [
+     12539,
+     12660
+    ],
+    "zone": "oxidized"
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c29",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "thin sections it far as, co~ld be det~rmined in the iron-stained appears as a :f4le-grained felt like mass of quartz",
+    "span": [
+     13127,
+     13249
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sericite",
+     "pyrite",
+     "galena"
+    ],
+    "element": null,
+    "id": "c30",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite",
+     "pyrite",
+     "galena"
+    ],
+    "page": null,
+    "quote": "251 and .sericite, with thickly disseminated pyrite, ~ontaining parallel bands of, galena and rela- tively coarse prismatic grains of qua:r;tz.",
+    "span": [
+     13287,
+     13434
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "kaolin"
+    ],
+    "element": null,
+    "id": "c31",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "kaolin"
+    ],
+    "page": null,
+    "quote": "The galena is i.n ,part replaced by cerusite, which is accompanied by a little kaolin.",
+    "span": [
+     13434,
+     13524
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c32",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "_The quartz and shale of the pyJ.itic portion may \u00b7 be in- terpreted as\u00b7 mostly a recrystallization of the constituents of s}lale or shaly limestone, but the predominance of quartz also indicates an ad-dition of silica.",
+    "span": [
+     13524,
+     13748
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite",
+     "galena",
+     "barite"
+    ],
+    "element": null,
+    "id": "c33",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "galena",
+     "barite"
+    ],
+    "page": null,
+    "quote": "half an inch in diameter slightly impregnated with extremely fine grained py- rite, in a siliceous rna trix of less fine grain con- taining pyrite, galena, and a little barite.",
+    "span": [
+     13841,
+     14019
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sericite",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c34",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "sericite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "In thin sections the inclusions consisted mainly of very fine grained q-q.artz, sericite, and pyrite, with here and.",
+    "span": [
+     14019,
+     14139
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c35",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "partly .developed crystal of quartz.",
+    "span": [
+     14165,
+     14203
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "sericite"
+    ],
+    "element": null,
+    "id": "c36",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "sericite"
+    ],
+    "page": null,
+    "quote": "The matrix con- sisted mainly of coarser grains of the same miner~ls, _ the quartz mostly in rather well developed crystals and the sericite partly segregated into tuftlike aggregates.",
+    "span": [
+     14203,
+     14391
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "Pyrite",
+     "quartz",
+     "sericite"
+    ],
+    "element": null,
+    "id": "c37",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite",
+     "quartz",
+     "sericite"
+    ],
+    "page": null,
+    "quote": "Pyrite as a whole presents distinct crystal boundaries but incloses and.is intergroWli to some extent with quartz and sericite.",
+    "span": [
+     14391,
+     14522
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "quartz",
+     "sericite"
+    ],
+    "element": null,
+    "id": "c38",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "quartz",
+     "sericite"
+    ],
+    "page": null,
+    "quote": "The galena s4ows similar relations to quartz \u00b7 and sericite, b~t has only irregular outlines.",
+    "span": [
+     14524,
+     14620
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "barite",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c39",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "barite",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The barite \u00b7 foi;'Ills typical tabular crystals of synchronous growth with so.me of the quartz, but also cut and re- plaoed by veinlets \u00b7 of q~a:rtz and se:ricite.",
+    "span": [
+     14620,
+     14787
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena"
+    ],
+    "element": null,
+    "id": "c40",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "-grade and low-grade galena.",
+    "span": [
+     16294,
+     16324
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "galena"
+    ],
+    "element": null,
+    "id": "c41",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "The high-grade galena consists of aggregates f grains 3 millimeters or less in diameter, in w ich are scattered lenses from half an inch to 2 i ches long of fine-grained galena.",
+    "span": [
+     16613,
+     16796
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena"
+    ],
+    "element": null,
+    "id": "c42",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena"
+    ],
+    "page": null,
+    "quote": "There is not ing to indicate that the fine-grained galena w s deposited later than the_ .coarse.",
+    "span": [
+     16796,
+     16895
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "barite",
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c43",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "barite",
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "The fine grained galena is also associated with small crystals of barite and pyrite at.",
+    "span": [
+     16895,
+     16985
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "pyrite"
+    ],
+    "element": null,
+    "id": "c44",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "pyrite"
+    ],
+    "page": null,
+    "quote": "Polished sur- faces of the g1,1lena a seen under the micro- scope to inclose scat ered minute -crystals of pyrite and droplike or rregular grains of argen- tite, none of which s owed indications of _sec- ondary origin.",
+    "span": [
+     17103,
+     17325
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "barite",
+     "sericite",
+     "galena"
+    ],
+    "element": null,
+    "id": "c45",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "barite",
+     "sericite",
+     "galena"
+    ],
+    "page": null,
+    "quote": "A thin section of e gangue showed it to consist of barite in t ical crystals, with fine fringes of sericite, hich separated it from galena.",
+    "span": [
+     17425,
+     17572
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "quartz"
+    ],
+    "element": null,
+    "id": "c46",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "quartz"
+    ],
+    "page": null,
+    "quote": "inclosed in the galena, but quartz w s inconspicuous.",
+    "span": [
+     17595,
+     17650
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "galena",
+     "kaolin"
+    ],
+    "element": null,
+    "id": "c47",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "galena",
+     "kaolin"
+    ],
+    "page": null,
+    "quote": "In places these layers consist of thin parall 1 streaks of galena and cerusite along beddin planes in a partly de- composed pyritic sh e showing small white spots of kaolin.",
+    "span": [
+     17720,
+     17897
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "feldspar"
+    ],
+    "element": null,
+    "id": "c48",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "feldspar"
+    ],
+    "page": null,
+    "quote": "Th se spots have some re- semblance to phenocr sts of feldspar in altered porphyry, and this v riety of the ore has ac- cordingly been term d \"porphyry ore.",
+    "span": [
+     17897,
+     18055
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz",
+     "sericite"
+    ],
+    "element": null,
+    "id": "c49",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "sericite"
+    ],
+    "page": null,
+    "quote": "Thin section of this shale or '' por- phyry\" show it to consist of fine-grained quartz and sericite accompanied by very fine grained",
+    "span": [
+     18115,
+     18253
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "b3e433989c7c56dff5d9c251bef2b905fc2e1eb242ab79ad05d5c4bbebe05868"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 4,
   "surveyed": 0
  },
- "content_sha256": "174e18b942408079fc2d6a21c9f551bd80881f82dfe18d7a98e29d6c765f0174",
+ "content_sha256": "fb9772f97f13892e7fdbfc8a8ddb5a2277d6ab15593f163e8e1ed8a0e0986c83",
  "coverage": {
   "assays": 4,
   "chars": 20896,
+  "composition_statements": 49,
   "elements": 4,
   "mentions": 10,
+  "minerals": 96,
   "mining_sentences": 46,
   "parsed_chars": 1474,
   "questions": 42,
@@ -246,18 +4852,18 @@
  ],
  "files": [
   {
-   "bytes": 287909,
+   "bytes": 287911,
    "content_type": "application/json",
    "key": "models/gemini-mine-enargite-specimen-c75bc57f/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "f570e7da5a0bf62e8ad236d6c14cfaa11e8692ce39fb8e9fb124d28a0cbd417e"
+   "sha256": "52d4b0b460c87c0bba2b6e39644b19ac2e58d89c5534519eb11a291a1671e2ea"
   },
   {
    "bytes": 197625,
    "content_type": "application/octet-stream",
    "key": "models/gemini-mine-enargite-specimen-c75bc57f/model.omf",
    "name": "model.omf",
-   "sha256": "f023071c66a4f3ab9e29e4f8292c5a17ddcf481dfce00b241c1ea04c96db68e5"
+   "sha256": "91a2c19a95a0277af333399945954c4d32ad99e32966c40f2d3b51fc53cf8d3b"
   },
   {
    "bytes": 2268,
@@ -432,10 +5038,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T05:38:43Z",
+ "published_utc": "2026-09-03T03:06:24Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {

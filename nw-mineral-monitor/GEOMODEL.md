@@ -113,10 +113,12 @@ site/index.html ──OPEN 3D MODEL──▶ site/model3d.html?lat&lon&name&gi&a
 pipelines/geomodel/          Python twin (stdlib only; numpy used when present)
    model.py  interp.py  stratigraphy.py  blockmodel.py  slicing.py  workings.py  contours.py  mapmodel.py  kit.py
    narrative.py  resolve.py  agentbuild.py  render2d.py  publish.py   <- prose -> model
-   mapplate.py   assay.py                                             <- plates, grades
+   mapplate.py   assay.py   composition.py                            <- plates, grades, minerals at depth
    formats/{omf1,omf2,parquet_lite,thrift_compact,surfer,geosoft,arcascii,zmap,irap,cps3,
             ubc,obj,dxf,gocad,lfmsh,tables,segy,las}.py
 pipelines/geomodel_kit.py    CLI: site | export | convert | info | list | mines | narrate
+pipelines/geomodel_corpus.py SiteIndex: document -> mine -> located site over every namespace; sections()
+pipelines/ws13_geomodel.py   the WS13 corpus driver: funnel, shards, ledger, fleet mode (WS13-GEOMODEL.md)
 services/minevis/            HTTP service: /tools /call /jobs/<id> (see its README)
 ```
 
@@ -215,6 +217,10 @@ scene carries a legend and a scale bar. The rest of the plan lives in the
 [`LEAPFROG-PARITY.md`](LEAPFROG-PARITY.md) — the read of the 23 Seequent
 course guides and papers against this code, with every verified gap, what was
 built from it on 2026-09-02, and what is set aside as drillhole-only.
+[`WS13-GEOMODEL.md`](WS13-GEOMODEL.md) is the framework that runs the
+56,282-document WS13 corpus through this modeller on AWS: the funnel, the
+resolver over every site namespace, composition at depth, the sharded
+ledgered driver and its fleet mode.
 
 
 **Delivered 2026-09-01** — the corpus autopopulator

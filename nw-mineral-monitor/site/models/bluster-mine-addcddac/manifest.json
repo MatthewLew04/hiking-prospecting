@@ -132,17 +132,546 @@
   "y": 4633097.691411306,
   "z": 2625.7620210003765
  },
+ "commodities": [
+  {
+   "commodity": "gold",
+   "count": 1,
+   "minerals": [
+    "electrum"
+   ]
+  },
+  {
+   "commodity": "silver",
+   "count": 1,
+   "minerals": [
+    "electrum"
+   ]
+  }
+ ],
+ "composition": {
+  "alteration": [],
+  "by_level": {},
+  "commodities": [
+   {
+    "commodity": "gold",
+    "count": 1,
+    "minerals": [
+     "electrum"
+    ]
+   },
+   {
+    "commodity": "silver",
+    "count": 1,
+    "minerals": [
+     "electrum"
+    ]
+   }
+  ],
+  "coverage": {
+   "sentences": 63,
+   "sentences_with_minerals": 5
+  },
+  "host_rock": [
+   {
+    "as_written": "black shale",
+    "at": [
+     3224,
+     3235
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "shale",
+    "quote": "At an intervening point a short crosscut to the north shows 2 feet of black shale or slate underlying a similar thickness of gray sandstone.",
+    "span": [
+     3152,
+     3295
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "slate",
+    "at": [
+     3239,
+     3244
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "slate",
+    "quote": "At an intervening point a short crosscut to the north shows 2 feet of black shale or slate underlying a similar thickness of gray sandstone.",
+    "span": [
+     3152,
+     3295
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "sandstone",
+    "at": [
+     3285,
+     3294
+    ],
+    "element": "e3",
+    "level": null,
+    "name": "sandstone",
+    "quote": "At an intervening point a short crosscut to the north shows 2 feet of black shale or slate underlying a similar thickness of gray sandstone.",
+    "span": [
+     3152,
+     3295
+    ],
+    "statement": null
+   }
+  ],
+  "minerals": [
+   {
+    "as_written": "kaolin",
+    "at": [
+     1815,
+     1821
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "kaolin",
+    "quote": "The walls in general are well defined and are accompanied by a sheet of kaolin-like gouge.",
+    "role": "alteration",
+    "span": [
+     1741,
+     1833
+    ],
+    "statement": "c1",
+    "zone": null
+   },
+   {
+    "as_written": "electrum",
+    "at": [
+     2600,
+     2608
+    ],
+    "commodities": [
+     "gold",
+     "silver"
+    ],
+    "commodity": "gold",
+    "element": null,
+    "level": null,
+    "name": "electrum",
+    "quote": "The gold occurs free and alloyed with silver, or as electrum.",
+    "role": "ore",
+    "span": [
+     2546,
+     2609
+    ],
+    "statement": "c2",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     3141,
+     3147
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The drift at the time of visit was entering good-looking quartz ore.",
+    "role": "gangue",
+    "span": [
+     3082,
+     3152
+    ],
+    "statement": "c3",
+    "zone": null
+   },
+   {
+    "as_written": "sugary quartz",
+    "at": [
+     5159,
+     5172
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "The ore is mostly of the soft, sugary quartz-adularia kind and is said to average about $16 to the ton.",
+    "role": "gangue",
+    "span": [
+     5126,
+     5232
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "adularia",
+    "at": [
+     5173,
+     5181
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "adularia",
+    "quote": "The ore is mostly of the soft, sugary quartz-adularia kind and is said to average about $16 to the ton.",
+    "role": "gangue",
+    "span": [
+     5126,
+     5232
+    ],
+    "statement": "c4",
+    "zone": null
+   },
+   {
+    "as_written": "quartz",
+    "at": [
+     5931,
+     5937
+    ],
+    "commodities": [],
+    "commodity": null,
+    "element": null,
+    "level": null,
+    "name": "quartz",
+    "quote": "On level No. 4 the face of the drift on the vein shows 3 feet of good quartz ore.",
+    "role": "gangue",
+    "span": [
+     5859,
+     5942
+    ],
+    "statement": "c5",
+    "zone": null
+   }
+  ],
+  "ore_terms": [
+   {
+    "as_written": "gouge",
+    "at": [
+     1827,
+     1832
+    ],
+    "element": null,
+    "level": null,
+    "name": "gouge",
+    "quote": "The walls in general are well defined and are accompanied by a sheet of kaolin-like gouge.",
+    "span": [
+     1741,
+     1833
+    ],
+    "statement": "c1"
+   },
+   {
+    "as_written": "ore bodies",
+    "at": [
+     2003,
+     2013
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore body",
+    "quote": "It is opened to a depth of about 300 feet and contains large and valuable ore bodies.",
+    "span": [
+     1927,
+     2014
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "footwall",
+    "at": [
+     2105,
+     2113
+    ],
+    "element": null,
+    "level": null,
+    "name": "footwall",
+    "quote": "The ore occurs mostly in the footwall side of the vein and as metasomastic replacement deposits in the adjacent rhyo- lite.",
+    "span": [
+     2075,
+     2201
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "replacement deposits",
+    "at": [
+     2152,
+     2172
+    ],
+    "element": null,
+    "level": null,
+    "name": "replacement",
+    "quote": "The ore occurs mostly in the footwall side of the vein and as metasomastic replacement deposits in the adjacent rhyo- lite.",
+    "span": [
+     2075,
+     2201
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoots",
+    "at": [
+     2291,
+     2301
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The ore shoots are nearly parallel with the vein.",
+    "span": [
+     2286,
+     2336
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "lenticular",
+    "at": [
+     2386,
+     2396
+    ],
+    "element": null,
+    "level": null,
+    "name": "lens",
+    "quote": "They range from thin tabular sheets to flattish lenticular bodies nearly 20 feet in width and 200 to 300 feet in length.",
+    "span": [
+     2336,
+     2459
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore \nshoots",
+    "at": [
+     2744,
+     2755
+    ],
+    "element": "e1",
+    "level": "lower",
+    "name": "ore shoot",
+    "quote": "On the lower level northward for 380 feet from the crosscut tunnel the vein is locally 45 feet in width and in places contained good ore shoots, of which one of the best had a width of 8 feet and averaged $21 to the ton.",
+    "span": [
+     2609,
+     2833
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     3034,
+     3043
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "The ore shoot is said to have an extent of 250 feet.",
+    "span": [
+     3028,
+     3082
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "Bonanza",
+    "at": [
+     4877,
+     4884
+    ],
+    "element": "e9",
+    "level": null,
+    "name": "bonanza",
+    "quote": "The lowest tunnel (No. 5), 300 feet long, with the portal near Bonanza Gulch at an elevation of approximately 8,100 feet, 140 feet lower than tunnel No. 4, has not yet reached the vein.",
+    "span": [
+     4812,
+     5001
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     5527,
+     5536
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "On level No. 2, at 50 feet from the portal, the vein looks well and has an ore shoot 6 feet wide extending for a considerable distance.",
+    "span": [
+     5450,
+     5587
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     5628,
+     5637
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "From the 150-foot point inward another ore shoot 9 feet wide looks well.",
+    "span": [
+     5587,
+     5662
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "banded",
+    "at": [
+     5669,
+     5675
+    ],
+    "element": null,
+    "level": null,
+    "name": "banded ore",
+    "quote": "It is banded, has well-defined walls, and is said to average $15 to the ton.",
+    "span": [
+     5662,
+     5740
+    ],
+    "statement": null
+   },
+   {
+    "as_written": "ore shoot",
+    "at": [
+     5818,
+     5827
+    ],
+    "element": null,
+    "level": null,
+    "name": "ore shoot",
+    "quote": "In the Discovery cut, 140 feet above the portal of level No. 2, is a 6-foot ore shoot said to average $35 to the ton.",
+    "span": [
+     5740,
+     5859
+    ],
+    "statement": null
+   }
+  ],
+  "schema": "nwmm-composition/1",
+  "statements": [
+   {
+    "as_written": [
+     "kaolin"
+    ],
+    "element": null,
+    "id": "c1",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "kaolin"
+    ],
+    "page": null,
+    "quote": "The walls in general are well defined and are accompanied by a sheet of kaolin-like gouge.",
+    "span": [
+     1741,
+     1833
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "electrum"
+    ],
+    "element": null,
+    "id": "c2",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "electrum"
+    ],
+    "page": null,
+    "quote": "The gold occurs free and alloyed with silver, or as electrum.",
+    "span": [
+     2546,
+     2609
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c3",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "The drift at the time of visit was entering good-looking quartz ore.",
+    "span": [
+     3082,
+     3152
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "sugary quartz",
+     "adularia"
+    ],
+    "element": null,
+    "id": "c4",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz",
+     "adularia"
+    ],
+    "page": null,
+    "quote": "The ore is mostly of the soft, sugary quartz-adularia kind and is said to average about $16 to the ton.",
+    "span": [
+     5126,
+     5232
+    ],
+    "zone": null
+   },
+   {
+    "as_written": [
+     "quartz"
+    ],
+    "element": null,
+    "id": "c5",
+    "level": null,
+    "level_source": null,
+    "minerals": [
+     "quartz"
+    ],
+    "page": null,
+    "quote": "On level No. 4 the face of the drift on the vein shows 3 feet of good quartz ore.",
+    "span": [
+     5859,
+     5942
+    ],
+    "zone": null
+   }
+  ],
+  "text_sha256": "8b11926e57e05449375864baf506118cf3b562b5c6ae099fc0586b4c7d94b2e4"
+ },
+ "composition_points": 0,
  "confidence": {
   "assumed": 0,
   "described": 2,
   "surveyed": 0
  },
- "content_sha256": "6751d93296647b1984342ecdfa8c60c1a55a1020a4dc5131965b95407974c99e",
+ "content_sha256": "832eaa72562c35cc560c06e61ec95585b6f3e861d5e329b5da672dd36f77b08c",
  "coverage": {
   "assays": 2,
   "chars": 6187,
+  "composition_statements": 5,
   "elements": 2,
   "mentions": 4,
+  "minerals": 6,
   "mining_sentences": 18,
   "parsed_chars": 1376,
   "questions": 13,
@@ -202,18 +731,18 @@
  ],
  "files": [
   {
-   "bytes": 328059,
+   "bytes": 328061,
    "content_type": "application/json",
    "key": "models/bluster-mine-addcddac/model.geomodel.json",
    "name": "model.geomodel.json",
-   "sha256": "01325672f8b3b8d6f9e06aca2c11a3e093144d5e18e6dcfab54a7161371cc291"
+   "sha256": "6f3575c1edc75942bc74624f3d40951ad4535516025bf64328bff06b84d291eb"
   },
   {
    "bytes": 232153,
    "content_type": "application/octet-stream",
    "key": "models/bluster-mine-addcddac/model.omf",
    "name": "model.omf",
-   "sha256": "d954e843503af5cd5b0ac13c3d6984d5ed72c1fda4ede0d93a9f943d8aad6f77"
+   "sha256": "8699c64b7be7d39cfc24902eef22e8ec2ada5ce9ec5074891bb56c0b55de4869"
   },
   {
    "bytes": 1492,
@@ -328,10 +857,11 @@
   "mentions are workings the text names without describing; they were not built.",
   "surveyed elements were traced off a georeferenced plate listed under \"plates\"; their geometry is the survey's, not this builder's.",
   "assay \"basis\" separates a selected sample from an average; no grade surface is interpolated from quoted figures.",
+  "composition lists the minerals, host rocks, alteration and ore terms the text names, each with its sentence; a commodity is implied only by a named ore mineral, never by the word \"ore\", and a statement is placed at depth only when its sentence names a level.",
   "access \"app-gate\" means the model sits under the public models/ prefix and is reachable by anyone who can construct its URL; \"presigned\" means it sits under private/ and is reachable only through a short-lived signed link."
  ],
  "plates": [],
- "published_utc": "2026-09-01T04:54:19Z",
+ "published_utc": "2026-09-03T03:06:34Z",
  "schema": "nwmm-model-manifest/1",
  "summary": {
   "by_level": {
